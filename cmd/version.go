@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +24,7 @@ import (
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Display current version of Vultr-cli",
-	Long: ``,
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println(version())
 	},

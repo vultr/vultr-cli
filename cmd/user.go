@@ -18,10 +18,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/vultr/govultr"
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/vultr/govultr"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 

@@ -17,17 +17,18 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"log"
+
 	"github.com/spf13/cobra"
 	"github.com/vultr/vultr-cli/cmd/printer"
-	"log"
 )
 
 // osCmd represents the os command
 var osCmd = &cobra.Command{
-	Use:   "os",
-	Short: "grab all available operating systems",
+	Use:     "os",
+	Short:   "grab all available operating systems",
 	Aliases: []string{"o"},
-	Long: ``,
+	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		os, err := client.OS.List(context.TODO())
 		if err != nil {
