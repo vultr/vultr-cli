@@ -15,21 +15,31 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
-// versionCmd represents the version command
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Display current version of Vultr-cli",
-	Long:  ``,
+// osCmd represents the os command
+var osCmd = &cobra.Command{
+	Use:     "os",
+	Short:   "grab all available operating systems",
+	Aliases: []string{"o"},
+	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(version())
-	},
-}
+		os, err := client.OS.List(context.TODO())
+		if err != nil {
+			log.Fatal(err)
+		}
 
-func version() string {
-	return "Vultr-cli v0.0.1"
+		if len(os) == 0 {
+			fmt.Println()
+			return
+		}
+
+		printer.Os(os)
+	},
 }
