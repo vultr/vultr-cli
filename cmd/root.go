@@ -1,4 +1,4 @@
-// Copyright © 2019 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2019 The Vultr-cli Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -63,7 +63,9 @@ func init() {
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	rootCmd.AddCommand(osCmd)
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(User())
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -94,8 +96,11 @@ func initConfig() {
 
 func initClient() {
 	key := os.Getenv("VULTR_API_KEY")
+	if key == "" {
+		fmt.Println("Please export your VULTR API Key")
+		os.Exit(1)
+	}
 
 	client = govultr.NewClient(nil, key)
 	client.RateLimit = 1 * time.Millisecond
-
 }
