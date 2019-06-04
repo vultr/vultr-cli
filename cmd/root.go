@@ -70,6 +70,7 @@ func init() {
 	rootCmd.AddCommand(osCmd)
 	rootCmd.AddCommand(SSHKey())
 	rootCmd.AddCommand(Regions())
+	rootCmd.AddCommand(Script())
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(User())
 }
