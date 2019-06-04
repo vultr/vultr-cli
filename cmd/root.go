@@ -71,6 +71,7 @@ func init() {
 	rootCmd.AddCommand(osCmd)
 	rootCmd.AddCommand(Regions())
 	rootCmd.AddCommand(Script())
+	rootCmd.AddCommand(Snapshot())
 	rootCmd.AddCommand(SSHKey())
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(User())
