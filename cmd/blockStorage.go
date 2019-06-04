@@ -42,7 +42,7 @@ func BlockStorageCmd() *cobra.Command {
 	bsAttach.Flags().StringP("instance", "i", "", "instance id you want to attach to")
 	bsAttach.MarkFlagRequired("instance")
 
-	// Craete
+	// Create
 	bsCreate.Flags().IntP("region", "r", 0, "regionID you want to create the block storage in")
 	bsCreate.MarkFlagRequired("region")
 
