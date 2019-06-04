@@ -18,11 +18,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// dnsCmd represents the dns command
+// Dns represents the dns command
 func Dns() *cobra.Command {
 	dnsCmd := &cobra.Command{
 		Use:   "dns",
-		Short: "A brief description of your command",
+		Short: "dns is used to access dns commands",
 		Long:  ``,
 	}
 
