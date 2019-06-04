@@ -67,6 +67,7 @@ func init() {
 	rootCmd.AddCommand(apiCmd)
 	rootCmd.AddCommand(applicationCmd)
 	rootCmd.AddCommand(backupCmd)
+	rootCmd.AddCommand(BlockStorageCmd())
 	rootCmd.AddCommand(osCmd)
 	rootCmd.AddCommand(Regions())
 	rootCmd.AddCommand(versionCmd)
