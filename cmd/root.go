@@ -67,10 +67,12 @@ func init() {
 	rootCmd.AddCommand(apiCmd)
 	rootCmd.AddCommand(applicationCmd)
 	rootCmd.AddCommand(backupCmd)
+	rootCmd.AddCommand(BlockStorageCmd())
 	rootCmd.AddCommand(osCmd)
 	rootCmd.AddCommand(Regions())
 	rootCmd.AddCommand(Script())
 	rootCmd.AddCommand(Snapshot())
+	rootCmd.AddCommand(SSHKey())
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(User())
 }
