@@ -27,6 +27,7 @@ import (
 // apiCmd represents the api command
 var apiCmd = &cobra.Command{
 	Use:   "api-key",
+	Aliases: []string{"api"},
 	Short: "retrieve information about the current API key",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
