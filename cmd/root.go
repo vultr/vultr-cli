@@ -70,6 +70,8 @@ func init() {
 	rootCmd.AddCommand(BlockStorageCmd())
 	rootCmd.AddCommand(osCmd)
 	rootCmd.AddCommand(Regions())
+	rootCmd.AddCommand(Script())
+	rootCmd.AddCommand(SSHKey())
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(User())
 }
