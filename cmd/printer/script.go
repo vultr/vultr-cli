@@ -5,10 +5,10 @@ import (
 )
 
 func Script(script []govultr.StartupScript) {
-	col := columns{"SCRIPTID", "TYPE", "NAME", "SCRIPT"}
+	col := columns{"SCRIPTID", "DATE CREATED", "DATE MODIFIED", "TYPE", "NAME", "SCRIPT"}
 	display(col)
 	for _, s := range script {
-		display(columns{s.ScriptID, s.Type, s.Name, s.Script})
+		display(columns{s.ScriptID, s.DateCreated, s.DateModified, s.Type, s.Name, s.Script})
 	}
 	flush()
 }
