@@ -144,7 +144,7 @@ var scriptUpdate = &cobra.Command{
 		err := client.StartupScript.Update(context.TODO(), s)
 
 		if err != nil {
-			fmt.Printf("%v", err)
+			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
