@@ -19,26 +19,24 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/vultr/vultr-cli/cmd/printer"
-
 	"github.com/spf13/cobra"
+	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
-// apiCmd represents the api command
-var apiCmd = &cobra.Command{
-	Use:     "api-key",
-	Aliases: []string{"api"},
-	Short:   "retrieve information about the current API key",
+// backupCmd represents the backup command
+var backupCmd = &cobra.Command{
+	Use:     "backups",
+	Aliases: []string{"b"},
+	Short:   "display all available backups",
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
-
-		api, err := client.API.GetInfo(context.TODO())
+		backups, err := client.Backup.List(context.TODO())
 
 		if err != nil {
-			fmt.Sprintf("error getting api-key information : %v", err)
+			fmt.Sprintf("error getting backups : %v", err)
 			os.Exit(1)
 		}
 
-		printer.ApiKey(api)
+		printer.Backup(backups)
 	},
 }
