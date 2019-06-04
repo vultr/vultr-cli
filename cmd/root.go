@@ -69,6 +69,7 @@ func init() {
 	rootCmd.AddCommand(backupCmd)
 	rootCmd.AddCommand(osCmd)
 	rootCmd.AddCommand(Regions())
+	rootCmd.AddCommand(Script())
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(User())
 }
