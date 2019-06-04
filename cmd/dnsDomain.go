@@ -24,15 +24,12 @@ import (
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
-var (
-	enable bool
-)
 
 // DnsDomain represents the domain sub command
 func DnsDomain() *cobra.Command {
 	dnsDomainCmd := &cobra.Command{
 		Use:   "domain",
-		Short: "A brief description of your command",
+		Short: "dns domain",
 		Long:  ``,
 	}
 

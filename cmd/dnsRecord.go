@@ -15,28 +15,163 @@
 package cmd
 
 import (
+	"context"
+	"errors"
 	"fmt"
+	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
+	"github.com/vultr/govultr"
+	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
 // dnsRecordCmd represents the dnsRecord command
 func DnsRecord() *cobra.Command {
 	dnsRecordCmd := &cobra.Command{
 		Use:   "record",
-		Short: "A brief description of your command",
+		Short: "dns record",
 		Long:  ``,
 	}
 
-	dnsRecordCmd.AddCommand(recordCreate)
+	dnsRecordCmd.AddCommand(recordCreate, recordlist, recordDelete, recordUpdate)
+
+	// Create
+	recordCreate.Flags().StringP("domain", "m", "", "name of domain you want to create this record for")
+	recordCreate.Flags().StringP("type", "t", "", "record type you want to create : Possible values A, AAAA, CNAME, NS, MX, SRV, TXT CAA, SSHFP")
+	recordCreate.Flags().StringP("name", "n", "", "name of record")
+	recordCreate.Flags().StringP("data", "d", "", "data for the record")
+	recordCreate.MarkFlagRequired("domain")
+	recordCreate.MarkFlagRequired("type")
+	recordCreate.MarkFlagRequired("name")
+	recordCreate.MarkFlagRequired("data")
+	// Create Optional
+	recordCreate.Flags().IntP("ttl", "", 0, "time to live for the record")
+	recordCreate.Flags().IntP("priority", "p", 0, "only required for MX and SRV")
+
+	// Update
+	recordUpdate.Flags().StringP("name", "n", "", "name of record")
+	recordUpdate.Flags().StringP("data", "d", "", "data for the record")
+	recordUpdate.Flags().IntP("ttl", "", 0, "time to live for the record")
+	recordUpdate.Flags().IntP("priority", "p", 0, "only required for MX and SRV")
+
 	return dnsRecordCmd
 }
 
 var recordCreate = &cobra.Command{
 	Use:   "create",
-	Short: "create a domain",
+	Short: "create a dns record",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("hello")
+		domain, _ := cmd.Flags().GetString("domain")
+		rType, _ := cmd.Flags().GetString("type")
+		name, _ := cmd.Flags().GetString("name")
+		data, _ := cmd.Flags().GetString("data")
+		ttl, _ := cmd.Flags().GetInt("ttl")
+		priority, _ := cmd.Flags().GetInt("priority")
+
+		err := client.DNSRecord.Create(context.TODO(), domain, rType, name, data, ttl, priority)
+
+		if err != nil {
+			fmt.Sprintf("error while creating dns record : %v", err)
+			os.Exit(1)
+		}
+		fmt.Println("created dns record")
+	},
+}
+
+var recordlist = &cobra.Command{
+	Use:   "list <domainName>",
+	Short: "list all dns records",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a domain name")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		domain := args[0]
+
+		records, err := client.DNSRecord.List(context.TODO(), domain)
+		if err != nil {
+			fmt.Sprintf("error while getting dns records : %v", err)
+			os.Exit(1)
+		}
+
+		printer.DnsRecordsList(records)
+	},
+}
+
+var recordDelete = &cobra.Command{
+	Use:   "delete <domainName> <recordID>",
+	Short: "delete dns record",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a domainName & recordID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		domain := args[0]
+		id := args[1]
+		err := client.DNSRecord.Delete(context.TODO(), domain, id)
+
+		if err != nil {
+			fmt.Sprintf("error while deleting dns record : %v", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("deleted dns record")
+	},
+}
+
+var recordUpdate = &cobra.Command{
+	Use:   "update <domainName> <recordID>",
+	Short: "update dns record",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a domainName & recordID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		domain := args[0]
+		id := args[1]
+		name, _ := cmd.Flags().GetString("name")
+		data, _ := cmd.Flags().GetString("data")
+		ttl, _ := cmd.Flags().GetInt("ttl")
+		priority, _ := cmd.Flags().GetInt("priority")
+
+		updates := &govultr.DNSRecord{}
+		i, _ := strconv.Atoi(id)
+		updates.RecordID = i
+
+		if name != "" {
+			updates.Name = name
+		}
+
+		if data != "" {
+			updates.Data = data
+		}
+
+		if ttl != 0 {
+			updates.TTL = ttl
+		}
+
+		if priority != 0 {
+			updates.Priority = priority
+		}
+
+		err := client.DNSRecord.Update(context.TODO(), domain, updates)
+
+		if err != nil {
+			fmt.Sprintf("error updating dns record : %v", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("updated dns record")
 	},
 }
