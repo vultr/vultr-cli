@@ -70,6 +70,7 @@ func init() {
 	rootCmd.AddCommand(BlockStorageCmd())
 	rootCmd.AddCommand(Dns())
 	rootCmd.AddCommand(Iso())
+	rootCmd.AddCommand(Network())
 	rootCmd.AddCommand(osCmd)
 	rootCmd.AddCommand(Regions())
 	rootCmd.AddCommand(Script())
