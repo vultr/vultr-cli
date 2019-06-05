@@ -30,7 +30,7 @@ import (
 var isoCmd = &cobra.Command{
 	Use:   "iso",
 	Short: "iso is used to access iso commands",
-	Long: ``,
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("iso called")
 	},
