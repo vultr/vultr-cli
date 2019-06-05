@@ -33,7 +33,7 @@ var backupCmd = &cobra.Command{
 		backups, err := client.Backup.List(context.TODO())
 
 		if err != nil {
-			fmt.Sprintf("error getting backups : %v", err)
+			fmt.Printf("error getting backups : %v", err)
 			os.Exit(1)
 		}
 
