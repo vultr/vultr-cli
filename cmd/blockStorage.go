@@ -172,7 +172,7 @@ var bsLabelSet = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Sprintf("set label on block storage : %s", id)
+		fmt.Printf("set label on block storage : %s", id)
 	},
 }
 
@@ -226,7 +226,7 @@ var bsResize = &cobra.Command{
 		err := client.BlockStorage.Resize(context.TODO(), id, size)
 
 		if err != nil {
-			fmt.Sprintf("error resizing block storage : %v", err)
+			fmt.Printf("error resizing block storage : %v", err)
 			os.Exit(1)
 		}
 
