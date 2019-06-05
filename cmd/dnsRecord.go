@@ -73,7 +73,7 @@ var recordCreate = &cobra.Command{
 		err := client.DNSRecord.Create(context.TODO(), domain, rType, name, data, ttl, priority)
 
 		if err != nil {
-			fmt.Sprintf("error while creating dns record : %v", err)
+			fmt.Printf("error while creating dns record : %v", err)
 			os.Exit(1)
 		}
 		fmt.Println("created dns record")
@@ -95,7 +95,7 @@ var recordlist = &cobra.Command{
 
 		records, err := client.DNSRecord.List(context.TODO(), domain)
 		if err != nil {
-			fmt.Sprintf("error while getting dns records : %v", err)
+			fmt.Printf("error while getting dns records : %v", err)
 			os.Exit(1)
 		}
 
@@ -119,7 +119,7 @@ var recordDelete = &cobra.Command{
 		err := client.DNSRecord.Delete(context.TODO(), domain, id)
 
 		if err != nil {
-			fmt.Sprintf("error while deleting dns record : %v", err)
+			fmt.Printf("error while deleting dns record : %v", err)
 			os.Exit(1)
 		}
 
@@ -168,7 +168,7 @@ var recordUpdate = &cobra.Command{
 		err := client.DNSRecord.Update(context.TODO(), domain, updates)
 
 		if err != nil {
-			fmt.Sprintf("error updating dns record : %v", err)
+			fmt.Printf("error updating dns record : %v", err)
 			os.Exit(1)
 		}
 
