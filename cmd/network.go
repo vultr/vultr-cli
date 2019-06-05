@@ -35,7 +35,7 @@ func Network() *cobra.Command {
 	networkCmd.AddCommand(networkList, networkDelete, networkCreate)
 	networkCreate.Flags().StringP("region-id", "r", "", "id of the region you wish to create the network")
 	networkCreate.Flags().StringP("description", "d", "", "description of the network")
-	networkCreate.Flags().StringP("cdidr", "c", "", "the ipv4 subnet and mask you want to create")
+	networkCreate.Flags().StringP("cidr", "c", "", "the ipv4 subnet and mask you want to create")
 	networkCreate.MarkFlagRequired("region-id")
 	networkCreate.MarkFlagRequired("description")
 	networkCreate.MarkFlagRequired("cdir")
@@ -74,7 +74,7 @@ var networkDelete = &cobra.Command{
 		err := client.Network.Delete(context.TODO(), id)
 
 		if err != nil {
-			fmt.Printf("error deleteing  network : %v", err)
+			fmt.Printf("error deleting  network : %v", err)
 			os.Exit(1)
 		}
 
