@@ -1,4 +1,4 @@
-// Copyright © 2019 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2019 The Vultr-cli Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ func ReservedIP() *cobra.Command {
 	reservedIPCmd := &cobra.Command{
 		Use:     "reserved-ip",
 		Aliases: []string{"rip"},
-		Short:   "",
+		Short:   "reserved-ip lets you interact with reserved-ip ",
 		Long:    ``,
 	}
 
