@@ -24,7 +24,6 @@ import (
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
-
 // DnsDomain represents the domain sub command
 func DnsDomain() *cobra.Command {
 	dnsDomainCmd := &cobra.Command{
@@ -109,7 +108,7 @@ var secEnable = &cobra.Command{
 		domain := args[0]
 		enabled, _ := cmd.Flags().GetString("enabled")
 
-		enable = false
+		enable := false
 		if enabled == "true" {
 			enable = true
 		}
