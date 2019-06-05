@@ -69,6 +69,7 @@ func init() {
 	rootCmd.AddCommand(backupCmd)
 	rootCmd.AddCommand(BlockStorageCmd())
 	rootCmd.AddCommand(Dns())
+	rootCmd.AddCommand(Network())
 	rootCmd.AddCommand(osCmd)
 	rootCmd.AddCommand(Regions())
 	rootCmd.AddCommand(Script())
