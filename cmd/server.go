@@ -30,7 +30,7 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete)
 
 	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	serverTag.MarkFlagRequired("tag")
@@ -44,6 +44,7 @@ todo list
 todo show grab single
 todo list-ipv4
 todo list ipv6
+todo bandwidth
 
 */
 
@@ -162,6 +163,28 @@ var serverTag = &cobra.Command{
 	},
 }
 
+var serverDelete = &cobra.Command{
+	Use:   "delete <instanceID>",
+	Short: "delete a server",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		err := client.Server.Delete(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error deleting server : %v", err)
+		}
+
+		fmt.Println("Deleted server")
+	},
+}
+
 //backup                 get and set backup schedules
 //create                 create a new virtual machine
 //rename                 rename a virtual machine
@@ -169,7 +192,6 @@ var serverTag = &cobra.Command{
 //app                    show and change application on a virtual machine
 //iso                    attach/detach ISO of a virtual machine
 //restore                restore from backup/snapshot
-//bandwidth              list bandwidth used by a virtual machine
 //create-ipv4            add a new IPv4 address to a virtual machine
 //delete-ipv4            remove IPv4 address from a virtual machine
 //reverse-dns            modify reverse DNS entries
