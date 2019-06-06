@@ -30,13 +30,12 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart)
 
 	return serverCmd
 }
 
 /*
-todo reboot
 todo reinstall
 todo tag
 todo delete
@@ -64,10 +63,10 @@ var serverStart = &cobra.Command{
 		err := client.Server.Start(context.TODO(), id)
 
 		if err != nil {
-			fmt.Printf("error starting instance : %v", err)
+			fmt.Printf("error starting server : %v", err)
 		}
 
-		fmt.Println("Started up instance")
+		fmt.Println("Started up server")
 	},
 }
 
@@ -87,10 +86,33 @@ var serverStop = &cobra.Command{
 		err := client.Server.Halt(context.TODO(), id)
 
 		if err != nil {
-			fmt.Printf("error stopping instance : %v", err)
+			fmt.Printf("error stopping server : %v", err)
 		}
 
-		fmt.Println("Stopped up instance")
+		fmt.Println("Stopped the server")
+	},
+}
+
+var serverRestart = &cobra.Command{
+	Use:   "restart <instanceID>",
+	Short: "restart a server",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+
+		err := client.Server.Reboot(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error rebooting server : %v", err)
+		}
+
+		fmt.Println("Rebooted server")
 	},
 }
 
