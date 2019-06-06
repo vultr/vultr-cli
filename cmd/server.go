@@ -30,13 +30,12 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall)
 
 	return serverCmd
 }
 
 /*
-todo reinstall
 todo tag
 todo delete
 todo rename
@@ -113,6 +112,29 @@ var serverRestart = &cobra.Command{
 		}
 
 		fmt.Println("Rebooted server")
+	},
+}
+
+var serverReinstall = &cobra.Command{
+	Use:   "reinstall <instanceID>",
+	Short: "reinstall a server",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+
+		err := client.Server.Reinstall(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error reinstalling server : %v", err)
+		}
+
+		fmt.Println("Reinstalled server")
 	},
 }
 
