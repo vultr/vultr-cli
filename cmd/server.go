@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/vultr/vultr-cli/cmd/printer"
 
 	"github.com/spf13/cobra"
 )
@@ -30,7 +31,7 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth)
 
 	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	serverTag.MarkFlagRequired("tag")
@@ -45,7 +46,6 @@ todo list
 todo show grab single
 todo list-ipv4
 todo list ipv6
-todo bandwidth
 
 */
 
@@ -209,6 +209,27 @@ var serverLabel = &cobra.Command{
 	},
 }
 
+var serverBandwidth = &cobra.Command{
+	Use:   "bandwidth <instanceID>",
+	Short: "bandwidth for server",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		bw, err := client.Server.Bandwidth(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error labeling server : %v", err)
+		}
+
+		printer.ServerBandwidth(bw)
+	},
+}
 //backup                 get and set backup schedules
 //create                 create a new virtual machine
 //os                     show and change OS on a virtual machine
