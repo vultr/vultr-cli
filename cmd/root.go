@@ -73,6 +73,7 @@ func init() {
 	rootCmd.AddCommand(Iso())
 	rootCmd.AddCommand(Network())
 	rootCmd.AddCommand(osCmd)
+	rootCmd.AddCommand(Plans())
 	rootCmd.AddCommand(Regions())
 	rootCmd.AddCommand(ReservedIP())
 	rootCmd.AddCommand(Script())
