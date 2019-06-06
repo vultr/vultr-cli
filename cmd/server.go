@@ -30,16 +30,17 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel)
 
 	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	serverTag.MarkFlagRequired("tag")
+
+	serverLabel.Flags().StringP("label", "l", "", "label you want to set for a given instance")
+	serverLabel.MarkFlagRequired("label")
 	return serverCmd
 }
 
 /*
-todo delete
-todo rename
 todo list
 todo show grab single
 todo list-ipv4
@@ -185,9 +186,31 @@ var serverDelete = &cobra.Command{
 	},
 }
 
+var serverLabel = &cobra.Command{
+	Use:   "label <instanceID>",
+	Short: "label a server",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		label, _ := cmd.Flags().GetString("label")
+		err := client.Server.SetLabel(context.TODO(), id, label)
+
+		if err != nil {
+			fmt.Printf("error labeling server : %v", err)
+		}
+
+		fmt.Printf("Labeled server with : %s", label)
+	},
+}
+
 //backup                 get and set backup schedules
 //create                 create a new virtual machine
-//rename                 rename a virtual machine
 //os                     show and change OS on a virtual machine
 //app                    show and change application on a virtual machine
 //iso                    attach/detach ISO of a virtual machine
