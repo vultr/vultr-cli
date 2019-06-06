@@ -30,13 +30,14 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag)
 
+	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
+	serverTag.MarkFlagRequired("tag")
 	return serverCmd
 }
 
 /*
-todo tag
 todo delete
 todo rename
 todo list
@@ -135,6 +136,29 @@ var serverReinstall = &cobra.Command{
 		}
 
 		fmt.Println("Reinstalled server")
+	},
+}
+
+var serverTag = &cobra.Command{
+	Use:   "tag <instanceID>",
+	Short: "add/modify tag on server",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		tag, _ := cmd.Flags().GetString("tag")
+		err := client.Server.SetTag(context.TODO(), id, tag)
+
+		if err != nil {
+			fmt.Printf("error adding tag to server : %v", err)
+		}
+
+		fmt.Printf("Tagged server with : %s", tag)
 	},
 }
 
