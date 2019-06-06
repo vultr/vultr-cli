@@ -33,7 +33,7 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List, serverIPV6List)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List, serverIPV6List, serverList)
 
 	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	serverTag.MarkFlagRequired("tag")
@@ -294,6 +294,23 @@ var serverIPV6List = &cobra.Command{
 		}
 
 		printer.ServerIPV6(v6)
+	},
+}
+
+var serverList = &cobra.Command{
+	Use:     "list",
+	Aliases: []string{"l"},
+	Short:   "list all available servers",
+	Long:    ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		s, err := client.Server.List(context.TODO())
+
+		if err != nil {
+			fmt.Printf("error getting list of servers : %v", err)
+			os.Exit(1)
+		}
+
+		printer.ServerList(s)
 	},
 }
 
