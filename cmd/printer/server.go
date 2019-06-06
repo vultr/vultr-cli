@@ -19,3 +19,12 @@ func ServerIPV4(ip []govultr.IPV4) {
 	}
 	flush()
 }
+
+func ServerIPV6(ip []govultr.IPV6) {
+	col := columns{"IP", "NETWORK", "NETWORK SIZE", "TYPE"}
+	display(col)
+	for _, i := range ip {
+		display(columns{i.IP, i.Network, i.NetworkSize, i.Type})
+	}
+	flush()
+}

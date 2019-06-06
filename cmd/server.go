@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -32,7 +33,7 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List, serverIPV6List)
 
 	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	serverTag.MarkFlagRequired("tag")
@@ -48,8 +49,6 @@ func Server() *cobra.Command {
 /*
 todo list
 todo show grab single
-todo list ipv6
-
 */
 
 var serverStart = &cobra.Command{
@@ -69,6 +68,7 @@ var serverStart = &cobra.Command{
 
 		if err != nil {
 			fmt.Printf("error starting server : %v", err)
+			os.Exit(1)
 		}
 
 		fmt.Println("Started up server")
@@ -92,6 +92,7 @@ var serverStop = &cobra.Command{
 
 		if err != nil {
 			fmt.Printf("error stopping server : %v", err)
+			os.Exit(1)
 		}
 
 		fmt.Println("Stopped the server")
@@ -115,6 +116,7 @@ var serverRestart = &cobra.Command{
 
 		if err != nil {
 			fmt.Printf("error rebooting server : %v", err)
+			os.Exit(1)
 		}
 
 		fmt.Println("Rebooted server")
@@ -138,6 +140,7 @@ var serverReinstall = &cobra.Command{
 
 		if err != nil {
 			fmt.Printf("error reinstalling server : %v", err)
+			os.Exit(1)
 		}
 
 		fmt.Println("Reinstalled server")
@@ -161,6 +164,7 @@ var serverTag = &cobra.Command{
 
 		if err != nil {
 			fmt.Printf("error adding tag to server : %v", err)
+			os.Exit(1)
 		}
 
 		fmt.Printf("Tagged server with : %s", tag)
@@ -183,6 +187,7 @@ var serverDelete = &cobra.Command{
 
 		if err != nil {
 			fmt.Printf("error deleting server : %v", err)
+			os.Exit(1)
 		}
 
 		fmt.Println("Deleted server")
@@ -206,6 +211,7 @@ var serverLabel = &cobra.Command{
 
 		if err != nil {
 			fmt.Printf("error labeling server : %v", err)
+			os.Exit(1)
 		}
 
 		fmt.Printf("Labeled server with : %s", label)
@@ -227,7 +233,8 @@ var serverBandwidth = &cobra.Command{
 		bw, err := client.Server.Bandwidth(context.TODO(), id)
 
 		if err != nil {
-			fmt.Printf("error labeling server : %v", err)
+			fmt.Printf("error getting bandwidth for server : %v", err)
+			os.Exit(1)
 		}
 
 		printer.ServerBandwidth(bw)
@@ -257,10 +264,36 @@ var serverIPV4List = &cobra.Command{
 		v4, err := client.Server.IPV4Info(context.TODO(), id, pub)
 
 		if err != nil {
-			fmt.Printf("error labeling server : %v", err)
+			fmt.Printf("error getting ipv4 info : %v", err)
+			os.Exit(1)
 		}
 
 		printer.ServerIPV4(v4)
+	},
+}
+
+var serverIPV6List = &cobra.Command{
+	Use:     "list-ipv6 <instanceID>",
+	Aliases: []string{"v6"},
+	Short:   "list ipv6 for a server",
+	Long:    ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+
+		v6, err := client.Server.IPV6Info(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error getting ipv6 info : %v", err)
+			os.Exit(1)
+		}
+
+		printer.ServerIPV6(v6)
 	},
 }
 
