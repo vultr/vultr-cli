@@ -30,14 +30,12 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(ServerStart)
+	serverCmd.AddCommand(serverStart, serverStop)
 
 	return serverCmd
 }
 
 /*
-todo start
-todo stop
 todo reboot
 todo reinstall
 todo tag
@@ -50,7 +48,7 @@ todo list ipv6
 
 */
 
-var ServerStart = &cobra.Command{
+var serverStart = &cobra.Command{
 	Use:   "start <instanceID>",
 	Short: "starts a server",
 	Long:  ``,
@@ -70,6 +68,29 @@ var ServerStart = &cobra.Command{
 		}
 
 		fmt.Println("Started up instance")
+	},
+}
+
+var serverStop = &cobra.Command{
+	Use:   "stop <instanceID>",
+	Short: "stops a server",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+
+		err := client.Server.Halt(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error stopping instance : %v", err)
+		}
+
+		fmt.Println("Stopped up instance")
 	},
 }
 
