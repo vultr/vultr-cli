@@ -18,9 +18,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
 // Server represents the server command
@@ -31,20 +32,22 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List)
 
 	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	serverTag.MarkFlagRequired("tag")
 
 	serverLabel.Flags().StringP("label", "l", "", "label you want to set for a given instance")
 	serverLabel.MarkFlagRequired("label")
+
+	serverIPV4List.Flags().StringP("public", "p", "", "include information about the public network adapter : True or False")
+
 	return serverCmd
 }
 
 /*
 todo list
 todo show grab single
-todo list-ipv4
 todo list ipv6
 
 */
@@ -230,6 +233,37 @@ var serverBandwidth = &cobra.Command{
 		printer.ServerBandwidth(bw)
 	},
 }
+
+var serverIPV4List = &cobra.Command{
+	Use:     "list-ipv4 <instanceID>",
+	Aliases: []string{"v4"},
+	Short:   "list ipv4 for a server",
+	Long:    ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		public, _ := cmd.Flags().GetString("public")
+
+		pub := false
+		if strings.ToLower(public) == "true" {
+			pub = true
+		}
+
+		v4, err := client.Server.IPV4Info(context.TODO(), id, pub)
+
+		if err != nil {
+			fmt.Printf("error labeling server : %v", err)
+		}
+
+		printer.ServerIPV4(v4)
+	},
+}
+
 //backup                 get and set backup schedules
 //create                 create a new virtual machine
 //os                     show and change OS on a virtual machine
