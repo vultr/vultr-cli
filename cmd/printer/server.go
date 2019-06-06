@@ -37,3 +37,36 @@ func ServerList(server []govultr.Server) {
 	}
 	flush()
 }
+
+func ServerInfo(server *govultr.Server) {
+	col := columns{"SERVER INFO"}
+	display(col)
+	display(columns{"Instance ID", server.VpsID})
+	display(columns{"Os", server.Os})
+	display(columns{"Ram", server.RAM})
+	display(columns{"Disk", server.Disk})
+	display(columns{"Main IP", server.MainIP})
+	display(columns{"VCPUS", server.VpsID})
+	display(columns{"RegionID", server.RegionID})
+	display(columns{"Date Created", server.Created})
+	display(columns{"Pending Charges", server.PendingCharges})
+	display(columns{"Status", server.Status})
+	display(columns{"Monthly Cost", server.Cost})
+	display(columns{"Current Bandwidth", server.CurrentBandwidth})
+	display(columns{"Allowed Bandwidth", server.Cost})
+	display(columns{"Netmask V4", server.NetmaskV4})
+	display(columns{"Gateway V4", server.GatewayV4})
+	display(columns{"Power Status", server.Status})
+	display(columns{"Server State", server.ServerState})
+	display(columns{"Plan", server.PlanID})
+	display(columns{"Label", server.Label})
+	display(columns{"Internal IP", server.InternalIP})
+	display(columns{"KVM URL", server.KVMUrl})
+	display(columns{"Auto Backup", server.AutoBackups})
+	display(columns{"Tag", server.Tag})
+	display(columns{"OsID", server.OsID})
+	display(columns{"AppID", server.AppID})
+	display(columns{"Firewall Group ID", server.FirewallGroupID})
+	display(columns{"V6 Networks", server.V6Networks})
+	flush()
+}

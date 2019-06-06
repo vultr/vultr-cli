@@ -33,7 +33,7 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List, serverIPV6List, serverList)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List, serverIPV6List, serverList, serverInfo)
 
 	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	serverTag.MarkFlagRequired("tag")
@@ -45,11 +45,6 @@ func Server() *cobra.Command {
 
 	return serverCmd
 }
-
-/*
-todo list
-todo show grab single
-*/
 
 var serverStart = &cobra.Command{
 	Use:   "start <instanceID>",
@@ -311,6 +306,29 @@ var serverList = &cobra.Command{
 		}
 
 		printer.ServerList(s)
+	},
+}
+
+var serverInfo = &cobra.Command{
+	Use:   "info <instanceID>",
+	Short: "info about a specific server",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		s, err := client.Server.GetServer(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error getting server : %v", err)
+			os.Exit(1)
+		}
+
+		printer.ServerInfo(s)
 	},
 }
 
