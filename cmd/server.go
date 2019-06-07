@@ -50,15 +50,28 @@ func Server() *cobra.Command {
 
 	osCmd := &cobra.Command{
 		Use:   "os",
-		Short: "operating system commands ",
+		Short: "list and update operating system for an instance",
 		Long:  ``,
 	}
 
+	// Sub commands for OS
 	osCmd.AddCommand(osList, osUpdate)
 	osUpdate.Flags().StringP("os", "o", "", "operating system ID you wish to use")
 	osUpdate.MarkFlagRequired("os")
-	// Sub commands for OS
 	serverCmd.AddCommand(osCmd)
+
+	appCMD := &cobra.Command{
+		Use:   "app",
+		Short: "list and update application for an instance",
+		Long:  ``,
+	}
+
+	// Sub commands for App
+	appCMD.AddCommand(appList, appUpdate, appInfo)
+	appUpdate.Flags().StringP("app", "a", "", "appplication ID you wish to use")
+	appUpdate.MarkFlagRequired("app")
+
+	serverCmd.AddCommand(appCMD)
 
 	return serverCmd
 }
@@ -415,10 +428,81 @@ var osUpdate = &cobra.Command{
 		fmt.Println("Updated OS")
 	},
 }
+
+var appList = &cobra.Command{
+	Use:   "list <instanceID>",
+	Short: "list available applications this instance can be changed to",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		a, err := client.Server.ListApps(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error getting os list : %v", err)
+			os.Exit(1)
+		}
+
+		printer.AppList(a)
+	},
+}
+
+var appUpdate = &cobra.Command{
+	Use:   "change <instanceID>",
+	Short: "changes application",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		appID, _ := cmd.Flags().GetString("app")
+
+		err := client.Server.ChangeApp(context.TODO(), id, appID)
+
+		if err != nil {
+			fmt.Printf("error updating application : %v", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Updated Application")
+	},
+}
+
+var appInfo = &cobra.Command{
+	Use:   "info <instanceID>",
+	Short: "gets information about the application on the instance",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+
+		info, err := client.Server.AppInfo(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error getting application info : %v", err)
+			os.Exit(1)
+		}
+
+		printer.ServerAppInfo(info)
+	},
+}
+
 //backup                 get and set backup schedules
 //create                 create a new virtual machine
-//os                     show and change OS on a virtual machine
-//app                    show and change application on a virtual machine
 //iso                    attach/detach ISO of a virtual machine
 //restore                restore from backup/snapshot
 //create-ipv4            add a new IPv4 address to a virtual machine

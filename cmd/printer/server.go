@@ -79,3 +79,19 @@ func OsList(os []govultr.OS) {
 	}
 	flush()
 }
+
+func AppList(app []govultr.Application) {
+	col := columns{"ID", "NAME", "SHORT NAME", "DEPLOY NAME"}
+	display(col)
+	for _, a := range app {
+		display(columns{a.AppID, a.Name, a.ShortName, a.DeployName})
+	}
+	flush()
+}
+
+func ServerAppInfo(app *govultr.AppInfo) {
+	col := columns{"APP INFO"}
+	display(col)
+	display(columns{app.AppInfo})
+	flush()
+}
