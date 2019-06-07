@@ -33,7 +33,7 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List, serverIPV6List, serverList, serverInfo)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List, serverIPV6List, serverList, serverInfo, addFwgGroup)
 
 	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	serverTag.MarkFlagRequired("tag")
@@ -42,6 +42,11 @@ func Server() *cobra.Command {
 	serverLabel.MarkFlagRequired("label")
 
 	serverIPV4List.Flags().StringP("public", "p", "", "include information about the public network adapter : True or False")
+
+	addFwgGroup.Flags().StringP("instance-id", "i", "", "instance id of the server you want to use")
+	addFwgGroup.Flags().StringP("firewall-group-id", "f", "", "firewall group id that you want to assign")
+	addFwgGroup.MarkFlagRequired("instance-id")
+	addFwgGroup.MarkFlagRequired("firewall-group-id")
 
 	return serverCmd
 }
@@ -329,6 +334,25 @@ var serverInfo = &cobra.Command{
 		}
 
 		printer.ServerInfo(s)
+	},
+}
+
+var addFwgGroup = &cobra.Command{
+	Use:   "add-firewall-group",
+	Short: "assign a firewall group to server",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		id, _ := cmd.Flags().GetString("instance-id")
+		fwgID, _ := cmd.Flags().GetString("firewall-group-id")
+
+		err := client.Server.SetFirewallGroup(context.TODO(), id, fwgID)
+
+		if err != nil {
+			fmt.Printf("error setting firewall group : %v", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Added firewall-group")
 	},
 }
 
