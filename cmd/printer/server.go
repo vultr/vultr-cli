@@ -95,3 +95,10 @@ func ServerAppInfo(app *govultr.AppInfo) {
 	display(columns{app.AppInfo})
 	flush()
 }
+
+func BackupsGet(b *govultr.BackupSchedule) {
+	col := columns{"ENABLED", "CRON TYPE", "NEXT RUN", "HOUR", "DOW", "DOM"}
+	display(col)
+	display(columns{b.Enabled, b.CronType, b.NextRun, b.Hour, b.Dow, b.Dom})
+	flush()
+}

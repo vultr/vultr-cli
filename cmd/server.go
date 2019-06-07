@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/vultr/govultr"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
@@ -48,30 +49,44 @@ func Server() *cobra.Command {
 	updateFwgGroup.MarkFlagRequired("instance-id")
 	updateFwgGroup.MarkFlagRequired("firewall-group-id")
 
+	// Sub commands for OS
 	osCmd := &cobra.Command{
 		Use:   "os",
 		Short: "list and update operating system for an instance",
 		Long:  ``,
 	}
 
-	// Sub commands for OS
 	osCmd.AddCommand(osList, osUpdate)
 	osUpdate.Flags().StringP("os", "o", "", "operating system ID you wish to use")
 	osUpdate.MarkFlagRequired("os")
 	serverCmd.AddCommand(osCmd)
 
+	// Sub commands for App
 	appCMD := &cobra.Command{
 		Use:   "app",
 		Short: "list and update application for an instance",
 		Long:  ``,
 	}
-
-	// Sub commands for App
 	appCMD.AddCommand(appList, appUpdate, appInfo)
 	appUpdate.Flags().StringP("app", "a", "", "appplication ID you wish to use")
 	appUpdate.MarkFlagRequired("app")
-
 	serverCmd.AddCommand(appCMD)
+
+	// Sub commands for Backup
+	backupCMD := &cobra.Command{
+		Use:   "backup",
+		Short: "list and create backup schedules for an instance",
+		Long:  ``,
+	}
+
+	backupCMD.AddCommand(backupGet, backupCreate)
+	backupCreate.Flags().StringP("type", "t", "", "type string Backup cron type. Can be one of 'daily', 'weekly', 'monthly', 'daily_alt_even', or 'daily_alt_odd'.")
+	backupCreate.MarkFlagRequired("type")
+	backupCreate.Flags().IntP("hour", "o", 0, "Hour value (0-23). Applicable to crons: 'daily', 'weekly', 'monthly', 'daily_alt_even', 'daily_alt_odd'")
+	backupCreate.Flags().IntP("dow", "w", 0, "Day-of-week value (0-6). Applicable to crons: 'weekly'")
+	backupCreate.Flags().IntP("dom", "m", 0, "Day-of-month value (1-28). Applicable to crons: 'monthly'")
+
+	serverCmd.AddCommand(backupCMD)
 
 	return serverCmd
 }
@@ -501,7 +516,66 @@ var appInfo = &cobra.Command{
 	},
 }
 
-//backup                 get and set backup schedules
+var backupGet = &cobra.Command{
+	Use:   "get <instanceID>",
+	Short: "get backup schedules on a given instance",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+
+		info, err := client.Server.GetBackupSchedule(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error getting application info : %v", err)
+			os.Exit(1)
+		}
+
+		printer.BackupsGet(info)
+	},
+}
+
+var backupCreate = &cobra.Command{
+	Use:   "create <instanceID>",
+	Short: "create backup schedule on a given instance",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+
+		crontType, _ := cmd.Flags().GetString("type")
+		hour, _ := cmd.Flags().GetInt("hour")
+		dow, _ := cmd.Flags().GetInt("dow")
+		dom, _ := cmd.Flags().GetInt("dom")
+
+		backup := &govultr.BackupSchedule{
+			CronType: crontType,
+			Hour:     hour,
+			Dow:      dow,
+			Dom:      dom,
+		}
+
+		err := client.Server.SetBackupSchedule(context.TODO(), id, backup)
+
+		if err != nil {
+			fmt.Printf("error creating backup schedule : %v", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Created backup schedule")
+	},
+}
+
 //create                 create a new virtual machine
 //iso                    attach/detach ISO of a virtual machine
 //restore                restore from backup/snapshot
