@@ -70,3 +70,12 @@ func ServerInfo(server *govultr.Server) {
 	display(columns{"V6 Networks", server.V6Networks})
 	flush()
 }
+
+func OsList(os []govultr.OS) {
+	col := columns{"ID", "NAME", "ARCH", "FAMILY"}
+	display(col)
+	for _, o := range os {
+		display(columns{o.OsID, o.Name, o.Arch, o.Family})
+	}
+	flush()
+}

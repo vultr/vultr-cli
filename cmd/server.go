@@ -48,6 +48,18 @@ func Server() *cobra.Command {
 	updateFwgGroup.MarkFlagRequired("instance-id")
 	updateFwgGroup.MarkFlagRequired("firewall-group-id")
 
+	osCmd := &cobra.Command{
+		Use:   "os",
+		Short: "operating system commands ",
+		Long:  ``,
+	}
+
+	osCmd.AddCommand(osList, osUpdate)
+	osUpdate.Flags().StringP("os", "o", "", "operating system ID you wish to use")
+	osUpdate.MarkFlagRequired("os")
+	// Sub commands for OS
+	serverCmd.AddCommand(osCmd)
+
 	return serverCmd
 }
 
@@ -356,6 +368,53 @@ var updateFwgGroup = &cobra.Command{
 	},
 }
 
+var osList = &cobra.Command{
+	Use:   "list <instanceID>",
+	Short: "list available operating systems this instance can be changed to",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		o, err := client.Server.ListOS(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error getting os list : %v", err)
+			os.Exit(1)
+		}
+
+		printer.OsList(o)
+	},
+}
+
+var osUpdate = &cobra.Command{
+	Use:   "change <instanceID>",
+	Short: "changes operating system",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		osID, _ := cmd.Flags().GetString("os")
+
+		err := client.Server.ChangeOS(context.TODO(), id, osID)
+
+		if err != nil {
+			fmt.Printf("error updating os : %v", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Updated OS")
+	},
+}
 //backup                 get and set backup schedules
 //create                 create a new virtual machine
 //os                     show and change OS on a virtual machine
