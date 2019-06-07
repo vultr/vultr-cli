@@ -33,7 +33,7 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List, serverIPV6List, serverList, serverInfo, addFwgGroup)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List, serverIPV6List, serverList, serverInfo, updateFwgGroup)
 
 	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	serverTag.MarkFlagRequired("tag")
@@ -43,10 +43,10 @@ func Server() *cobra.Command {
 
 	serverIPV4List.Flags().StringP("public", "p", "", "include information about the public network adapter : True or False")
 
-	addFwgGroup.Flags().StringP("instance-id", "i", "", "instance id of the server you want to use")
-	addFwgGroup.Flags().StringP("firewall-group-id", "f", "", "firewall group id that you want to assign")
-	addFwgGroup.MarkFlagRequired("instance-id")
-	addFwgGroup.MarkFlagRequired("firewall-group-id")
+	updateFwgGroup.Flags().StringP("instance-id", "i", "", "instance id of the server you want to use")
+	updateFwgGroup.Flags().StringP("firewall-group-id", "f", "", "firewall group id that you want to assign. 0 Value will unset the firewall-group")
+	updateFwgGroup.MarkFlagRequired("instance-id")
+	updateFwgGroup.MarkFlagRequired("firewall-group-id")
 
 	return serverCmd
 }
@@ -337,8 +337,8 @@ var serverInfo = &cobra.Command{
 	},
 }
 
-var addFwgGroup = &cobra.Command{
-	Use:   "add-firewall-group",
+var updateFwgGroup = &cobra.Command{
+	Use:   "update-firewall-group",
 	Short: "assign a firewall group to server",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -365,6 +365,4 @@ var addFwgGroup = &cobra.Command{
 //create-ipv4            add a new IPv4 address to a virtual machine
 //delete-ipv4            remove IPv4 address from a virtual machine
 //reverse-dns            modify reverse DNS entries
-//set-firewall-group     set firewall group of a virtual machine
-//unset-firewall-group   remove virtual machine from firewall group
 //upgrade-plan           upgrade plan of a virtual machine
