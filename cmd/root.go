@@ -67,6 +67,7 @@ func init() {
 	rootCmd.AddCommand(apiCmd)
 	rootCmd.AddCommand(applicationCmd)
 	rootCmd.AddCommand(backupCmd)
+	rootCmd.AddCommand(BareMetal())
 	rootCmd.AddCommand(BlockStorageCmd())
 	rootCmd.AddCommand(Dns())
 	rootCmd.AddCommand(Firewall())
