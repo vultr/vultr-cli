@@ -34,7 +34,7 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV6List, serverList, serverInfo, updateFwgGroup, restore)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverList, serverInfo, updateFwgGroup, restore)
 
 	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	serverTag.MarkFlagRequired("tag")
@@ -108,6 +108,14 @@ func Server() *cobra.Command {
 	deleteIpv4.Flags().StringP("ipv4", "i", "", "ipv4 address you wish to delete")
 	deleteIpv4.MarkFlagRequired("ipv4")
 	serverCmd.AddCommand(ipv4Cmd)
+
+	ipv6Cmd := &cobra.Command{
+		Use:   "ipv6",
+		Short: "commands for ipv6 on instance",
+		Long:  ``,
+	}
+	ipv6Cmd.AddCommand(serverIPV6List)
+	serverCmd.AddCommand(ipv6Cmd)
 
 	return serverCmd
 }
@@ -334,7 +342,7 @@ var serverIPV4List = &cobra.Command{
 }
 
 var serverIPV6List = &cobra.Command{
-	Use:     "list-ipv6 <instanceID>",
+	Use:     "list <instanceID>",
 	Aliases: []string{"v6"},
 	Short:   "list ipv6 for a server",
 	Long:    ``,
