@@ -34,7 +34,7 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverList, serverInfo, updateFwgGroup, restore)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverList, serverInfo, updateFwgGroup, serverRestore, serverCreate)
 
 	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	serverTag.MarkFlagRequired("tag")
@@ -49,8 +49,34 @@ func Server() *cobra.Command {
 	updateFwgGroup.MarkFlagRequired("instance-id")
 	updateFwgGroup.MarkFlagRequired("firewall-group-id")
 
-	restore.Flags().StringP("backup", "b", "", "id of backup you wish to restore the instance with")
-	restore.Flags().StringP("snapshot", "s", "", "id of snapshot you wish to restore the instance with")
+	serverRestore.Flags().StringP("backup", "b", "", "id of backup you wish to restore the instance with")
+	serverRestore.Flags().StringP("snapshot", "s", "", "id of snapshot you wish to restore the instance with")
+
+	serverCreate.Flags().IntP("region", "r", 0, "region id you wish to have the instance created in")
+	serverCreate.Flags().IntP("plan", "p", 0, "plan id you wish to the instance to have")
+	serverCreate.Flags().IntP("os", "o", 0, "os id you wish the instance to have")
+	serverCreate.MarkFlagRequired("region")
+	serverCreate.MarkFlagRequired("plan")
+	serverCreate.MarkFlagRequired("os")
+	// Optional Params
+	serverCreate.Flags().StringP("ipxe", "", "", "ff you've selected the 'custom' operating system, this can be set to chainload the specified URL on bootup")
+	serverCreate.Flags().IntP("iso", "", 0, "iso ID you want to create the instance with")
+	serverCreate.Flags().StringP("snapshot", "", "", "snapshot ID you want to create the instance with")
+	serverCreate.Flags().StringP("script-id", "", "", "script id of the startup script")
+	serverCreate.Flags().StringP("ipv6", "", "", "enable ipv6 | true or false")
+	serverCreate.Flags().StringP("private-network", "", "", "enable private network | true or false")
+	serverCreate.Flags().StringArrayP("network", "", []string{}, "network IDs you want to assign to the instance")
+	serverCreate.Flags().StringP("label", "l", "", "label you want to give this instance")
+	serverCreate.Flags().StringArrayP("ssh-keys", "s", []string{}, "ssh keys you want to assign to the instance")
+	serverCreate.Flags().StringP("auto-backup", "b", "", "enable auto backups | true or false")
+	serverCreate.Flags().StringP("app", "a", "", "application ID you want this instance to have")
+	serverCreate.Flags().StringP("userdata", "u", "", "userdata you want to give this instance")
+	serverCreate.Flags().StringP("notify", "n", "", "notify when server has been created | true or false")
+	serverCreate.Flags().StringP("ddos", "d", "", "enable ddos protected | true or false")
+	serverCreate.Flags().StringP("reserved-ipv4", "", "", "ip address of the floating IP to use as the main IP for this instance")
+	serverCreate.Flags().StringP("host", "", "", "The hostname to assign to this instance")
+	serverCreate.Flags().StringP("tag", "t", "", "The tag to assign to this instance")
+	serverCreate.Flags().StringP("firewall-group", "", "", "The firewall group to assign to this instance")
 
 	// Sub commands for OS
 	osCmd := &cobra.Command{
@@ -714,7 +740,7 @@ var isoDetach = &cobra.Command{
 	},
 }
 
-var restore = &cobra.Command{
+var serverRestore = &cobra.Command{
 	Use:   "restore <instanceID>",
 	Short: "restore instance from backup/snapshot",
 	Long:  ``,
@@ -964,4 +990,81 @@ var setIpv6 = &cobra.Command{
 	},
 }
 
-//create                 create a new virtual machine
+var serverCreate = &cobra.Command{
+	Use:   "create",
+	Short: "Set a reverse DNS entry for an IPv6 address for an instance",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		region, _ := cmd.Flags().GetInt("region")
+		plan, _ := cmd.Flags().GetInt("plan")
+		osID, _ := cmd.Flags().GetInt("os")
+
+		// Optional
+		ipxe, _ := cmd.Flags().GetString("ipxe")
+		iso, _ := cmd.Flags().GetInt("iso")
+		snapshot, _ := cmd.Flags().GetString("snapshot")
+		script, _ := cmd.Flags().GetString("script-id")
+		ipv6, _ := cmd.Flags().GetString("ipv6")
+		privateNetwork, _ := cmd.Flags().GetString("private-network")
+		networks, _ := cmd.Flags().GetStringArray("network")
+		label, _ := cmd.Flags().GetString("label")
+		ssh, _ := cmd.Flags().GetStringArray("ssh-keys")
+		backup, _ := cmd.Flags().GetString("auto-backup")
+		app, _ := cmd.Flags().GetString("app")
+		userData, _ := cmd.Flags().GetString("userdata")
+		notify, _ := cmd.Flags().GetString("notify")
+		ddos, _ := cmd.Flags().GetString("ddos")
+		ipv4, _ := cmd.Flags().GetString("reserved-ipv4")
+		host, _ := cmd.Flags().GetString("host")
+		tag, _ := cmd.Flags().GetString("tag")
+		fwg, _ := cmd.Flags().GetString("firewall-group")
+
+		opt := &govultr.ServerOptions{
+			IPXEChain:            ipxe,
+			IsoID:                iso,
+			SnapshotID:           snapshot,
+			ScriptID:             script,
+			NetworkID:            networks,
+			Label:                label,
+			SSHKeyIDs:            ssh,
+			AppID:                app,
+			UserData:             userData,
+			ReservedIPV4:         ipv4,
+			Hostname:             host,
+			Tag:                  tag,
+			FirewallGroupID:      fwg,
+			EnableIPV6:           false,
+			DDOSProtection:       false,
+			NotifyActivate:       false,
+			AutoBackups:          false,
+			EnablePrivateNetwork: false,
+		}
+
+		if strings.ToLower(ipv6) == "true" {
+			opt.EnableIPV6 = true
+		}
+		if strings.ToLower(ddos) == "true" {
+			opt.DDOSProtection = true
+		}
+		if strings.ToLower(notify) == "true" {
+			opt.NotifyActivate = true
+		}
+		if strings.ToLower(ipv6) == "true" {
+			opt.EnableIPV6 = true
+		}
+		if strings.ToLower(backup) == "true" {
+			opt.AutoBackups = true
+		}
+		if strings.ToLower(privateNetwork) == "true" {
+			opt.EnablePrivateNetwork = true
+		}
+
+		server, err := client.Server.Create(context.TODO(), region, plan, osID, opt)
+
+		if err != nil {
+			fmt.Printf("error setting creating instance : %v", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Instance created - ID : %s", server.VpsID)
+	},
+}
