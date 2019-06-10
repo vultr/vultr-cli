@@ -34,7 +34,7 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List, serverIPV6List, serverList, serverInfo, updateFwgGroup, restore)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV6List, serverList, serverInfo, updateFwgGroup, restore)
 
 	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	serverTag.MarkFlagRequired("tag")
@@ -98,6 +98,16 @@ func Server() *cobra.Command {
 	isoAttach.Flags().StringP("iso-id", "i", "", "id of the ISO you wish to attach")
 	isoAttach.MarkFlagRequired("iso-id")
 	serverCmd.AddCommand(isoCmd)
+
+	ipv4Cmd := &cobra.Command{
+		Use:   "ipv4",
+		Short: "list/create/delete ipv4 on instance",
+		Long:  ``,
+	}
+	ipv4Cmd.AddCommand(serverIPV4List, createIpv4, deleteIpv4)
+	deleteIpv4.Flags().StringP("ipv4", "i", "", "ipv4 address you wish to delete")
+	deleteIpv4.MarkFlagRequired("ipv4")
+	serverCmd.AddCommand(ipv4Cmd)
 
 	return serverCmd
 }
@@ -293,7 +303,7 @@ var serverBandwidth = &cobra.Command{
 }
 
 var serverIPV4List = &cobra.Command{
-	Use:     "list-ipv4 <instanceID>",
+	Use:     "list <instanceID>",
 	Aliases: []string{"v4"},
 	Short:   "list ipv4 for a server",
 	Long:    ``,
@@ -700,8 +710,52 @@ var restore = &cobra.Command{
 	},
 }
 
+var createIpv4 = &cobra.Command{
+	Use:   "create <instanceID>",
+	Short: "create ipv4 for instance",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		err := client.Server.AddIPV4(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error creating ipv4 : %v", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("IPV4 has been created")
+	},
+}
+
+var deleteIpv4 = &cobra.Command{
+	Use:   "delete <instanceID>",
+	Short: "delete ipv4 for instance",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		ip, _ := cmd.Flags().GetString("ipv4")
+		err := client.Server.DestroyIPV4(context.TODO(), id, ip)
+
+		if err != nil {
+			fmt.Printf("error deleting ipv4 : %v", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("IPV4 has been deleted")
+	},
+}
 //create                 create a new virtual machine
-//create-ipv4            add a new IPv4 address to a virtual machine
-//delete-ipv4            remove IPv4 address from a virtual machine
 //reverse-dns            modify reverse DNS entries
 //upgrade-plan           upgrade plan of a virtual machine
