@@ -78,15 +78,23 @@ func Server() *cobra.Command {
 		Short: "list and create backup schedules for an instance",
 		Long:  ``,
 	}
-
 	backupCMD.AddCommand(backupGet, backupCreate)
 	backupCreate.Flags().StringP("type", "t", "", "type string Backup cron type. Can be one of 'daily', 'weekly', 'monthly', 'daily_alt_even', or 'daily_alt_odd'.")
 	backupCreate.MarkFlagRequired("type")
 	backupCreate.Flags().IntP("hour", "o", 0, "Hour value (0-23). Applicable to crons: 'daily', 'weekly', 'monthly', 'daily_alt_even', 'daily_alt_odd'")
 	backupCreate.Flags().IntP("dow", "w", 0, "Day-of-week value (0-6). Applicable to crons: 'weekly'")
 	backupCreate.Flags().IntP("dom", "m", 0, "Day-of-month value (1-28). Applicable to crons: 'monthly'")
-
 	serverCmd.AddCommand(backupCMD)
+
+	isoCmd := &cobra.Command{
+		Use:   "iso",
+		Short: "attach/detach ISOs to a given instance",
+		Long:  ``,
+	}
+	isoCmd.AddCommand(isoStatus, isoAttach, isoDetach)
+	isoAttach.Flags().StringP("iso-id", "i", "", "id of the ISO you wish to attach")
+	isoAttach.MarkFlagRequired("iso-id")
+	serverCmd.AddCommand(isoCmd)
 
 	return serverCmd
 }
@@ -576,8 +584,79 @@ var backupCreate = &cobra.Command{
 	},
 }
 
+var isoStatus = &cobra.Command{
+	Use:   "status <instanceID>",
+	Short: "current ISO state",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+
+		info, err := client.Server.IsoStatus(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error getting iso state info : %v", err)
+			os.Exit(1)
+		}
+
+		printer.IsoStatus(info)
+	},
+}
+
+var isoAttach = &cobra.Command{
+	Use:   "attach <instanceID>",
+	Short: "attach ISO to instance",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		iso, _ := cmd.Flags().GetString("iso-id")
+
+		err := client.Server.IsoAttach(context.TODO(), id, iso)
+
+		if err != nil {
+			fmt.Printf("error attaching iso : %v", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("ISO has been attached")
+	},
+}
+
+var isoDetach = &cobra.Command{
+	Use:   "detach <instanceID>",
+	Short: "detach ISO from instance",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		err := client.Server.IsoDetach(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error detaching iso : %v", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("ISO has been detached")
+	},
+}
+
 //create                 create a new virtual machine
-//iso                    attach/detach ISO of a virtual machine
 //restore                restore from backup/snapshot
 //create-ipv4            add a new IPv4 address to a virtual machine
 //delete-ipv4            remove IPv4 address from a virtual machine

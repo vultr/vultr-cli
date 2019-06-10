@@ -102,3 +102,10 @@ func BackupsGet(b *govultr.BackupSchedule) {
 	display(columns{b.Enabled, b.CronType, b.NextRun, b.Hour, b.Dow, b.Dom})
 	flush()
 }
+
+func IsoStatus(iso *govultr.ServerIso) {
+	col := columns{"ISO ID", "STATE"}
+	display(col)
+	display(columns{iso.IsoID, iso.State})
+	flush()
+}
