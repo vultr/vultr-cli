@@ -109,3 +109,12 @@ func IsoStatus(iso *govultr.ServerIso) {
 	display(columns{iso.IsoID, iso.State})
 	flush()
 }
+
+func PlansList(plans []int) {
+	col := columns{"PLAN ID"}
+	display(col)
+	for _, p := range plans {
+		display(columns{p})
+	}
+	flush()
+}

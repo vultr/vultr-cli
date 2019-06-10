@@ -89,6 +89,7 @@ func Server() *cobra.Command {
 	backupCreate.Flags().IntP("dom", "m", 0, "Day-of-month value (1-28). Applicable to crons: 'monthly'")
 	serverCmd.AddCommand(backupCMD)
 
+	// IPV4 Subcommands
 	isoCmd := &cobra.Command{
 		Use:   "iso",
 		Short: "attach/detach ISOs to a given instance",
@@ -109,6 +110,7 @@ func Server() *cobra.Command {
 	deleteIpv4.MarkFlagRequired("ipv4")
 	serverCmd.AddCommand(ipv4Cmd)
 
+	// IPV6 Subcommands
 	ipv6Cmd := &cobra.Command{
 		Use:   "ipv6",
 		Short: "commands for ipv6 on instance",
@@ -116,6 +118,17 @@ func Server() *cobra.Command {
 	}
 	ipv6Cmd.AddCommand(serverIPV6List)
 	serverCmd.AddCommand(ipv6Cmd)
+
+	// Plans Commands
+	plansCmd := &cobra.Command{
+		Use:   "plans",
+		Short: "update/list plans for an instance",
+		Long:  ``,
+	}
+	plansCmd.AddCommand(listPlans, upgradePlan)
+	upgradePlan.Flags().StringP("plan", "p", "", "plan id that you wish to upgrade to")
+	upgradePlan.MarkFlagRequired("plan")
+	serverCmd.AddCommand(plansCmd)
 
 	return serverCmd
 }
@@ -764,6 +777,53 @@ var deleteIpv4 = &cobra.Command{
 		fmt.Println("IPV4 has been deleted")
 	},
 }
+
+var listPlans = &cobra.Command{
+	Use:   "list <instanceID>",
+	Short: "list available plans for instance",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		plans, err := client.Server.ListUpgradePlan(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error getting plans : %v", err)
+			os.Exit(1)
+		}
+
+		printer.PlansList(plans)
+	},
+}
+
+var upgradePlan = &cobra.Command{
+	Use:   "upgrade <instanceID>",
+	Short: "upgrade plan for instance",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		plan, _ := cmd.Flags().GetString("plan")
+		err := client.Server.UpgradePlan(context.TODO(), id, plan)
+
+		if err != nil {
+			fmt.Printf("error upgrading plans : %v", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Upgraded plan")
+	},
+}
+
 //create                 create a new virtual machine
 //reverse-dns            modify reverse DNS entries
-//upgrade-plan           upgrade plan of a virtual machine
