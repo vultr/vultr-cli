@@ -34,7 +34,7 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List, serverIPV6List, serverList, serverInfo, updateFwgGroup)
+	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverIPV4List, serverIPV6List, serverList, serverInfo, updateFwgGroup, restore)
 
 	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	serverTag.MarkFlagRequired("tag")
@@ -48,6 +48,9 @@ func Server() *cobra.Command {
 	updateFwgGroup.Flags().StringP("firewall-group-id", "f", "", "firewall group id that you want to assign. 0 Value will unset the firewall-group")
 	updateFwgGroup.MarkFlagRequired("instance-id")
 	updateFwgGroup.MarkFlagRequired("firewall-group-id")
+
+	restore.Flags().StringP("backup", "b", "", "id of backup you wish to restore the instance with")
+	restore.Flags().StringP("snapshot", "s", "", "id of snapshot you wish to restore the instance with")
 
 	// Sub commands for OS
 	osCmd := &cobra.Command{
@@ -656,8 +659,48 @@ var isoDetach = &cobra.Command{
 	},
 }
 
+var restore = &cobra.Command{
+	Use:   "restore <instanceID>",
+	Short: "restore instance from backup/snapshot",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+
+		backup, _ := cmd.Flags().GetString("backup")
+		snapshot, _ := cmd.Flags().GetString("snapshot")
+
+		if backup == "" && snapshot == "" {
+			fmt.Println("at least one flag must be provided (snapshot or backup)")
+			os.Exit(1)
+		} else if backup != "" && snapshot != "" {
+			fmt.Println("one flag must be provided not both (snapshot or backup)")
+			os.Exit(1)
+		}
+
+		var err error
+
+		if snapshot != "" {
+			err = client.Server.RestoreSnapshot(context.TODO(), id, snapshot)
+		} else {
+			err = client.Server.RestoreBackup(context.TODO(), id, backup)
+		}
+
+		if err != nil {
+			fmt.Printf("error restoring instance : %v", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Instance has been restored")
+	},
+}
+
 //create                 create a new virtual machine
-//restore                restore from backup/snapshot
 //create-ipv4            add a new IPv4 address to a virtual machine
 //delete-ipv4            remove IPv4 address from a virtual machine
 //reverse-dns            modify reverse DNS entries
