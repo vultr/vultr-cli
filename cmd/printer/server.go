@@ -118,3 +118,12 @@ func PlansList(plans []int) {
 	}
 	flush()
 }
+
+func ReverseIpv6(rip []govultr.ReverseIPV6) {
+	col := columns{"IP", "REVERSE"}
+	display(col)
+	for _, r := range rip {
+		display(columns{r.IP, r.Reverse})
+	}
+	flush()
+}

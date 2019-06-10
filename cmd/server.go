@@ -119,7 +119,7 @@ func Server() *cobra.Command {
 	ipv6Cmd.AddCommand(serverIPV6List)
 	serverCmd.AddCommand(ipv6Cmd)
 
-	// Plans Commands
+	// Plans SubCommands
 	plansCmd := &cobra.Command{
 		Use:   "plans",
 		Short: "update/list plans for an instance",
@@ -129,6 +129,30 @@ func Server() *cobra.Command {
 	upgradePlan.Flags().StringP("plan", "p", "", "plan id that you wish to upgrade to")
 	upgradePlan.MarkFlagRequired("plan")
 	serverCmd.AddCommand(plansCmd)
+
+	// ReverseDNS SubCommands\
+	reverseCmd := &cobra.Command{
+		Use:   "reverse-dns",
+		Short: "commands to handle reverse-dns on an instance",
+		Long:  ``,
+	}
+	reverseCmd.AddCommand(defaultIpv4, listIpv6, deleteIpv6, setIpv4, setIpv6)
+	defaultIpv4.Flags().StringP("ip", "i", "", "iPv4 address used in the reverse DNS update")
+	defaultIpv4.MarkFlagRequired("ip")
+	deleteIpv6.Flags().StringP("ip", "i", "", "ipv6 address you wish to delete")
+
+	defaultIpv4.MarkFlagRequired("ip")
+	setIpv4.Flags().StringP("ip", "i", "", "ip address you wish to set a reverse DNS on")
+	setIpv4.Flags().StringP("entry", "e", "", "reverse dns entry")
+	setIpv4.MarkFlagRequired("ip")
+	setIpv4.MarkFlagRequired("entry")
+
+	setIpv6.Flags().StringP("ip", "i", "", "ip address you wish to set a reverse DNS on")
+	setIpv6.Flags().StringP("entry", "e", "", "reverse dns entry")
+	setIpv6.MarkFlagRequired("ip")
+	setIpv6.MarkFlagRequired("entry")
+
+	serverCmd.AddCommand(reverseCmd)
 
 	return serverCmd
 }
@@ -820,10 +844,124 @@ var upgradePlan = &cobra.Command{
 			fmt.Printf("error upgrading plans : %v", err)
 			os.Exit(1)
 		}
-
 		fmt.Println("Upgraded plan")
 	},
 }
 
+var defaultIpv4 = &cobra.Command{
+	Use:   "default-ipv4 <instanceID>",
+	Short: "Set a reverse DNS entry for an IPv4 address of an instance to the original setting",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		ip, _ := cmd.Flags().GetString("ip")
+		err := client.Server.SetDefaultReverseIPV4(context.TODO(), id, ip)
+
+		if err != nil {
+			fmt.Printf("error setting default reverse dns : %v", err)
+			os.Exit(1)
+		}
+		fmt.Println("Set default reserve dns")
+	},
+}
+
+var listIpv6 = &cobra.Command{
+	Use:   "list-ipv6 <instanceID>",
+	Short: "List the IPv6 reverse DNS entries for an instance",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		rip, err := client.Server.ListReverseIPV6(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error getting the reverse ipv6 list: %v", err)
+			os.Exit(1)
+		}
+		printer.ReverseIpv6(rip)
+	},
+}
+
+var deleteIpv6 = &cobra.Command{
+	Use:   "delete-ipv6 <instanceID>",
+	Short: "Remove a reverse DNS entry for an IPv6 address for an instance",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		ip, _ := cmd.Flags().GetString("ip")
+		err := client.Server.DeleteReverseIPV6(context.TODO(), id, ip)
+
+		if err != nil {
+			fmt.Printf("error deleting reverse ipv6 entry : %v", err)
+			os.Exit(1)
+		}
+		fmt.Println("Deleted reverse DNS IPV6 entry")
+	},
+}
+
+var setIpv4 = &cobra.Command{
+	Use:   "set-ipv4 <instanceID>",
+	Short: "Set a reverse DNS entry for an IPv4 address for an instance",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		ip, _ := cmd.Flags().GetString("ip")
+		entry, _ := cmd.Flags().GetString("entry")
+		err := client.Server.SetReverseIPV4(context.TODO(), id, ip, entry)
+
+		if err != nil {
+			fmt.Printf("error setting reverse dns ipv4 entry : %v", err)
+			os.Exit(1)
+		}
+		fmt.Println("Set reverse DNS entry for ipv4 address")
+	},
+}
+
+var setIpv6 = &cobra.Command{
+	Use:   "set-ipv6 <instanceID>",
+	Short: "Set a reverse DNS entry for an IPv6 address for an instance",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		ip, _ := cmd.Flags().GetString("ip")
+		entry, _ := cmd.Flags().GetString("entry")
+		err := client.Server.SetReverseIPV6(context.TODO(), id, ip, entry)
+
+		if err != nil {
+			fmt.Printf("error setting reverse dns ipv6 entry : %v", err)
+			os.Exit(1)
+		}
+		fmt.Println("Set reverse DNS entry for ipv6 address")
+	},
+}
+
 //create                 create a new virtual machine
-//reverse-dns            modify reverse DNS entries
