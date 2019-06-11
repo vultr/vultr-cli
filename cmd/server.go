@@ -30,7 +30,7 @@ import (
 func Server() *cobra.Command {
 	serverCmd := &cobra.Command{
 		Use:   "server",
-		Short: "A brief description of your command",
+		Short: "commands to interact with servers on vultr",
 		Long:  ``,
 	}
 
@@ -156,7 +156,7 @@ func Server() *cobra.Command {
 	upgradePlan.MarkFlagRequired("plan")
 	serverCmd.AddCommand(plansCmd)
 
-	// ReverseDNS SubCommands\
+	// ReverseDNS SubCommands
 	reverseCmd := &cobra.Command{
 		Use:   "reverse-dns",
 		Short: "commands to handle reverse-dns on an instance",
