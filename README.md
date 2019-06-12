@@ -55,10 +55,15 @@ Another way to build from source is to
 ```
 git clone git@github.com/vultr/vultr-cli.git
 cd vultr-cli
-make build_(
+make build_(pass name of os + arch)
 ```
 
-This will build the binary native to your machine - Linux or Mac
+The available make build options are
+- build_mac
+- build_linux_386
+- build_linux_amd64
+- build_windows_64
+- build_windows_32
 
 ## Using Vultr-cli
 
