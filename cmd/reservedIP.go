@@ -167,7 +167,7 @@ var reservedIPConvert = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Println("Converted ip to reservedIP : %v", r.ReservedIPID)
+		fmt.Printf("Converted ip to reservedIP : %v", r.ReservedIPID)
 	},
 }
 
@@ -189,6 +189,6 @@ var reservedIPCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Println("Created ReservedIP : %v", r.ReservedIPID)
+		fmt.Printf("Created ReservedIP : %v", r.ReservedIPID)
 	},
 }
