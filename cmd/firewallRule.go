@@ -108,9 +108,9 @@ var firewallRuleList = &cobra.Command{
 		var err error
 		var list []govultr.FirewallRule
 		if ipType != "" {
-			list, err = client.FirewallRule.List(context.TODO(), args[0], ipType)
+			list, err = client.FirewallRule.ListByIPType(context.TODO(), args[0], ipType)
 		} else {
-			list, err = client.FirewallRule.GetAll(context.TODO(), args[0])
+			list, err = client.FirewallRule.List(context.TODO(), args[0])
 		}
 
 		if err != nil {

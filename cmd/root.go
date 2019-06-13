@@ -32,7 +32,7 @@ var client *govultr.Client
 var rootCmd = &cobra.Command{
 	Use:   "vultr-cli",
 	Short: "vultr-cli is a command line interface for the Vultr API",
-	Long: ``,
+	Long:  ``,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

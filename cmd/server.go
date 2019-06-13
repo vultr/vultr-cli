@@ -1065,6 +1065,6 @@ var serverCreate = &cobra.Command{
 			fmt.Printf("error setting creating instance : %v", err)
 			os.Exit(1)
 		}
-		fmt.Printf("Instance created - ID : %s", server.VpsID)
+		fmt.Printf("Instance created - ID : %s", server.InstanceID)
 	},
 }
