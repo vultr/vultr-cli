@@ -11,7 +11,7 @@ func BareMetal(b *govultr.BareMetalServer) {
 	display(columns{"RAM", b.RAM})
 	display(columns{"Disk", b.Disk})
 	display(columns{"Main IP", b.MainIP})
-	display(columns{"CPU Count", b.CPUCount})
+	display(columns{"CPU Count", b.CPUs})
 	display(columns{"Location", b.Location})
 	display(columns{"Region ID", b.RegionID})
 	display(columns{"Date Created", b.DateCreated})
@@ -32,7 +32,7 @@ func BareMetalList(bms []govultr.BareMetalServer) {
 	col := columns{"ID", "IP", "TAG", "LABEL", "OS", "STATUS", "REGION", "CPU", "RAM", "DISK"}
 	display(col)
 	for _, b := range bms {
-		display(columns{b.BareMetalServerID, b.MainIP, b.Tag, b.Label, b.Os, b.Status, b.RegionID, b.CPUCount, b.RAM, b.Disk})
+		display(columns{b.BareMetalServerID, b.MainIP, b.Tag, b.Label, b.Os, b.Status, b.RegionID, b.CPUs, b.RAM, b.Disk})
 	}
 	flush()
 }

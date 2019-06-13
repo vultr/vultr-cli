@@ -33,7 +33,7 @@ func ServerList(server []govultr.Server) {
 	col := columns{"ID", "IP", "LABEL", "OS", "STATUS", "Region", "CPU", "RAM", "DISK", "BANDWIDTH", "COST"}
 	display(col)
 	for _, s := range server {
-		display(columns{s.VpsID, s.MainIP, s.Label, s.Os, s.Status, s.RegionID, s.VPSCpus, s.RAM, s.Disk, s.CurrentBandwidth, s.Cost})
+		display(columns{s.InstanceID, s.MainIP, s.Label, s.Os, s.Status, s.RegionID, s.VPSCpus, s.RAM, s.Disk, s.CurrentBandwidth, s.Cost})
 	}
 	flush()
 }
@@ -41,12 +41,12 @@ func ServerList(server []govultr.Server) {
 func ServerInfo(server *govultr.Server) {
 	col := columns{"SERVER INFO"}
 	display(col)
-	display(columns{"Instance ID", server.VpsID})
+	display(columns{"Instance ID", server.InstanceID})
 	display(columns{"Os", server.Os})
 	display(columns{"Ram", server.RAM})
 	display(columns{"Disk", server.Disk})
 	display(columns{"Main IP", server.MainIP})
-	display(columns{"VCPUS", server.VpsID})
+	display(columns{"VCPUS", server.VPSCpus})
 	display(columns{"RegionID", server.RegionID})
 	display(columns{"Date Created", server.Created})
 	display(columns{"Pending Charges", server.PendingCharges})
