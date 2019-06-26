@@ -23,7 +23,7 @@ build_windows_64: GOOS = windows
 build_windows_64: GOARCH = amd64
 build_windows_64: _build_win
 
-# Builds for Windows 64bit
+# Builds for Windows 32bit
 build_windows_32: GOOS = windows
 build_windows_32: GOARCH = 386
 build_windows_32: _build_win
