@@ -42,7 +42,10 @@ Use "vultr-cli [command] --help" for more information about a command.
 
 There are two ways to install `vultr-cli`:
 1. From source
-
+2. Package Manager (Coming soon)
+  - Brew
+  - Snap
+  - Chocolatey
 
 ### Building from source 
 
