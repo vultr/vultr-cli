@@ -56,7 +56,7 @@ You will need Go installed on your machine in order to work with the source (and
 Another way to build from source is to 
 
 ```
-git clone git@github.com/vultr/vultr-cli.git
+git clone https://git@github.com/vultr/vultr-cli.git
 cd vultr-cli
 make build_(pass name of os + arch)
 ```
