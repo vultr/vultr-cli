@@ -69,7 +69,7 @@ The available make build options are
 
 ### Authentication
 
-In order to use `vultr-cli` you will need to export your [Vultr API API](https://my.vultr.com/settings/#settingsapi) 
+In order to use `vultr-cli` you will need to export your [Vultr API KEY](https://my.vultr.com/settings/#settingsapi) 
 
 `export VULTR_API_KEY=your_api_key`
 
