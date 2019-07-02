@@ -31,13 +31,13 @@ build_windows_32: _build_win
 _build:
 	@mkdir -p builds
 	@echo "building vultr-cli"
-	env GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o $(DIR)/vultr-cli_$(GOOS)_$(GOARCH)
+	env GOOS=$(GOOS) GOARCH=$(GOARCH) go build -gcflags=-trimpath=$$GOPATH -o $(DIR)/vultr-cli_$(GOOS)_$(GOARCH)
 	@echo "built $(DIR)/vultr-cli_$(GOOS)_$(GOARCH)"
 
 _build_win:
 	@mkdir -p builds
 	@echo "building vultr-cli"
-	env GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o $(DIR)/vultr-cli_$(GOOS)_$(GOARCH).exe
+	env GOOS=$(GOOS) GOARCH=$(GOARCH) go build -gcflags=-trimpath=$$GOPATH -o $(DIR)/vultr-cli_$(GOOS)_$(GOARCH).exe
 	@echo "built $(DIR)/vultr-cli_$(GOOS)_$(GOARCH)"
 
 remove:
