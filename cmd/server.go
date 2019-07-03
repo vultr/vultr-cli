@@ -304,9 +304,10 @@ var serverTag = &cobra.Command{
 }
 
 var serverDelete = &cobra.Command{
-	Use:   "delete <instanceID>",
-	Short: "delete a server",
-	Long:  ``,
+	Use:     "delete <instanceID>",
+	Short:   "delete/destroy a server",
+	Aliases: []string{"destroy"},
+	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide an instanceID")
