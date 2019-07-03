@@ -922,9 +922,10 @@ var listIpv6 = &cobra.Command{
 }
 
 var deleteIpv6 = &cobra.Command{
-	Use:   "delete-ipv6 <instanceID>",
-	Short: "Remove a reverse DNS entry for an IPv6 address for an instance",
-	Long:  ``,
+	Use:     "delete-ipv6 <instanceID>",
+	Short:   "Remove a reverse DNS entry for an IPv6 address for an instance",
+	Aliases: []string{"destroy-ipv6"},
+	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide an instanceID")

@@ -72,9 +72,10 @@ var domainCreate = &cobra.Command{
 }
 
 var domainDelete = &cobra.Command{
-	Use:   "delete <domainName>",
-	Short: "delete a domain",
-	Long:  ``,
+	Use:     "delete <domainName>",
+	Short:   "delete a domain",
+	Aliases: []string{"destroy"},
+	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a domain name")
