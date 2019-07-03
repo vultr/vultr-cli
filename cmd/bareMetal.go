@@ -121,8 +121,9 @@ var bareMetalCreate = &cobra.Command{
 }
 
 var bareMetalDelete = &cobra.Command{
-	Use:   "delete <bareMetalID>",
-	Short: "Delete a bare metal server",
+	Use:     "delete <bareMetalID>",
+	Short:   "Delete a bare metal server",
+	Aliases: []string{"destroy"},
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a bareMetalID")

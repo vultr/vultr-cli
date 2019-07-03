@@ -60,9 +60,10 @@ var networkList = &cobra.Command{
 }
 
 var networkDelete = &cobra.Command{
-	Use:   "delete <networkID>",
-	Short: "delete a private network",
-	Long:  ``,
+	Use:     "delete <networkID>",
+	Short:   "delete a private network",
+	Aliases: []string{"destroy"},
+	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a networkID")
