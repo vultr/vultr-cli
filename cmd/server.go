@@ -304,9 +304,10 @@ var serverTag = &cobra.Command{
 }
 
 var serverDelete = &cobra.Command{
-	Use:   "delete <instanceID>",
-	Short: "delete a server",
-	Long:  ``,
+	Use:     "delete <instanceID>",
+	Short:   "delete/destroy a server",
+	Aliases: []string{"destroy"},
+	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide an instanceID")
@@ -805,9 +806,10 @@ var createIpv4 = &cobra.Command{
 }
 
 var deleteIpv4 = &cobra.Command{
-	Use:   "delete <instanceID>",
-	Short: "delete ipv4 for instance",
-	Long:  ``,
+	Use:     "delete <instanceID>",
+	Short:   "delete ipv4 for instance",
+	Aliases: []string{"destroy"},
+	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide an instanceID")
@@ -920,9 +922,10 @@ var listIpv6 = &cobra.Command{
 }
 
 var deleteIpv6 = &cobra.Command{
-	Use:   "delete-ipv6 <instanceID>",
-	Short: "Remove a reverse DNS entry for an IPv6 address for an instance",
-	Long:  ``,
+	Use:     "delete-ipv6 <instanceID>",
+	Short:   "Remove a reverse DNS entry for an IPv6 address for an instance",
+	Aliases: []string{"destroy-ipv6"},
+	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide an instanceID")

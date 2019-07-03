@@ -104,9 +104,10 @@ var recordlist = &cobra.Command{
 }
 
 var recordDelete = &cobra.Command{
-	Use:   "delete <domainName> <recordID>",
-	Short: "delete dns record",
-	Long:  ``,
+	Use:     "delete <domainName> <recordID>",
+	Short:   "delete dns record",
+	Aliases: []string{"destroy"},
+	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 2 {
 			return errors.New("please provide a domainName & recordID")

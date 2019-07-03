@@ -61,7 +61,7 @@ var firewallGroupCreate = &cobra.Command{
 var firewallGroupDelete = &cobra.Command{
 	Use:     "delete <firewallGroupID>",
 	Short:   "Delete a firewall group",
-	Aliases: []string{"d"},
+	Aliases: []string{"d", "destroy"},
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a firewallGroupID")

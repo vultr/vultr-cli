@@ -104,9 +104,10 @@ var isoCreate = &cobra.Command{
 }
 
 var isoDelete = &cobra.Command{
-	Use:   "delete <isoID>",
-	Short: "delete a private iso",
-	Long:  ``,
+	Use:     "delete <isoID>",
+	Short:   "delete a private iso",
+	Aliases: []string{"destroy"},
+	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide an isoID")
