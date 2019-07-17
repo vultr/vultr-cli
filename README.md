@@ -68,6 +68,19 @@ The available make build options are
 - build_windows_64
 - build_windows_32
 
+### Installing via Brew
+
+You will need to tap for formula
+``` sh
+brew tap vultr/vultr-cli
+```
+
+Then install the formula
+
+```sh 
+brew install vultr-cli
+```
+
 ## Using Vultr-cli
 
 ### Authentication
