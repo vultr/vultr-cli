@@ -40,12 +40,16 @@ Use "vultr-cli [command] --help" for more information about a command.
 
 ## Installation
 
-There are two ways to install `vultr-cli`:
-1. From source
-2. Package Manager (Coming soon)
+There are three ways to install `vultr-cli`:
+1. Download a release from GitHub
+2. From source
+3. Package Manager
   - Brew
-  - Snap
-  - Chocolatey
+  - Snap (Coming soon)
+  - Chocolatey (Coming soon)
+  
+### GitHub Release
+If you are to visit the `vultr-cli` [releases](https://github.com/vultr/vultr-cli/releases) page. You can download a compiled version of `vultr-cli` for you Linux/MacOS/Windows in either 32/64bit.
 
 ### Building from source 
 
