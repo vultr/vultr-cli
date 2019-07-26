@@ -72,6 +72,8 @@ The available make build options are
 - build_windows_64
 - build_windows_32
 
+Note that the latter method will install the `vultr-cli` executable in `builds/vultr-cli_(name of os + arch)`.
+
 ### Installing via Brew
 
 You will need to tap for formula
