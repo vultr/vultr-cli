@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 
 	"github.com/spf13/cobra"
@@ -58,6 +59,11 @@ func DnsRecord() *cobra.Command {
 	return dnsRecordCmd
 }
 
+// Temporary solution to determine if the record type is TXT, in order to
+// add quotes around the value. The API does not accept TXT records without
+//	quotes.
+var regRecordTxt = regexp.MustCompile("([A-Z]|=|_)")
+
 var recordCreate = &cobra.Command{
 	Use:   "create",
 	Short: "create a dns record",
@@ -67,6 +73,10 @@ var recordCreate = &cobra.Command{
 		rType, _ := cmd.Flags().GetString("type")
 		name, _ := cmd.Flags().GetString("name")
 		data, _ := cmd.Flags().GetString("data")
+		// Record data for TXT must be enclosed in quotes
+		if data[0] != '"' && data[len(data)-1] != '"' && regRecordTxt.Match([]byte(data)) {
+			data = fmt.Sprintf("\"%s\"", data)
+		}
 		ttl, _ := cmd.Flags().GetInt("ttl")
 		priority, _ := cmd.Flags().GetInt("priority")
 
@@ -155,6 +165,10 @@ var recordUpdate = &cobra.Command{
 		}
 
 		if data != "" {
+			// Record data for TXT must be enclosed in quotes
+			if data[0] != '"' && data[len(data)-1] != '"' && regRecordTxt.Match([]byte(data)) {
+				data = fmt.Sprintf("\"%s\"", data)
+			}
 			updates.Data = data
 		}
 
