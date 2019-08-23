@@ -42,3 +42,6 @@ _build_win:
 
 remove:
 	@rm -rf builds
+
+format:
+	@go fmt ./...
