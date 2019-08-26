@@ -127,28 +127,31 @@ var scriptContents = &cobra.Command{
 			return errors.New("please provide a scriptID")
 		}
 		return nil
-	},	
+	},
 	Run: func(cmd *cobra.Command, args []string) {
-		var err error
 		list, err := client.StartupScript.List(context.TODO())
-
-		matchingID := false
-
-		for _, key := range list {
-			if (args[0] == key.ScriptID) {
-				matchingID = true
-				fmt.Println(key.Script)
-			}
-		}
-
-		if (!matchingID) {
-			err = errors.New("Invalid scriptID")
-		}
 
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
+
+		matchingID := false
+		scriptContent := ""
+		for _, key := range list {
+			if args[0] == key.ScriptID {
+				matchingID = true
+				scriptContent = key.Script
+				break
+			}
+		}
+
+		if !matchingID {
+			fmt.Printf("Invalid scriptID\n")
+			os.Exit(1)
+		}
+
+		fmt.Println(scriptContent)
 	},
 }
 
