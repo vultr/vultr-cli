@@ -38,6 +38,7 @@ func Script() *cobra.Command {
 	cmd.AddCommand(scriptDelete)
 	cmd.AddCommand(scriptList)
 	cmd.AddCommand(scriptUpdate)
+	cmd.AddCommand(scriptContents)
 
 	scriptCreate.Flags().StringP("name", "n", "", "Name of the newly created startup script.")
 	scriptCreate.Flags().StringP("script", "s", "", "Startup script contents.")
@@ -113,6 +114,44 @@ var scriptList = &cobra.Command{
 		}
 
 		printer.Script(list)
+	},
+}
+
+// Displays the contents of a specified script
+var scriptContents = &cobra.Command{
+	Use:   "contents <scriptID>",
+	Short: "Displays the contents of specified script",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a scriptID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		list, err := client.StartupScript.List(context.TODO())
+
+		if err != nil {
+			fmt.Printf("%v\n", err)
+			os.Exit(1)
+		}
+
+		matchingID := false
+		scriptContent := ""
+		for _, key := range list {
+			if args[0] == key.ScriptID {
+				matchingID = true
+				scriptContent = key.Script
+				break
+			}
+		}
+
+		if !matchingID {
+			fmt.Printf("Invalid scriptID\n")
+			os.Exit(1)
+		}
+
+		fmt.Println(scriptContent)
 	},
 }
 
