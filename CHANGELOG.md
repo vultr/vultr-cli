@@ -1,8 +1,13 @@
 # Change Log
 
+## [v0.1.4](https://github.com/vultr/vultr-cli/compare/v0.1.3..v0.1.4) (2019-08-26)
+### Enhancements
+* Makefile entry for gofmt [PR 44](https://github.com/vultr/vultr-cli/pull/44)
+* New command `script contents` will display contents of a given script  [PR 43](https://github.com/vultr/vultr-cli/pull/43)
+
 ## [v0.1.3](https://github.com/vultr/vultr-cli/compare/v0.1.2..v0.1.3) (2019-08-21)
 ### Bug Fixes
-* Quote handling on DNS Record Data [PR #35](https://github.com/vultr/vultr-cli/pull/41)
+* Quote handling on DNS Record Data [PR #41](https://github.com/vultr/vultr-cli/pull/41)
   
 ## [v0.1.2](https://github.com/vultr/vultr-cli/compare/v0.1.1..v0.1.2) (2019-07-15)
 ### Dependencies
