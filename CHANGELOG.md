@@ -1,5 +1,9 @@
 # Change Log
 
+## [v0.1.5](https://github.com/vultr/vultr-cli/compare/v0.1.4..v0.1.5) (2019-09-03)
+### Enhancements
+* Add contextual instructions for Vultr API key setup [PR 47](https://github.com/vultr/vultr-cli/pull/47)
+
 ## [v0.1.4](https://github.com/vultr/vultr-cli/compare/v0.1.3..v0.1.4) (2019-08-26)
 ### Enhancements
 * Makefile entry for gofmt [PR 44](https://github.com/vultr/vultr-cli/pull/44)
