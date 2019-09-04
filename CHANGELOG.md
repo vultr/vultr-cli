@@ -2,7 +2,7 @@
 
 ## [v0.1.6](https://github.com/vultr/vultr-cli/compare/v0.1.5..v0.1.6) (2019-09-04)
 ### Enhancements
-* Print the original API error messages in [PR 50](https://github.com/vultr/vultr-cli/pull/50)
+* Print the original API error messages in [PR 50](https://github.com/vultr/vultr-cli/pull/50) && [PR 52](https://github.com/vultr/vultr-cli/pull/52)
   * application
   * plans
   * regions
