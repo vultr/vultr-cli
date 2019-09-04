@@ -72,7 +72,7 @@ var userCreate = &cobra.Command{
 		id, err := client.User.Create(context.TODO(), email, name, password, api, acl)
 
 		if err != nil {
-			fmt.Printf("error creating user : %v", err)
+			fmt.Printf("error creating user : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -98,7 +98,7 @@ var userDelete = &cobra.Command{
 		err := client.User.Delete(context.TODO(), id)
 
 		if err != nil {
-			fmt.Printf("error deleting user : %v", err)
+			fmt.Printf("error deleting user : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -171,7 +171,7 @@ var userUpdate = &cobra.Command{
 		err := client.User.Update(context.TODO(), user)
 
 		if err != nil {
-			fmt.Printf("error updating user : %v", err)
+			fmt.Printf("error updating user : %v\n", err)
 			os.Exit(1)
 		}
 
