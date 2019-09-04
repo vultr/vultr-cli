@@ -33,7 +33,7 @@ var applicationCmd = &cobra.Command{
 		apps, err := client.Application.List(context.TODO())
 
 		if err != nil {
-			fmt.Printf("error getting available applications : %v", err)
+			fmt.Printf("error getting available applications : %v\n", err)
 			os.Exit(1)
 		}
 
