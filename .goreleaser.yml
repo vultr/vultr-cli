@@ -59,6 +59,85 @@ changelog:
       - '^docs:'
       - '^test:'
 
+
+
+
+
+brews:
+  -
+    name: vultr-cli
+
+    # IDs of the archives to use.
+    # Defaults to all.
+    ids:
+      - foo
+      - bar
+
+
+    # NOTE: make sure the url_template, the token and given repo (github or gitlab) owner and name are from the
+    # same kind. We will probably unify this in the next major version like it is done with scoop.
+
+    # Github repository to push the tap to.
+    github:
+      owner: vultr
+      name: homebrew-vultr-cli
+
+
+    url_template: "https://github.com/vultr/homebrew-vultr-cli/releases/{{ .Tag }}/{{ .ArtifactName }}"
+
+
+    # Git author used to commit to the repository.
+    # Defaults are shown.
+    commit_author:
+      name: goreleaserbot
+      email: opensource@vultr.com
+
+
+
+    homepage: "https://github.com/vultr/vultr-cli"
+
+
+    description: "Official command-line tool for Vultr services"
+
+    # Setting this will prevent goreleaser to actually try to commit the updated
+    # formula - instead, the formula file will be stored on the dist folder only,
+    # leaving the responsibility of publishing it to the user.
+    # If set to auto, the release will not be uploaded to the homebrew tap
+    # in case there is an indicator for prerelease in the tag e.g. v1.0.0-rc1
+    # Default is false.
+    skip_upload: true
+
+    # Custom block for brew.
+    # Can be used to specify alternate downloads for devel or head releases.
+    # Default is empty.
+    custom_block: |
+      head "https://github.com/some/package.git"
+      ...
+
+    # Packages your package depends on.
+    dependencies:
+      - go
+
+    # So you can `brew test` your formula.
+    # Default is empty.
+    test: |
+      output = shell_output("#{bin}/vultr-cli version 2>&1", 1)
+      assert_match "Please export your VULTR API key as an environment variable, eg:\nexport VULTR_API_KEY='<api_key_from_vultr_account>'\n", output
+
+
+    # Custom install script for brew.
+    # Default is 'bin.install "program"'.
+    install: |
+      ENV["GOPATH"] = buildpath
+      ENV["GO111MODULE"] = "on"
+      dir = buildpath/"src/github.com/vultr/vultr-cli"
+      dir.install buildpath.children
+
+      cd dir do
+        system "go", "build", "-o", bin/"vultr-cli", "-ldflags", "-X main.Version=v#{version}"
+        prefix.install_metafiles
+      end
+
 release:
   github:
     owner: vultr
