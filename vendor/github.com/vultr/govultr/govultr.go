@@ -13,11 +13,26 @@ import (
 )
 
 const (
-	version     = "0.1.4"
+	version     = "0.1.5"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 600 * time.Millisecond
 )
+
+// whiteListURI is an array of endpoints that should not have the API Key passed to them
+var whiteListURI = [12]string{"/v1/regions/availability",
+	"/v1/app/list",
+	"/v1/os/list",
+	"/v1/plans/list",
+	"/v1/plans/list_baremetal",
+	"/v1/plans/list_vc2",
+	"/v1/plans/list_vc2z",
+	"/v1/plans/list_vdc2",
+	"/v1/regions/list",
+	"/v1/regions/availability_vc2",
+	"/v1/regions/availability_vdc2",
+	"/v1/regions/availability_baremetal",
+}
 
 // APIKey contains a users API Key for interacting with the API
 type APIKey struct {
@@ -141,6 +156,13 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body url.Va
 	}
 
 	req.Header.Add("API-key", c.APIKey.key)
+	for _, v := range whiteListURI {
+		if v == uri {
+			req.Header.Del("API-key")
+			break
+		}
+	}
+
 	req.Header.Add("User-Agent", c.UserAgent)
 	req.Header.Add("Accept", "application/json")
 

@@ -1,5 +1,9 @@
 # Change Log
 
+## [v0.1.5](https://github.com/vultr/govultr/compare/v0.1.4..v0.1.5) (2019-10-16)
+### Enhancement
+*  Whitelisting public endpoints that do not require the api key[#24](https://github.com/vultr/govultr/pull/24)
+
 ## [v0.1.4](https://github.com/vultr/govultr/compare/v0.1.3..v0.1.4) (2019-07-14)
 ### Bug Fixes
 * Fix panic on request failure [#20](https://github.com/vultr/govultr/pull/20)
