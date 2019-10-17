@@ -1,6 +1,6 @@
 # Change Log
 
-## [v0.1.7](https://github.com/vultr/vultr-cli/compare/v0.1.6..v0.1.7) (2019-10-16)
+## [v0.1.7](https://github.com/vultr/vultr-cli/compare/v0.1.6..v0.1.7) (2019-10-17)
 ### Enhancements
 * Bump GoVultr to v0.1.5 [PR 55](https://github.com/vultr/vultr-cli/pull/55)
 
