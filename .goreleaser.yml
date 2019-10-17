@@ -68,7 +68,7 @@ brews:
       name: homebrew-vultr-cli
 
 
-    url_template: "https://github.com/vultr/homebrew-vultr-cli/releases/{{ .Tag }}/{{ .ArtifactName }}"
+    url_template: "https://github.com/vultr/vultr-cli/releases/{{ .Tag }}/{{ .ArtifactName }}"
 
     commit_author:
       name: goreleaserbot
