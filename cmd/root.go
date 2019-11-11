@@ -106,5 +106,5 @@ func initClient() {
 	}
 
 	client = govultr.NewClient(nil, key)
-	client.SetRateLimit(1 * time.Millisecond)
+	client.SetRateLimit(1 * time.Second)
 }
