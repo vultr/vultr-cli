@@ -1,5 +1,9 @@
 # Change Log
 
+## [v0.1.6](https://github.com/vultr/govultr/compare/v0.1.5..v0.1.6) (2019-11-07)
+### Enhancement
+*  Retry rate-limited requests with exponential backoff[#28](https://github.com/vultr/govultr/pull/28)
+
 ## [v0.1.5](https://github.com/vultr/govultr/compare/v0.1.4..v0.1.5) (2019-10-16)
 ### Enhancement
 *  Whitelisting public endpoints that do not require the api key[#24](https://github.com/vultr/govultr/pull/24)
