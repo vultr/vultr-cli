@@ -87,7 +87,6 @@ brews:
     install: |
       bin.install "vultr-cli"
       prefix.install_metafiles
-      end
 
 release:
   github:
