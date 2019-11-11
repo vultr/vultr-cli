@@ -1,7 +1,7 @@
 # Change Log
 
 ## [v0.1.9](https://github.com/vultr/vultr-cli/compare/v0.1.8..v0.1.9) (2019-11-11)
-### Bug fix
+### Enhancements
 * Updating dependency versions  [PR 57](https://github.com/vultr/vultr-cli/pull/59)
 * GoVultr v0.1.6 now supports retry [PR 57](https://github.com/vultr/vultr-cli/pull/59)
 
