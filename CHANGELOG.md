@@ -1,5 +1,9 @@
 # Change Log
 
+## [v0.1.10](https://github.com/vultr/vultr-cli/compare/v0.1.9..v0.1.10) (2019-11-12)
+### Bug fix
+* GoVultr v0.1.7 version fix [PR 61](https://github.com/vultr/vultr-cli/pull/61)
+
 ## [v0.1.9](https://github.com/vultr/vultr-cli/compare/v0.1.8..v0.1.9) (2019-11-11)
 ### Enhancements
 * Updating dependency versions  [PR 59](https://github.com/vultr/vultr-cli/pull/59)
