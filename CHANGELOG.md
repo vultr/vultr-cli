@@ -1,6 +1,6 @@
 # Change Log
 
-## [v0.1.11](https://github.com/vultr/vultr-cli/compare/v0.1.19..v0.1.11) (2019-12-09)
+## [v0.1.11](https://github.com/vultr/vultr-cli/compare/v0.1.10..v0.1.11) (2019-12-09)
 ### Bug fix
 * Fix error message on network create [PR 65](https://github.com/vultr/vultr-cli/pull/65)
 
