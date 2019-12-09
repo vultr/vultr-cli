@@ -1,31 +1,39 @@
-.PHONY: build
+.PHONY: \
+	build \
+	remove \
+	format \
+	build_mac \
+	build_linux_386 \
+	build_linux_amd64 \
+	build_windows_64 \
+	build_windows_32
 export CGO=0
 
-DIR = $(shell echo $${DIR:-$(shell pwd)/builds})
+DIR != echo $${DIR:-$$(pwd)/builds}
 
 # Builds for mac os
-build_mac: GOOS = darwin
-build_mac: GOARCH = amd64
+GOOS = darwin
+GOARCH = amd64
 build_mac: _build
 
 # Builds for linux 32bit
-build_linux_386: GOOS = linux
-build_linux_386: GOARCH = 386
+GOOS = linux
+GOARCH = 386
 build_linux_386: _build
 
 # Builds for linux 64bit
-build_linux_amd64: GOOS = linux
-build_linux_amd64: GOARCH = amd64
+GOOS = linux
+GOARCH = amd64
 build_linux_amd64: _build
 
 # Builds for Windows 64bit
-build_windows_64: GOOS = windows
-build_windows_64: GOARCH = amd64
+GOOS = windows
+GOARCH = amd64
 build_windows_64: _build_win
 
 # Builds for Windows 32bit
-build_windows_32: GOOS = windows
-build_windows_32: GOARCH = 386
+GOOS = windows
+GOARCH = 386
 build_windows_32: _build_win
 
 _build:
