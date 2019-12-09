@@ -95,7 +95,7 @@ var networkCreate = &cobra.Command{
 		network, err := client.Network.Create(context.TODO(), region, description, cdir)
 
 		if err != nil {
-			fmt.Printf("error createing network : %v", err)
+			fmt.Printf("error creating network : %v", err)
 			os.Exit(1)
 		}
 
