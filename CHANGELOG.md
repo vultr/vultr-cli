@@ -1,5 +1,9 @@
 # Change Log
 
+## [v0.1.11](https://github.com/vultr/vultr-cli/compare/v0.1.10..v0.1.11) (2019-12-09)
+### Bug fix
+* Fix error message on network create [PR 65](https://github.com/vultr/vultr-cli/pull/65)
+
 ## [v0.1.10](https://github.com/vultr/vultr-cli/compare/v0.1.9..v0.1.10) (2019-11-12)
 ### Bug fix
 * GoVultr v0.1.7 version fix [PR 61](https://github.com/vultr/vultr-cli/pull/61)
