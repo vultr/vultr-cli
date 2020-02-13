@@ -19,6 +19,7 @@ Available Commands:
   help          Help about any command
   iso           iso is used to access iso commands
   network       network interacts with network actions
+  object-storage object storage commands
   os            grab all available operating systems
   plans         get information about Vultr plans
   regions       get regions
