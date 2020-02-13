@@ -40,18 +40,18 @@ func ObjectStorageCmd() *cobra.Command {
 
 	// Create
 	objStorageCreate.Flags().StringP("label", "l", "", "label you want your object storage to have")
-	objStorageCreate.Flags().IntP("OBJSTORECLUSTERID", "o", 0, "OBJSTORECLUSTERID you want to create the object storage in")
-	objStorageCreate.MarkFlagRequired("OBJSTORECLUSTERID")
+	objStorageCreate.Flags().IntP("obj-store-clusterid", "o", 0, "obj-store-clusterid you want to create the object storage in")
+	objStorageCreate.MarkFlagRequired("obj-store-clusterid")
 
 	// Label
 	objStorageLabelSet.Flags().StringP("label", "l", "", "label you want your object storage to have")
 	objStorageLabelSet.MarkFlagRequired("label")
 
 	// List
-	objStorageList.Flags().StringP("include_s3", "i", "", "(optional) Whether to include s3 keys with each subscription entry. Possible values: 'yes', 'no'. Defaults to 'yes'.")
+	objStorageList.Flags().StringP("include-s3", "i", "", "(optional) Whether to include s3 keys with each subscription entry. Possible values: 'yes', 'no'. Defaults to 'yes'.")
 
 	// Regenerate
-	objStorageS3KeyRegenerate.Flags().StringP("s3_access_key", "s", "", "access key for a given object storage subscription")
+	objStorageS3KeyRegenerate.Flags().StringP("s3-access-key", "s", "", "access key for a given object storage subscription")
 
 	return objStorageCmd
 }
@@ -61,10 +61,10 @@ var objStorageCreate = &cobra.Command{
 	Short: "",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		ObjectStoreClusterID, _ := cmd.Flags().GetInt("OBJSTORECLUSTERID")
+		objectStoreClusterID, _ := cmd.Flags().GetInt("obj-store-clusterid")
 		label, _ := cmd.Flags().GetString("label")
 
-		objstorage, err := client.ObjectStorage.Create(context.TODO(), ObjectStoreClusterID, label)
+		objstorage, err := client.ObjectStorage.Create(context.TODO(), objectStoreClusterID, label)
 
 		if err != nil {
 			fmt.Printf("error creating object storage : %v", err)
@@ -104,7 +104,7 @@ var objStorageList = &cobra.Command{
 	Short: "retrieves a list of active object storage subscriptions",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		includeS3, _ := cmd.Flags().GetString("include_s3")
+		includeS3, _ := cmd.Flags().GetString("include-s3")
 		options := &govultr.ObjectListOptions{
 			IncludeS3: true,
 		}
@@ -158,7 +158,7 @@ var objStorageS3KeyRegenerate = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := strconv.Atoi(args[0])
-		s3AccessKey, _ := cmd.Flags().GetString("s3_access_key")
+		s3AccessKey, _ := cmd.Flags().GetString("s3-access-key")
 		s3Keys, err := client.ObjectStorage.RegenerateKeys(context.TODO(), id, s3AccessKey)
 
 		if err != nil {
