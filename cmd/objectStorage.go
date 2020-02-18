@@ -58,7 +58,7 @@ func ObjectStorageCmd() *cobra.Command {
 
 var objStorageCreate = &cobra.Command{
 	Use:   "create",
-	Short: "",
+	Short: "create a new object storage subscription",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		objectStoreClusterID, _ := cmd.Flags().GetInt("obj-store-clusterid")
@@ -171,8 +171,8 @@ var objStorageS3KeyRegenerate = &cobra.Command{
 }
 
 var objStorageDestroy = &cobra.Command{
-	Use:   "destroy <objectStorageID>",
-	Short: "destroys an object storage subscription",
+	Use:   "delete <objectStorageID>",
+	Short: "deletes an object storage subscription",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := strconv.Atoi(args[0])
