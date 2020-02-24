@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	version     = "0.2.0"
+	version     = "0.3.0"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 600 * time.Millisecond
@@ -72,6 +72,7 @@ type Client struct {
 	FirewallGroup   FirewallGroupService
 	FirewallRule    FireWallRuleService
 	ISO             ISOService
+	LoadBalancer    LoadBalancerService
 	Network         NetworkService
 	ObjectStorage   ObjectStorageService
 	OS              OSService
@@ -123,6 +124,7 @@ func NewClient(httpClient *http.Client, key string) *Client {
 	client.FirewallGroup = &FireWallGroupServiceHandler{client}
 	client.FirewallRule = &FireWallRuleServiceHandler{client}
 	client.ISO = &ISOServiceHandler{client}
+	client.LoadBalancer = &LoadBalancerHandler{client}
 	client.Network = &NetworkServiceHandler{client}
 	client.ObjectStorage = &ObjectStorageServiceHandler{client}
 	client.OS = &OSServiceHandler{client}

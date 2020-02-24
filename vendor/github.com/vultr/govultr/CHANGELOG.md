@@ -1,5 +1,11 @@
 # Change Log
 
+## [v0.3.0](https://github.com/vultr/govultr/compare/v0.2.0..v0.3.0) (2020-02-24)
+### Enhancement
+*  Added support for Load Balancers [#44](https://github.com/vultr/govultr/pull/44)
+### Bug Fix
+* Fixed Object Storage Get call [#46](https://github.com/vultr/govultr/pull/46)
+
 ## [v0.2.0](https://github.com/vultr/govultr/compare/v0.1.7..v0.2.0) (2020-02-06)
 ### Enhancement
 *  Added support for Object Storage [#39](https://github.com/vultr/govultr/pull/39)

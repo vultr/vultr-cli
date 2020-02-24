@@ -190,15 +190,14 @@ func (o *ObjectStorageServiceHandler) Get(ctx context.Context, id int) (*ObjectS
 		req.URL.RawQuery = q.Encode()
 	}
 
-	objectStorage := new(ObjectStorage)
-
-	err = o.client.DoWithContext(ctx, req, objectStorage)
-
+	objStorage := make(map[string]ObjectStorage)
+	err = o.client.DoWithContext(ctx, req, &objStorage)
 	if err != nil {
 		return nil, err
 	}
 
-	return objectStorage, nil
+	obj := objStorage[strconv.Itoa(id)]
+	return &obj, nil
 }
 
 // ListCluster returns back your object storage clusters.
