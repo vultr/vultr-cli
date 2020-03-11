@@ -3,6 +3,8 @@ module github.com/vultr/vultr-cli
 go 1.12
 
 require (
+	github.com/hashicorp/go-hclog v0.12.0 // indirect
+	github.com/hashicorp/go-retryablehttp v0.6.4 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pelletier/go-toml v1.6.0 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
