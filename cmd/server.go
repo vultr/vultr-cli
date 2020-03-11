@@ -995,7 +995,7 @@ var setIpv6 = &cobra.Command{
 
 var serverCreate = &cobra.Command{
 	Use:   "create",
-	Short: "Set a reverse DNS entry for an IPv6 address for an instance",
+	Short: "Create a server instance",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		region, _ := cmd.Flags().GetInt("region")

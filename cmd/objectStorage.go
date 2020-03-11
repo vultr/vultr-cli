@@ -70,7 +70,7 @@ var objStorageCreate = &cobra.Command{
 		objStorage, err := client.ObjectStorage.Create(context.TODO(), objectStoreClusterID, label)
 
 		if err != nil {
-			fmt.Printf("error creating object storage : %v", err)
+			fmt.Printf("error creating object storage : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -94,11 +94,11 @@ var objStorageLabelSet = &cobra.Command{
 
 		err := client.ObjectStorage.SetLabel(context.TODO(), id, label)
 		if err != nil {
-			fmt.Printf("error setting label : %v", err)
+			fmt.Printf("error setting label : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("set label on object storage : %v", id)
+		fmt.Printf("set label on object storage : %v\n", id)
 	},
 }
 
@@ -119,7 +119,7 @@ var objStorageList = &cobra.Command{
 		objStorage, err := client.ObjectStorage.List(context.TODO(), options)
 
 		if err != nil {
-			fmt.Printf("error getting object storage : %v", err)
+			fmt.Printf("error getting object storage : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -151,7 +151,7 @@ var objStorageGet = &cobra.Command{
 		objStorage, err := client.ObjectStorage.Get(context.TODO(), id)
 
 		if err != nil {
-			fmt.Printf("error getting object storage : %v", err)
+			fmt.Printf("error getting object storage : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -167,7 +167,7 @@ var objStorageClusterList = &cobra.Command{
 		cluster, err := client.ObjectStorage.ListCluster(context.TODO())
 
 		if err != nil {
-			fmt.Printf("error getting object storage clusters : %v", err)
+			fmt.Printf("error getting object storage clusters : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -191,7 +191,7 @@ var objStorageS3KeyRegenerate = &cobra.Command{
 		s3Keys, err := client.ObjectStorage.RegenerateKeys(context.TODO(), id, s3AccessKey)
 
 		if err != nil {
-			fmt.Printf("error regenerating object storage keys : %v", err)
+			fmt.Printf("error regenerating object storage keys : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -214,10 +214,10 @@ var objStorageDestroy = &cobra.Command{
 		err := client.ObjectStorage.Delete(context.TODO(), id)
 
 		if err != nil {
-			fmt.Printf("error destroying object storage subscription : %v", err)
+			fmt.Printf("error destroying object storage subscription : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Print("destroyed object storage subscription")
+		fmt.Println("destroyed object storage subscription")
 	},
 }
