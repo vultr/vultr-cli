@@ -1,5 +1,14 @@
 # Change Log
 
+## [v0.3.1](https://github.com/vultr/govultr/compare/v0.3.0..v0.3.1) (2020-03-11)
+### Enhancement
+*  Added support for Load Balancers SSL Calls [#53](https://github.com/vultr/govultr/pull/53)
+### Bug Fix
+* Fixed InstanceList type from string to int [#50](https://github.com/vultr/govultr/pull/50)
+* Fixed struct json marshalling issue [#48](https://github.com/vultr/govultr/pull/48)
+### Dependencies
+* go-retryablehttp 0.6.3 -> 0.6.4 [#51](https://github.com/vultr/govultr/pull/51)
+
 ## [v0.3.0](https://github.com/vultr/govultr/compare/v0.2.0..v0.3.0) (2020-02-24)
 ### Enhancement
 *  Added support for Load Balancers [#44](https://github.com/vultr/govultr/pull/44)

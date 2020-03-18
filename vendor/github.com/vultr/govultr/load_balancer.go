@@ -25,8 +25,10 @@ type LoadBalancerService interface {
 	CreateForwardingRule(ctx context.Context, ID int, rule *ForwardingRule) (*ForwardingRule, error)
 	GetFullConfig(ctx context.Context, ID int) (*LBConfig, error)
 	HasSSL(ctx context.Context, ID int) (*struct{ SSLInfo bool `json:"has_ssl"` }, error)
-	Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (*LoadBalancers, error)
+	Create(ctx context.Context, region int, label string, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule, ssl *SSL) (*LoadBalancers, error)
 	UpdateGenericInfo(ctx context.Context, ID int, label string, genericInfo *GenericInfo) error
+	AddSSL(ctx context.Context, ID int, ssl *SSL) error
+	RemoveSSL(ctx context.Context, ID int) error
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -42,13 +44,13 @@ type LoadBalancers struct {
 	Location    string `json:"location,omitempty"`
 	Label       string `json:"label,omitempty"`
 	Status      string `json:"status,omitempty"`
-	IPV4        string `json:"main_ipv4,omitempty"`
-	IPV6        string `json:"main_ipv6,omitempty"`
+	IPV4        string `json:"ipv4,omitempty"`
+	IPV6        string `json:"ipv6,omitempty"`
 }
 
 // InstanceList represents instances that attached to your load balancer
 type InstanceList struct {
-	InstanceList []string `json:"instance_list"`
+	InstanceList []int `json:"instance_list"`
 }
 
 // HealthCheck represents your health check configuration for your load balancer.
@@ -96,6 +98,13 @@ type LBConfig struct {
 	SSLInfo     bool `json:"has_ssl"`
 	ForwardingRules
 	InstanceList
+}
+
+// SSL represents valid SSL config
+type SSL struct {
+	PrivateKey  string `json:"ssl_private_key"`
+	Certificate string `json:"ssl_certificate"`
+	Chain       string `json:"chain,omitempty"`
 }
 
 // List all load balancer subscriptions on the current account.
@@ -442,11 +451,15 @@ func (l *LoadBalancerHandler) HasSSL(ctx context.Context, ID int) (*struct{ SSLI
 }
 
 // Create a load balancer
-func (l *LoadBalancerHandler) Create(ctx context.Context, region int, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule) (*LoadBalancers, error) {
+func (l *LoadBalancerHandler) Create(ctx context.Context, region int, label string, genericInfo *GenericInfo, healthCheck *HealthCheck, rules []ForwardingRule, ssl *SSL) (*LoadBalancers, error) {
 	uri := "/v1/loadbalancer/create"
 
 	values := url.Values{
 		"DCID": {strconv.Itoa(region)},
+	}
+
+	if label != "" {
+		values.Add("label", label)
 	}
 
 	// Check generic info struct
@@ -478,6 +491,15 @@ func (l *LoadBalancerHandler) Create(ctx context.Context, region int, genericInf
 			panic(e)
 		}
 		values.Add("forwarding_rules", string(t))
+	}
+
+	if ssl != nil {
+		values.Add("ssl_private_key", ssl.PrivateKey)
+		values.Add("ssl_certificate", ssl.Certificate)
+
+		if ssl.Chain != "" {
+			values.Add("ssl_chain", ssl.Chain)
+		}
 	}
 
 	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -531,5 +553,52 @@ func (l *LoadBalancerHandler) UpdateGenericInfo(ctx context.Context, ID int, lab
 		return err
 	}
 
+	return nil
+}
+
+// AddSSL will attach an SSL certificate to a given load balancer
+func (l *LoadBalancerHandler) AddSSL(ctx context.Context, ID int, ssl *SSL) error {
+	uri := "/v1/loadbalancer/ssl_add"
+
+	values := url.Values{
+		"SUBID":           {strconv.Itoa(ID)},
+		"ssl_private_key": {ssl.PrivateKey},
+		"ssl_certificate": {ssl.Certificate},
+	}
+
+	if ssl.Chain != "" {
+		values.Add("ssl_chain", ssl.Chain)
+	}
+
+	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
+	if err != nil {
+		return err
+	}
+
+	err = l.client.DoWithContext(ctx, req, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// RemoveSSL will remove an SSL certificate from a load balancer
+func (l *LoadBalancerHandler) RemoveSSL(ctx context.Context, ID int) error {
+	uri := "/v1/loadbalancer/ssl_remove"
+
+	values := url.Values{
+		"SUBID": {strconv.Itoa(ID)},
+	}
+
+	req, err := l.client.NewRequest(ctx, http.MethodPost, uri, values)
+	if err != nil {
+		return err
+	}
+
+	err = l.client.DoWithContext(ctx, req, nil)
+	if err != nil {
+		return err
+	}
 	return nil
 }
