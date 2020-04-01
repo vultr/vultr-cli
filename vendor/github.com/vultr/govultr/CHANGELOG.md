@@ -1,5 +1,9 @@
 # Change Log
 
+## [v0.3.2](https://github.com/vultr/govultr/compare/v0.3.1..v0.3.2) (2020-03-25)
+### Enhancement
+*  Added support to live attach/detach blockstorage [#55](https://github.com/vultr/govultr/pull/55)
+
 ## [v0.3.1](https://github.com/vultr/govultr/compare/v0.3.0..v0.3.1) (2020-03-11)
 ### Enhancement
 *  Added support for Load Balancers SSL Calls [#53](https://github.com/vultr/govultr/pull/53)

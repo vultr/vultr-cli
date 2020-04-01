@@ -12,10 +12,10 @@ import (
 // BlockStorageService is the interface to interact with Block-Storage endpoint on the Vultr API
 // Link: https://www.vultr.com/api/#block
 type BlockStorageService interface {
-	Attach(ctx context.Context, blockID, InstanceID string) error
+	Attach(ctx context.Context, blockID, InstanceID, liveAttach string) error
 	Create(ctx context.Context, regionID, size int, label string) (*BlockStorage, error)
 	Delete(ctx context.Context, blockID string) error
-	Detach(ctx context.Context, blockID string) error
+	Detach(ctx context.Context, blockID, liveDetach string) error
 	SetLabel(ctx context.Context, blockID, label string) error
 	List(ctx context.Context) ([]BlockStorage, error)
 	Get(ctx context.Context, blockID string) (*BlockStorage, error)
@@ -119,13 +119,18 @@ func (b *BlockStorage) unmarshalStr(value string) (string, error) {
 }
 
 // Attach will link a given block storage to a given Vultr vps
-func (b *BlockStorageServiceHandler) Attach(ctx context.Context, blockID, InstanceID string) error {
+// If liveAttach is set to "yes" the block storage will be attached without reloading the instance
+func (b *BlockStorageServiceHandler) Attach(ctx context.Context, blockID, InstanceID, liveAttach string) error {
 
 	uri := "/v1/block/attach"
 
 	values := url.Values{
 		"SUBID":           {blockID},
 		"attach_to_SUBID": {InstanceID},
+	}
+
+	if liveAttach == "yes" {
+		values.Add("live", "yes")
 	}
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
@@ -200,12 +205,17 @@ func (b *BlockStorageServiceHandler) Delete(ctx context.Context, blockID string)
 }
 
 // Detach will de-link a given block storage to the Vultr vps it is attached to
-func (b *BlockStorageServiceHandler) Detach(ctx context.Context, blockID string) error {
+// If liveDetach is set to "yes" the block storage will be detached without reloading the instance
+func (b *BlockStorageServiceHandler) Detach(ctx context.Context, blockID, liveDetach string) error {
 
 	uri := "/v1/block/detach"
 
 	values := url.Values{
 		"SUBID": {blockID},
+	}
+
+	if liveDetach == "yes" {
+		values.Add("live", "yes")
 	}
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)
