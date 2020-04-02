@@ -42,6 +42,11 @@ func BlockStorageCmd() *cobra.Command {
 	bsAttach.Flags().StringP("instance", "i", "", "instance id you want to attach to")
 	bsAttach.MarkFlagRequired("instance")
 
+	bsAttach.Flags().StringP("live", "l", "", "attach block storage to the instance without a restart (yes or no)")
+
+	// Detach
+	bsDetach.Flags().StringP("live", "l", "", "detach block storage from instance without a restart")
+
 	// Create
 	bsCreate.Flags().IntP("region", "r", 0, "regionID you want to create the block storage in")
 	bsCreate.MarkFlagRequired("region")
@@ -75,8 +80,9 @@ var bsAttach = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		instance, _ := cmd.Flags().GetString("instance")
+		live, _ := cmd.Flags().GetString("live")
 
-		err := client.BlockStorage.Attach(context.TODO(), id, instance)
+		err := client.BlockStorage.Attach(context.TODO(), id, instance, live)
 		if err != nil {
 			fmt.Printf("error attaching block storage : %v", err)
 			os.Exit(1)
@@ -142,8 +148,9 @@ var bsDetach = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
+		live, _ := cmd.Flags().GetString("live")
 
-		err := client.BlockStorage.Detach(context.TODO(), id)
+		err := client.BlockStorage.Detach(context.TODO(), id, live)
 		if err != nil {
 			fmt.Printf("error detaching block storage : %v", err)
 			os.Exit(1)
