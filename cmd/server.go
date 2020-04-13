@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -1031,7 +1032,7 @@ var serverCreate = &cobra.Command{
 		osOptions := map[string]string{"app_id": app, "snapshot_id": snapshot}
 
 		if iso != 0 {
-			osOptions["iso_id"] = string(iso)
+			osOptions["iso_id"] = strconv.Itoa(iso)
 		}
 
 		osOption, err := optionCheck(osOptions)
