@@ -995,9 +995,15 @@ var setIpv6 = &cobra.Command{
 
 var serverCreate = &cobra.Command{
 	Use:   "create",
-	Short: "Set a reverse DNS entry for an IPv6 address for an instance",
+	Short: "Create a new instance",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
+		var (
+			osAppID  = 186
+			osIsoID  = 159
+			osSnapID = 164
+		)
+
 		region, _ := cmd.Flags().GetInt("region")
 		plan, _ := cmd.Flags().GetInt("plan")
 		osID, _ := cmd.Flags().GetInt("os")
@@ -1022,6 +1028,19 @@ var serverCreate = &cobra.Command{
 		tag, _ := cmd.Flags().GetString("tag")
 		fwg, _ := cmd.Flags().GetString("firewall-group")
 
+		osOptions := map[string]string{"app_id": app, "snapshot_id": snapshot}
+
+		if iso != 0 {
+			osOptions["iso_id"] = string(iso)
+		}
+
+		osOption, err := optionCheck(osOptions)
+
+		if err != nil {
+			fmt.Printf("error creating instance : %v", err)
+			os.Exit(1)
+		}
+
 		opt := &govultr.ServerOptions{
 			IPXEChain:            ipxe,
 			IsoID:                iso,
@@ -1043,6 +1062,31 @@ var serverCreate = &cobra.Command{
 			EnablePrivateNetwork: false,
 		}
 
+		// If no osOptions were selected and osID has a real value then set the osOptions to os_id
+		if osOption == "" && osID != 0 {
+			osOption = "os_id"
+		}
+
+		var osOpt int
+
+		switch osOption {
+		case "os_id":
+			osOpt = osID
+
+		case "app_id":
+			osOpt = osAppID
+
+		case "iso_id":
+			osOpt = osIsoID
+
+		case "snapshot_id":
+			osOpt = osSnapID
+
+		default:
+			fmt.Print("Error occurred while getting your intended os type")
+			os.Exit(1)
+		}
+
 		if strings.ToLower(ipv6) == "true" {
 			opt.EnableIPV6 = true
 		}
@@ -1062,12 +1106,32 @@ var serverCreate = &cobra.Command{
 			opt.EnablePrivateNetwork = true
 		}
 
-		server, err := client.Server.Create(context.TODO(), region, plan, osID, opt)
+		server, err := client.Server.Create(context.TODO(), region, plan, osOpt, opt)
 
 		if err != nil {
-			fmt.Printf("error setting creating instance : %v", err)
+			fmt.Printf("error creating instance : %v", err)
 			os.Exit(1)
 		}
 		fmt.Printf("Instance created - ID : %s", server.InstanceID)
 	},
+}
+
+func optionCheck(options map[string]string) (string, error) {
+	result := []string{}
+	for k, v := range options {
+		if v != "" {
+			result = append(result, k)
+		}
+	}
+
+	if len(result) > 1 {
+		return "", fmt.Errorf("Too many options have been selected : %v : please select one", result)
+	}
+
+	// Return back an empty slice so we can possibly add in osID
+	if len(result) == 0 {
+		return "", nil
+	}
+
+	return result[0], nil
 }
