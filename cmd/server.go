@@ -1065,6 +1065,9 @@ var serverCreate = &cobra.Command{
 		// If no osOptions were selected and osID has a real value then set the osOptions to os_id
 		if osOption == "" && osID != 0 {
 			osOption = "os_id"
+		} else if osOption == "" && osID == 0 {
+			fmt.Printf("error creating instance: an os ID must be provided")
+			os.Exit(1)
 		}
 
 		var osOpt int
