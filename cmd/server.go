@@ -58,7 +58,6 @@ func Server() *cobra.Command {
 	serverCreate.Flags().IntP("os", "o", 0, "os id you wish the instance to have")
 	serverCreate.MarkFlagRequired("region")
 	serverCreate.MarkFlagRequired("plan")
-	serverCreate.MarkFlagRequired("os")
 	// Optional Params
 	serverCreate.Flags().StringP("ipxe", "", "", "ff you've selected the 'custom' operating system, this can be set to chainload the specified URL on bootup")
 	serverCreate.Flags().IntP("iso", "", 0, "iso ID you want to create the instance with")
