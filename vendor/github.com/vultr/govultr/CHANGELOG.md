@@ -1,9 +1,31 @@
 # Change Log
 
+## [v0.3.2](https://github.com/vultr/govultr/compare/v0.3.1..v0.3.2) (2020-03-25)
+### Enhancement
+*  Added support to live attach/detach blockstorage [#55](https://github.com/vultr/govultr/pull/55)
+
+## [v0.3.1](https://github.com/vultr/govultr/compare/v0.3.0..v0.3.1) (2020-03-11)
+### Enhancement
+*  Added support for Load Balancers SSL Calls [#53](https://github.com/vultr/govultr/pull/53)
+### Bug Fix
+* Fixed InstanceList type from string to int [#50](https://github.com/vultr/govultr/pull/50)
+* Fixed struct json marshalling issue [#48](https://github.com/vultr/govultr/pull/48)
+### Dependencies
+* go-retryablehttp 0.6.3 -> 0.6.4 [#51](https://github.com/vultr/govultr/pull/51)
+
+## [v0.3.0](https://github.com/vultr/govultr/compare/v0.2.0..v0.3.0) (2020-02-24)
+### Enhancement
+*  Added support for Load Balancers [#44](https://github.com/vultr/govultr/pull/44)
+### Bug Fix
+* Fixed Object Storage Get call [#46](https://github.com/vultr/govultr/pull/46)
+
+## [v0.2.0](https://github.com/vultr/govultr/compare/v0.1.7..v0.2.0) (2020-02-06)
+### Enhancement
+*  Added support for Object Storage [#39](https://github.com/vultr/govultr/pull/39)
+
 ## [v0.1.7](https://github.com/vultr/govultr/compare/v0.1.6..v0.1.7) (2019-11-11)
 ### Enhancement
 *  Version number was missing in v0.1.6 - Attempt was made to fix however it will not work. Cutting new release to remedy this.
-
 
 ## [v0.1.6](https://github.com/vultr/govultr/compare/v0.1.5..v0.1.6) (2019-11-07)
 ### Enhancement

@@ -995,7 +995,7 @@ var setIpv6 = &cobra.Command{
 
 var serverCreate = &cobra.Command{
 	Use:   "create",
-	Short: "Create a new instance",
+	Short: "Create a server instance",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (

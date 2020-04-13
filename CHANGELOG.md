@@ -1,5 +1,21 @@
 # Change Log
 
+## [v0.2.1](https://github.com/vultr/vultr-cli/compare/v0.2.0..v0.2.1) (2020-03-18)
+### Dependencies
+* govultr 0.3.0 -> 0.3.1 [PR 81](https://github.com/vultr/vultr-cli/pull/81)
+
+## [v0.2.0](https://github.com/vultr/vultr-cli/compare/v0.1.11..v0.2.0) (2020-03-11)
+### Enhancement
+* Object Storage support [PR 79](https://github.com/vultr/vultr-cli/pull/79) [74](https://github.com/vultr/vultr-cli/pull/74)
+
+### Bug Fix
+* Server Create description [PR 75](https://github.com/vultr/vultr-cli/pull/75)
+
+### Dependencies
+* spf13/viper 1.5.0 -> 1.6.2 [PR 76](https://github.com/vultr/vultr-cli/pull/76)
+* spf13/cobra 0.0.5 -> 0.0.6 [PR 78](https://github.com/vultr/vultr-cli/pull/78)
+* govultr 0.1.7 -> 0.3.0 [PR 77](https://github.com/vultr/vultr-cli/pull/77)
+
 ## [v0.1.11](https://github.com/vultr/vultr-cli/compare/v0.1.10..v0.1.11) (2019-12-09)
 ### Bug fix
 * Fix error message on network create [PR 65](https://github.com/vultr/vultr-cli/pull/65)

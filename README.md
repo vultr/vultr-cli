@@ -8,27 +8,28 @@ Usage:
   vultr-cli [command]
 
 Available Commands:
-  account       Retrieve information about your account
-  api-key       retrieve information about the current API key
-  apps          Display all available applications
-  backups       display all available backups
-  bare-metal    bare-metal is used to access bare metal server commands
-  block-storage block storage commands
-  dns           dns is used to access dns commands
-  firewall      firewall is used to access firewall commands
-  help          Help about any command
-  iso           iso is used to access iso commands
-  network       network interacts with network actions
-  os            grab all available operating systems
-  plans         get information about Vultr plans
-  regions       get regions
-  reserved-ip   reserved-ip lets you interact with reserved-ip
-  script        startup script commands
-  server        commands to interact with servers on vultr
-  snapshot      snapshot commands
-  ssh-key       ssh-key commands
-  user          user commands
-  version       Display current version of Vultr-cli
+  account        Retrieve information about your account
+  api-key        retrieve information about the current API key
+  apps           Display all available applications
+  backups        display all available backups
+  bare-metal     bare-metal is used to access bare metal server commands
+  block-storage  block storage commands
+  dns            dns is used to access dns commands
+  firewall       firewall is used to access firewall commands
+  help           Help about any command
+  iso            iso is used to access iso commands
+  network        network interacts with network actions
+  object-storage object storage commands
+  os             grab all available operating systems
+  plans          get information about Vultr plans
+  regions        get regions
+  reserved-ip    reserved-ip lets you interact with reserved-ip
+  script         startup script commands
+  server         commands to interact with servers on vultr
+  snapshot       snapshot commands
+  ssh-key        ssh-key commands
+  user           user commands
+  version        Display current version of Vultr-cli
 
 Flags:
       --config string   config file (default is $HOME/.vultr-cli.yaml)
