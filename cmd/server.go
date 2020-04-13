@@ -1086,7 +1086,7 @@ var serverCreate = &cobra.Command{
 			osOpt = osSnapID
 
 		default:
-			fmt.Printf("Error occurred while getting your intended os type")
+			fmt.Println("Error occurred while getting your intended os type")
 			os.Exit(1)
 		}
 
