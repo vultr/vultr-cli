@@ -84,7 +84,7 @@ var bsAttach = &cobra.Command{
 
 		err := client.BlockStorage.Attach(context.TODO(), id, instance, live)
 		if err != nil {
-			fmt.Printf("error attaching block storage : %v", err)
+			fmt.Printf("error attaching block storage : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -104,11 +104,11 @@ var bsCreate = &cobra.Command{
 		bs, err := client.BlockStorage.Create(context.TODO(), region, size, label)
 
 		if err != nil {
-			fmt.Printf("error creating block storage : %v", err)
+			fmt.Printf("error creating block storage : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("created block storage - ID : %v", bs.BlockStorageID)
+		fmt.Printf("created block storage - ID : %v\n", bs.BlockStorageID)
 	},
 }
 
@@ -128,7 +128,7 @@ var bsDelete = &cobra.Command{
 		err := client.BlockStorage.Delete(context.TODO(), id)
 
 		if err != nil {
-			fmt.Printf("error deleting block storage : %v", err)
+			fmt.Printf("error deleting block storage : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -152,7 +152,7 @@ var bsDetach = &cobra.Command{
 
 		err := client.BlockStorage.Detach(context.TODO(), id, live)
 		if err != nil {
-			fmt.Printf("error detaching block storage : %v", err)
+			fmt.Printf("error detaching block storage : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -176,11 +176,11 @@ var bsLabelSet = &cobra.Command{
 
 		err := client.BlockStorage.SetLabel(context.TODO(), id, label)
 		if err != nil {
-			fmt.Printf("error setting label : %v", err)
+			fmt.Printf("error setting label : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("set label on block storage : %s", id)
+		fmt.Printf("set label on block storage : %s\n", id)
 	},
 }
 
@@ -197,7 +197,7 @@ var bsList = &cobra.Command{
 			bs, err := client.BlockStorage.List(context.TODO())
 
 			if err != nil {
-				fmt.Printf("error getting block storage : %v", err)
+				fmt.Printf("error getting block storage : %v\n", err)
 				os.Exit(1)
 			}
 
@@ -207,7 +207,7 @@ var bsList = &cobra.Command{
 			bs, err := client.BlockStorage.Get(context.TODO(), instance)
 
 			if err != nil {
-				fmt.Printf("error getting block storage : %v", err)
+				fmt.Printf("error getting block storage : %v\n", err)
 				os.Exit(1)
 			}
 
@@ -234,7 +234,7 @@ var bsResize = &cobra.Command{
 		err := client.BlockStorage.Resize(context.TODO(), id, size)
 
 		if err != nil {
-			fmt.Printf("error resizing block storage : %v", err)
+			fmt.Printf("error resizing block storage : %v\n", err)
 			os.Exit(1)
 		}
 

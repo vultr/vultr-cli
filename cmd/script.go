@@ -147,7 +147,7 @@ var scriptContents = &cobra.Command{
 		}
 
 		if !matchingID {
-			fmt.Printf("Invalid scriptID\n")
+			fmt.Println("Invalid scriptID")
 			os.Exit(1)
 		}
 
