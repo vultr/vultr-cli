@@ -1112,7 +1112,7 @@ var serverCreate = &cobra.Command{
 		server, err := client.Server.Create(context.TODO(), region, plan, osOpt, opt)
 
 		if err != nil {
-			fmt.Printf("error setting creating instance : %v\n", err)
+			fmt.Printf("error creating instance : %v\n", err)
 			os.Exit(1)
 		}
 		fmt.Printf("Instance created - ID : %s\n", server.InstanceID)
