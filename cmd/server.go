@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -57,7 +58,6 @@ func Server() *cobra.Command {
 	serverCreate.Flags().IntP("os", "o", 0, "os id you wish the instance to have")
 	serverCreate.MarkFlagRequired("region")
 	serverCreate.MarkFlagRequired("plan")
-	serverCreate.MarkFlagRequired("os")
 	// Optional Params
 	serverCreate.Flags().StringP("ipxe", "", "", "ff you've selected the 'custom' operating system, this can be set to chainload the specified URL on bootup")
 	serverCreate.Flags().IntP("iso", "", 0, "iso ID you want to create the instance with")
@@ -998,6 +998,12 @@ var serverCreate = &cobra.Command{
 	Short: "Create a server instance",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
+		var (
+			osAppID  = 186
+			osIsoID  = 159
+			osSnapID = 164
+		)
+
 		region, _ := cmd.Flags().GetInt("region")
 		plan, _ := cmd.Flags().GetInt("plan")
 		osID, _ := cmd.Flags().GetInt("os")
@@ -1022,6 +1028,19 @@ var serverCreate = &cobra.Command{
 		tag, _ := cmd.Flags().GetString("tag")
 		fwg, _ := cmd.Flags().GetString("firewall-group")
 
+		osOptions := map[string]string{"app_id": app, "snapshot_id": snapshot}
+
+		if iso != 0 {
+			osOptions["iso_id"] = strconv.Itoa(iso)
+		}
+
+		osOption, err := optionCheck(osOptions)
+
+		if err != nil {
+			fmt.Printf("error creating instance : %v", err)
+			os.Exit(1)
+		}
+
 		opt := &govultr.ServerOptions{
 			IPXEChain:            ipxe,
 			IsoID:                iso,
@@ -1043,6 +1062,34 @@ var serverCreate = &cobra.Command{
 			EnablePrivateNetwork: false,
 		}
 
+		// If no osOptions were selected and osID has a real value then set the osOptions to os_id
+		if osOption == "" && osID != 0 {
+			osOption = "os_id"
+		} else if osOption == "" && osID == 0 {
+			fmt.Printf("error creating instance: an os ID must be provided")
+			os.Exit(1)
+		}
+
+		var osOpt int
+
+		switch osOption {
+		case "os_id":
+			osOpt = osID
+
+		case "app_id":
+			osOpt = osAppID
+
+		case "iso_id":
+			osOpt = osIsoID
+
+		case "snapshot_id":
+			osOpt = osSnapID
+
+		default:
+			fmt.Println("Error occurred while getting your intended os type")
+			os.Exit(1)
+		}
+
 		if strings.ToLower(ipv6) == "true" {
 			opt.EnableIPV6 = true
 		}
@@ -1062,7 +1109,7 @@ var serverCreate = &cobra.Command{
 			opt.EnablePrivateNetwork = true
 		}
 
-		server, err := client.Server.Create(context.TODO(), region, plan, osID, opt)
+		server, err := client.Server.Create(context.TODO(), region, plan, osOpt, opt)
 
 		if err != nil {
 			fmt.Printf("error setting creating instance : %v\n", err)
@@ -1070,4 +1117,24 @@ var serverCreate = &cobra.Command{
 		}
 		fmt.Printf("Instance created - ID : %s\n", server.InstanceID)
 	},
+}
+
+func optionCheck(options map[string]string) (string, error) {
+	result := []string{}
+	for k, v := range options {
+		if v != "" {
+			result = append(result, k)
+		}
+	}
+
+	if len(result) > 1 {
+		return "", fmt.Errorf("Too many options have been selected : %v : please select one", result)
+	}
+
+	// Return back an empty slice so we can possibly add in osID
+	if len(result) == 0 {
+		return "", nil
+	}
+
+	return result[0], nil
 }
