@@ -11,7 +11,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.6.3
-	github.com/vultr/govultr v0.3.2
+	github.com/vultr/govultr v0.4.0
 	golang.org/x/sys v0.0.0-20191110163157-d32e6e3b99c4 // indirect
 	golang.org/x/text v0.3.2 // indirect
 	gopkg.in/yaml.v2 v2.2.5 // indirect
