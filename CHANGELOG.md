@@ -1,5 +1,11 @@
 # Change Log
 
+## [v0.3.1](https://github.com/vultr/vultr-cli/compare/v0.3.0..v0.3.1) (2020-05-18)
+### Enhancement
+* spf13/viper 1.6.3 -> 1.7.0 [PR 94](https://github.com/vultr/vultr-cli/pull/94)
+* govultr 0.3.2 -> 0.4.1 [PR 95](https://github.com/vultr/vultr-cli/pull/95)
+
+
 ## [v0.3.0](https://github.com/vultr/vultr-cli/compare/v0.2.1..v0.3.0) (2020-04-14)
 ### Enhancement
 * OS no longer required for App/Iso/Snapshot during server create [PR 88](https://github.com/vultr/vultr-cli/pull/88)
