@@ -1,5 +1,24 @@
 # Change Log
 
+## [v0.4.1](https://github.com/vultr/govultr/compare/v0.4.0..v0.4.1) (2020-05-08)
+### Bug Fix
+*  LoadBalancers: Fix nil pointer in create call [#65](https://github.com/vultr/govultr/pull/65)
+
+## [v0.4.0](https://github.com/vultr/govultr/compare/v0.3.3..v0.4.0) (2020-04-29)
+### Enhancement
+*  LoadBalancers: Proxy protocol is now available as an option [#62](https://github.com/vultr/govultr/pull/62)
+*  LoadBalancers: Ability to attach instances during Create (note this adds a new param to create call) [#62](https://github.com/vultr/govultr/pull/62)
+
+### Bug Fix
+*  LoadBalancers: Create call will now properly pass your algorithm [#61](https://github.com/vultr/govultr/pull/61)
+
+### CI/CD
+* Drop go 1.12 and add 1.14 [#63](https://github.com/vultr/govultr/pull/63)
+
+## [v0.3.3](https://github.com/vultr/govultr/compare/v0.3.2..v0.3.3) (2020-04-15)
+### Dependencies
+*  go-retryablehttp 0.6.4 -> 0.6.6 [#58](https://github.com/vultr/govultr/pull/58)
+
 ## [v0.3.2](https://github.com/vultr/govultr/compare/v0.3.1..v0.3.2) (2020-03-25)
 ### Enhancement
 *  Added support to live attach/detach blockstorage [#55](https://github.com/vultr/govultr/pull/55)
