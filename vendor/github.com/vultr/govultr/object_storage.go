@@ -10,7 +10,9 @@ import (
 // ObjectStorageService is the interface to interact with the object storage endpoints on the Vultr API.
 // Link: https://www.vultr.com/api/#objectstorage
 type ObjectStorageService interface {
-	Create(ctx context.Context, objectStoreClusterID int, Label string) (*struct{ ID int `json:"SUBID"` }, error)
+	Create(ctx context.Context, objectStoreClusterID int, Label string) (*struct {
+		ID int `json:"SUBID"`
+	}, error)
 	Delete(ctx context.Context, id int) error
 	SetLabel(ctx context.Context, id int, label string) error
 	List(ctx context.Context, options *ObjectListOptions) ([]ObjectStorage, error)
@@ -59,7 +61,9 @@ type ObjectListOptions struct {
 }
 
 // Create an object storage subscription
-func (o *ObjectStorageServiceHandler) Create(ctx context.Context, objectStoreClusterID int, Label string) (*struct{ ID int `json:"SUBID"` }, error) {
+func (o *ObjectStorageServiceHandler) Create(ctx context.Context, objectStoreClusterID int, Label string) (*struct {
+	ID int `json:"SUBID"`
+}, error) {
 	uri := "/v1/objectstorage/create"
 
 	values := url.Values{

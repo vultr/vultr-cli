@@ -2,7 +2,7 @@
 github.com/fsnotify/fsnotify
 # github.com/hashicorp/go-cleanhttp v0.5.1
 github.com/hashicorp/go-cleanhttp
-# github.com/hashicorp/go-retryablehttp v0.6.4
+# github.com/hashicorp/go-retryablehttp v0.6.6
 github.com/hashicorp/go-retryablehttp
 # github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
@@ -40,7 +40,7 @@ github.com/spf13/pflag
 github.com/spf13/viper
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
-# github.com/vultr/govultr v0.3.2
+# github.com/vultr/govultr v0.4.1
 github.com/vultr/govultr
 # golang.org/x/sys v0.0.0-20191110163157-d32e6e3b99c4
 golang.org/x/sys/unix
