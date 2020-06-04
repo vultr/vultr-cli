@@ -27,7 +27,7 @@ type DNSRecord struct {
 	Type     string `json:"type"`
 	Name     string `json:"name"`
 	Data     string `json:"data"`
-	Priority int    `json:"priority"`
+	Priority *int   `json:"priority"`
 	TTL      int    `json:"ttl"`
 }
 
@@ -130,8 +130,8 @@ func (d *DNSRecordsServiceHandler) Update(ctx context.Context, domain string, dn
 	if dnsRecord.TTL != 0 {
 		values.Add("ttl", strconv.Itoa(dnsRecord.TTL))
 	}
-	if dnsRecord.Priority != 0 {
-		values.Add("priority", strconv.Itoa(dnsRecord.Priority))
+	if dnsRecord.Priority != nil {
+		values.Add("priority", strconv.Itoa(*dnsRecord.Priority))
 	}
 
 	req, err := d.client.NewRequest(ctx, http.MethodPost, uri, values)
