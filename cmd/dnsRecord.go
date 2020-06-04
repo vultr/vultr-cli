@@ -54,7 +54,7 @@ func DnsRecord() *cobra.Command {
 	recordUpdate.Flags().StringP("name", "n", "", "name of record")
 	recordUpdate.Flags().StringP("data", "d", "", "data for the record")
 	recordUpdate.Flags().IntP("ttl", "", 0, "time to live for the record")
-	recordUpdate.Flags().IntP("priority", "p", 0, "only required for MX and SRV")
+	recordUpdate.Flags().IntP("priority", "p", -1, "only required for MX and SRV")
 
 	return dnsRecordCmd
 }
@@ -176,8 +176,8 @@ var recordUpdate = &cobra.Command{
 			updates.TTL = ttl
 		}
 
-		if priority != 0 {
-			updates.Priority = priority
+		if priority != -1 {
+			updates.Priority = &priority
 		}
 
 		err := client.DNSRecord.Update(context.TODO(), domain, updates)

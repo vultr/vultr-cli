@@ -1,5 +1,9 @@
 # Change Log
 
+## [v0.4.2](https://github.com/vultr/govultr/compare/v0.4.1..v0.4.2) (2020-06-02)
+### Bug Fix
+*  DNS Records: Allow DNS Records on updates to have priority of 0 [#67](https://github.com/vultr/govultr/pull/67)
+
 ## [v0.4.1](https://github.com/vultr/govultr/compare/v0.4.0..v0.4.1) (2020-05-08)
 ### Bug Fix
 *  LoadBalancers: Fix nil pointer in create call [#65](https://github.com/vultr/govultr/pull/65)
