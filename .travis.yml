@@ -1,30 +1,22 @@
 # .travis.yml
 language: go
 
-jobs:
-  include:
-    - name: "master"
-      if: branch = master
-      dist: bionic
-      go: 1.14.x
-      services: docker
-      script:
-        - docker login -u="$DOCKER_USER" -p="$DOCKER_PASSWORD"
-        - docker build . -t vultr/vultr-cli
-        - docker push vultr/vultr-cli
+go:
+  - 1.14.x
 
-    - name: "goreleaser"
-      os: linux
-      dist: bionic
-      go: 1.14.x
-      services: docker
-      env: GO111MODULE=on
-      before_deploy:
-        - docker login -u="$DOCKER_USER" -p="$DOCKER_PASSWORD"
-      deploy:
-        - provider: script
-          cleanup: false
-          script: curl -sL https://git.io/goreleaser | bash
-          on:
-            tags: true
-            condition: $TRAVIS_OS_NAME = linux
+env:
+  - GO111MODULE=on
+
+services:
+  - docker
+
+after_success:
+  - docker login -u="$DOCKER_USER" -p="$DOCKER_PASSWORD"
+
+deploy:
+  - provider: script
+    cleanup: false
+    script: curl -sL https://git.io/goreleaser | bash
+    on:
+      tags: true
+      condition: $TRAVIS_OS_NAME = linux
