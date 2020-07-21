@@ -10,7 +10,8 @@ jobs:
       services: docker
       script:
         - docker login -u="$DOCKER_USER" -p="$DOCKER_PASSWORD"
-        - make docker
+        - docker build . -t vultr/vultr-cli
+        - docker push vultr/vultr-cli
 
     - name: "goreleaser"
       os: linux
