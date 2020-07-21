@@ -28,3 +28,7 @@ remove:
 
 format:
 	@go fmt ./...
+
+docker:
+	docker build . -t vultr/vultr-cli
+	docker push vultr/vultr-cli
