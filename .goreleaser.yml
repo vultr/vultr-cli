@@ -88,6 +88,12 @@ brews:
       bin.install "vultr-cli"
       prefix.install_metafiles
 
+dockers:
+  - dockerfile: Dockerfile.goreleaser
+    image_templates:
+      - "vultr/vultr-cli:release"
+      - "vultr/vultr-cli:{{ .Tag }}"
+
 release:
   github:
     owner: vultr
