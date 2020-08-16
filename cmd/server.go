@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
@@ -179,6 +180,8 @@ func Server() *cobra.Command {
 	setIpv6.MarkFlagRequired("entry")
 
 	serverCmd.AddCommand(reverseCmd)
+	serverCmd.AddCommand(serverSetUserData)
+	serverCmd.AddCommand(serverGetUserData)
 
 	return serverCmd
 }
@@ -1116,6 +1119,54 @@ var serverCreate = &cobra.Command{
 			os.Exit(1)
 		}
 		fmt.Printf("Instance created - ID : %s\n", server.InstanceID)
+	},
+}
+
+var serverSetUserData = &cobra.Command{
+	Use:   "set-user-data <instanceID> <userData>",
+	Short: "Set the user-data of a server",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a instanceID and userData")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		err := client.Server.SetUserData(context.TODO(), args[0], args[1])
+
+		if err != nil {
+			fmt.Printf("error setting user-data : %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("Set user-data for server")
+	},
+}
+
+var serverGetUserData = &cobra.Command{
+	Use:   "get-user-data <instanceID>",
+	Short: "Get the user-data of a server",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		userData, err := client.Server.GetUserData(context.TODO(), args[0])
+
+		if err != nil {
+			fmt.Printf("error getting user-data : %v\n", err)
+			os.Exit(1)
+		}
+
+		rawData, err := base64.StdEncoding.DecodeString(userData.UserData)
+
+		if err != nil {
+			fmt.Printf("error decoding user-data : %v\n", err)
+			os.Exit(1)
+		}
+
+		_, _ = os.Stdout.Write(rawData) // For proper handling of binary user-data
 	},
 }
 
