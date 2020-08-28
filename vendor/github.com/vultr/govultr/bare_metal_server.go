@@ -767,11 +767,9 @@ func (b *BareMetalServerServiceHandler) SetTag(ctx context.Context, serverID, ta
 func (b *BareMetalServerServiceHandler) SetUserData(ctx context.Context, serverID, userData string) error {
 	uri := "/v1/baremetal/set_user_data"
 
-	encodedUserData := base64.StdEncoding.EncodeToString([]byte(userData))
-
 	values := url.Values{
 		"SUBID":    {serverID},
-		"userdata": {encodedUserData},
+		"userdata": {userData},
 	}
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, values)

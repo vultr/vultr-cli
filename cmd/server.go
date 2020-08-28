@@ -19,6 +19,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -133,6 +134,7 @@ func Server() *cobra.Command {
 		Long:  ``,
 	}
 	ipv4Cmd.AddCommand(serverIPV4List, createIpv4, deleteIpv4)
+	createIpv4.Flags().StringP("reboot", "r", "no", "whether to reboot server after adding ipv4 address")
 	deleteIpv4.Flags().StringP("ipv4", "i", "", "ipv4 address you wish to delete")
 	deleteIpv4.MarkFlagRequired("ipv4")
 	serverCmd.AddCommand(ipv4Cmd)
@@ -178,10 +180,16 @@ func Server() *cobra.Command {
 	setIpv6.Flags().StringP("entry", "e", "", "reverse dns entry")
 	setIpv6.MarkFlagRequired("ip")
 	setIpv6.MarkFlagRequired("entry")
-
 	serverCmd.AddCommand(reverseCmd)
-	serverCmd.AddCommand(serverSetUserData)
-	serverCmd.AddCommand(serverGetUserData)
+
+	userdataCmd := &cobra.Command{
+		Use:   "userdata",
+		Short: "commands to handle userdata on an instance",
+		Long:  ``,
+	}
+	userdataCmd.AddCommand(setUserData, getUserData)
+	setUserData.Flags().StringP("userdata", "d", "/dev/stdin", "file to read userdata from")
+	serverCmd.AddCommand(userdataCmd)
 
 	return serverCmd
 }
@@ -797,7 +805,8 @@ var createIpv4 = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		err := client.Server.AddIPV4(context.TODO(), id)
+		reboot, _ := cmd.Flags().GetString("reboot")
+		_, err := client.Server.AddIPV4(context.TODO(), id, reboot)
 
 		if err != nil {
 			fmt.Printf("error creating ipv4 : %v\n", err)
@@ -1122,17 +1131,25 @@ var serverCreate = &cobra.Command{
 	},
 }
 
-var serverSetUserData = &cobra.Command{
-	Use:   "set-user-data <instanceID> <userData>",
+var setUserData = &cobra.Command{
+	Use:   "set <instanceID>",
 	Short: "Set the user-data of a server",
 	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 2 {
-			return errors.New("please provide a instanceID and userData")
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
 		}
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.Server.SetUserData(context.TODO(), args[0], args[1])
+		userData, _ := cmd.Flags().GetString("userdata")
+		rawData, err := ioutil.ReadFile(userData)
+
+		if err != nil {
+			fmt.Printf("error reading user-data : %v\n", err)
+			os.Exit(1)
+		}
+
+		err = client.Server.SetUserData(context.TODO(), args[0], base64.StdEncoding.EncodeToString(rawData))
 
 		if err != nil {
 			fmt.Printf("error setting user-data : %v\n", err)
@@ -1142,12 +1159,12 @@ var serverSetUserData = &cobra.Command{
 	},
 }
 
-var serverGetUserData = &cobra.Command{
-	Use:   "get-user-data <instanceID>",
+var getUserData = &cobra.Command{
+	Use:   "get <instanceID>",
 	Short: "Get the user-data of a server",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			return errors.New("please provide a instanceID")
+			return errors.New("please provide an instanceID")
 		}
 		return nil
 	},
@@ -1159,14 +1176,7 @@ var serverGetUserData = &cobra.Command{
 			os.Exit(1)
 		}
 
-		rawData, err := base64.StdEncoding.DecodeString(userData.UserData)
-
-		if err != nil {
-			fmt.Printf("error decoding user-data : %v\n", err)
-			os.Exit(1)
-		}
-
-		_, _ = os.Stdout.Write(rawData) // For proper handling of binary user-data
+		printer.UserData(userData)
 	},
 }
 

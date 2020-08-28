@@ -1,5 +1,14 @@
 # Change Log
 
+## [v0.5.0](https://github.com/vultr/govultr/compare/v0.4.2..v0.5.0) (2020-08-25)
+### Enhancement
+*  Servers: Enable/Disable DDOS Protection [#75](https://github.com/vultr/govultr/pull/75)
+
+### Breaking Changes
+* Servers: SetUserData userData param should already be base64 encoded. This call will no longer encode supplied string. [#73](https://github.com/vultr/govultr/pull/73)
+* BareMetalServer: SetUserData userData param should already be base64 encoded. This call will no longer encode supplied string. [#73](https://github.com/vultr/govultr/pull/73)
+* Servers: AddIPV4 now returns the created IP address. The call also has a new parameter called `reboot` which will let you hold off on rebooting the server. [#77](https://github.com/vultr/govultr/pull/77)
+
 ## [v0.4.2](https://github.com/vultr/govultr/compare/v0.4.1..v0.4.2) (2020-06-02)
 ### Bug Fix
 *  DNS Records: Allow DNS Records on updates to have priority of 0 [#67](https://github.com/vultr/govultr/pull/67)
