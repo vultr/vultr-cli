@@ -32,7 +32,7 @@ var accountCmd = &cobra.Command{
 		account, err := client.Account.GetInfo(context.TODO())
 
 		if err != nil {
-			fmt.Printf("Error getting account information : %v", err)
+			fmt.Printf("Error getting account information : %v\n", err)
 			os.Exit(1)
 		}
 

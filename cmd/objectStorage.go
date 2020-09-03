@@ -74,7 +74,7 @@ var objStorageCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Printf("created object storage - ID : %v", objStorage.ID)
+		fmt.Printf("created object storage - ID : %v\n", objStorage.ID)
 	},
 }
 

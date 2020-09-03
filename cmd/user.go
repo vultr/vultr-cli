@@ -76,7 +76,7 @@ var userCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Printf("User has been created : %s", id.UserID)
+		fmt.Printf("User has been created : %s\n", id.UserID)
 	},
 }
 
@@ -115,7 +115,7 @@ var userList = &cobra.Command{
 		list, err := client.User.List(context.TODO())
 
 		if err != nil {
-			fmt.Errorf("error while grabbing users %v", err)
+			fmt.Errorf("error while grabbing users %v\n", err)
 			os.Exit(1)
 		}
 

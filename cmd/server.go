@@ -1049,7 +1049,7 @@ var serverCreate = &cobra.Command{
 		osOption, err := optionCheck(osOptions)
 
 		if err != nil {
-			fmt.Printf("error creating instance : %v", err)
+			fmt.Printf("error creating instance : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -1078,7 +1078,7 @@ var serverCreate = &cobra.Command{
 		if osOption == "" && osID != 0 {
 			osOption = "os_id"
 		} else if osOption == "" && osID == 0 {
-			fmt.Printf("error creating instance: an os ID must be provided")
+			fmt.Printf("error creating instance: an os ID must be provided\n")
 			os.Exit(1)
 		}
 
