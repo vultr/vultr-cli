@@ -1,5 +1,13 @@
 # Change Log
 
+## [v0.4.0](https://github.com/vultr/vultr-cli/compare/v0.3.2..v0.4.0) (2020-09-03)
+### Enhancement
+* Improve error responses by adding a newline [PR 109](https://github.com/vultr/vultr-cli/pull/109) 
+* Add Server User Data subcommands Get and Set [PR 105](https://github.com/vultr/vultr-cli/pull/105)
+
+### Dependencies
+* spf13/viper from 1.7.0 -> 1.7.1 [PR 104](https://github.com/vultr/vultr-cli/pull/104) [PR 108](https://github.com/vultr/vultr-cli/pull/108)
+
 ## [v0.3.2](https://github.com/vultr/vultr-cli/compare/v0.3.1..v0.3.2) (2020-06-04)
 ### Dependencies
 * govultr 0.4.1 -> 0.4.2 [PR 98](https://github.com/vultr/vultr-cli/pull/98)
