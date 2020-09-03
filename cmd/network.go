@@ -51,7 +51,7 @@ var networkList = &cobra.Command{
 		network, err := client.Network.List(context.TODO())
 
 		if err != nil {
-			fmt.Printf("error getting network information : %v", err)
+			fmt.Printf("error getting network information : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -75,7 +75,7 @@ var networkDelete = &cobra.Command{
 		err := client.Network.Delete(context.TODO(), id)
 
 		if err != nil {
-			fmt.Printf("error deleting  network : %v", err)
+			fmt.Printf("error deleting  network : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -95,10 +95,10 @@ var networkCreate = &cobra.Command{
 		network, err := client.Network.Create(context.TODO(), region, description, cdir)
 
 		if err != nil {
-			fmt.Printf("error creating network : %v", err)
+			fmt.Printf("error creating network : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Network created ID : %s", network.NetworkID)
+		fmt.Printf("Network created ID : %s\n", network.NetworkID)
 	},
 }

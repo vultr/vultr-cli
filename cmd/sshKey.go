@@ -67,7 +67,7 @@ var sshCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Printf("SSH key has been created : %s", id.SSHKeyID)
+		fmt.Printf("SSH key has been created : %s\n", id.SSHKeyID)
 	},
 }
 
