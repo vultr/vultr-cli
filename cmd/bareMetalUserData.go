@@ -32,7 +32,7 @@ func BareMetalUserData() *cobra.Command {
 		Aliases: []string{"u"},
 	}
 
-	bareMetalUserDataCmd.AddCommand(bareMetalSetUserData, bareMetalGetUserData)
+	bareMetalUserDataCmd.AddCommand(bareMetalGetUserData)
 
 	return bareMetalUserDataCmd
 }
@@ -49,34 +49,11 @@ var bareMetalGetUserData = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		u, err := client.BareMetalServer.GetUserData(context.TODO(), args[0])
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
 		printer.UserData(u)
-	},
-}
-
-var bareMetalSetUserData = &cobra.Command{
-	Use:     "set <bareMetalID> <userData>",
-	Short:   "Set the user-data of a bare metal server.",
-	Aliases: []string{"s"},
-	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 2 {
-			return errors.New("please provide a bareMetalID and userData")
-		}
-		return nil
-	},
-	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.SetUserData(context.TODO(), args[0], args[1])
-
-		if err != nil {
-			fmt.Printf("%v\n", err)
-			os.Exit(1)
-		}
-
-		fmt.Println("bare metal server userdata set.")
 	},
 }

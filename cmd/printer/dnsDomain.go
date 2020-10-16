@@ -11,18 +11,28 @@ func SecInfo(info []string) {
 	flush()
 }
 
-func DomainList(domain []govultr.DNSDomain) {
+func DomainList(domain []govultr.Domain, meta *govultr.Meta) {
 	col := columns{"DOMAIN", "DATE CREATED"}
 	display(col)
 	for _, d := range domain {
 		display(columns{d.Domain, d.DateCreated})
 	}
+
+	Meta(meta)
+	flush()
+}
+
+func Domain(domain *govultr.Domain) {
+	col := columns{"DOMAIN", "DATE CREATED"}
+	display(col)
+	display(columns{domain.Domain, domain.DateCreated})
+
 	flush()
 }
 
 func SoaInfo(soa *govultr.Soa) {
 	col := columns{"NS PRIMARY", "EMAIL"}
 	display(col)
-	display(columns{soa.NsPrimary, soa.Email})
+	display(columns{soa.NSPrimary, soa.Email})
 	flush()
 }

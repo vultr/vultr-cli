@@ -23,20 +23,34 @@ import (
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
-// applicationCmd represents the application command
-var applicationCmd = &cobra.Command{
-	Use:     "apps",
-	Aliases: []string{"a"},
-	Short:   "Display all available applications",
-	Long:    ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		apps, err := client.Application.List(context.TODO())
+// Applications  represents the application command
+func Applications() *cobra.Command {
+	appsCmd := &cobra.Command{
+		Use:     "apps",
+		Aliases: []string{"a"},
+		Short:   "Display all available applications",
+	}
 
+	appsCmd.AddCommand(appsList)
+
+	appsList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	appsList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+
+	return appsCmd
+}
+
+var appsList = &cobra.Command{
+	Use:     "list",
+	Short:   "list applications",
+	Aliases: []string{"l"},
+	Run: func(cmd *cobra.Command, args []string) {
+		options := getPaging(cmd)
+		apps, meta, err := client.Application.List(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error getting available applications : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.Application(apps)
+		printer.Application(apps, meta)
 	},
 }

@@ -4,20 +4,24 @@ import (
 	"github.com/vultr/govultr"
 )
 
-func Plan(plan []govultr.Plan) {
-	col := columns{"VPSPLANID", "NAME", "VCPU COUNT", "RAM", "DISK", "BANDWIDTH", "BANDWIDTH GB", "PRICE PER MONTH", "TYPE", "REGIONS", "DEPRECATED"}
+func Plan(plan []govultr.Plan, meta *govultr.Meta) {
+	col := columns{"ID", "VCPU COUNT", "RAM", "DISK", "BANDWIDTH GB", "PRICE PER MONTH", "TYPE", "REGIONS"}
 	display(col)
 	for _, p := range plan {
-		display(columns{p.PlanID, p.Name, p.VCPUs, p.RAM, p.Disk, p.Bandwidth, p.BandwidthGB, p.Price, p.PlanType, p.Regions, p.Deprecated})
+		display(columns{p.ID, p.VCPUCount, p.Ram, p.Disk, p.Bandwidth, p.MonthlyCost, p.Type, p.Locations})
 	}
+
+	Meta(meta)
 	flush()
 }
 
-func PlanBareMetal(plan []govultr.BareMetalPlan) {
-	col := columns{"METALPLANID", "NAME", "VCPU COUNT", "RAM", "DISK", "BANDWIDTH TB", "PRICE PER MONTH", "TYPE", "REGIONS", "DEPRECATED"}
+func PlanBareMetal(plan []govultr.BareMetalPlan, meta *govultr.Meta) {
+	col := columns{"ID", "CPU COUNT", "CPU MODEL", "CPU THREADS", "RAM", "DISK", "BANDWIDTH GB", "PRICE PER MONTH", "TYPE", "REGIONS"}
 	display(col)
 	for _, p := range plan {
-		display(columns{p.PlanID, p.Name, p.CPUs, p.RAM, p.Disk, p.BandwidthTB, p.Price, p.PlanType, p.Regions, p.Deprecated})
+		display(columns{p.ID, p.CPUCount, p.CPUModel, p.CPUThreads, p.Ram, p.Disk, p.Bandwidth, p.MonthlyCost, p.Type, p.Locations})
 	}
+
+	Meta(meta)
 	flush()
 }

@@ -21,6 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/vultr/govultr"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
@@ -33,35 +34,51 @@ func ReservedIP() *cobra.Command {
 		Long:    ``,
 	}
 
-	reservedIPCmd.AddCommand(reservedIPList, reservedIPDelete, reservedIPAttach, reservedIPDetach, reservedIPConvert, reservedIPCreate)
+	reservedIPCmd.AddCommand(reservedIPGet, reservedIPList, reservedIPDelete, reservedIPAttach, reservedIPDetach, reservedIPConvert, reservedIPCreate)
+
+	// List
+	reservedIPList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	reservedIPList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
 
 	// Attach
 	reservedIPAttach.Flags().StringP("instance-id", "i", "", "id of instance you want to attach")
 	reservedIPAttach.MarkFlagRequired("instance-id")
 
-	// Detach
-	reservedIPDetach.Flags().StringP("instance-id", "i", "", "id of instance you want to detach")
-	reservedIPDetach.MarkFlagRequired("instance-id")
-
 	// Convert
-	reservedIPConvert.Flags().StringP("instance-id", "i", "", "id of instance")
-	reservedIPConvert.MarkFlagRequired("instance-id")
-	reservedIPConvert.Flags().StringP("ip", "", "", "ip you wish to convert")
+	reservedIPConvert.Flags().StringP("ip", "i", "", "ip you wish to convert")
 	reservedIPConvert.MarkFlagRequired("ip")
 	reservedIPConvert.Flags().StringP("label", "l", "", "label")
 
 	// Create
-	reservedIPCreate.Flags().IntP("region-id", "r", 0, "id of region")
-	reservedIPCreate.MarkFlagRequired("region-id")
+	reservedIPCreate.Flags().StringP("region", "r", "", "id of region")
+	reservedIPCreate.MarkFlagRequired("region")
 	reservedIPCreate.Flags().StringP("type", "t", "", "type of IP : v4 or v6")
 	reservedIPCreate.MarkFlagRequired("type")
 	reservedIPCreate.Flags().StringP("label", "l", "", "label")
-	/*
-	   convert
-	   create
-	*/
 
 	return reservedIPCmd
+}
+
+var reservedIPGet = &cobra.Command{
+	Use:   "get <reservedIPID",
+	Short: "get a reserved IP",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a reservedIP ID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		rip, err := client.ReservedIP.Get(context.TODO(), id)
+		if err != nil {
+			fmt.Printf("error getting reserved IP : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.ReservedIP(rip)
+	},
 }
 
 var reservedIPList = &cobra.Command{
@@ -69,14 +86,14 @@ var reservedIPList = &cobra.Command{
 	Short: "list all reserved IPs",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		rip, err := client.ReservedIP.List(context.TODO())
-
+		options := getPaging(cmd)
+		rip, meta, err := client.ReservedIP.List(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error getting reserved IPs : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.ReservedIPList(rip)
+		printer.ReservedIPList(rip, meta)
 	},
 }
 
@@ -93,9 +110,7 @@ var reservedIPDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		ip := args[0]
-		err := client.ReservedIP.Delete(context.TODO(), ip)
-
-		if err != nil {
+		if err := client.ReservedIP.Delete(context.TODO(), ip); err != nil {
 			fmt.Printf("error getting reserved IPs : %v\n", err)
 			os.Exit(1)
 		}
@@ -117,9 +132,7 @@ var reservedIPAttach = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ip := args[0]
 		instance, _ := cmd.Flags().GetString("instance-id")
-		err := client.ReservedIP.Attach(context.TODO(), ip, instance)
-
-		if err != nil {
+		if err := client.ReservedIP.Attach(context.TODO(), ip, instance); err != nil {
 			fmt.Printf("error attaching reserved IPs : %v\n", err)
 			os.Exit(1)
 		}
@@ -140,10 +153,7 @@ var reservedIPDetach = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		ip := args[0]
-		instance, _ := cmd.Flags().GetString("instance-id")
-		err := client.ReservedIP.Detach(context.TODO(), ip, instance)
-
-		if err != nil {
+		if err := client.ReservedIP.Detach(context.TODO(), ip); err != nil {
 			fmt.Printf("error detaching reserved IPs : %v\n", err)
 			os.Exit(1)
 		}
@@ -158,17 +168,19 @@ var reservedIPConvert = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		ip, _ := cmd.Flags().GetString("ip")
-		instance, _ := cmd.Flags().GetString("instance-id")
 		label, _ := cmd.Flags().GetString("label")
+		options := &govultr.ReservedIPConvertReq{
+			IPAddress: ip,
+			Label:     label,
+		}
 
-		r, err := client.ReservedIP.Convert(context.TODO(), ip, instance, label)
-
+		r, err := client.ReservedIP.Convert(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error converting IP to reserved IPs : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Converted ip to reservedIP : %v", r.ReservedIPID)
+		printer.ReservedIP(r)
 	},
 }
 
@@ -177,19 +189,22 @@ var reservedIPCreate = &cobra.Command{
 	Short: "create reservedIP",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		region, _ := cmd.Flags().GetInt("region-id")
+		region, _ := cmd.Flags().GetString("region")
 		ipType, _ := cmd.Flags().GetString("type")
 		label, _ := cmd.Flags().GetString("label")
 
-		fmt.Println(region, ipType, label)
+		options := &govultr.ReservedIPReq{
+			Region: region,
+			IPType: ipType,
+			Label:  label,
+		}
 
-		r, err := client.ReservedIP.Create(context.TODO(), region, ipType, label)
-
+		r, err := client.ReservedIP.Create(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error creating reserved IPs : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Created ReservedIP : %v", r.ReservedIPID)
+		printer.ReservedIP(r)
 	},
 }

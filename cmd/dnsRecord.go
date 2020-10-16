@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"os"
 	"regexp"
-	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr"
@@ -35,7 +34,7 @@ func DnsRecord() *cobra.Command {
 		Long:  ``,
 	}
 
-	dnsRecordCmd.AddCommand(recordCreate, recordlist, recordDelete, recordUpdate)
+	dnsRecordCmd.AddCommand(recordCreate, recordGet, recordlist, recordDelete, recordUpdate)
 
 	// Create
 	recordCreate.Flags().StringP("domain", "m", "", "name of domain you want to create this record for")
@@ -80,13 +79,45 @@ var recordCreate = &cobra.Command{
 		ttl, _ := cmd.Flags().GetInt("ttl")
 		priority, _ := cmd.Flags().GetInt("priority")
 
-		err := client.DNSRecord.Create(context.TODO(), domain, rType, name, data, ttl, priority)
+		options := &govultr.DomainRecordReq{
+			Name:     name,
+			Type:     rType,
+			Data:     data,
+			TTL:      ttl,
+			Priority: &priority,
+		}
 
+		record, err := client.DomainRecord.Create(context.TODO(), domain, options)
 		if err != nil {
 			fmt.Printf("error while creating dns record : %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Println("created dns record")
+
+		printer.DnsRecord(record)
+	},
+}
+
+var recordGet = &cobra.Command{
+	Use:   "get <domainName> <recordID>",
+	Short: "get dns record",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a domain name and recordID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		domain := args[0]
+		id := args[1]
+
+		record, err := client.DomainRecord.Get(context.TODO(), domain, id)
+		if err != nil {
+			fmt.Printf("error while getting dns records : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DnsRecord(record)
 	},
 }
 
@@ -102,14 +133,15 @@ var recordlist = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		domain := args[0]
+		options := getPaging(cmd)
 
-		records, err := client.DNSRecord.List(context.TODO(), domain)
+		records, meta, err := client.DomainRecord.List(context.TODO(), domain, options)
 		if err != nil {
 			fmt.Printf("error while getting dns records : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.DnsRecordsList(records)
+		printer.DnsRecordsList(records, meta)
 	},
 }
 
@@ -127,9 +159,8 @@ var recordDelete = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		domain := args[0]
 		id := args[1]
-		err := client.DNSRecord.Delete(context.TODO(), domain, id)
 
-		if err != nil {
+		if err := client.DomainRecord.Delete(context.TODO(), domain, id); err != nil {
 			fmt.Printf("error while deleting dns record : %v\n", err)
 			os.Exit(1)
 		}
@@ -156,9 +187,7 @@ var recordUpdate = &cobra.Command{
 		ttl, _ := cmd.Flags().GetInt("ttl")
 		priority, _ := cmd.Flags().GetInt("priority")
 
-		updates := &govultr.DNSRecord{}
-		i, _ := strconv.Atoi(id)
-		updates.RecordID = i
+		updates := &govultr.DomainRecordReq{}
 
 		if name != "" {
 			updates.Name = name
@@ -180,9 +209,7 @@ var recordUpdate = &cobra.Command{
 			updates.Priority = &priority
 		}
 
-		err := client.DNSRecord.Update(context.TODO(), domain, updates)
-
-		if err != nil {
+		if err := client.DomainRecord.Update(context.TODO(), domain, id, updates); err != nil {
 			fmt.Printf("error updating dns record : %v\n", err)
 			os.Exit(1)
 		}

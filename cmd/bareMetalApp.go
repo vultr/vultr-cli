@@ -19,9 +19,10 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/govultr"
 )
 
 // BareMetalApp represents the baremetal app commands
@@ -32,31 +33,9 @@ func BareMetalApp() *cobra.Command {
 		Aliases: []string{"a"},
 	}
 
-	bareMetalAppCmd.AddCommand(bareMetalAppInfo, bareMetalAppChange, bareMetalAppChangeList)
+	bareMetalAppCmd.AddCommand(bareMetalAppChange)
 
 	return bareMetalAppCmd
-}
-
-var bareMetalAppInfo = &cobra.Command{
-	Use:     "info <bareMetalID>",
-	Short:   "Get a bare metal server's application info",
-	Aliases: []string{"i"},
-	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("please provide a bareMetalID")
-		}
-		return nil
-	},
-	Run: func(cmd *cobra.Command, args []string) {
-		app, err := client.BareMetalServer.AppInfo(context.TODO(), args[0])
-
-		if err != nil {
-			fmt.Printf("%v\n", err)
-			os.Exit(1)
-		}
-
-		printer.BareMetalAppInfo(app)
-	},
 }
 
 var bareMetalAppChange = &cobra.Command{
@@ -70,35 +49,16 @@ var bareMetalAppChange = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.ChangeApp(context.TODO(), args[0], args[1])
+		appID, _ := strconv.Atoi(args[1])
+		options := &govultr.BareMetalUpdate{
+			AppID: appID,
+		}
 
-		if err != nil {
+		if err := client.BareMetalServer.Update(context.TODO(), args[0], options); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
 		fmt.Println("bare metal server's application changed")
-	},
-}
-
-var bareMetalAppChangeList = &cobra.Command{
-	Use:     "list <bareMetalID>",
-	Short:   "Lists applications to which a bare metal server can be changed.",
-	Aliases: []string{"l"},
-	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("please provide a bareMetalID")
-		}
-		return nil
-	},
-	Run: func(cmd *cobra.Command, args []string) {
-		app, err := client.BareMetalServer.ListApps(context.TODO(), args[0])
-
-		if err != nil {
-			fmt.Printf("%v\n", err)
-			os.Exit(1)
-		}
-
-		printer.Application(app)
 	},
 }

@@ -19,9 +19,10 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/govultr"
 )
 
 // BareMetalOS represents the baremetal operating system commands
@@ -32,31 +33,9 @@ func BareMetalOS() *cobra.Command {
 		Aliases: []string{"o"},
 	}
 
-	bareMetalOSCmd.AddCommand(bareMetalOSChange, bareMetalOSChangeList)
+	bareMetalOSCmd.AddCommand(bareMetalOSChange)
 
 	return bareMetalOSCmd
-}
-
-var bareMetalOSChangeList = &cobra.Command{
-	Use:     "list <bareMetalID>",
-	Short:   "Lists operating systems to which a bare metal server can be changed.",
-	Aliases: []string{"l"},
-	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("please provide a bareMetalID")
-		}
-		return nil
-	},
-	Run: func(cmd *cobra.Command, args []string) {
-		OS, err := client.BareMetalServer.ListOS(context.TODO(), args[0])
-
-		if err != nil {
-			fmt.Printf("%v\n", err)
-			os.Exit(1)
-		}
-
-		printer.Os(OS)
-	},
 }
 
 var bareMetalOSChange = &cobra.Command{
@@ -70,9 +49,12 @@ var bareMetalOSChange = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.ChangeOS(context.TODO(), args[0], args[1])
+		osid, _ := strconv.Atoi(args[1])
+		options := &govultr.BareMetalUpdate{
+			OsID: osid,
+		}
 
-		if err != nil {
+		if err := client.BareMetalServer.Update(context.TODO(), args[0], options); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

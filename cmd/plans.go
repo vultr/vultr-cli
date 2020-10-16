@@ -35,6 +35,9 @@ func Plans() *cobra.Command {
 
 	planList.Flags().StringP("type", "t", "", "(optional) The type of plans to return. Possible values: 'bare-metal', 'vc2', 'vdc2', 'ssd', 'dedicated'. Defaults to all VPS plans.")
 
+	planList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	planList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+
 	return planCmd
 }
 
@@ -44,25 +47,24 @@ var planList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		planType, _ := cmd.Flags().GetString("type")
+		options := getPaging(cmd)
 
 		if planType == "bare-metal" {
-			list, err := client.Plan.GetBareMetalList(context.TODO())
-
+			list, meta, err := client.Plan.ListBareMetal(context.TODO(), options)
 			if err != nil {
 				fmt.Printf("error getting bare metal plan list : %v\n", err)
 				os.Exit(1)
 			}
 
-			printer.PlanBareMetal(list)
+			printer.PlanBareMetal(list, meta)
 		} else {
-			list, err := client.Plan.List(context.TODO(), planType)
-
+			list, meta, err := client.Plan.List(context.TODO(), planType, options)
 			if err != nil {
 				fmt.Printf("error getting plan list : %v\n", err)
 				os.Exit(1)
 			}
 
-			printer.Plan(list)
+			printer.Plan(list, meta)
 		}
 	},
 }

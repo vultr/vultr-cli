@@ -34,10 +34,7 @@ func SSHKey() *cobra.Command {
 		Long:    `ssh-key is used to access SSH key commands`,
 	}
 
-	cmd.AddCommand(sshCreate)
-	cmd.AddCommand(sshDelete)
-	cmd.AddCommand(sshList)
-	cmd.AddCommand(sshUpdate)
+	cmd.AddCommand(sshCreate, sshDelete, sshGet, sshList, sshUpdate)
 
 	sshCreate.Flags().StringP("name", "n", "", "Name of the SSH key")
 	sshCreate.Flags().StringP("key", "k", "", "SSH public key (in authorized_keys format)")
@@ -47,6 +44,9 @@ func SSHKey() *cobra.Command {
 
 	sshUpdate.Flags().StringP("name", "n", "", "Name of the SSH key")
 	sshUpdate.Flags().StringP("key", "k", "", "SSH public key (in authorized_keys format)")
+
+	sshList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	sshList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
 
 	return cmd
 }
@@ -59,15 +59,18 @@ var sshCreate = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		name, _ := cmd.Flags().GetString("name")
 		key, _ := cmd.Flags().GetString("key")
+		options := &govultr.SSHKeyReq{
+			Name:   name,
+			SSHKey: key,
+		}
 
-		id, err := client.SSHKey.Create(context.TODO(), name, key)
-
+		id, err := client.SSHKey.Create(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("SSH key has been created : %s\n", id.SSHKeyID)
+		printer.SSHKey(id)
 	},
 }
 
@@ -84,12 +87,33 @@ var sshDelete = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.SSHKey.Delete(context.TODO(), args[0])
-		if err != nil {
+		if err := client.SSHKey.Delete(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 		fmt.Println("SSH key has been deleted")
+	},
+}
+
+// Get SSH key command
+var sshGet = &cobra.Command{
+	Use:   "get <sshKeyID>",
+	Short: "Get an SSH key",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an sshKeyID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		ssh, err := client.SSHKey.Get(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("%v\n", err)
+			os.Exit(1)
+		}
+
+		printer.SSHKey(ssh)
 	},
 }
 
@@ -99,14 +123,14 @@ var sshList = &cobra.Command{
 	Short: "List all SSH keys",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		list, err := client.SSHKey.List(context.TODO())
-
+		options := getPaging(cmd)
+		list, meta, err := client.SSHKey.List(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
-		printer.SSHKey(list)
+		printer.SSHKeys(list, meta)
 	},
 }
 
@@ -122,23 +146,19 @@ var sshUpdate = &cobra.Command{
 	},
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
 		name, _ := cmd.Flags().GetString("name")
 		key, _ := cmd.Flags().GetString("key")
 
-		s := new(govultr.SSHKey)
-		s.SSHKeyID = args[0]
-
-		if name != "" {
-			s.Name = name
+		s := &govultr.SSHKeyReq{
+			Name: name,
 		}
 
 		if key != "" {
-			s.Key = key
+			s.SSHKey = key
 		}
 
-		err := client.SSHKey.Update(context.TODO(), s)
-
-		if err != nil {
+		if err := client.SSHKey.Update(context.TODO(), id, s); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

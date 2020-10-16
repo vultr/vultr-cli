@@ -19,7 +19,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/vultr-cli/cmd/printer"
@@ -37,6 +36,10 @@ func Regions() *cobra.Command {
 	regionCmd.AddCommand(regionAvailability)
 
 	regionAvailability.Flags().StringP("type", "t", "", "type of plans for which to include availability. Possible values: vc2, vdc2, bare-metal")
+
+	regionList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	regionList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+
 	return regionCmd
 }
 
@@ -45,15 +48,14 @@ var regionList = &cobra.Command{
 	Short: "list regions",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-
-		list, err := client.Region.List(context.TODO())
-
+		options := getPaging(cmd)
+		list, meta, err := client.Region.List(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error getting region list : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.Regions(list)
+		printer.Regions(list, meta)
 	},
 }
 
@@ -68,46 +70,12 @@ var regionAvailability = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-
 		regionID := args[0]
 		availType, _ := cmd.Flags().GetString("type")
-
-		var availability []int
-		var err error
-
-		region, _ := strconv.Atoi(regionID)
-
-		switch availType {
-		case "vc2":
-			availability, err = client.Region.Vc2Availability(context.TODO(), region)
-
-			if err != nil {
-				fmt.Printf("error getting VC2 availability : %v\n", err)
-				os.Exit(1)
-			}
-		case "v2c2":
-			availability, err = client.Region.Vdc2Availability(context.TODO(), region)
-
-			if err != nil {
-				fmt.Printf("error getting VDC2 availability : %v\n", err)
-				os.Exit(1)
-			}
-
-		case "bare-metal":
-			availability, err = client.Region.BareMetalAvailability(context.TODO(), region)
-
-			if err != nil {
-				fmt.Printf("error getting bare-metal availability : %v\n", err)
-				os.Exit(1)
-			}
-
-		default:
-			availability, err = client.Region.Availability(context.TODO(), region, "")
-
-			if err != nil {
-				fmt.Printf("error getting availability : %v\n", err)
-				os.Exit(1)
-			}
+		availability, err := client.Region.Availability(context.TODO(), regionID, availType)
+		if err != nil {
+			fmt.Printf("error getting availability : %v\n", err)
+			os.Exit(1)
 		}
 
 		printer.RegionAvailability(availability)

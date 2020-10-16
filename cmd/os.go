@@ -16,30 +16,41 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
-// osCmd represents the os command
-var osCmd = &cobra.Command{
-	Use:     "os",
-	Short:   "grab all available operating systems",
+// Iso() epresents the iso command
+func Os() *cobra.Command {
+	osCmd := &cobra.Command{
+		Use:   "os",
+		Short: "iso is used to access iso commands",
+		Long:  ``,
+	}
+
+	osCmd.AddCommand(osList)
+
+	osList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	osList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+
+	return osCmd
+}
+
+// osList represents the list of available operating systems
+var osList = &cobra.Command{
+	Use:     "list",
+	Short:   "list all available operating systems",
 	Aliases: []string{"o"},
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		os, err := client.OS.List(context.TODO())
+		options := getPaging(cmd)
+		os, meta, err := client.OS.List(context.TODO(), options)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		if len(os) == 0 {
-			fmt.Println()
-			return
-		}
-
-		printer.Os(os)
+		printer.Os(os, meta)
 	},
 }

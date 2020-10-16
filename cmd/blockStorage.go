@@ -21,6 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/vultr/govultr"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
@@ -36,19 +37,20 @@ func BlockStorageCmd() *cobra.Command {
 
 	bsCmd.AddCommand(bsAttach, bsCreate, bsDelete, bsDetach, bsLabelSet, bsList, bsResize)
 
-	bsList.Flags().StringP("instance", "i", "", "get the block storage that is attached to a given instance id")
+	// List
+	bsList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	bsList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
 
 	// Attach
 	bsAttach.Flags().StringP("instance", "i", "", "instance id you want to attach to")
+	bsAttach.Flags().Bool("live", false, "attach Block Storage without restarting the Instance.")
 	bsAttach.MarkFlagRequired("instance")
 
-	bsAttach.Flags().StringP("live", "l", "", "attach block storage to the instance without a restart (yes or no)")
-
 	// Detach
-	bsDetach.Flags().StringP("live", "l", "", "detach block storage from instance without a restart")
+	bsDetach.Flags().Bool("live", false, "detach block storage from instance without a restart")
 
 	// Create
-	bsCreate.Flags().IntP("region", "r", 0, "regionID you want to create the block storage in")
+	bsCreate.Flags().StringP("region", "r", "", "regionID you want to create the block storage in")
 	bsCreate.MarkFlagRequired("region")
 
 	bsCreate.Flags().IntP("size", "s", 0, "size of the block storage you want to create")
@@ -69,7 +71,7 @@ func BlockStorageCmd() *cobra.Command {
 
 var bsAttach = &cobra.Command{
 	Use:   "attach <blockStorageID>",
-	Short: "",
+	Short: "attaches a block storage to an instance",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -80,10 +82,14 @@ var bsAttach = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		instance, _ := cmd.Flags().GetString("instance")
-		live, _ := cmd.Flags().GetString("live")
+		live, _ := cmd.Flags().GetBool("live")
 
-		err := client.BlockStorage.Attach(context.TODO(), id, instance, live)
-		if err != nil {
+		bsAttach := &govultr.BlockStorageAttach{
+			InstanceID: instance,
+			Live:       live,
+		}
+
+		if err := client.BlockStorage.Attach(context.TODO(), id, bsAttach); err != nil {
 			fmt.Printf("error attaching block storage : %v\n", err)
 			os.Exit(1)
 		}
@@ -94,27 +100,33 @@ var bsAttach = &cobra.Command{
 
 var bsCreate = &cobra.Command{
 	Use:   "create",
-	Short: "",
+	Short: "create a new block storage",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		region, _ := cmd.Flags().GetInt("region")
+		region, _ := cmd.Flags().GetString("region")
 		size, _ := cmd.Flags().GetInt("size")
 		label, _ := cmd.Flags().GetString("label")
 
-		bs, err := client.BlockStorage.Create(context.TODO(), region, size, label)
+		bsCreate := &govultr.BlockStorageCreate{
+			Region: region,
+			SizeGB: size,
+			Label:  label,
+		}
 
+		bs, err := client.BlockStorage.Create(context.TODO(), bsCreate)
 		if err != nil {
 			fmt.Printf("error creating block storage : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("created block storage - ID : %v\n", bs.BlockStorageID)
+		printer.SingleBlockStorage(bs)
+
 	},
 }
 
 var bsDelete = &cobra.Command{
 	Use:     "delete <blockStorageID>",
-	Short:   "",
+	Short:   "delete a block storage",
 	Aliases: []string{"destroy"},
 	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -125,9 +137,7 @@ var bsDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		err := client.BlockStorage.Delete(context.TODO(), id)
-
-		if err != nil {
+		if err := client.BlockStorage.Delete(context.TODO(), id); err != nil {
 			fmt.Printf("error deleting block storage : %v\n", err)
 			os.Exit(1)
 		}
@@ -138,7 +148,7 @@ var bsDelete = &cobra.Command{
 
 var bsDetach = &cobra.Command{
 	Use:   "detach <blockStorageID>",
-	Short: "",
+	Short: "detaches a block storage from an instance",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -148,10 +158,13 @@ var bsDetach = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		live, _ := cmd.Flags().GetString("live")
+		live, _ := cmd.Flags().GetBool("live")
 
-		err := client.BlockStorage.Detach(context.TODO(), id, live)
-		if err != nil {
+		bsDetach := &govultr.BlockStorageDetach{
+			Live: live,
+		}
+
+		if err := client.BlockStorage.Detach(context.TODO(), id, bsDetach); err != nil {
 			fmt.Printf("error detaching block storage : %v\n", err)
 			os.Exit(1)
 		}
@@ -162,7 +175,7 @@ var bsDetach = &cobra.Command{
 
 var bsLabelSet = &cobra.Command{
 	Use:   "label <blockStorageID>",
-	Short: "",
+	Short: "sets a label for a block storage",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -174,8 +187,11 @@ var bsLabelSet = &cobra.Command{
 		id := args[0]
 		label, _ := cmd.Flags().GetString("label")
 
-		err := client.BlockStorage.SetLabel(context.TODO(), id, label)
-		if err != nil {
+		options := &govultr.BlockStorageUpdate{
+			Label: label,
+		}
+
+		if err := client.BlockStorage.Update(context.TODO(), id, options); err != nil {
 			fmt.Printf("error setting label : %v\n", err)
 			os.Exit(1)
 		}
@@ -184,42 +200,26 @@ var bsLabelSet = &cobra.Command{
 	},
 }
 
-// List all of individual block storage devices
+// List all of individual block storage
 var bsList = &cobra.Command{
 	Use:   "list",
-	Short: "retrieves a list of active block storage devices",
+	Short: "retrieves a list of active block storage",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-
-		instance, _ := cmd.Flags().GetString("instance")
-
-		if instance == "" {
-			bs, err := client.BlockStorage.List(context.TODO())
-
-			if err != nil {
-				fmt.Printf("error getting block storage : %v\n", err)
-				os.Exit(1)
-			}
-
-			printer.BlockStorage(bs)
-
-		} else {
-			bs, err := client.BlockStorage.Get(context.TODO(), instance)
-
-			if err != nil {
-				fmt.Printf("error getting block storage : %v\n", err)
-				os.Exit(1)
-			}
-
-			printer.SingleBlockStorage(bs)
+		options := getPaging(cmd)
+		bs, meta, err := client.BlockStorage.List(context.TODO(), options)
+		if err != nil {
+			fmt.Printf("error getting block storage : %v\n", err)
+			os.Exit(1)
 		}
 
+		printer.BlockStorage(bs, meta)
 	},
 }
 
 var bsResize = &cobra.Command{
 	Use:   "resize <blockStorageID>",
-	Short: "resize a block storage device",
+	Short: "resize a block storage",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -231,13 +231,15 @@ var bsResize = &cobra.Command{
 		id := args[0]
 		size, _ := cmd.Flags().GetInt("size")
 
-		err := client.BlockStorage.Resize(context.TODO(), id, size)
+		options := &govultr.BlockStorageUpdate{
+			SizeGB: size,
+		}
 
-		if err != nil {
+		if err := client.BlockStorage.Update(context.TODO(), id, options); err != nil {
 			fmt.Printf("error resizing block storage : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("resized block storage device")
+		fmt.Println("resized block storage")
 	},
 }

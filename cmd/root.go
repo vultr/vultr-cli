@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"time"
@@ -23,6 +24,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vultr/govultr"
+	"golang.org/x/oauth2"
 )
 
 var cfgFile string
@@ -50,16 +52,16 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vultr-cli.yaml)")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.AddCommand(accountCmd)
-	rootCmd.AddCommand(apiCmd)
-	rootCmd.AddCommand(applicationCmd)
-	rootCmd.AddCommand(backupCmd)
+	rootCmd.AddCommand(Applications())
+	rootCmd.AddCommand(Backups())
 	rootCmd.AddCommand(BareMetal())
 	rootCmd.AddCommand(BlockStorageCmd())
 	rootCmd.AddCommand(Dns())
 	rootCmd.AddCommand(Firewall())
 	rootCmd.AddCommand(Iso())
+	rootCmd.AddCommand(LoadBalancer())
 	rootCmd.AddCommand(Network())
-	rootCmd.AddCommand(osCmd)
+	rootCmd.AddCommand(Os())
 	rootCmd.AddCommand(ObjectStorageCmd())
 	rootCmd.AddCommand(Plans())
 	rootCmd.AddCommand(Regions())
@@ -99,13 +101,33 @@ func initConfig() {
 }
 
 func initClient() {
-	key := os.Getenv("VULTR_API_KEY")
-	if key == "" {
+	apiKey := os.Getenv("VULTR_API_KEY")
+	if apiKey == "" {
 		fmt.Println("Please export your VULTR API key as an environment variable, eg:")
 		fmt.Println("export VULTR_API_KEY='<api_key_from_vultr_account>'")
 		os.Exit(1)
 	}
 
-	client = govultr.NewClient(nil, key)
+	config := &oauth2.Config{}
+	ts := config.TokenSource(context.TODO(), &oauth2.Token{AccessToken: apiKey})
+	client = govultr.NewClient(oauth2.NewClient(context.TODO(), ts))
+
 	client.SetRateLimit(1 * time.Second)
+}
+
+func getPaging(cmd *cobra.Command) *govultr.ListOptions {
+	options := &govultr.ListOptions{}
+
+	cursor, _ := cmd.Flags().GetString("cursor")
+	perPage, _ := cmd.Flags().GetInt("per-page")
+
+	if cursor != "" {
+		options.Cursor = cursor
+	}
+
+	if perPage != 0 {
+		options.PerPage = perPage
+	}
+
+	return options
 }

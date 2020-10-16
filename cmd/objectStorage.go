@@ -19,11 +19,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
@@ -48,13 +45,15 @@ func ObjectStorageCmd() *cobra.Command {
 	objStorageLabelSet.MarkFlagRequired("label")
 
 	// List
-	objStorageList.Flags().StringP("include-s3", "i", "", "(optional) Whether to include s3 keys with each subscription entry. Possible values: 'yes', 'no'. Defaults to 'yes'.")
-
-	// Get
-	objStorageGet.Flags().StringP("include-s3", "i", "", "(optional) Whether to include s3 keys with subscription entry. Possible values: 'yes', 'no'. Defaults to 'yes'.")
+	objStorageList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	objStorageList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
 
 	// Regenerate
 	objStorageS3KeyRegenerate.Flags().StringP("s3-access-key", "s", "", "access key for a given object storage subscription")
+
+	// Cluster List
+	objStorageClusterList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	objStorageClusterList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
 
 	return objStorageCmd
 }
@@ -68,13 +67,12 @@ var objStorageCreate = &cobra.Command{
 		label, _ := cmd.Flags().GetString("label")
 
 		objStorage, err := client.ObjectStorage.Create(context.TODO(), objectStoreClusterID, label)
-
 		if err != nil {
 			fmt.Printf("error creating object storage : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("created object storage - ID : %v\n", objStorage.ID)
+		printer.SingleObjectStorage(objStorage)
 	},
 }
 
@@ -89,10 +87,10 @@ var objStorageLabelSet = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		id, _ := strconv.Atoi(args[0])
+		id := args[0]
 		label, _ := cmd.Flags().GetString("label")
 
-		err := client.ObjectStorage.SetLabel(context.TODO(), id, label)
+		err := client.ObjectStorage.Update(context.TODO(), id, label)
 		if err != nil {
 			fmt.Printf("error setting label : %v\n", err)
 			os.Exit(1)
@@ -107,23 +105,14 @@ var objStorageList = &cobra.Command{
 	Short: "retrieves a list of active object storage subscriptions",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		includeS3, _ := cmd.Flags().GetString("include-s3")
-		options := &govultr.ObjectListOptions{
-			IncludeS3: true,
-		}
-
-		if strings.ToLower(includeS3) == "no" {
-			options.IncludeS3 = false
-		}
-
-		objStorage, err := client.ObjectStorage.List(context.TODO(), options)
-
+		options := getPaging(cmd)
+		objStorage, meta, err := client.ObjectStorage.List(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error getting object storage : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.ObjectStorage(objStorage, options)
+		printer.ObjectStorages(objStorage, meta)
 	},
 }
 
@@ -138,24 +127,14 @@ var objStorageGet = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		includeS3, _ := cmd.Flags().GetString("include-s3")
-		options := &govultr.ObjectListOptions{
-			IncludeS3: true,
-		}
-
-		if strings.ToLower(includeS3) == "no" {
-			options.IncludeS3 = false
-		}
-
-		id, _ := strconv.Atoi(args[0])
+		id := args[0]
 		objStorage, err := client.ObjectStorage.Get(context.TODO(), id)
-
 		if err != nil {
 			fmt.Printf("error getting object storage : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.SingleObjectStorage(objStorage, options)
+		printer.SingleObjectStorage(objStorage)
 	},
 }
 
@@ -164,14 +143,14 @@ var objStorageClusterList = &cobra.Command{
 	Short: "retrieves a list of object storage clusters",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		cluster, err := client.ObjectStorage.ListCluster(context.TODO())
-
+		options := getPaging(cmd)
+		cluster, meta, err := client.ObjectStorage.ListCluster(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error getting object storage clusters : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.ObjectStorageClusterList(cluster)
+		printer.ObjectStorageClusterList(cluster, meta)
 	},
 }
 
@@ -186,10 +165,8 @@ var objStorageS3KeyRegenerate = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		id, _ := strconv.Atoi(args[0])
-		s3AccessKey, _ := cmd.Flags().GetString("s3-access-key")
-		s3Keys, err := client.ObjectStorage.RegenerateKeys(context.TODO(), id, s3AccessKey)
-
+		id := args[0]
+		s3Keys, err := client.ObjectStorage.RegenerateKeys(context.TODO(), id)
 		if err != nil {
 			fmt.Printf("error regenerating object storage keys : %v\n", err)
 			os.Exit(1)
@@ -210,10 +187,8 @@ var objStorageDestroy = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		id, _ := strconv.Atoi(args[0])
-		err := client.ObjectStorage.Delete(context.TODO(), id)
-
-		if err != nil {
+		id := args[0]
+		if err := client.ObjectStorage.Delete(context.TODO(), id); err != nil {
 			fmt.Printf("error destroying object storage subscription : %v\n", err)
 			os.Exit(1)
 		}

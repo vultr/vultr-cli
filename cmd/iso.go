@@ -19,54 +19,69 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
 
+	"github.com/vultr/govultr"
 	"github.com/vultr/vultr-cli/cmd/printer"
 
 	"github.com/spf13/cobra"
 )
 
-// isoCmd represents the iso command
-var isoCmd = &cobra.Command{
-	Use:   "iso",
-	Short: "iso is used to access iso commands",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("iso called")
-	},
-}
-
+// Iso() epresents the iso command
 func Iso() *cobra.Command {
-	isoCmd = &cobra.Command{
+	isoCmd := &cobra.Command{
 		Use:   "iso",
 		Short: "iso is used to access iso commands",
 		Long:  ``,
 	}
 
-	isoCmd.AddCommand(isoPrivate)
-	isoCmd.AddCommand(isoPublic)
-	isoCmd.AddCommand(isoCreate)
+	isoCmd.AddCommand(isoCreate, isoDelete, isoPrivateGet, isoPrivateList, isoPublic)
 	isoCreate.Flags().StringP("url", "u", "", "url from where the ISO will be downloaded")
 	isoCreate.MarkFlagRequired("url")
 
-	isoCmd.AddCommand(isoDelete)
+	isoPrivateList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	isoPrivateList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+
+	isoPublic.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	isoPublic.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
 
 	return isoCmd
 }
 
-var isoPrivate = &cobra.Command{
-	Use:   "private",
+var isoPrivateGet = &cobra.Command{
+	Use:   "get <isoID>",
+	Short: "get private ISO <isoID>",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an ISO id")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		iso, err := client.ISO.Get(context.TODO(), id)
+		if err != nil {
+			fmt.Printf("error getting ISO : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.IsoPrivate(iso)
+	},
+}
+
+var isoPrivateList = &cobra.Command{
+	Use:   "list",
 	Short: "list all private ISOs available",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		isos, err := client.ISO.List(context.TODO())
-
+		options := getPaging(cmd)
+		isos, meta, err := client.ISO.List(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error getting private ISOs : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.IsoPrivate(isos)
+		printer.IsoPrivates(isos, meta)
 	},
 }
 
@@ -75,14 +90,14 @@ var isoPublic = &cobra.Command{
 	Short: "list all public ISOs available",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		isos, err := client.ISO.GetPublicList(context.TODO())
-
+		options := getPaging(cmd)
+		isos, meta, err := client.ISO.ListPublic(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error getting public ISOs : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.IsoPublic(isos)
+		printer.IsoPublic(isos, meta)
 	},
 }
 
@@ -92,14 +107,17 @@ var isoCreate = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		url, _ := cmd.Flags().GetString("url")
-		_, err := client.ISO.CreateFromURL(context.TODO(), url)
+		options := &govultr.ISOReq{
+			Url: url,
+		}
 
+		iso, err := client.ISO.Create(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error creating ISOs : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("ISO is in the process of being created")
+		printer.IsoPrivate(iso)
 	},
 }
 
@@ -116,11 +134,7 @@ var isoDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-
-		i, _ := strconv.Atoi(id)
-		err := client.ISO.Delete(context.TODO(), i)
-
-		if err != nil {
+		if err := client.ISO.Delete(context.TODO(), id); err != nil {
 			fmt.Printf("error deleting ISOs : %v\n", err)
 			os.Exit(1)
 		}

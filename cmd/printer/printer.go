@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"text/tabwriter"
+
+	"github.com/vultr/govultr"
 )
 
 type Printer interface {
@@ -33,4 +35,12 @@ func display(values columns) {
 
 func flush() {
 	tw.Flush()
+}
+
+func Meta(meta *govultr.Meta) {
+	display(columns{"======================================"})
+	col := columns{"TOTAL", "NEXT PAGE", "PREV PAGE"}
+	display(col)
+
+	display(columns{meta.Total, meta.Links.Next, meta.Links.Prev})
 }
