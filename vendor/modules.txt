@@ -2,9 +2,13 @@
 github.com/fsnotify/fsnotify
 # github.com/golang/protobuf v1.3.2
 github.com/golang/protobuf/proto
+# github.com/google/go-querystring v1.0.0
+github.com/google/go-querystring/query
 # github.com/hashicorp/go-cleanhttp v0.5.1
 github.com/hashicorp/go-cleanhttp
-# github.com/hashicorp/go-retryablehttp v0.6.7
+# github.com/hashicorp/go-hclog v0.12.0
+## explicit
+# github.com/hashicorp/go-retryablehttp v0.6.6
 github.com/hashicorp/go-retryablehttp
 # github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
@@ -22,35 +26,45 @@ github.com/inconshreveable/mousetrap
 # github.com/magiconair/properties v1.8.1
 github.com/magiconair/properties
 # github.com/mitchellh/go-homedir v1.1.0
+## explicit
 github.com/mitchellh/go-homedir
 # github.com/mitchellh/mapstructure v1.1.2
 github.com/mitchellh/mapstructure
 # github.com/pelletier/go-toml v1.6.0
+## explicit
 github.com/pelletier/go-toml
 # github.com/spf13/afero v1.2.2
+## explicit
 github.com/spf13/afero
 github.com/spf13/afero/mem
 # github.com/spf13/cast v1.3.0
 github.com/spf13/cast
 # github.com/spf13/cobra v0.0.7
+## explicit
 github.com/spf13/cobra
 # github.com/spf13/jwalterweatherman v1.1.0
+## explicit
 github.com/spf13/jwalterweatherman
 # github.com/spf13/pflag v1.0.5
+## explicit
 github.com/spf13/pflag
 # github.com/spf13/viper v1.7.1
+## explicit
 github.com/spf13/viper
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
-# github.com/vultr/govultr v0.5.0
-github.com/vultr/govultr
+# github.com/vultr/govultr/v2 v2.0.0-beta2
+## explicit
+github.com/vultr/govultr/v2
 # golang.org/x/net v0.0.0-20190620200207-3b0461eec859
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 # golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
+## explicit
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
 # golang.org/x/sys v0.0.0-20191110163157-d32e6e3b99c4
+## explicit
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.2
 golang.org/x/text/transform
@@ -66,4 +80,5 @@ google.golang.org/appengine/urlfetch
 # gopkg.in/ini.v1 v1.51.0
 gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.2.5
+## explicit
 gopkg.in/yaml.v2

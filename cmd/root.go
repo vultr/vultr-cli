@@ -23,7 +23,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 	"golang.org/x/oauth2"
 )
 

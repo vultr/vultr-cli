@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/printer"
 
 	"github.com/spf13/cobra"

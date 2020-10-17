@@ -1,6 +1,6 @@
 package printer
 
-import "github.com/vultr/govultr"
+import "github.com/vultr/govultr/v2"
 
 func NetworkList(network []govultr.Network, meta *govultr.Meta) {
 	col := columns{"ID", "REGION", "DESCRIPTION", "V4 SUBNET", "V4 SUBNET MASK", "DATE CREATED"}

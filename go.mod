@@ -1,6 +1,6 @@
 module github.com/vultr/vultr-cli
 
-go 1.12
+go 1.14
 
 require (
 	github.com/hashicorp/go-hclog v0.12.0 // indirect
@@ -11,10 +11,8 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.1
-	github.com/vultr/govultr v0.5.0
+	github.com/vultr/govultr/v2 v2.0.0-beta2
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sys v0.0.0-20191110163157-d32e6e3b99c4 // indirect
 	gopkg.in/yaml.v2 v2.2.5 // indirect
 )
-
-replace github.com/vultr/govultr v0.5.0 => /Users/mariahmclaughlin/go/src/github.com/mamclaughlin/govultr

@@ -22,7 +22,7 @@ import (
 	"regexp"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 

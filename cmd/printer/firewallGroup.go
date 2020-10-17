@@ -1,7 +1,7 @@
 package printer
 
 import (
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 )
 
 func FirewallGroups(fwg []govultr.FirewallGroup, meta *govultr.Meta) {
