@@ -49,7 +49,7 @@ var regionList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.Region.List(context.TODO(), options)
+		list, meta, err := client.Region.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting region list : %v\n", err)
 			os.Exit(1)
@@ -72,7 +72,7 @@ var regionAvailability = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		regionID := args[0]
 		availType, _ := cmd.Flags().GetString("type")
-		availability, err := client.Region.Availability(context.TODO(), regionID, availType)
+		availability, err := client.Region.Availability(context.Background(), regionID, availType)
 		if err != nil {
 			fmt.Printf("error getting availability : %v\n", err)
 			os.Exit(1)

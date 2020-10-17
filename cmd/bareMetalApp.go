@@ -54,7 +54,7 @@ var bareMetalAppChange = &cobra.Command{
 			AppID: appID,
 		}
 
-		if err := client.BareMetalServer.Update(context.TODO(), args[0], options); err != nil {
+		if err := client.BareMetalServer.Update(context.Background(), args[0], options); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

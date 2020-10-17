@@ -54,7 +54,7 @@ var firewallGroupCreate = &cobra.Command{
 			Description: description,
 		}
 
-		fwg, err := client.FirewallGroup.Create(context.TODO(), options)
+		fwg, err := client.FirewallGroup.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -75,7 +75,7 @@ var firewallGroupDelete = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := client.FirewallGroup.Delete(context.TODO(), args[0]); err != nil {
+		if err := client.FirewallGroup.Delete(context.Background(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -100,7 +100,7 @@ var firewallGroupUpdate = &cobra.Command{
 			Description: description,
 		}
 
-		if err := client.FirewallGroup.Update(context.TODO(), args[0], options); err != nil {
+		if err := client.FirewallGroup.Update(context.Background(), args[0], options); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -120,7 +120,7 @@ var firewallGroupGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.FirewallGroup.List(context.TODO(), options)
+		list, meta, err := client.FirewallGroup.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -136,7 +136,7 @@ var firewallGroupList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.FirewallGroup.List(context.TODO(), options)
+		list, meta, err := client.FirewallGroup.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)

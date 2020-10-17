@@ -109,8 +109,8 @@ func initClient() {
 	}
 
 	config := &oauth2.Config{}
-	ts := config.TokenSource(context.TODO(), &oauth2.Token{AccessToken: apiKey})
-	client = govultr.NewClient(oauth2.NewClient(context.TODO(), ts))
+	ts := config.TokenSource(context.Background(), &oauth2.Token{AccessToken: apiKey})
+	client = govultr.NewClient(oauth2.NewClient(context.Background(), ts))
 
 	client.SetRateLimit(1 * time.Second)
 }

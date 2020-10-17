@@ -202,7 +202,7 @@ var lbCreate = &cobra.Command{
 			options.Instances = instances
 		}
 
-		lb, err := client.LoadBalancer.Create(context.TODO(), options)
+		lb, err := client.LoadBalancer.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error creating load balancer : %v\n", err)
 			os.Exit(1)
@@ -224,7 +224,7 @@ var lbDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.LoadBalancer.Delete(context.TODO(), id); err != nil {
+		if err := client.LoadBalancer.Delete(context.Background(), id); err != nil {
 			fmt.Printf("error deleting load balancer : %v\n", err)
 			os.Exit(1)
 		}
@@ -245,7 +245,7 @@ var lbGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		lb, err := client.LoadBalancer.Get(context.TODO(), id)
+		lb, err := client.LoadBalancer.Get(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error getting load balancer : %v\n", err)
 			os.Exit(1)
@@ -261,7 +261,7 @@ var lbList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.LoadBalancer.List(context.TODO(), options)
+		list, meta, err := client.LoadBalancer.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error listing load balancers : %v\n", err)
 			os.Exit(1)
@@ -385,7 +385,7 @@ var lbUpdate = &cobra.Command{
 			options.Instances = instances
 		}
 
-		if err := client.LoadBalancer.Update(context.TODO(), id, options); err != nil {
+		if err := client.LoadBalancer.Update(context.Background(), id, options); err != nil {
 			fmt.Printf("error updating load balancer : %v\n", err)
 			os.Exit(1)
 		}
@@ -407,7 +407,7 @@ var ruleList = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		options := getPaging(cmd)
-		rules, meta, err := client.LoadBalancer.ListForwardingRules(context.TODO(), id, options)
+		rules, meta, err := client.LoadBalancer.ListForwardingRules(context.Background(), id, options)
 		if err != nil {
 			fmt.Printf("error listing load balancer rules : %v\n", err)
 			os.Exit(1)
@@ -430,7 +430,7 @@ var ruleCreate = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		options := &govultr.ForwardingRule{}
-		rule, err := client.LoadBalancer.CreateForwardingRule(context.TODO(), id, options)
+		rule, err := client.LoadBalancer.CreateForwardingRule(context.Background(), id, options)
 		if err != nil {
 			fmt.Printf("error listing load balancer rules : %v\n", err)
 			os.Exit(1)
@@ -453,7 +453,7 @@ var ruleGet = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		ruleID := args[1]
-		rule, err := client.LoadBalancer.GetForwardingRule(context.TODO(), id, ruleID)
+		rule, err := client.LoadBalancer.GetForwardingRule(context.Background(), id, ruleID)
 		if err != nil {
 			fmt.Printf("error getting load balancer rule : %v\n", err)
 			os.Exit(1)
@@ -477,7 +477,7 @@ var ruleDelete = &cobra.Command{
 		id := args[0]
 		ruleID := args[1]
 
-		if err := client.LoadBalancer.DeleteForwardingRule(context.TODO(), id, ruleID); err != nil {
+		if err := client.LoadBalancer.DeleteForwardingRule(context.Background(), id, ruleID); err != nil {
 			fmt.Printf("error deleting load balancer rule : %v\n", err)
 			os.Exit(1)
 		}

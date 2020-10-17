@@ -69,7 +69,7 @@ var domainCreate = &cobra.Command{
 			IP:     ip,
 		}
 
-		dns, err := client.Domain.Create(context.TODO(), options)
+		dns, err := client.Domain.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error creating dns domain : %v\n", err)
 			os.Exit(1)
@@ -92,7 +92,7 @@ var domainDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		domain := args[0]
-		if err := client.Domain.Delete(context.TODO(), domain); err != nil {
+		if err := client.Domain.Delete(context.Background(), domain); err != nil {
 			fmt.Printf("error delete dns domain : %v\n", err)
 			os.Exit(1)
 		}
@@ -114,7 +114,7 @@ var secEnable = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		domain := args[0]
 		enabled, _ := cmd.Flags().GetString("enabled")
-		if err := client.Domain.Update(context.TODO(), domain, enabled); err != nil {
+		if err := client.Domain.Update(context.Background(), domain, enabled); err != nil {
 			fmt.Printf("error toggling dnssec : %v\n", err)
 			os.Exit(1)
 		}
@@ -135,7 +135,7 @@ var secInfo = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		domain := args[0]
-		info, err := client.Domain.GetDnsSec(context.TODO(), domain)
+		info, err := client.Domain.GetDnsSec(context.Background(), domain)
 		if err != nil {
 			fmt.Printf("error getting dnssec info : %v\n", err)
 			os.Exit(1)
@@ -151,7 +151,7 @@ var domainGet = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		domain, err := client.Domain.Get(context.TODO(), id)
+		domain, err := client.Domain.Get(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error getting domain : %v\n", err)
 			os.Exit(1)
@@ -167,7 +167,7 @@ var domainList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.Domain.List(context.TODO(), options)
+		list, meta, err := client.Domain.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting domains : %v\n", err)
 			os.Exit(1)
@@ -189,7 +189,7 @@ var soaInfo = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		domain := args[0]
-		info, err := client.Domain.GetSoa(context.TODO(), domain)
+		info, err := client.Domain.GetSoa(context.Background(), domain)
 		if err != nil {
 			fmt.Printf("error toggling dnssec : %v\n", err)
 			os.Exit(1)
@@ -219,7 +219,7 @@ var soaUpdate = &cobra.Command{
 			Email:     email,
 		}
 
-		if err := client.Domain.UpdateSoa(context.TODO(), domain, soaUpdate); err != nil {
+		if err := client.Domain.UpdateSoa(context.Background(), domain, soaUpdate); err != nil {
 			fmt.Printf("error toggling dnssec : %v\n", err)
 			os.Exit(1)
 		}

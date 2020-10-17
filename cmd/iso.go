@@ -59,7 +59,7 @@ var isoPrivateGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		iso, err := client.ISO.Get(context.TODO(), id)
+		iso, err := client.ISO.Get(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error getting ISO : %v\n", err)
 			os.Exit(1)
@@ -75,7 +75,7 @@ var isoPrivateList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		isos, meta, err := client.ISO.List(context.TODO(), options)
+		isos, meta, err := client.ISO.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting private ISOs : %v\n", err)
 			os.Exit(1)
@@ -91,7 +91,7 @@ var isoPublic = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		isos, meta, err := client.ISO.ListPublic(context.TODO(), options)
+		isos, meta, err := client.ISO.ListPublic(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting public ISOs : %v\n", err)
 			os.Exit(1)
@@ -111,7 +111,7 @@ var isoCreate = &cobra.Command{
 			Url: url,
 		}
 
-		iso, err := client.ISO.Create(context.TODO(), options)
+		iso, err := client.ISO.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error creating ISOs : %v\n", err)
 			os.Exit(1)
@@ -134,7 +134,7 @@ var isoDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.ISO.Delete(context.TODO(), id); err != nil {
+		if err := client.ISO.Delete(context.Background(), id); err != nil {
 			fmt.Printf("error deleting ISOs : %v\n", err)
 			os.Exit(1)
 		}

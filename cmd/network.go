@@ -61,7 +61,7 @@ var networkGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		network, err := client.Network.Get(context.TODO(), id)
+		network, err := client.Network.Get(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error getting network : %v\n", err)
 			os.Exit(1)
@@ -77,7 +77,7 @@ var networkList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		network, meta, err := client.Network.List(context.TODO(), options)
+		network, meta, err := client.Network.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting network list : %v\n", err)
 			os.Exit(1)
@@ -100,7 +100,7 @@ var networkDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.Network.Delete(context.TODO(), id); err != nil {
+		if err := client.Network.Delete(context.Background(), id); err != nil {
 			fmt.Printf("error deleting network : %v\n", err)
 			os.Exit(1)
 		}
@@ -126,7 +126,7 @@ var networkCreate = &cobra.Command{
 			V4SubnetMask: size,
 		}
 
-		network, err := client.Network.Create(context.TODO(), options)
+		network, err := client.Network.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error creating network : %v\n", err)
 			os.Exit(1)
