@@ -20,7 +20,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vultr/govultr/v2"
@@ -47,9 +46,9 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-	cobra.OnInitialize(initClient)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.vultr-cli.yaml)")
+	rootCmd.AddCommand(versionCmd)
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", configHome(), "config file (default is $HOME/.vultr-cli.yaml)")
+	viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.AddCommand(accountCmd)
 	rootCmd.AddCommand(Applications())
@@ -70,49 +69,48 @@ func init() {
 	rootCmd.AddCommand(Server())
 	rootCmd.AddCommand(Snapshot())
 	rootCmd.AddCommand(SSHKey())
-	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(User())
+	cobra.OnInitialize(initConfig)
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
+	var token string
+	configPath := viper.GetString("config")
+
+	if configPath == "" {
+		cfgDir, err := os.UserHomeDir()
 		if err != nil {
-			fmt.Println(err)
 			os.Exit(1)
 		}
-
-		// Search config in home directory with name ".vultr-cli" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".vultr-cli")
+		configPath = fmt.Sprintf("%s/.vultr-cli.yaml", cfgDir)
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	viper.AutomaticEnv()
+	viper.SetConfigType("yaml")
+	viper.SetConfigFile(configPath)
 
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Println("Error Reading in file:", viper.ConfigFileUsed())
 	}
-}
 
-func initClient() {
-	apiKey := os.Getenv("VULTR_API_KEY")
-	if apiKey == "" {
-		fmt.Println("Please export your VULTR API key as an environment variable, eg:")
+	token = viper.GetString("api-key")
+	if token == "" {
+		token = os.Getenv("VULTR_API_KEY")
+	}
+
+	if token == "" {
+		fmt.Println("Please export your VULTR API key as an environment variable or add `api-key` to your config file, eg:")
 		fmt.Println("export VULTR_API_KEY='<api_key_from_vultr_account>'")
 		os.Exit(1)
 	}
 
 	config := &oauth2.Config{}
-	ts := config.TokenSource(context.Background(), &oauth2.Token{AccessToken: apiKey})
+	ts := config.TokenSource(context.Background(), &oauth2.Token{AccessToken: token})
 	client = govultr.NewClient(oauth2.NewClient(context.Background(), ts))
 
 	client.SetRateLimit(1 * time.Second)
+
 }
 
 func getPaging(cmd *cobra.Command) *govultr.ListOptions {
@@ -130,4 +128,23 @@ func getPaging(cmd *cobra.Command) *govultr.ListOptions {
 	}
 
 	return options
+}
+
+func configHome() string {
+	configHome, err := os.UserHomeDir()
+	if err != nil {
+		os.Exit(1)
+	}
+
+	configHome = fmt.Sprintf("%s/.vultr-cli.yaml", configHome)
+	if _, err := os.Stat(configHome); err != nil {
+		f, err := os.Create(configHome)
+		if err != nil {
+			os.Exit(1)
+		}
+		defer f.Close()
+
+	}
+
+	return configHome
 }
