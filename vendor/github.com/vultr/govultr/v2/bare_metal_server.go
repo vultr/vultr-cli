@@ -12,13 +12,14 @@ const bmPath = "/v2/bare-metals"
 
 // BareMetalServerService is the interface to interact with the bare metal endpoints on the Vultr API
 type BareMetalServerService interface {
-	Create(ctx context.Context, bmCreate *BareMetalReq) (*BareMetalServer, error)
+	Create(ctx context.Context, bmCreate *BareMetalCreate) (*BareMetalServer, error)
 	Get(ctx context.Context, serverID string) (*BareMetalServer, error)
-	Update(ctx context.Context, serverID string, bmReq *BareMetalReq) error
+	Update(ctx context.Context, serverID string, bmReq *BareMetalUpdate) error
 	Delete(ctx context.Context, serverID string) error
 	List(ctx context.Context, options *ListOptions) ([]BareMetalServer, *Meta, error)
 
 	GetBandwidth(ctx context.Context, serverID string) (*Bandwidth, error)
+	GetUserData(ctx context.Context, serverID string) (*UserData, error)
 
 	ListIPv4s(ctx context.Context, serverID string, options *ListOptions) ([]IPv4, *Meta, error)
 	ListIPv6s(ctx context.Context, serverID string, options *ListOptions) ([]IPv6, *Meta, error)
@@ -62,8 +63,8 @@ type BareMetalServer struct {
 	Features        []string `json:"features"`
 }
 
-// BareMetalReq represents the optional parameters that can be set when creating or updating a bare metal server
-type BareMetalReq struct {
+// BareMetalCreate represents the optional parameters that can be set when creating a bare metal server
+type BareMetalCreate struct {
 	Region          string   `json:"region,omitempty"`
 	Plan            string   `json:"plan,omitempty"`
 	OsID            int      `json:"os_id,omitempty"`
@@ -78,6 +79,16 @@ type BareMetalReq struct {
 	Hostname        string   `json:"hostname,omitempty"`
 	Tag             string   `json:"tag,omitempty"`
 	ReservedIPv4    string   `json:"reserved_ipv4,omitempty"`
+}
+
+// BareMetalUpdate represents the optional parameters that can be set when updating a bare metal server
+type BareMetalUpdate struct {
+	OsID       int    `json:"os_id,omitempty"`
+	EnableIPv6 bool   `json:"enable_ipv6,omitempty"`
+	Label      string `json:"label,omitempty"`
+	AppID      int    `json:"app_id,omitempty"`
+	UserData   string `json:"user_data,omitempty"`
+	Tag        string `json:"tag,omitempty"`
 }
 
 // BareMetalServerBandwidth represents bandwidth information for a bare metal server
@@ -100,7 +111,7 @@ type BMBareMetalBase struct {
 }
 
 // Create a new bare metal server.
-func (b *BareMetalServerServiceHandler) Create(ctx context.Context, bmCreate *BareMetalReq) (*BareMetalServer, error) {
+func (b *BareMetalServerServiceHandler) Create(ctx context.Context, bmCreate *BareMetalCreate) (*BareMetalServer, error) {
 	req, err := b.client.NewRequest(ctx, http.MethodPost, bmPath, bmCreate)
 	if err != nil {
 		return nil, err
@@ -131,7 +142,7 @@ func (b *BareMetalServerServiceHandler) Get(ctx context.Context, serverID string
 }
 
 // Update will update the given bare metal. Empty values are ignored
-func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID string, bmReq *BareMetalReq) error {
+func (b *BareMetalServerServiceHandler) Update(ctx context.Context, serverID string, bmReq *BareMetalUpdate) error {
 	uri := fmt.Sprintf("%s/%s", bmPath, serverID)
 	req, err := b.client.NewRequest(ctx, http.MethodPatch, uri, bmReq)
 	if err != nil {
@@ -197,6 +208,22 @@ func (b *BareMetalServerServiceHandler) GetBandwidth(ctx context.Context, server
 	}
 
 	return bms, nil
+}
+
+// GetUserData from given bareMetal. The userdata returned will be in base64 encoding.
+func (i *BareMetalServerServiceHandler) GetUserData(ctx context.Context, serverID string) (*UserData, error) {
+	uri := fmt.Sprintf("%s/%s/user-data", bmPath, serverID)
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	userData := new(userDataBase)
+	if err = i.client.DoWithContext(ctx, req, userData); err != nil {
+		return nil, err
+	}
+
+	return userData.UserData, nil
 }
 
 // ListIPv4s will List the IPv4 information of a bare metal server.
@@ -299,7 +326,7 @@ func (b *BareMetalServerServiceHandler) Reinstall(ctx context.Context, serverID 
 
 // Start will start a list of bare metal servers the machine is already running, it will be restarted.
 func (b *BareMetalServerServiceHandler) MassStart(ctx context.Context, serverList []string) error {
-	uri := fmt.Sprintf("%s/start", instancePath)
+	uri := fmt.Sprintf("%s/start", bmPath)
 
 	reqBody := RequestBody{"baremetal_ids": serverList}
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
@@ -316,7 +343,7 @@ func (b *BareMetalServerServiceHandler) MassStart(ctx context.Context, serverLis
 
 // Halt will pause a list of bare metals.
 func (b *BareMetalServerServiceHandler) MassHalt(ctx context.Context, serverList []string) error {
-	uri := fmt.Sprintf("%s/halt", instancePath)
+	uri := fmt.Sprintf("%s/halt", bmPath)
 
 	reqBody := RequestBody{"baremetal_ids": serverList}
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
@@ -331,9 +358,9 @@ func (b *BareMetalServerServiceHandler) MassHalt(ctx context.Context, serverList
 	return nil
 }
 
-// MassReboot reboots a list of instances.
+// MassReboot reboots a list of bare metals.
 func (b *BareMetalServerServiceHandler) MassReboot(ctx context.Context, serverList []string) error {
-	uri := fmt.Sprintf("%s/reboot", instancePath)
+	uri := fmt.Sprintf("%s/reboot", bmPath)
 
 	reqBody := RequestBody{"baremetal_ids": serverList}
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, reqBody)

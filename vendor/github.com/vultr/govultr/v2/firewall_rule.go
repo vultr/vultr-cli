@@ -75,7 +75,7 @@ func (f *FireWallRuleServiceHandler) Create(ctx context.Context, fwGroupID strin
 func (f *FireWallRuleServiceHandler) Get(ctx context.Context, fwGroupID string, fwRuleID int) (*FirewallRule, error) {
 	uri := fmt.Sprintf("/v2/firewalls/%s/rules/%d", fwGroupID, fwRuleID)
 
-	req, err := f.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	req, err := f.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, err
 	}

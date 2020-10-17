@@ -145,7 +145,7 @@ type backupScheduleBase struct {
 type BackupSchedule struct {
 	Enabled             bool   `json:"enabled,omitempty"`
 	Type                string `json:"type,omitempty"`
-	NextScheduleTimeUTC string `json:"next_run_utc,omitempty"`
+	NextScheduleTimeUTC string `json:"next_scheduled_time_utc,omitempty"`
 	Hour                int    `json:"hour,omitempty"`
 	Dow                 int    `json:"dow,omitempty"`
 	Dom                 int    `json:"dom,omitempty"`

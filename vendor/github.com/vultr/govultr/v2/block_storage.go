@@ -20,7 +20,6 @@ type BlockStorageService interface {
 
 	Attach(ctx context.Context, blockID string, attach *BlockStorageAttach) error
 	Detach(ctx context.Context, blockID string, detach *BlockStorageDetach) error
-	Resize(ctx context.Context, blockID string, sizeGB int) error
 }
 
 // BlockStorageServiceHandler handles interaction with the block-storage methods for the Vultr API
@@ -186,23 +185,6 @@ func (b *BlockStorageServiceHandler) Detach(ctx context.Context, blockID string,
 	uri := fmt.Sprintf("/v2/blocks/%s/detach", blockID)
 
 	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, detach)
-	if err != nil {
-		return err
-	}
-
-	if err = b.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Resize allows you to resize your Vultr block storage
-func (b *BlockStorageServiceHandler) Resize(ctx context.Context, blockID string, sizeGB int) error {
-	uri := fmt.Sprintf("/v2/blocks/%s/resize", blockID)
-	body := &RequestBody{"size_gb": sizeGB}
-
-	req, err := b.client.NewRequest(ctx, http.MethodPost, uri, body)
 	if err != nil {
 		return err
 	}

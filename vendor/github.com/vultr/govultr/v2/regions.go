@@ -10,7 +10,7 @@ import (
 
 // RegionService is the interface to interact with Region endpoints on the Vultr API
 type RegionService interface {
-	Availability(ctx context.Context, regionID string, planType string) (*planAvailability, error)
+	Availability(ctx context.Context, regionID string, planType string) (*PlanAvailability, error)
 	List(ctx context.Context, options *ListOptions) ([]Region, *Meta, error)
 }
 
@@ -35,7 +35,7 @@ type regionBase struct {
 	Meta    *Meta
 }
 
-type planAvailability struct {
+type PlanAvailability struct {
 	AvailablePlans []string `json:"available_plans"`
 }
 
@@ -64,7 +64,7 @@ func (r *RegionServiceHandler) List(ctx context.Context, options *ListOptions) (
 }
 
 // Availability retrieves a list of the plan IDs currently available for a given location.
-func (r *RegionServiceHandler) Availability(ctx context.Context, regionID string, planType string) (*planAvailability, error) {
+func (r *RegionServiceHandler) Availability(ctx context.Context, regionID string, planType string) (*PlanAvailability, error) {
 	uri := fmt.Sprintf("/v2/regions/%s/availability", regionID)
 
 	req, err := r.Client.NewRequest(ctx, http.MethodGet, uri, nil)
@@ -80,7 +80,7 @@ func (r *RegionServiceHandler) Availability(ctx context.Context, regionID string
 		req.URL.RawQuery = q.Encode()
 	}
 
-	plans := new(planAvailability)
+	plans := new(PlanAvailability)
 	if err = r.Client.DoWithContext(ctx, req, plans); err != nil {
 		return nil, err
 	}
