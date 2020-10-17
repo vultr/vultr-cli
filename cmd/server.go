@@ -570,7 +570,7 @@ var backupCreate = &cobra.Command{
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			errors.New("please provide an instanceID")
+			return errors.New("please provide an instanceID")
 		}
 		return nil
 	},
@@ -1077,7 +1077,7 @@ var getUserData = &cobra.Command{
 }
 
 func optionCheck(options map[string]interface{}) (string, error) {
-	result := []string{}
+	var result []string
 	for k, v := range options {
 		if v != "" {
 			result = append(result, k)
@@ -1085,7 +1085,7 @@ func optionCheck(options map[string]interface{}) (string, error) {
 	}
 
 	if len(result) > 1 {
-		return "", fmt.Errorf("Too many options have been selected : %v : please select one", result)
+		return "", fmt.Errorf("too many options have been selected : %v : please select one", result)
 	}
 
 	// Return back an empty slice so we can possibly add in osID

@@ -488,7 +488,7 @@ var ruleDelete = &cobra.Command{
 
 // formatFWRules parses forwarding rules into proper format
 func formatFWRules(rules []string) ([]govultr.ForwardingRule, error) {
-	formattedList := []govultr.ForwardingRule{}
+	var formattedList []govultr.ForwardingRule
 	rulesList := strings.Split(rules[0], ",,")
 
 	for _, r := range rulesList {

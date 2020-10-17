@@ -331,7 +331,7 @@ var bareMetalReinstall = &cobra.Command{
 }
 
 func optionCheckBM(options map[string]interface{}) (string, error) {
-	result := []string{}
+	var result []string
 
 	for k, v := range options {
 		switch v.(type) {
@@ -347,7 +347,7 @@ func optionCheckBM(options map[string]interface{}) (string, error) {
 	}
 
 	if len(result) > 1 {
-		return "", fmt.Errorf("Too many options have been selected : %v : please select one", result)
+		return "", fmt.Errorf("too many options have been selected : %v : please select one", result)
 	}
 
 	// Return back an empty slice so we can possibly add in osID
