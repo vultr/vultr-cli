@@ -23,7 +23,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
@@ -212,7 +212,7 @@ var serverStart = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.Instance.Start(context.TODO(), id); err != nil {
+		if err := client.Instance.Start(context.Background(), id); err != nil {
 			fmt.Printf("error starting server : %v\n", err)
 			os.Exit(1)
 		}
@@ -233,7 +233,7 @@ var serverStop = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.Instance.Halt(context.TODO(), id); err != nil {
+		if err := client.Instance.Halt(context.Background(), id); err != nil {
 			fmt.Printf("error stopping server : %v\n", err)
 			os.Exit(1)
 		}
@@ -254,7 +254,7 @@ var serverRestart = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.Instance.Reboot(context.TODO(), id); err != nil {
+		if err := client.Instance.Reboot(context.Background(), id); err != nil {
 			fmt.Printf("error rebooting server : %v\n", err)
 			os.Exit(1)
 		}
@@ -275,7 +275,7 @@ var serverReinstall = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.Instance.Reinstall(context.TODO(), id); err != nil {
+		if err := client.Instance.Reinstall(context.Background(), id); err != nil {
 			fmt.Printf("error reinstalling server : %v\n", err)
 			os.Exit(1)
 		}
@@ -301,7 +301,7 @@ var serverTag = &cobra.Command{
 			Tag: tag,
 		}
 
-		if err := client.Instance.Update(context.TODO(), id, options); err != nil {
+		if err := client.Instance.Update(context.Background(), id, options); err != nil {
 			fmt.Printf("error adding tag to server : %v\n", err)
 			os.Exit(1)
 		}
@@ -323,7 +323,7 @@ var serverDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.Instance.Delete(context.TODO(), id); err != nil {
+		if err := client.Instance.Delete(context.Background(), id); err != nil {
 			fmt.Printf("error deleting server : %v\n", err)
 			os.Exit(1)
 		}
@@ -349,7 +349,7 @@ var serverLabel = &cobra.Command{
 			Label: label,
 		}
 
-		if err := client.Instance.Update(context.TODO(), id, options); err != nil {
+		if err := client.Instance.Update(context.Background(), id, options); err != nil {
 			fmt.Printf("error labeling server : %v\n", err)
 			os.Exit(1)
 		}
@@ -370,7 +370,7 @@ var serverBandwidth = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		bw, err := client.Instance.GetBandwidth(context.TODO(), id)
+		bw, err := client.Instance.GetBandwidth(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error getting bandwidth for server : %v\n", err)
 			os.Exit(1)
@@ -394,7 +394,7 @@ var serverIPV4List = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		options := getPaging(cmd)
-		v4, meta, err := client.Instance.ListIPv4(context.TODO(), id, options)
+		v4, meta, err := client.Instance.ListIPv4(context.Background(), id, options)
 		if err != nil {
 			fmt.Printf("error getting ipv4 info : %v\n", err)
 			os.Exit(1)
@@ -570,7 +570,7 @@ var backupCreate = &cobra.Command{
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			errors.New("please provide an instanceID")
+			return errors.New("please provide an instanceID")
 		}
 		return nil
 	},
@@ -1077,7 +1077,7 @@ var getUserData = &cobra.Command{
 }
 
 func optionCheck(options map[string]interface{}) (string, error) {
-	result := []string{}
+	var result []string
 	for k, v := range options {
 		if v != "" {
 			result = append(result, k)
@@ -1085,7 +1085,7 @@ func optionCheck(options map[string]interface{}) (string, error) {
 	}
 
 	if len(result) > 1 {
-		return "", fmt.Errorf("Too many options have been selected : %v : please select one", result)
+		return "", fmt.Errorf("too many options have been selected : %v : please select one", result)
 	}
 
 	// Return back an empty slice so we can possibly add in osID

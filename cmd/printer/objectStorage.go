@@ -1,7 +1,7 @@
 package printer
 
 import (
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 )
 
 func ObjectStorages(obj []govultr.ObjectStorage, meta *govultr.Meta) {

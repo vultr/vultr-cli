@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
@@ -81,7 +81,7 @@ var userCreate = &cobra.Command{
 			options.APIEnabled = true
 		}
 
-		user, err := client.User.Create(context.TODO(), options)
+		user, err := client.User.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error creating user : %v\n", err)
 			os.Exit(1)
@@ -105,7 +105,7 @@ var userDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.User.Delete(context.TODO(), id); err != nil {
+		if err := client.User.Delete(context.Background(), id); err != nil {
 			fmt.Printf("error deleting user : %v\n", err)
 			os.Exit(1)
 		}
@@ -127,7 +127,7 @@ var userGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		user, err := client.User.Get(context.TODO(), id)
+		user, err := client.User.Get(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error getting user : %v\n", err)
 			os.Exit(1)
@@ -144,7 +144,7 @@ var userList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.User.List(context.TODO(), options)
+		list, meta, err := client.User.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error while grabbing users %v\n", err)
 			os.Exit(1)
@@ -197,7 +197,7 @@ var userUpdate = &cobra.Command{
 			user.ACL = acl
 		}
 
-		if err := client.User.Update(context.TODO(), id, user); err != nil {
+		if err := client.User.Update(context.Background(), id, user); err != nil {
 			fmt.Printf("error updating user : %v\n", err)
 			os.Exit(1)
 		}

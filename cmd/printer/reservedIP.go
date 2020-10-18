@@ -1,6 +1,6 @@
 package printer
 
-import "github.com/vultr/govultr"
+import "github.com/vultr/govultr/v2"
 
 func ReservedIPList(reservedIP []govultr.ReservedIP, meta *govultr.Meta) {
 	col := columns{"ID", "REGION", "IP TYPE", "SUBNET", "SUBNET SIZE", "LABEL", "ATTACHED TO"}

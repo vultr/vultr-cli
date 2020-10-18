@@ -22,7 +22,7 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
@@ -88,7 +88,7 @@ var firewallRuleCreate = &cobra.Command{
 			options.Source = source
 		}
 
-		fwr, err := client.FirewallRule.Create(context.TODO(), id, options)
+		fwr, err := client.FirewallRule.Create(context.Background(), id, options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -110,7 +110,7 @@ var firewallRuleDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		rule, _ := strconv.Atoi(args[1])
-		if err := client.FirewallRule.Delete(context.TODO(), args[0], rule); err != nil {
+		if err := client.FirewallRule.Delete(context.Background(), args[0], rule); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -129,7 +129,7 @@ var firewallRuleGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		ruleNumber, _ := strconv.Atoi(args[1])
-		fwRule, err := client.FirewallRule.Get(context.TODO(), args[0], ruleNumber)
+		fwRule, err := client.FirewallRule.Get(context.Background(), args[0], ruleNumber)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -151,7 +151,7 @@ var firewallRuleList = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.FirewallRule.List(context.TODO(), args[0], options)
+		list, meta, err := client.FirewallRule.List(context.Background(), args[0], options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)

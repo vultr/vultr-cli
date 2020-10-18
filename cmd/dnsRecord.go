@@ -22,7 +22,7 @@ import (
 	"regexp"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
@@ -87,7 +87,7 @@ var recordCreate = &cobra.Command{
 			Priority: &priority,
 		}
 
-		record, err := client.DomainRecord.Create(context.TODO(), domain, options)
+		record, err := client.DomainRecord.Create(context.Background(), domain, options)
 		if err != nil {
 			fmt.Printf("error while creating dns record : %v\n", err)
 			os.Exit(1)
@@ -111,7 +111,7 @@ var recordGet = &cobra.Command{
 		domain := args[0]
 		id := args[1]
 
-		record, err := client.DomainRecord.Get(context.TODO(), domain, id)
+		record, err := client.DomainRecord.Get(context.Background(), domain, id)
 		if err != nil {
 			fmt.Printf("error while getting dns records : %v\n", err)
 			os.Exit(1)
@@ -135,7 +135,7 @@ var recordlist = &cobra.Command{
 		domain := args[0]
 		options := getPaging(cmd)
 
-		records, meta, err := client.DomainRecord.List(context.TODO(), domain, options)
+		records, meta, err := client.DomainRecord.List(context.Background(), domain, options)
 		if err != nil {
 			fmt.Printf("error while getting dns records : %v\n", err)
 			os.Exit(1)
@@ -160,7 +160,7 @@ var recordDelete = &cobra.Command{
 		domain := args[0]
 		id := args[1]
 
-		if err := client.DomainRecord.Delete(context.TODO(), domain, id); err != nil {
+		if err := client.DomainRecord.Delete(context.Background(), domain, id); err != nil {
 			fmt.Printf("error while deleting dns record : %v\n", err)
 			os.Exit(1)
 		}
@@ -209,7 +209,7 @@ var recordUpdate = &cobra.Command{
 			updates.Priority = &priority
 		}
 
-		if err := client.DomainRecord.Update(context.TODO(), domain, id, updates); err != nil {
+		if err := client.DomainRecord.Update(context.Background(), domain, id, updates); err != nil {
 			fmt.Printf("error updating dns record : %v\n", err)
 			os.Exit(1)
 		}

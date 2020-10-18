@@ -1,4 +1,4 @@
-// Copyright © 2019 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2019 The Vultr-cli Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
@@ -89,7 +89,7 @@ var bsAttach = &cobra.Command{
 			Live:       live,
 		}
 
-		if err := client.BlockStorage.Attach(context.TODO(), id, bsAttach); err != nil {
+		if err := client.BlockStorage.Attach(context.Background(), id, bsAttach); err != nil {
 			fmt.Printf("error attaching block storage : %v\n", err)
 			os.Exit(1)
 		}
@@ -113,7 +113,7 @@ var bsCreate = &cobra.Command{
 			Label:  label,
 		}
 
-		bs, err := client.BlockStorage.Create(context.TODO(), bsCreate)
+		bs, err := client.BlockStorage.Create(context.Background(), bsCreate)
 		if err != nil {
 			fmt.Printf("error creating block storage : %v\n", err)
 			os.Exit(1)
@@ -137,7 +137,7 @@ var bsDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.BlockStorage.Delete(context.TODO(), id); err != nil {
+		if err := client.BlockStorage.Delete(context.Background(), id); err != nil {
 			fmt.Printf("error deleting block storage : %v\n", err)
 			os.Exit(1)
 		}
@@ -164,7 +164,7 @@ var bsDetach = &cobra.Command{
 			Live: live,
 		}
 
-		if err := client.BlockStorage.Detach(context.TODO(), id, bsDetach); err != nil {
+		if err := client.BlockStorage.Detach(context.Background(), id, bsDetach); err != nil {
 			fmt.Printf("error detaching block storage : %v\n", err)
 			os.Exit(1)
 		}
@@ -191,7 +191,7 @@ var bsLabelSet = &cobra.Command{
 			Label: label,
 		}
 
-		if err := client.BlockStorage.Update(context.TODO(), id, options); err != nil {
+		if err := client.BlockStorage.Update(context.Background(), id, options); err != nil {
 			fmt.Printf("error setting label : %v\n", err)
 			os.Exit(1)
 		}
@@ -207,7 +207,7 @@ var bsList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		bs, meta, err := client.BlockStorage.List(context.TODO(), options)
+		bs, meta, err := client.BlockStorage.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting block storage : %v\n", err)
 			os.Exit(1)
@@ -235,7 +235,7 @@ var bsResize = &cobra.Command{
 			SizeGB: size,
 		}
 
-		if err := client.BlockStorage.Update(context.TODO(), id, options); err != nil {
+		if err := client.BlockStorage.Update(context.Background(), id, options); err != nil {
 			fmt.Printf("error resizing block storage : %v\n", err)
 			os.Exit(1)
 		}

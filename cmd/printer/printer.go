@@ -5,7 +5,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 )
 
 type Printer interface {

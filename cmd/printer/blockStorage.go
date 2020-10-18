@@ -3,7 +3,7 @@ package printer
 import (
 	"fmt"
 
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 )
 
 func BlockStorage(bs []govultr.BlockStorage, meta *govultr.Meta) {

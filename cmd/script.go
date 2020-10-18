@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
@@ -69,7 +69,7 @@ var scriptCreate = &cobra.Command{
 			Type:   scriptType,
 		}
 
-		startup, err := client.StartupScript.Create(context.TODO(), options)
+		startup, err := client.StartupScript.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -93,7 +93,7 @@ var scriptDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.StartupScript.Delete(context.TODO(), id); err != nil {
+		if err := client.StartupScript.Delete(context.Background(), id); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -109,7 +109,7 @@ var scriptList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.StartupScript.List(context.TODO(), options)
+		list, meta, err := client.StartupScript.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -132,7 +132,7 @@ var scriptGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		script, err := client.StartupScript.Get(context.TODO(), id)
+		script, err := client.StartupScript.Get(context.Background(), id)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -173,7 +173,7 @@ var scriptUpdate = &cobra.Command{
 			s.Type = scriptType
 		}
 
-		if err := client.StartupScript.Update(context.TODO(), id, s); err != nil {
+		if err := client.StartupScript.Update(context.Background(), id, s); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

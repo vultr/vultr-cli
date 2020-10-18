@@ -48,7 +48,7 @@ var bareMetalGetUserData = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		u, err := client.BareMetalServer.GetUserData(context.TODO(), args[0])
+		u, err := client.BareMetalServer.GetUserData(context.Background(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)

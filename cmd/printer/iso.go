@@ -1,6 +1,6 @@
 package printer
 
-import "github.com/vultr/govultr"
+import "github.com/vultr/govultr/v2"
 
 func IsoPrivates(iso []govultr.ISO, meta *govultr.Meta) {
 	col := columns{"ID", "FILE NAME", "SIZE", "STATUS", "MD5SUM", "SHA512SUM", "DATE CREATED"}
