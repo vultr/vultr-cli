@@ -40,6 +40,7 @@ func BareMetal() *cobra.Command {
 		bareMetalDelete,
 		bareMetalHalt,
 		bareMetalGet,
+		bareMetalGetVNCUrl,
 		bareMetalListIPV4,
 		bareMetalListIPV6,
 		bareMetalList,
@@ -184,7 +185,7 @@ var bareMetalList = &cobra.Command{
 
 var bareMetalGet = &cobra.Command{
 	Use:   "get <bareMetalID>",
-	Short: "Get a bare metal server's by <bareMetalID>",
+	Short: "Get a bare metal server by <bareMetalID>",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a bareMetalID")
@@ -199,6 +200,26 @@ var bareMetalGet = &cobra.Command{
 		}
 
 		printer.BareMetal(srv)
+	},
+}
+
+var bareMetalGetVNCUrl = &cobra.Command{
+	Use:   "get <bareMetalID>",
+	Short: "Get a bare metal server's VNC url by <bareMetalID>",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		vnc, err := client.BareMetalServer.GetVNCUrl(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("%v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println(vnc)
 	},
 }
 
