@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
@@ -136,7 +136,7 @@ var bareMetalCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		bm, err := client.BareMetalServer.Create(context.Background(), options)
+		bm, err := client.BareMetalServer.Create(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -157,7 +157,7 @@ var bareMetalDelete = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := client.BareMetalServer.Delete(context.Background(), args[0]); err != nil {
+		if err := client.BareMetalServer.Delete(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -172,7 +172,7 @@ var bareMetalList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.BareMetalServer.List(context.Background(), options)
+		list, meta, err := client.BareMetalServer.List(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -192,7 +192,7 @@ var bareMetalGet = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		srv, err := client.BareMetalServer.Get(context.Background(), args[0])
+		srv, err := client.BareMetalServer.Get(context.TODO(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -213,7 +213,7 @@ var bareMetalBandwidth = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		bw, err := client.BareMetalServer.GetBandwidth(context.Background(), args[0])
+		bw, err := client.BareMetalServer.GetBandwidth(context.TODO(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -236,7 +236,7 @@ var bareMetalHalt = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := client.BareMetalServer.Halt(context.Background(), args[0]); err != nil {
+		if err := client.BareMetalServer.Halt(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -257,7 +257,7 @@ var bareMetalListIPV4 = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		info, meta, err := client.BareMetalServer.ListIPv4s(context.Background(), args[0], options)
+		info, meta, err := client.BareMetalServer.ListIPv4s(context.TODO(), args[0], options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -279,7 +279,7 @@ var bareMetalListIPV6 = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		info, meta, err := client.BareMetalServer.ListIPv6s(context.Background(), args[0], options)
+		info, meta, err := client.BareMetalServer.ListIPv6s(context.TODO(), args[0], options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -300,7 +300,7 @@ var bareMetalReboot = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := client.BareMetalServer.Reboot(context.Background(), args[0]); err != nil {
+		if err := client.BareMetalServer.Reboot(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -321,7 +321,7 @@ var bareMetalReinstall = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := client.BareMetalServer.Reinstall(context.Background(), args[0]); err != nil {
+		if err := client.BareMetalServer.Reinstall(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -331,7 +331,7 @@ var bareMetalReinstall = &cobra.Command{
 }
 
 func optionCheckBM(options map[string]interface{}) (string, error) {
-	var result []string
+	result := []string{}
 
 	for k, v := range options {
 		switch v.(type) {
@@ -347,7 +347,7 @@ func optionCheckBM(options map[string]interface{}) (string, error) {
 	}
 
 	if len(result) > 1 {
-		return "", fmt.Errorf("too many options have been selected : %v : please select one", result)
+		return "", fmt.Errorf("Too many options have been selected : %v : please select one", result)
 	}
 
 	// Return back an empty slice so we can possibly add in osID
