@@ -22,7 +22,7 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 )
 
 // BareMetalApp represents the baremetal app commands
@@ -54,7 +54,8 @@ var bareMetalAppChange = &cobra.Command{
 			AppID: appID,
 		}
 
-		if err := client.BareMetalServer.Update(context.TODO(), args[0], options); err != nil {
+		_, err := client.BareMetalServer.Update(context.TODO(), args[0], options)
+		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
