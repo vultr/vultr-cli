@@ -22,7 +22,7 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 )
 
 // BareMetalOS represents the baremetal operating system commands
@@ -54,8 +54,7 @@ var bareMetalOSChange = &cobra.Command{
 			OsID: osid,
 		}
 
-		_, err := client.BareMetalServer.Update(context.TODO(), args[0], options)
-		if err != nil {
+		if err := client.BareMetalServer.Update(context.TODO(), args[0], options); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

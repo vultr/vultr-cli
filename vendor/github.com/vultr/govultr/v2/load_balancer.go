@@ -84,8 +84,7 @@ type GenericInfo struct {
 
 // StickySessions represents cookie for your load balancer
 type StickySessions struct {
-	StickySessionsEnabled string `json:"sticky_sessions,omitempty"`
-	CookieName            string `json:"cookie_name,omitempty"`
+	CookieName string `json:"cookie_name,omitempty"`
 }
 
 // ForwardingRules represent a list of forwarding rules

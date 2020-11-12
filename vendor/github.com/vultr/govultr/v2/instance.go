@@ -57,6 +57,8 @@ type InstanceService interface {
 	DefaultReverseIPv4(ctx context.Context, instanceID, ip string) error
 
 	GetUserData(ctx context.Context, instanceID string) (*UserData, error)
+
+	GetUpgrades(ctx context.Context, instanceID string) (*Upgrades, error)
 }
 
 // ServerServiceHandler handles interaction with the server methods for the Vultr API
@@ -182,11 +184,19 @@ type UserData struct {
 	Data string `json:"data"`
 }
 
+type upgradeBase struct {
+	Upgrades *Upgrades `json:"upgrades"`
+}
+type Upgrades struct {
+	Applications []Application `json:"applications,omitempty"`
+	OS           []OS          `json:"os,omitempty"`
+	Plans        []string      `json:"plans,omitempty"`
+}
+
 // InstanceCreateReq
 type InstanceCreateReq struct {
 	Region               string   `json:"region,omitempty"`
 	Plan                 string   `json:"plan,omitempty"`
-	UpgradePlan          string   `json:"upgrade_plan,omitempty"`
 	Label                string   `json:"label,omitempty"`
 	Tag                  string   `json:"tag,omitempty"`
 	OsID                 int      `json:"os_id,omitempty"`
@@ -201,7 +211,7 @@ type InstanceCreateReq struct {
 	EnablePrivateNetwork bool     `json:"enable_private_network,omitempty"`
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
 	SSHKeys              []string `json:"sshkey_id,omitempty"`
-	Backups              bool     `json:"backups,omitempty"`
+	Backups              string   `json:"backups,omitempty"`
 	DDOSProtection       bool     `json:"ddos_protection,omitempty"`
 	UserData             string   `json:"user_data,omitempty"`
 	ReservedIPv4         string   `json:"reserved_ipv4,omitempty"`
@@ -219,7 +229,7 @@ type InstanceUpdateReq struct {
 	EnablePrivateNetwork bool     `json:"enable_private_network,omitempty"`
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
 	DetachPrivateNetwork []string `json:"detach_private_network,omitempty"`
-	Backups              *bool    `json:"backups,omitempty"`
+	Backups              string   `json:"backups,omitempty"`
 	DDOSProtection       *bool    `json:"ddos_protection"`
 	UserData             string   `json:"user_data,omitempty"`
 	FirewallGroupID      string   `json:"firewall_group_id,omitempty"`
@@ -768,6 +778,22 @@ func (i *InstanceServiceHandler) GetUserData(ctx context.Context, instanceID str
 	}
 
 	return userData.UserData, nil
+}
+
+// GetUpgrades
+func (i *InstanceServiceHandler) GetUpgrades(ctx context.Context, instanceID string) (*Upgrades, error) {
+	uri := fmt.Sprintf("%s/%s/upgrades", instancePath, instanceID)
+	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	upgrades := new(upgradeBase)
+	if err = i.client.DoWithContext(ctx, req, upgrades); err != nil {
+		return nil, err
+	}
+
+	return upgrades.Upgrades, nil
 }
 
 func Bool(v bool) *bool {
