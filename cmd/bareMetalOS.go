@@ -54,7 +54,7 @@ var bareMetalOSChange = &cobra.Command{
 			OsID: osid,
 		}
 
-		if err := client.BareMetalServer.Update(context.TODO(), args[0], options); err != nil {
+		if _, err := client.BareMetalServer.Update(context.TODO(), args[0], options); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
