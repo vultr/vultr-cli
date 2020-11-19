@@ -1,5 +1,9 @@
 # Change Log
 
+## [v1.0.0](https://github.com/vultr/vultr-cli/compare/v0.4.0..v1.0.0) (2020-11-19)
+### Enhancement
+* Vultr-CLI v1.0.0 release [PR 114](https://github.com/vultr/vultr-cli/pull/114) 
+
 ## [v0.4.0](https://github.com/vultr/vultr-cli/compare/v0.3.2..v0.4.0) (2020-09-03)
 ### Enhancement
 * Improve error responses by adding a newline [PR 109](https://github.com/vultr/vultr-cli/pull/109) 
