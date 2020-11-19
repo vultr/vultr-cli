@@ -49,7 +49,6 @@ var bareMetalGetUserData = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		u, err := client.BareMetalServer.GetUserData(context.TODO(), args[0])
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -70,9 +69,7 @@ var bareMetalSetUserData = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.SetUserData(context.TODO(), args[0], args[1])
-
-		if err != nil {
+		if err := client.BareMetalServer.SetUserData(context.TODO(), args[0], args[1]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

@@ -64,7 +64,6 @@ var scriptCreate = &cobra.Command{
 		scriptType, _ := cmd.Flags().GetString("type")
 
 		id, err := client.StartupScript.Create(context.TODO(), name, script, scriptType)
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -89,9 +88,7 @@ var scriptDelete = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 
-		err := client.StartupScript.Delete(context.TODO(), id)
-
-		if err != nil {
+		if err := client.StartupScript.Delete(context.TODO(), id); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -107,7 +104,6 @@ var scriptList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		list, err := client.StartupScript.List(context.TODO())
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -130,7 +126,6 @@ var scriptContents = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		list, err := client.StartupScript.List(context.TODO())
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -181,9 +176,7 @@ var scriptUpdate = &cobra.Command{
 			s.Script = script
 		}
 
-		err := client.StartupScript.Update(context.TODO(), s)
-
-		if err != nil {
+		if err := client.StartupScript.Update(context.TODO(), s); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

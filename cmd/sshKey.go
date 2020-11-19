@@ -61,7 +61,6 @@ var sshCreate = &cobra.Command{
 		key, _ := cmd.Flags().GetString("key")
 
 		id, err := client.SSHKey.Create(context.TODO(), name, key)
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -84,8 +83,7 @@ var sshDelete = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.SSHKey.Delete(context.TODO(), args[0])
-		if err != nil {
+		if err := client.SSHKey.Delete(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -100,7 +98,6 @@ var sshList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		list, err := client.SSHKey.List(context.TODO())
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -136,9 +133,7 @@ var sshUpdate = &cobra.Command{
 			s.Key = key
 		}
 
-		err := client.SSHKey.Update(context.TODO(), s)
-
-		if err != nil {
+		if err := client.SSHKey.Update(context.TODO(), s); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

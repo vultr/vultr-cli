@@ -60,7 +60,6 @@ var isoPrivate = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		isos, err := client.ISO.List(context.TODO())
-
 		if err != nil {
 			fmt.Printf("error getting private ISOs : %v\n", err)
 			os.Exit(1)
@@ -76,7 +75,6 @@ var isoPublic = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		isos, err := client.ISO.GetPublicList(context.TODO())
-
 		if err != nil {
 			fmt.Printf("error getting public ISOs : %v\n", err)
 			os.Exit(1)
@@ -93,7 +91,6 @@ var isoCreate = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		url, _ := cmd.Flags().GetString("url")
 		_, err := client.ISO.CreateFromURL(context.TODO(), url)
-
 		if err != nil {
 			fmt.Printf("error creating ISOs : %v\n", err)
 			os.Exit(1)
@@ -118,9 +115,7 @@ var isoDelete = &cobra.Command{
 		id := args[0]
 
 		i, _ := strconv.Atoi(id)
-		err := client.ISO.Delete(context.TODO(), i)
-
-		if err != nil {
+		if err := client.ISO.Delete(context.TODO(), i); err != nil {
 			fmt.Printf("error deleting ISOs : %v\n", err)
 			os.Exit(1)
 		}

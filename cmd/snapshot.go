@@ -58,7 +58,6 @@ var snapshotCreate = &cobra.Command{
 		desc, _ := cmd.Flags().GetString("description")
 
 		s, err := client.Snapshot.Create(context.TODO(), id, desc)
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -77,7 +76,6 @@ var snapshotCreateFromURL = &cobra.Command{
 		url, _ := cmd.Flags().GetString("url")
 
 		s, err := client.Snapshot.CreateFromURL(context.TODO(), url)
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -100,8 +98,7 @@ var snapshotDelete = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.Snapshot.Delete(context.TODO(), args[0])
-		if err != nil {
+		if err := client.Snapshot.Delete(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -116,7 +113,6 @@ var snapshotList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		list, err := client.Snapshot.List(context.TODO())
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)

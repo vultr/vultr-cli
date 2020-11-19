@@ -110,7 +110,6 @@ var bareMetalCreate = &cobra.Command{
 		}
 
 		id, err := client.BareMetalServer.Create(context.TODO(), region, plan, osID, options)
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -131,9 +130,7 @@ var bareMetalDelete = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.Delete(context.TODO(), args[0])
-
-		if err != nil {
+		if err := client.BareMetalServer.Delete(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -148,7 +145,6 @@ var bareMetalList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		list, err := client.BareMetalServer.List(context.TODO())
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -170,7 +166,6 @@ var bareMetalInfo = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		srv, err := client.BareMetalServer.GetServer(context.TODO(), args[0])
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -192,7 +187,6 @@ var bareMetalBandwidth = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		bw, err := client.BareMetalServer.Bandwidth(context.TODO(), args[0])
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -212,9 +206,8 @@ var bareMetalEnableIPv6 = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.EnableIPV6(context.TODO(), args[0])
+		if err := client.BareMetalServer.EnableIPV6(context.TODO(), args[0]); err != nil {
 
-		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -236,9 +229,7 @@ var bareMetalHalt = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.Halt(context.TODO(), args[0])
-
-		if err != nil {
+		if err := client.BareMetalServer.Halt(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -260,7 +251,6 @@ var bareMetalIPV4Info = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		info, err := client.BareMetalServer.IPV4Info(context.TODO(), args[0])
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -282,7 +272,6 @@ var bareMetalIPV6Info = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		info, err := client.BareMetalServer.IPV6Info(context.TODO(), args[0])
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -303,9 +292,7 @@ var bareMetalReboot = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.Reboot(context.TODO(), args[0])
-
-		if err != nil {
+		if err := client.BareMetalServer.Reboot(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -326,9 +313,7 @@ var bareMetalReinstall = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.Reinstall(context.TODO(), args[0])
-
-		if err != nil {
+		if err := client.BareMetalServer.Reinstall(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -347,9 +332,7 @@ var bareMetalSetLabel = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.SetLabel(context.TODO(), args[0], args[1])
-
-		if err != nil {
+		if err := client.BareMetalServer.SetLabel(context.TODO(), args[0], args[1]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -368,9 +351,7 @@ var bareMetalSetTag = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.SetTag(context.TODO(), args[0], args[1])
-
-		if err != nil {
+		if err := client.BareMetalServer.SetTag(context.TODO(), args[0], args[1]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

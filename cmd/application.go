@@ -31,7 +31,6 @@ var applicationCmd = &cobra.Command{
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		apps, err := client.Application.List(context.TODO())
-
 		if err != nil {
 			fmt.Printf("error getting available applications : %v\n", err)
 			os.Exit(1)

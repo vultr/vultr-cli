@@ -207,9 +207,7 @@ var serverStart = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 
-		err := client.Server.Start(context.TODO(), id)
-
-		if err != nil {
+		if err := client.Server.Start(context.TODO(), id); err != nil {
 			fmt.Printf("error starting server : %v\n", err)
 			os.Exit(1)
 		}
@@ -231,9 +229,7 @@ var serverStop = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 
-		err := client.Server.Halt(context.TODO(), id)
-
-		if err != nil {
+		if err := client.Server.Halt(context.TODO(), id); err != nil {
 			fmt.Printf("error stopping server : %v\n", err)
 			os.Exit(1)
 		}
@@ -255,9 +251,7 @@ var serverRestart = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 
-		err := client.Server.Reboot(context.TODO(), id)
-
-		if err != nil {
+		if err := client.Server.Reboot(context.TODO(), id); err != nil {
 			fmt.Printf("error rebooting server : %v\n", err)
 			os.Exit(1)
 		}
@@ -279,9 +273,7 @@ var serverReinstall = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 
-		err := client.Server.Reinstall(context.TODO(), id)
-
-		if err != nil {
+		if err := client.Server.Reinstall(context.TODO(), id); err != nil {
 			fmt.Printf("error reinstalling server : %v\n", err)
 			os.Exit(1)
 		}
@@ -303,9 +295,7 @@ var serverTag = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		tag, _ := cmd.Flags().GetString("tag")
-		err := client.Server.SetTag(context.TODO(), id, tag)
-
-		if err != nil {
+		if err := client.Server.SetTag(context.TODO(), id, tag); err != nil {
 			fmt.Printf("error adding tag to server : %v\n", err)
 			os.Exit(1)
 		}
@@ -327,9 +317,7 @@ var serverDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		err := client.Server.Delete(context.TODO(), id)
-
-		if err != nil {
+		if err := client.Server.Delete(context.TODO(), id); err != nil {
 			fmt.Printf("error deleting server : %v\n", err)
 			os.Exit(1)
 		}
@@ -351,9 +339,7 @@ var serverLabel = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		label, _ := cmd.Flags().GetString("label")
-		err := client.Server.SetLabel(context.TODO(), id, label)
-
-		if err != nil {
+		if err := client.Server.SetLabel(context.TODO(), id, label); err != nil {
 			fmt.Printf("error labeling server : %v\n", err)
 			os.Exit(1)
 		}
@@ -375,7 +361,6 @@ var serverBandwidth = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		bw, err := client.Server.Bandwidth(context.TODO(), id)
-
 		if err != nil {
 			fmt.Printf("error getting bandwidth for server : %v\n", err)
 			os.Exit(1)
@@ -406,7 +391,6 @@ var serverIPV4List = &cobra.Command{
 		}
 
 		v4, err := client.Server.IPV4Info(context.TODO(), id, pub)
-
 		if err != nil {
 			fmt.Printf("error getting ipv4 info : %v\n", err)
 			os.Exit(1)
@@ -431,7 +415,6 @@ var serverIPV6List = &cobra.Command{
 		id := args[0]
 
 		v6, err := client.Server.IPV6Info(context.TODO(), id)
-
 		if err != nil {
 			fmt.Printf("error getting ipv6 info : %v\n", err)
 			os.Exit(1)
@@ -448,7 +431,6 @@ var serverList = &cobra.Command{
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		s, err := client.Server.List(context.TODO())
-
 		if err != nil {
 			fmt.Printf("error getting list of servers : %v\n", err)
 			os.Exit(1)
@@ -471,7 +453,6 @@ var serverInfo = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		s, err := client.Server.GetServer(context.TODO(), id)
-
 		if err != nil {
 			fmt.Printf("error getting server : %v\n", err)
 			os.Exit(1)
@@ -489,9 +470,7 @@ var updateFwgGroup = &cobra.Command{
 		id, _ := cmd.Flags().GetString("instance-id")
 		fwgID, _ := cmd.Flags().GetString("firewall-group-id")
 
-		err := client.Server.SetFirewallGroup(context.TODO(), id, fwgID)
-
-		if err != nil {
+		if err := client.Server.SetFirewallGroup(context.TODO(), id, fwgID); err != nil {
 			fmt.Printf("error setting firewall group : %v\n", err)
 			os.Exit(1)
 		}
@@ -513,7 +492,6 @@ var osList = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		o, err := client.Server.ListOS(context.TODO(), id)
-
 		if err != nil {
 			fmt.Printf("error getting os list : %v\n", err)
 			os.Exit(1)
@@ -537,9 +515,7 @@ var osUpdate = &cobra.Command{
 		id := args[0]
 		osID, _ := cmd.Flags().GetString("os")
 
-		err := client.Server.ChangeOS(context.TODO(), id, osID)
-
-		if err != nil {
+		if err := client.Server.ChangeOS(context.TODO(), id, osID); err != nil {
 			fmt.Printf("error updating os : %v\n", err)
 			os.Exit(1)
 		}
@@ -561,7 +537,6 @@ var appList = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		a, err := client.Server.ListApps(context.TODO(), id)
-
 		if err != nil {
 			fmt.Printf("error getting os list : %v\n", err)
 			os.Exit(1)
@@ -585,9 +560,7 @@ var appUpdate = &cobra.Command{
 		id := args[0]
 		appID, _ := cmd.Flags().GetString("app")
 
-		err := client.Server.ChangeApp(context.TODO(), id, appID)
-
-		if err != nil {
+		if err := client.Server.ChangeApp(context.TODO(), id, appID); err != nil {
 			fmt.Printf("error updating application : %v\n", err)
 			os.Exit(1)
 		}
@@ -610,7 +583,6 @@ var appInfo = &cobra.Command{
 		id := args[0]
 
 		info, err := client.Server.AppInfo(context.TODO(), id)
-
 		if err != nil {
 			fmt.Printf("error getting application info : %v\n", err)
 			os.Exit(1)
@@ -634,7 +606,6 @@ var backupGet = &cobra.Command{
 		id := args[0]
 
 		info, err := client.Server.GetBackupSchedule(context.TODO(), id)
-
 		if err != nil {
 			fmt.Printf("error getting application info : %v\n", err)
 			os.Exit(1)
@@ -669,9 +640,7 @@ var backupCreate = &cobra.Command{
 			Dom:      dom,
 		}
 
-		err := client.Server.SetBackupSchedule(context.TODO(), id, backup)
-
-		if err != nil {
+		if err := client.Server.SetBackupSchedule(context.TODO(), id, backup); err != nil {
 			fmt.Printf("error creating backup schedule : %v\n", err)
 			os.Exit(1)
 		}
@@ -694,7 +663,6 @@ var isoStatus = &cobra.Command{
 		id := args[0]
 
 		info, err := client.Server.IsoStatus(context.TODO(), id)
-
 		if err != nil {
 			fmt.Printf("error getting iso state info : %v\n", err)
 			os.Exit(1)
@@ -718,9 +686,7 @@ var isoAttach = &cobra.Command{
 		id := args[0]
 		iso, _ := cmd.Flags().GetString("iso-id")
 
-		err := client.Server.IsoAttach(context.TODO(), id, iso)
-
-		if err != nil {
+		if err := client.Server.IsoAttach(context.TODO(), id, iso); err != nil {
 			fmt.Printf("error attaching iso : %v\n", err)
 			os.Exit(1)
 		}
@@ -741,9 +707,7 @@ var isoDetach = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		err := client.Server.IsoDetach(context.TODO(), id)
-
-		if err != nil {
+		if err := client.Server.IsoDetach(context.TODO(), id); err != nil {
 			fmt.Printf("error detaching iso : %v\n", err)
 			os.Exit(1)
 		}
@@ -807,7 +771,6 @@ var createIpv4 = &cobra.Command{
 		id := args[0]
 		reboot, _ := cmd.Flags().GetString("reboot")
 		_, err := client.Server.AddIPV4(context.TODO(), id, reboot)
-
 		if err != nil {
 			fmt.Printf("error creating ipv4 : %v\n", err)
 			os.Exit(1)
@@ -831,9 +794,7 @@ var deleteIpv4 = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		ip, _ := cmd.Flags().GetString("ipv4")
-		err := client.Server.DestroyIPV4(context.TODO(), id, ip)
-
-		if err != nil {
+		if err := client.Server.DestroyIPV4(context.TODO(), id, ip); err != nil {
 			fmt.Printf("error deleting ipv4 : %v\n", err)
 			os.Exit(1)
 		}
@@ -855,7 +816,6 @@ var listPlans = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		plans, err := client.Server.ListUpgradePlan(context.TODO(), id)
-
 		if err != nil {
 			fmt.Printf("error getting plans : %v\n", err)
 			os.Exit(1)
@@ -878,9 +838,7 @@ var upgradePlan = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		plan, _ := cmd.Flags().GetString("plan")
-		err := client.Server.UpgradePlan(context.TODO(), id, plan)
-
-		if err != nil {
+		if err := client.Server.UpgradePlan(context.TODO(), id, plan); err != nil {
 			fmt.Printf("error upgrading plans : %v\n", err)
 			os.Exit(1)
 		}
@@ -901,9 +859,7 @@ var defaultIpv4 = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		ip, _ := cmd.Flags().GetString("ip")
-		err := client.Server.SetDefaultReverseIPV4(context.TODO(), id, ip)
-
-		if err != nil {
+		if err := client.Server.SetDefaultReverseIPV4(context.TODO(), id, ip); err != nil {
 			fmt.Printf("error setting default reverse dns : %v\n", err)
 			os.Exit(1)
 		}
@@ -924,7 +880,6 @@ var listIpv6 = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		rip, err := client.Server.ListReverseIPV6(context.TODO(), id)
-
 		if err != nil {
 			fmt.Printf("error getting the reverse ipv6 list: %v\n", err)
 			os.Exit(1)
@@ -947,9 +902,7 @@ var deleteIpv6 = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		ip, _ := cmd.Flags().GetString("ip")
-		err := client.Server.DeleteReverseIPV6(context.TODO(), id, ip)
-
-		if err != nil {
+		if err := client.Server.DeleteReverseIPV6(context.TODO(), id, ip); err != nil {
 			fmt.Printf("error deleting reverse ipv6 entry : %v\n", err)
 			os.Exit(1)
 		}
@@ -971,9 +924,7 @@ var setIpv4 = &cobra.Command{
 		id := args[0]
 		ip, _ := cmd.Flags().GetString("ip")
 		entry, _ := cmd.Flags().GetString("entry")
-		err := client.Server.SetReverseIPV4(context.TODO(), id, ip, entry)
-
-		if err != nil {
+		if err := client.Server.SetReverseIPV4(context.TODO(), id, ip, entry); err != nil {
 			fmt.Printf("error setting reverse dns ipv4 entry : %v\n", err)
 			os.Exit(1)
 		}
@@ -995,9 +946,7 @@ var setIpv6 = &cobra.Command{
 		id := args[0]
 		ip, _ := cmd.Flags().GetString("ip")
 		entry, _ := cmd.Flags().GetString("entry")
-		err := client.Server.SetReverseIPV6(context.TODO(), id, ip, entry)
-
-		if err != nil {
+		if err := client.Server.SetReverseIPV6(context.TODO(), id, ip, entry); err != nil {
 			fmt.Printf("error setting reverse dns ipv6 entry : %v\n", err)
 			os.Exit(1)
 		}
@@ -1047,7 +996,6 @@ var serverCreate = &cobra.Command{
 		}
 
 		osOption, err := optionCheck(osOptions)
-
 		if err != nil {
 			fmt.Printf("error creating instance : %v\n", err)
 			os.Exit(1)
@@ -1122,7 +1070,6 @@ var serverCreate = &cobra.Command{
 		}
 
 		server, err := client.Server.Create(context.TODO(), region, plan, osOpt, opt)
-
 		if err != nil {
 			fmt.Printf("error creating instance : %v\n", err)
 			os.Exit(1)
@@ -1143,15 +1090,12 @@ var setUserData = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		userData, _ := cmd.Flags().GetString("userdata")
 		rawData, err := ioutil.ReadFile(userData)
-
 		if err != nil {
 			fmt.Printf("error reading user-data : %v\n", err)
 			os.Exit(1)
 		}
 
-		err = client.Server.SetUserData(context.TODO(), args[0], base64.StdEncoding.EncodeToString(rawData))
-
-		if err != nil {
+		if err = client.Server.SetUserData(context.TODO(), args[0], base64.StdEncoding.EncodeToString(rawData)); err != nil {
 			fmt.Printf("error setting user-data : %v\n", err)
 			os.Exit(1)
 		}
@@ -1170,7 +1114,6 @@ var getUserData = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		userData, err := client.Server.GetUserData(context.TODO(), args[0])
-
 		if err != nil {
 			fmt.Printf("error getting user-data : %v\n", err)
 			os.Exit(1)

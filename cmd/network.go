@@ -49,7 +49,6 @@ var networkList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		network, err := client.Network.List(context.TODO())
-
 		if err != nil {
 			fmt.Printf("error getting network information : %v\n", err)
 			os.Exit(1)
@@ -72,9 +71,7 @@ var networkDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		err := client.Network.Delete(context.TODO(), id)
-
-		if err != nil {
+		if err := client.Network.Delete(context.TODO(), id); err != nil {
 			fmt.Printf("error deleting  network : %v\n", err)
 			os.Exit(1)
 		}
@@ -93,7 +90,6 @@ var networkCreate = &cobra.Command{
 		cdir, _ := cmd.Flags().GetString("cidr")
 
 		network, err := client.Network.Create(context.TODO(), region, description, cdir)
-
 		if err != nil {
 			fmt.Printf("error creating network : %v\n", err)
 			os.Exit(1)

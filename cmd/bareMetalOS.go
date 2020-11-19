@@ -49,7 +49,6 @@ var bareMetalOSChangeList = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		OS, err := client.BareMetalServer.ListOS(context.TODO(), args[0])
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -70,9 +69,7 @@ var bareMetalOSChange = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.ChangeOS(context.TODO(), args[0], args[1])
-
-		if err != nil {
+		if err := client.BareMetalServer.ChangeOS(context.TODO(), args[0], args[1]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

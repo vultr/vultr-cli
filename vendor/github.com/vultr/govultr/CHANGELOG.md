@@ -1,5 +1,14 @@
 # Change Log
 
+## [v1.1.0](https://github.com/vultr/govultr/compare/v1.0.0..v1.1.0) (2020-10-03)
+### Breaking Changes
+* Servers: Create userData param should already be base64 encoded. This call will no longer encode supplied string. [#100](https://github.com/vultr/govultr/pull/100)
+* BareMetalServer: Create userData param should already be base64 encoded. This call will no longer encode supplied string. [#100](https://github.com/vultr/govultr/pull/100)
+
+## [v1.0.0](https://github.com/vultr/govultr/compare/v0.5.0..v1.0.0) (2020-09-03)
+### Feature
+*  Promoting GoVultr to v1.0.0. Moving forward all v1 changes will be made against the [v1](https://github.com/vultr/govultr/tree/v1) branch.
+
 ## [v0.5.0](https://github.com/vultr/govultr/compare/v0.4.2..v0.5.0) (2020-08-25)
 ### Enhancement
 *  Servers: Enable/Disable DDOS Protection [#75](https://github.com/vultr/govultr/pull/75)
