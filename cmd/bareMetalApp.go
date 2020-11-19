@@ -49,7 +49,6 @@ var bareMetalAppInfo = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		app, err := client.BareMetalServer.AppInfo(context.TODO(), args[0])
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -70,9 +69,7 @@ var bareMetalAppChange = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.ChangeApp(context.TODO(), args[0], args[1])
-
-		if err != nil {
+		if err := client.BareMetalServer.ChangeApp(context.TODO(), args[0], args[1]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -93,7 +90,6 @@ var bareMetalAppChangeList = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		app, err := client.BareMetalServer.ListApps(context.TODO(), args[0])
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)

@@ -31,7 +31,6 @@ var backupCmd = &cobra.Command{
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		backups, err := client.Backup.List(context.TODO())
-
 		if err != nil {
 			fmt.Printf("error getting backups : %v\n", err)
 			os.Exit(1)

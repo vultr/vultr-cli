@@ -24,7 +24,6 @@ builds:
 
     goarch:
       - amd64
-      - 386
 
 archives:
   -
@@ -32,7 +31,6 @@ archives:
       darwin: macOs
       linux: linux
       windows: windows
-      386: 32-bit
       amd64: 64-bit
 
     format: tar.gz
@@ -63,7 +61,7 @@ brews:
   -
     name: vultr-cli
 
-    github:
+    tap:
       owner: vultr
       name: homebrew-vultr-cli
 

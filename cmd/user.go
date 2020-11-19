@@ -70,7 +70,6 @@ var userCreate = &cobra.Command{
 		acl, _ := cmd.Flags().GetStringSlice("acl")
 
 		id, err := client.User.Create(context.TODO(), email, name, password, api, acl)
-
 		if err != nil {
 			fmt.Printf("error creating user : %v\n", err)
 			os.Exit(1)
@@ -95,9 +94,7 @@ var userDelete = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 
-		err := client.User.Delete(context.TODO(), id)
-
-		if err != nil {
+		if err := client.User.Delete(context.TODO(), id); err != nil {
 			fmt.Printf("error deleting user : %v\n", err)
 			os.Exit(1)
 		}
@@ -113,7 +110,6 @@ var userList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		list, err := client.User.List(context.TODO())
-
 		if err != nil {
 			fmt.Errorf("error while grabbing users %v\n", err)
 			os.Exit(1)
@@ -168,9 +164,7 @@ var userUpdate = &cobra.Command{
 			user.ACL = acl
 		}
 
-		err := client.User.Update(context.TODO(), user)
-
-		if err != nil {
+		if err := client.User.Update(context.TODO(), user); err != nil {
 			fmt.Printf("error updating user : %v\n", err)
 			os.Exit(1)
 		}

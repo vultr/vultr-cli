@@ -47,7 +47,6 @@ var regionList = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		list, err := client.Region.List(context.TODO())
-
 		if err != nil {
 			fmt.Printf("error getting region list : %v\n", err)
 			os.Exit(1)
@@ -80,14 +79,12 @@ var regionAvailability = &cobra.Command{
 		switch availType {
 		case "vc2":
 			availability, err = client.Region.Vc2Availability(context.TODO(), region)
-
 			if err != nil {
 				fmt.Printf("error getting VC2 availability : %v\n", err)
 				os.Exit(1)
 			}
 		case "v2c2":
 			availability, err = client.Region.Vdc2Availability(context.TODO(), region)
-
 			if err != nil {
 				fmt.Printf("error getting VDC2 availability : %v\n", err)
 				os.Exit(1)
@@ -95,7 +92,6 @@ var regionAvailability = &cobra.Command{
 
 		case "bare-metal":
 			availability, err = client.Region.BareMetalAvailability(context.TODO(), region)
-
 			if err != nil {
 				fmt.Printf("error getting bare-metal availability : %v\n", err)
 				os.Exit(1)
@@ -103,7 +99,6 @@ var regionAvailability = &cobra.Command{
 
 		default:
 			availability, err = client.Region.Availability(context.TODO(), region, "")
-
 			if err != nil {
 				fmt.Printf("error getting availability : %v\n", err)
 				os.Exit(1)

@@ -70,7 +70,6 @@ var reservedIPList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		rip, err := client.ReservedIP.List(context.TODO())
-
 		if err != nil {
 			fmt.Printf("error getting reserved IPs : %v\n", err)
 			os.Exit(1)
@@ -93,9 +92,7 @@ var reservedIPDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		ip := args[0]
-		err := client.ReservedIP.Delete(context.TODO(), ip)
-
-		if err != nil {
+		if err := client.ReservedIP.Delete(context.TODO(), ip); err != nil {
 			fmt.Printf("error getting reserved IPs : %v\n", err)
 			os.Exit(1)
 		}
@@ -117,9 +114,7 @@ var reservedIPAttach = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ip := args[0]
 		instance, _ := cmd.Flags().GetString("instance-id")
-		err := client.ReservedIP.Attach(context.TODO(), ip, instance)
-
-		if err != nil {
+		if err := client.ReservedIP.Attach(context.TODO(), ip, instance); err != nil {
 			fmt.Printf("error attaching reserved IPs : %v\n", err)
 			os.Exit(1)
 		}
@@ -141,9 +136,7 @@ var reservedIPDetach = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ip := args[0]
 		instance, _ := cmd.Flags().GetString("instance-id")
-		err := client.ReservedIP.Detach(context.TODO(), ip, instance)
-
-		if err != nil {
+		if err := client.ReservedIP.Detach(context.TODO(), ip, instance); err != nil {
 			fmt.Printf("error detaching reserved IPs : %v\n", err)
 			os.Exit(1)
 		}
@@ -162,7 +155,6 @@ var reservedIPConvert = &cobra.Command{
 		label, _ := cmd.Flags().GetString("label")
 
 		r, err := client.ReservedIP.Convert(context.TODO(), ip, instance, label)
-
 		if err != nil {
 			fmt.Printf("error converting IP to reserved IPs : %v\n", err)
 			os.Exit(1)
@@ -184,7 +176,6 @@ var reservedIPCreate = &cobra.Command{
 		fmt.Println(region, ipType, label)
 
 		r, err := client.ReservedIP.Create(context.TODO(), region, ipType, label)
-
 		if err != nil {
 			fmt.Printf("error creating reserved IPs : %v\n", err)
 			os.Exit(1)

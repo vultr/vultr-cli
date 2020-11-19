@@ -60,9 +60,7 @@ var domainCreate = &cobra.Command{
 		domain, _ := cmd.Flags().GetString("domain")
 		instance, _ := cmd.Flags().GetString("ip")
 
-		err := client.DNSDomain.Create(context.TODO(), domain, instance)
-
-		if err != nil {
+		if err := client.DNSDomain.Create(context.TODO(), domain, instance); err != nil {
 			fmt.Printf("error creating dns domain : %v\n", err)
 			os.Exit(1)
 		}

@@ -62,7 +62,6 @@ var firewallRuleCreate = &cobra.Command{
 		notes, _ := cmd.Flags().GetString("notes")
 
 		fwr, err := client.FirewallRule.Create(context.TODO(), id, protocol, port, cidr, notes)
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)

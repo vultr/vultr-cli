@@ -33,7 +33,6 @@ var apiCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		api, err := client.API.GetInfo(context.TODO())
-
 		if err != nil {
 			fmt.Printf("error getting api-key information : %v\n", err)
 			os.Exit(1)

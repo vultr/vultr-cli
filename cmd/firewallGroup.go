@@ -48,7 +48,6 @@ var firewallGroupCreate = &cobra.Command{
 		description, _ := cmd.Flags().GetString("description")
 
 		fwg, err := client.FirewallGroup.Create(context.TODO(), description)
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -89,9 +88,7 @@ var firewallGroupUpdate = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.FirewallGroup.ChangeDescription(context.TODO(), args[0], args[1])
-
-		if err != nil {
+		if err := client.FirewallGroup.ChangeDescription(context.TODO(), args[0], args[1]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -106,7 +103,6 @@ var firewallGroupList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		list, err := client.FirewallGroup.List(context.TODO())
-
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)

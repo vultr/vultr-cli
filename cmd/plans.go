@@ -47,7 +47,6 @@ var planList = &cobra.Command{
 
 		if planType == "bare-metal" {
 			list, err := client.Plan.GetBareMetalList(context.TODO())
-
 			if err != nil {
 				fmt.Printf("error getting bare metal plan list : %v\n", err)
 				os.Exit(1)
@@ -56,7 +55,6 @@ var planList = &cobra.Command{
 			printer.PlanBareMetal(list)
 		} else {
 			list, err := client.Plan.List(context.TODO(), planType)
-
 			if err != nil {
 				fmt.Printf("error getting plan list : %v\n", err)
 				os.Exit(1)

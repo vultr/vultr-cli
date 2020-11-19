@@ -68,7 +68,6 @@ var objStorageCreate = &cobra.Command{
 		label, _ := cmd.Flags().GetString("label")
 
 		objStorage, err := client.ObjectStorage.Create(context.TODO(), objectStoreClusterID, label)
-
 		if err != nil {
 			fmt.Printf("error creating object storage : %v\n", err)
 			os.Exit(1)
@@ -117,7 +116,6 @@ var objStorageList = &cobra.Command{
 		}
 
 		objStorage, err := client.ObjectStorage.List(context.TODO(), options)
-
 		if err != nil {
 			fmt.Printf("error getting object storage : %v\n", err)
 			os.Exit(1)
@@ -149,7 +147,6 @@ var objStorageGet = &cobra.Command{
 
 		id, _ := strconv.Atoi(args[0])
 		objStorage, err := client.ObjectStorage.Get(context.TODO(), id)
-
 		if err != nil {
 			fmt.Printf("error getting object storage : %v\n", err)
 			os.Exit(1)
@@ -165,7 +162,6 @@ var objStorageClusterList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		cluster, err := client.ObjectStorage.ListCluster(context.TODO())
-
 		if err != nil {
 			fmt.Printf("error getting object storage clusters : %v\n", err)
 			os.Exit(1)
@@ -189,7 +185,6 @@ var objStorageS3KeyRegenerate = &cobra.Command{
 		id, _ := strconv.Atoi(args[0])
 		s3AccessKey, _ := cmd.Flags().GetString("s3-access-key")
 		s3Keys, err := client.ObjectStorage.RegenerateKeys(context.TODO(), id, s3AccessKey)
-
 		if err != nil {
 			fmt.Printf("error regenerating object storage keys : %v\n", err)
 			os.Exit(1)
@@ -211,9 +206,7 @@ var objStorageDestroy = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := strconv.Atoi(args[0])
-		err := client.ObjectStorage.Delete(context.TODO(), id)
-
-		if err != nil {
+		if err := client.ObjectStorage.Delete(context.TODO(), id); err != nil {
 			fmt.Printf("error destroying object storage subscription : %v\n", err)
 			os.Exit(1)
 		}

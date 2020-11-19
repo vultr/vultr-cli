@@ -2,7 +2,6 @@ package govultr
 
 import (
 	"context"
-	"encoding/base64"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -1349,7 +1348,7 @@ func (s *ServerServiceHandler) Create(ctx context.Context, regionID, vpsPlanID, 
 		}
 
 		if options.UserData != "" {
-			values.Add("userdata", base64.StdEncoding.EncodeToString([]byte(options.UserData)))
+			values.Add("userdata", options.UserData)
 		}
 
 		if options.NotifyActivate == true {

@@ -102,7 +102,6 @@ var bsCreate = &cobra.Command{
 		label, _ := cmd.Flags().GetString("label")
 
 		bs, err := client.BlockStorage.Create(context.TODO(), region, size, label)
-
 		if err != nil {
 			fmt.Printf("error creating block storage : %v\n", err)
 			os.Exit(1)
@@ -125,9 +124,7 @@ var bsDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		err := client.BlockStorage.Delete(context.TODO(), id)
-
-		if err != nil {
+		if err := client.BlockStorage.Delete(context.TODO(), id); err != nil {
 			fmt.Printf("error deleting block storage : %v\n", err)
 			os.Exit(1)
 		}
@@ -195,7 +192,6 @@ var bsList = &cobra.Command{
 
 		if instance == "" {
 			bs, err := client.BlockStorage.List(context.TODO())
-
 			if err != nil {
 				fmt.Printf("error getting block storage : %v\n", err)
 				os.Exit(1)
@@ -205,7 +201,6 @@ var bsList = &cobra.Command{
 
 		} else {
 			bs, err := client.BlockStorage.Get(context.TODO(), instance)
-
 			if err != nil {
 				fmt.Printf("error getting block storage : %v\n", err)
 				os.Exit(1)
@@ -231,9 +226,7 @@ var bsResize = &cobra.Command{
 		id := args[0]
 		size, _ := cmd.Flags().GetInt("size")
 
-		err := client.BlockStorage.Resize(context.TODO(), id, size)
-
-		if err != nil {
+		if err := client.BlockStorage.Resize(context.TODO(), id, size); err != nil {
 			fmt.Printf("error resizing block storage : %v\n", err)
 			os.Exit(1)
 		}
