@@ -1,6 +1,6 @@
 module github.com/vultr/vultr-cli
 
-go 1.14
+go 1.15
 
 require (
 	github.com/hashicorp/go-hclog v0.12.0 // indirect
