@@ -18,7 +18,7 @@ type DomainRecordService interface {
 	List(ctx context.Context, domain string, options *ListOptions) ([]DomainRecord, *Meta, error)
 }
 
-// DNSRecordsServiceHandler handles interaction with the DNS Records methods for the Vultr API
+// DomainRecordsServiceHandler handles interaction with the DNS Records methods for the Vultr API
 type DomainRecordsServiceHandler struct {
 	client *Client
 }
@@ -88,11 +88,7 @@ func (d *DomainRecordsServiceHandler) Update(ctx context.Context, domain, record
 		return err
 	}
 
-	if err = d.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return d.client.DoWithContext(ctx, req, nil)
 }
 
 // Delete will delete a domain name and all associated records.
@@ -102,11 +98,7 @@ func (d *DomainRecordsServiceHandler) Delete(ctx context.Context, domain, record
 		return err
 	}
 
-	if err = d.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return d.client.DoWithContext(ctx, req, nil)
 }
 
 // List will list all the records associated with a particular domain on Vultr.

@@ -33,13 +33,13 @@ type Snapshot struct {
 	AppID       int    `json:"app_id"`
 }
 
-// SnapshotReq
+// SnapshotReq struct is used to create snapshots.
 type SnapshotReq struct {
 	InstanceID  string `json:"instance_id,omitempty"`
 	Description string `json:"description,omitempty"`
 }
 
-// SnapshotURLReq
+// SnapshotURLReq struct is used to create snapshots from a URL.
 type SnapshotURLReq struct {
 	URL string `json:"url"`
 }
@@ -113,11 +113,7 @@ func (s *SnapshotServiceHandler) Delete(ctx context.Context, snapshotID string) 
 		return err
 	}
 
-	if err = s.Client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return s.Client.DoWithContext(ctx, req, nil)
 }
 
 // List all available snapshots.

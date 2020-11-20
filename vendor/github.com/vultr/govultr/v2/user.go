@@ -94,11 +94,7 @@ func (u *UserServiceHandler) Update(ctx context.Context, userID string, userReq 
 		return err
 	}
 
-	if err = u.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return u.client.DoWithContext(ctx, req, nil)
 }
 
 // Delete will remove the specified user from your Vultr account
@@ -110,11 +106,7 @@ func (u *UserServiceHandler) Delete(ctx context.Context, userID string) error {
 		return err
 	}
 
-	if err = u.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return u.client.DoWithContext(ctx, req, nil)
 }
 
 // List will list all the users associated with your Vultr account

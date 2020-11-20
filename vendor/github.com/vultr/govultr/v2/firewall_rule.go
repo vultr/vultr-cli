@@ -34,7 +34,7 @@ type FirewallRule struct {
 	Notes      string `json:"notes"`
 }
 
-// FirewallRuleReq
+// FirewallRuleReq struct used to create a FirewallRule.
 type FirewallRuleReq struct {
 	IPType     string `json:"ip_type"`
 	Protocol   string `json:"protocol"`
@@ -97,11 +97,7 @@ func (f *FireWallRuleServiceHandler) Delete(ctx context.Context, fwGroupID strin
 		return err
 	}
 
-	if err = f.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return f.client.DoWithContext(ctx, req, nil)
 }
 
 // List will return both ipv4 an ipv6 firewall rules that are defined within a firewall group

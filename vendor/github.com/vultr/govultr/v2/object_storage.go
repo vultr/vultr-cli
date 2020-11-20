@@ -112,7 +112,7 @@ func (o *ObjectStorageServiceHandler) Get(ctx context.Context, id string) (*Obje
 	return objectStorage.ObjectStorage, nil
 }
 
-// SetLabel of an object storage subscription.
+// Update a Object Storage Subscription.
 func (o *ObjectStorageServiceHandler) Update(ctx context.Context, id, label string) error {
 	uri := fmt.Sprintf("/v2/object-storage/%s", id)
 
@@ -122,14 +122,10 @@ func (o *ObjectStorageServiceHandler) Update(ctx context.Context, id, label stri
 		return err
 	}
 
-	if err = o.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return o.client.DoWithContext(ctx, req, nil)
 }
 
-// Delete an object storage subscription.
+// Delete a object storage subscription.
 func (o *ObjectStorageServiceHandler) Delete(ctx context.Context, id string) error {
 	uri := fmt.Sprintf("/v2/object-storage/%s", id)
 
@@ -138,14 +134,10 @@ func (o *ObjectStorageServiceHandler) Delete(ctx context.Context, id string) err
 		return err
 	}
 
-	if err = o.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return o.client.DoWithContext(ctx, req, nil)
 }
 
-// List returns all object storage subscriptions on the current account. This includes both pending and active subscriptions.
+// List all object storage subscriptions on the current account. This includes both pending and active subscriptions.
 func (o *ObjectStorageServiceHandler) List(ctx context.Context, options *ListOptions) ([]ObjectStorage, *Meta, error) {
 	uri := "/v2/object-storage"
 

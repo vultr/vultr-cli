@@ -29,6 +29,9 @@ type APIKey struct {
 	key string
 }
 
+// RequestBody is used to create JSON bodies for one off calls
+type RequestBody map[string]interface{}
+
 // Client manages interaction with the Vultr V1 API
 type Client struct {
 	// Http Client used to interact with the Vultr V1 API

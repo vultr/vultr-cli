@@ -92,11 +92,7 @@ func (n *NetworkServiceHandler) Update(ctx context.Context, networkID string, de
 		return err
 	}
 
-	if err = n.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return n.client.DoWithContext(ctx, req, nil)
 }
 
 // Delete a private network. Before deleting, a network must be disabled from all instances
@@ -107,11 +103,7 @@ func (n *NetworkServiceHandler) Delete(ctx context.Context, networkID string) er
 		return err
 	}
 
-	if err = n.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return n.client.DoWithContext(ctx, req, nil)
 }
 
 // List lists all private networks on the current account

@@ -88,11 +88,7 @@ func (s *SSHKeyServiceHandler) Update(ctx context.Context, sshKeyID string, sshK
 		return err
 	}
 
-	if err = s.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return s.client.DoWithContext(ctx, req, nil)
 }
 
 // Delete a specific ssh-key.
@@ -104,11 +100,7 @@ func (s *SSHKeyServiceHandler) Delete(ctx context.Context, sshKeyID string) erro
 		return err
 	}
 
-	if err = s.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return s.client.DoWithContext(ctx, req, nil)
 }
 
 // List all available SSH Keys.

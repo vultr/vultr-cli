@@ -56,6 +56,7 @@ type reservedIPBase struct {
 	ReservedIP *ReservedIP `json:"reserved_ip"`
 }
 
+// ReservedIPConvertReq is the struct used for create and update calls.
 type ReservedIPConvertReq struct {
 	IPAddress string `json:"ip_address,omitempty"`
 	Label     string `json:"label,omitempty"`
@@ -100,11 +101,7 @@ func (r *ReservedIPServiceHandler) Delete(ctx context.Context, id string) error 
 		return err
 	}
 
-	if err = r.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return r.client.DoWithContext(ctx, req, nil)
 }
 
 // List lists all the reserved IPs associated with your Vultr account
@@ -154,11 +151,7 @@ func (r *ReservedIPServiceHandler) Attach(ctx context.Context, id, instance stri
 		return err
 	}
 
-	if err = r.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return r.client.DoWithContext(ctx, req, nil)
 }
 
 // Detach a reserved IP from an existing subscription.
@@ -169,9 +162,5 @@ func (r *ReservedIPServiceHandler) Detach(ctx context.Context, id string) error 
 		return err
 	}
 
-	if err = r.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return r.client.DoWithContext(ctx, req, nil)
 }

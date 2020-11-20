@@ -35,6 +35,7 @@ type regionBase struct {
 	Meta    *Meta
 }
 
+// PlanAvailability contains all available plans.
 type PlanAvailability struct {
 	AvailablePlans []string `json:"available_plans"`
 }
