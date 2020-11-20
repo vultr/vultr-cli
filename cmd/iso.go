@@ -108,7 +108,7 @@ var isoCreate = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		url, _ := cmd.Flags().GetString("url")
 		options := &govultr.ISOReq{
-			Url: url,
+			URL: url,
 		}
 
 		iso, err := client.ISO.Create(context.Background(), options)

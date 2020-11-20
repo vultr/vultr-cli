@@ -24,7 +24,7 @@ type BareMetalPlan struct {
 	CPUCount    int      `json:"cpu_count"`
 	CPUModel    string   `json:"cpu_model"`
 	CPUThreads  int      `json:"cpu_threads"`
-	Ram         int      `json:"ram"`
+	RAM         int      `json:"ram"`
 	Disk        int      `json:"disk"`
 	Bandwidth   int      `json:"bandwidth"`
 	MonthlyCost int      `json:"monthly_cost"`
@@ -32,11 +32,11 @@ type BareMetalPlan struct {
 	Locations   []string `json:"locations"`
 }
 
-// Plans represents vc2, vdc, or vhf
+// Plan represents vc2, vdc, or vhf
 type Plan struct {
 	ID          string   `json:"id"`
 	VCPUCount   int      `json:"vcpu_count"`
-	Ram         int      `json:"ram"`
+	RAM         int      `json:"ram"`
 	Disk        int      `json:"disk"`
 	Bandwidth   int      `json:"bandwidth"`
 	MonthlyCost int      `json:"monthly_cost"`
@@ -83,7 +83,7 @@ func (p *PlanServiceHandler) List(ctx context.Context, planType string, options 
 	return plans.Plans, plans.Meta, nil
 }
 
-// GetBareMetalList retrieves a list of all active bare metal plans.
+// ListBareMetal all active bare metal plans.
 func (p *PlanServiceHandler) ListBareMetal(ctx context.Context, options *ListOptions) ([]BareMetalPlan, *Meta, error) {
 	uri := "/v2/plans-metal"
 

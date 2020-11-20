@@ -135,7 +135,7 @@ var secInfo = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		domain := args[0]
-		info, err := client.Domain.GetDnsSec(context.Background(), domain)
+		info, err := client.Domain.GetDNSSec(context.Background(), domain)
 		if err != nil {
 			fmt.Printf("error getting dnssec info : %v\n", err)
 			os.Exit(1)

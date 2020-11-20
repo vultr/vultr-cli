@@ -55,6 +55,6 @@ func BareMetalIPV6Info(info []govultr.IPv6, meta *govultr.Meta) {
 
 func BareMetalVNCUrl(vnc *govultr.VNCUrl) {
 	display(columns{"VNC URL"})
-	display(columns{vnc.Url})
+	display(columns{vnc.URL})
 	flush()
 }

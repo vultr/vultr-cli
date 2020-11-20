@@ -41,10 +41,11 @@ type PublicISO struct {
 	MD5Sum      string `json:"md5sum,omitempty"`
 }
 
-// ISOReq
+// ISOReq is used for creating ISOs.
 type ISOReq struct {
-	Url string `json:"url"`
+	URL string `json:"url"`
 }
+
 type isosBase struct {
 	ISOs []ISO `json:"isos"`
 	Meta *Meta `json:"meta"`
@@ -59,7 +60,7 @@ type publicIsosBase struct {
 	Meta       *Meta       `json:"meta"`
 }
 
-// CreateFromURL will create a new ISO image on your account
+// Create will create a new ISO image on your account
 func (i *ISOServiceHandler) Create(ctx context.Context, isoReq *ISOReq) (*ISO, error) {
 	uri := "/v2/iso"
 
@@ -101,11 +102,7 @@ func (i *ISOServiceHandler) Delete(ctx context.Context, isoID string) error {
 		return err
 	}
 
-	if err = i.Client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return i.Client.DoWithContext(ctx, req, nil)
 }
 
 // List will list all ISOs currently available on your account
@@ -132,7 +129,7 @@ func (i *ISOServiceHandler) List(ctx context.Context, options *ListOptions) ([]I
 	return iso.ISOs, iso.Meta, nil
 }
 
-// GetPublicList will list public ISOs offered in the Vultr ISO library.
+// ListPublic will list public ISOs offered in the Vultr ISO library.
 func (i *ISOServiceHandler) ListPublic(ctx context.Context, options *ListOptions) ([]PublicISO, *Meta, error) {
 	uri := "/v2/iso-public"
 

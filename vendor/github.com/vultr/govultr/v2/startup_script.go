@@ -93,11 +93,7 @@ func (s *StartupScriptServiceHandler) Update(ctx context.Context, scriptID strin
 		return err
 	}
 
-	if err = s.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return s.client.DoWithContext(ctx, req, nil)
 }
 
 // Delete the specified startup script from your account.
@@ -109,14 +105,10 @@ func (s *StartupScriptServiceHandler) Delete(ctx context.Context, scriptID strin
 		return err
 	}
 
-	if err = s.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return s.client.DoWithContext(ctx, req, nil)
 }
 
-// List will list all the startup scripts associated with your Vultr account
+// List all the startup scripts associated with your Vultr account
 func (s *StartupScriptServiceHandler) List(ctx context.Context, options *ListOptions) ([]StartupScript, *Meta, error) {
 	req, err := s.client.NewRequest(ctx, http.MethodGet, scriptPath, nil)
 	if err != nil {

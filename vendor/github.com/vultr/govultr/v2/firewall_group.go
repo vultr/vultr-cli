@@ -33,7 +33,7 @@ type FirewallGroup struct {
 	MaxRuleCount  int    `json:"max_rule_count"`
 }
 
-// FirewallGroupReq
+// FirewallGroupReq struct is used to create and update a Firewall Group.
 type FirewallGroupReq struct {
 	Description string `json:"description"`
 }
@@ -90,11 +90,7 @@ func (f *FireWallGroupServiceHandler) Update(ctx context.Context, fwGroupID stri
 		return err
 	}
 
-	if err = f.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return f.client.DoWithContext(ctx, req, nil)
 }
 
 // Delete will delete a firewall group from your Vultr account
@@ -106,11 +102,7 @@ func (f *FireWallGroupServiceHandler) Delete(ctx context.Context, fwGroupID stri
 		return err
 	}
 
-	if err = f.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return f.client.DoWithContext(ctx, req, nil)
 }
 
 // List will return a list of  all firewall groups on your Vultr account

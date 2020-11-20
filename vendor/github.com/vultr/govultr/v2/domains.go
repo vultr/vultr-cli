@@ -10,7 +10,7 @@ import (
 
 const domainPath = "/v2/domains"
 
-// DNSDomainService is the interface to interact with the DNS endpoints on the Vultr API
+// DomainService is the interface to interact with the DNS endpoints on the Vultr API
 // https://www.vultr.com/api/v2/#tag/dns
 type DomainService interface {
 	Create(ctx context.Context, domainReq *DomainReq) (*Domain, error)
@@ -22,10 +22,10 @@ type DomainService interface {
 	GetSoa(ctx context.Context, domain string) (*Soa, error)
 	UpdateSoa(ctx context.Context, domain string, soaReq *Soa) error
 
-	GetDnsSec(ctx context.Context, domain string) ([]string, error)
+	GetDNSSec(ctx context.Context, domain string) ([]string, error)
 }
 
-// DNSDomainServiceHandler handles interaction with the DNS methods for the Vultr API
+// DomainServiceHandler handles interaction with the DNS methods for the Vultr API
 type DomainServiceHandler struct {
 	client *Client
 }
@@ -106,11 +106,7 @@ func (d *DomainServiceHandler) Update(ctx context.Context, domain, dnsSec string
 		return err
 	}
 
-	if err := d.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-
-	return nil
+	return d.client.DoWithContext(ctx, req, nil)
 }
 
 // Delete a domain with all associated records.
@@ -120,10 +116,7 @@ func (d *DomainServiceHandler) Delete(ctx context.Context, domain string) error 
 		return err
 	}
 
-	if err = d.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-	return nil
+	return d.client.DoWithContext(ctx, req, nil)
 }
 
 // List gets all domains associated with the current Vultr account.
@@ -172,14 +165,11 @@ func (d *DomainServiceHandler) UpdateSoa(ctx context.Context, domain string, soa
 		return err
 	}
 
-	if err = d.client.DoWithContext(ctx, req, nil); err != nil {
-		return err
-	}
-	return nil
+	return d.client.DoWithContext(ctx, req, nil)
 }
 
-// DNSSecInfo gets the DNSSec keys for a domain (if enabled)
-func (d *DomainServiceHandler) GetDnsSec(ctx context.Context, domain string) ([]string, error) {
+// GetDNSSec gets the DNSSec keys for a domain (if enabled)
+func (d *DomainServiceHandler) GetDNSSec(ctx context.Context, domain string) ([]string, error) {
 	req, err := d.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/dnssec", domainPath, domain), nil)
 	if err != nil {
 		return nil, err

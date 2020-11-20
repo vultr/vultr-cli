@@ -691,7 +691,7 @@ var serverRestore = &cobra.Command{
 		if snapshot != "" {
 			options.SnapshotID = snapshot
 		} else {
-			options.BackupId = backup
+			options.BackupID = backup
 		}
 
 		if err := client.Instance.Restore(context.TODO(), id, options); err != nil {
@@ -968,7 +968,7 @@ var serverCreate = &cobra.Command{
 			EnableIPv6:           false,
 			DDOSProtection:       false,
 			ActivationEmail:      false,
-			Backups:              false,
+			Backups:              "disabled",
 			EnablePrivateNetwork: false,
 		}
 
@@ -1008,7 +1008,7 @@ var serverCreate = &cobra.Command{
 			opt.ActivationEmail = true
 		}
 		if backup {
-			opt.Backups = true
+			opt.Backups = "enabled"
 		}
 		if privateNetwork {
 			opt.EnablePrivateNetwork = true

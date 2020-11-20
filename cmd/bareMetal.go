@@ -342,7 +342,7 @@ var bareMetalReinstall = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := client.BareMetalServer.Reinstall(context.TODO(), args[0]); err != nil {
+		if _, err := client.BareMetalServer.Reinstall(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

@@ -44,7 +44,7 @@ func ServerList(server []govultr.Instance, meta *govultr.Meta) {
 	col := columns{"ID", "IP", "LABEL", "OS", "STATUS", "Region", "CPU", "RAM", "DISK", "BANDWIDTH"}
 	display(col)
 	for _, s := range server {
-		display(columns{s.ID, s.MainIP, s.Label, s.Os, s.Status, s.Region, s.VCPUCount, s.Ram, s.Disk, s.AllowedBandwidth})
+		display(columns{s.ID, s.MainIP, s.Label, s.Os, s.Status, s.Region, s.VCPUCount, s.RAM, s.Disk, s.AllowedBandwidth})
 	}
 
 	Meta(meta)
@@ -56,7 +56,7 @@ func Server(server *govultr.Instance) {
 	display(col)
 	display(columns{"ID", server.ID})
 	display(columns{"Os", server.Os})
-	display(columns{"RAM", server.Ram})
+	display(columns{"RAM", server.RAM})
 	display(columns{"DISK", server.Disk})
 	display(columns{"MAIN IP", server.MainIP})
 	display(columns{"VCPU CONT", server.VCPUCount})
