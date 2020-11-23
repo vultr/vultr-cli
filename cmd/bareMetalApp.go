@@ -23,6 +23,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v2"
+	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
 // BareMetalApp represents the baremetal app commands
@@ -33,7 +34,7 @@ func BareMetalApp() *cobra.Command {
 		Aliases: []string{"a"},
 	}
 
-	bareMetalAppCmd.AddCommand(bareMetalAppChange)
+	bareMetalAppCmd.AddCommand(bareMetalAppChange, bareMetalAppChangeList)
 
 	return bareMetalAppCmd
 }
@@ -61,5 +62,28 @@ var bareMetalAppChange = &cobra.Command{
 		}
 
 		fmt.Println("bare metal server's application changed")
+	},
+}
+
+var bareMetalAppChangeList = &cobra.Command{
+	Use:   "list <bareMetalID>",
+	Short: "available apps a bare metal server can change to.",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		list, err := client.BareMetalServer.GetUpgrades(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error listing available applications : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.AppList(list.Applications)
 	},
 }
