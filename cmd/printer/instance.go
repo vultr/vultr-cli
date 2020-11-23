@@ -52,7 +52,7 @@ func Instance(instance *govultr.Instance) {
 	display(columns{"RAM", instance.RAM})
 	display(columns{"DISK", instance.Disk})
 	display(columns{"MAIN IP", instance.MainIP})
-	display(columns{"VCPU CONT", instance.VCPUCount})
+	display(columns{"VCPU COUNT", instance.VCPUCount})
 	display(columns{"REGION", instance.Region})
 	display(columns{"DATE CREATED", instance.DateCreated})
 	display(columns{"STATUS", instance.Status})

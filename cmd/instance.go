@@ -93,7 +93,7 @@ func Instance() *cobra.Command {
 		Long:  ``,
 	}
 
-	osCmd.AddCommand(osUpdate)
+	osCmd.AddCommand(osUpdate, osUpdateList)
 	osUpdate.Flags().IntP("os", "o", 0, "operating system ID you wish to use")
 	osUpdate.MarkFlagRequired("os")
 	instanceCmd.AddCommand(osCmd)
@@ -104,7 +104,7 @@ func Instance() *cobra.Command {
 		Short: "update application for an instance",
 		Long:  ``,
 	}
-	appCMD.AddCommand(appUpdate)
+	appCMD.AddCommand(appUpdate, appUpdateList)
 	appUpdate.Flags().IntP("app", "a", 0, "application ID you wish to use")
 	appUpdate.MarkFlagRequired("app")
 	instanceCmd.AddCommand(appCMD)
@@ -156,7 +156,7 @@ func Instance() *cobra.Command {
 
 	// Plans SubCommands
 	plansCmd := &cobra.Command{
-		Use:   "plans",
+		Use:   "plan",
 		Short: "update/list plans for an instance",
 		Long:  ``,
 	}
@@ -515,6 +515,29 @@ var osUpdate = &cobra.Command{
 	},
 }
 
+var osUpdateList = &cobra.Command{
+	Use:   "list <instanceID>",
+	Short: "available operating systems an instance can change to.",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		list, err := client.Instance.GetUpgrades(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error listing available os : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.OsList(list.OS)
+	},
+}
+
 var appUpdate = &cobra.Command{
 	Use:   "change <instanceID>",
 	Short: "changes application",
@@ -539,6 +562,29 @@ var appUpdate = &cobra.Command{
 		}
 
 		fmt.Println("Updated Application")
+	},
+}
+
+var appUpdateList = &cobra.Command{
+	Use:   "list <instanceID>",
+	Short: "available apps an instance can change to.",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		list, err := client.Instance.GetUpgrades(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error listing available applications : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.AppList(list.Applications)
 	},
 }
 
@@ -790,14 +836,14 @@ var upgradePlanList = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		plans, err := client.Instance.GetUpgrades(context.TODO(), id)
+		list, err := client.Instance.GetUpgrades(context.TODO(), id)
 
 		if err != nil {
 			fmt.Printf("error listing available plans : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.PlansList(plans.Plans)
+		printer.PlansList(list.Plans)
 	},
 }
 
@@ -930,12 +976,6 @@ var instanceCreate = &cobra.Command{
 	Short: "Create an instance",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		var (
-			osAppID  = 186
-			osIsoID  = 159
-			osSnapID = 164
-		)
-
 		region, _ := cmd.Flags().GetString("region")
 		plan, _ := cmd.Flags().GetString("plan")
 		osID, _ := cmd.Flags().GetInt("os")
@@ -960,7 +1000,7 @@ var instanceCreate = &cobra.Command{
 		tag, _ := cmd.Flags().GetString("tag")
 		fwg, _ := cmd.Flags().GetString("firewall-group")
 
-		osOptions := map[string]interface{}{"app_id": app, "snapshot_id": snapshot}
+		osOptions := map[string]interface{}{"iso_id": iso, "os_id": osID, "app_id": app, "snapshot_id": snapshot}
 
 		if iso != "" {
 			osOptions["iso_id"] = iso
@@ -996,28 +1036,10 @@ var instanceCreate = &cobra.Command{
 		}
 
 		// If no osOptions were selected and osID has a real value then set the osOptions to os_id
-		if osOption == "" && osID != 0 {
-			osOption = "os_id"
+		if osOption == "os_id" && osID != 0 {
+			opt.OsID = osID
 		} else if osOption == "" && osID == 0 {
 			fmt.Printf("error creating instance: an os ID must be provided\n")
-			os.Exit(1)
-		}
-
-		switch osOption {
-		case "os_id":
-			opt.OsID = osID
-
-		case "app_id":
-			opt.OsID = osAppID
-
-		case "iso_id":
-			opt.OsID = osIsoID
-
-		case "snapshot_id":
-			opt.OsID = osSnapID
-
-		default:
-			fmt.Println("Error occurred while getting your intended os type")
 			os.Exit(1)
 		}
 
@@ -1037,6 +1059,10 @@ var instanceCreate = &cobra.Command{
 			opt.EnablePrivateNetwork = true
 		}
 
+		if userData != "" {
+			opt.UserData = base64.StdEncoding.EncodeToString([]byte(userData))
+		}
+
 		//region, plan, osOpt, opt
 		instance, err := client.Instance.Create(context.TODO(), opt)
 		if err != nil {
@@ -1050,7 +1076,7 @@ var instanceCreate = &cobra.Command{
 
 var setUserData = &cobra.Command{
 	Use:   "set <instanceID>",
-	Short: "Set the user-data of an instance",
+	Short: "Set the plain text user-data of an instance",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide an instanceID")
@@ -1102,8 +1128,15 @@ var getUserData = &cobra.Command{
 func optionCheck(options map[string]interface{}) (string, error) {
 	var result []string
 	for k, v := range options {
-		if v != "" {
-			result = append(result, k)
+		switch v.(type) {
+		case int:
+			if v != 0 {
+				result = append(result, k)
+			}
+		case string:
+			if v != "" {
+				result = append(result, k)
+			}
 		}
 	}
 
