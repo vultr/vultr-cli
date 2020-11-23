@@ -175,7 +175,7 @@ var lbCreate = &cobra.Command{
 
 		if cookieName != "" {
 			options.StickySessions = &govultr.StickySessions{
-				CookieName:            cookieName,
+				CookieName: cookieName,
 			}
 		}
 

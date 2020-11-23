@@ -25,7 +25,7 @@ Available Commands:
   regions        get regions
   reserved-ip    reserved-ip lets you interact with reserved-ip
   script         startup script commands
-  server         commands to interact with servers on vultr
+  instance       commands to interact with instances on vultr
   snapshot       snapshot commands
   ssh-key        ssh-key commands
   user           user commands

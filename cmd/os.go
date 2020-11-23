@@ -26,7 +26,7 @@ import (
 func Os() *cobra.Command {
 	osCmd := &cobra.Command{
 		Use:   "os",
-		Short: "iso is used to access iso commands",
+		Short: "os is used to access os commands",
 		Long:  ``,
 	}
 

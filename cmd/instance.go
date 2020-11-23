@@ -27,64 +27,64 @@ import (
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
-// Server represents the server command
-func Server() *cobra.Command {
-	serverCmd := &cobra.Command{
-		Use:   "server",
-		Short: "commands to interact with servers on vultr",
+// Instance represents the instance command
+func Instance() *cobra.Command {
+	instanceCmd := &cobra.Command{
+		Use:   "instance",
+		Short: "commands to interact with instances on vultr",
 		Long:  ``,
 	}
 
-	serverCmd.AddCommand(serverStart, serverStop, serverRestart, serverReinstall, serverTag, serverDelete, serverLabel, serverBandwidth, serverList, serverInfo, updateFwgGroup, serverRestore, serverCreate)
+	instanceCmd.AddCommand(instanceStart, instanceStop, instanceRestart, instanceReinstall, instanceTag, instanceDelete, instanceLabel, instanceBandwidth, instanceList, instanceInfo, updateFwgGroup, instanceRestore, instanceCreate)
 
-	serverTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
-	serverTag.MarkFlagRequired("tag")
+	instanceTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
+	instanceTag.MarkFlagRequired("tag")
 
-	serverLabel.Flags().StringP("label", "l", "", "label you want to set for a given instance")
-	serverLabel.MarkFlagRequired("label")
+	instanceLabel.Flags().StringP("label", "l", "", "label you want to set for a given instance")
+	instanceLabel.MarkFlagRequired("label")
 
 	updateFwgGroup.Flags().StringP("instance-id", "i", "", "instance id of the instance you want to use")
 	updateFwgGroup.Flags().StringP("firewall-group-id", "f", "", "firewall group id that you want to assign. 0 Value will unset the firewall-group")
 	updateFwgGroup.MarkFlagRequired("instance-id")
 	updateFwgGroup.MarkFlagRequired("firewall-group-id")
 
-	serverRestore.Flags().StringP("backup", "b", "", "id of backup you wish to restore the instance with")
-	serverRestore.Flags().StringP("snapshot", "s", "", "id of snapshot you wish to restore the instance with")
+	instanceRestore.Flags().StringP("backup", "b", "", "id of backup you wish to restore the instance with")
+	instanceRestore.Flags().StringP("snapshot", "s", "", "id of snapshot you wish to restore the instance with")
 
-	serverCreate.Flags().StringP("region", "r", "", "region id you wish to have the instance created in")
-	serverCreate.Flags().StringP("plan", "p", "", "plan id you wish the instance to have")
-	serverCreate.Flags().IntP("os", "o", 0, "os id you wish the instance to have")
-	serverCreate.MarkFlagRequired("region")
-	serverCreate.MarkFlagRequired("plan")
+	instanceCreate.Flags().StringP("region", "r", "", "region id you wish to have the instance created in")
+	instanceCreate.Flags().StringP("plan", "p", "", "plan id you wish the instance to have")
+	instanceCreate.Flags().IntP("os", "o", 0, "os id you wish the instance to have")
+	instanceCreate.MarkFlagRequired("region")
+	instanceCreate.MarkFlagRequired("plan")
 
 	// Optional Params
-	serverCreate.Flags().StringP("ipxe", "", "", "if you've selected the 'custom' operating system, this can be set to chainload the specified URL on bootup")
-	serverCreate.Flags().StringP("iso", "", "", "iso ID you want to create the instance with")
-	serverCreate.Flags().StringP("snapshot", "", "", "snapshot ID you want to create the instance with")
-	serverCreate.Flags().StringP("script-id", "", "", "script id of the startup script")
-	serverCreate.Flags().BoolP("ipv6", "", false, "enable ipv6 | true or false")
-	serverCreate.Flags().BoolP("private-network", "", false, "enable private network | true or false")
-	serverCreate.Flags().StringArrayP("network", "", []string{}, "network IDs you want to assign to the instance")
-	serverCreate.Flags().StringP("label", "l", "", "label you want to give this instance")
-	serverCreate.Flags().StringArrayP("ssh-keys", "s", []string{}, "ssh keys you want to assign to the instance")
-	serverCreate.Flags().BoolP("auto-backup", "b", false, "enable auto backups | true or false")
-	serverCreate.Flags().IntP("app", "a", 0, "application ID you want this instance to have")
-	serverCreate.Flags().StringP("userdata", "u", "", "base64 encoded userdata you want to give this instance")
-	serverCreate.Flags().BoolP("notify", "n", true, "notify when server has been created | true or false")
-	serverCreate.Flags().BoolP("ddos", "d", false, "enable ddos protection | true or false")
-	serverCreate.Flags().StringP("reserved-ipv4", "", "", "ip address of the floating IP to use as the main IP for this instance")
-	serverCreate.Flags().StringP("host", "", "", "The hostname to assign to this instance")
-	serverCreate.Flags().StringP("tag", "t", "", "The tag to assign to this instance")
-	serverCreate.Flags().StringP("firewall-group", "", "", "The firewall group to assign to this instance")
+	instanceCreate.Flags().StringP("ipxe", "", "", "if you've selected the 'custom' operating system, this can be set to chainload the specified URL on bootup")
+	instanceCreate.Flags().StringP("iso", "", "", "iso ID you want to create the instance with")
+	instanceCreate.Flags().StringP("snapshot", "", "", "snapshot ID you want to create the instance with")
+	instanceCreate.Flags().StringP("script-id", "", "", "script id of the startup script")
+	instanceCreate.Flags().BoolP("ipv6", "", false, "enable ipv6 | true or false")
+	instanceCreate.Flags().BoolP("private-network", "", false, "enable private network | true or false")
+	instanceCreate.Flags().StringArrayP("network", "", []string{}, "network IDs you want to assign to the instance")
+	instanceCreate.Flags().StringP("label", "l", "", "label you want to give this instance")
+	instanceCreate.Flags().StringArrayP("ssh-keys", "s", []string{}, "ssh keys you want to assign to the instance")
+	instanceCreate.Flags().BoolP("auto-backup", "b", false, "enable auto backups | true or false")
+	instanceCreate.Flags().IntP("app", "a", 0, "application ID you want this instance to have")
+	instanceCreate.Flags().StringP("userdata", "u", "", "base64 encoded userdata you want to give this instance")
+	instanceCreate.Flags().BoolP("notify", "n", true, "notify when instance has been created | true or false")
+	instanceCreate.Flags().BoolP("ddos", "d", false, "enable ddos protection | true or false")
+	instanceCreate.Flags().StringP("reserved-ipv4", "", "", "ip address of the floating IP to use as the main IP for this instance")
+	instanceCreate.Flags().StringP("host", "", "", "The hostname to assign to this instance")
+	instanceCreate.Flags().StringP("tag", "t", "", "The tag to assign to this instance")
+	instanceCreate.Flags().StringP("firewall-group", "", "", "The firewall group to assign to this instance")
 
-	serverList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	serverList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	instanceList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	instanceList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
 
-	serverIPV4List.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	serverIPV4List.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	instanceIPV4List.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	instanceIPV4List.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
 
-	serverIPV6List.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	serverIPV6List.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	instanceIPV6List.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	instanceIPV6List.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
 
 	// Sub commands for OS
 	osCmd := &cobra.Command{
@@ -96,7 +96,7 @@ func Server() *cobra.Command {
 	osCmd.AddCommand(osUpdate)
 	osUpdate.Flags().IntP("os", "o", 0, "operating system ID you wish to use")
 	osUpdate.MarkFlagRequired("os")
-	serverCmd.AddCommand(osCmd)
+	instanceCmd.AddCommand(osCmd)
 
 	// Sub commands for App
 	appCMD := &cobra.Command{
@@ -107,7 +107,7 @@ func Server() *cobra.Command {
 	appCMD.AddCommand(appUpdate)
 	appUpdate.Flags().IntP("app", "a", 0, "application ID you wish to use")
 	appUpdate.MarkFlagRequired("app")
-	serverCmd.AddCommand(appCMD)
+	instanceCmd.AddCommand(appCMD)
 
 	// Sub commands for Backup
 	backupCMD := &cobra.Command{
@@ -121,7 +121,7 @@ func Server() *cobra.Command {
 	backupCreate.Flags().IntP("hour", "o", 0, "Hour value (0-23). Applicable to crons: 'daily', 'weekly', 'monthly', 'daily_alt_even', 'daily_alt_odd'")
 	backupCreate.Flags().IntP("dow", "w", 0, "Day-of-week value (0-6). Applicable to crons: 'weekly'")
 	backupCreate.Flags().IntP("dom", "m", 0, "Day-of-month value (1-28). Applicable to crons: 'monthly'")
-	serverCmd.AddCommand(backupCMD)
+	instanceCmd.AddCommand(backupCMD)
 
 	// IPV4 Subcommands
 	isoCmd := &cobra.Command{
@@ -132,18 +132,18 @@ func Server() *cobra.Command {
 	isoCmd.AddCommand(isoStatus, isoAttach, isoDetach)
 	isoAttach.Flags().StringP("iso-id", "i", "", "id of the ISO you wish to attach")
 	isoAttach.MarkFlagRequired("iso-id")
-	serverCmd.AddCommand(isoCmd)
+	instanceCmd.AddCommand(isoCmd)
 
 	ipv4Cmd := &cobra.Command{
 		Use:   "ipv4",
 		Short: "list/create/delete ipv4 on instance",
 		Long:  ``,
 	}
-	ipv4Cmd.AddCommand(serverIPV4List, createIpv4, deleteIpv4)
-	createIpv4.Flags().Bool("reboot", false, "whether to reboot server after adding ipv4 address")
+	ipv4Cmd.AddCommand(instanceIPV4List, createIpv4, deleteIpv4)
+	createIpv4.Flags().Bool("reboot", false, "whether to reboot instance after adding ipv4 address")
 	deleteIpv4.Flags().StringP("ipv4", "i", "", "ipv4 address you wish to delete")
 	deleteIpv4.MarkFlagRequired("ipv4")
-	serverCmd.AddCommand(ipv4Cmd)
+	instanceCmd.AddCommand(ipv4Cmd)
 
 	// IPV6 Subcommands
 	ipv6Cmd := &cobra.Command{
@@ -151,8 +151,8 @@ func Server() *cobra.Command {
 		Short: "commands for ipv6 on instance",
 		Long:  ``,
 	}
-	ipv6Cmd.AddCommand(serverIPV6List)
-	serverCmd.AddCommand(ipv6Cmd)
+	ipv6Cmd.AddCommand(instanceIPV6List)
+	instanceCmd.AddCommand(ipv6Cmd)
 
 	// Plans SubCommands
 	plansCmd := &cobra.Command{
@@ -160,10 +160,10 @@ func Server() *cobra.Command {
 		Short: "update/list plans for an instance",
 		Long:  ``,
 	}
-	plansCmd.AddCommand(upgradePlan)
+	plansCmd.AddCommand(upgradePlan, upgradePlanList)
 	upgradePlan.Flags().StringP("plan", "p", "", "plan id that you wish to upgrade to")
 	upgradePlan.MarkFlagRequired("plan")
-	serverCmd.AddCommand(plansCmd)
+	instanceCmd.AddCommand(plansCmd)
 
 	// ReverseDNS SubCommands
 	reverseCmd := &cobra.Command{
@@ -186,7 +186,7 @@ func Server() *cobra.Command {
 	setIpv6.Flags().StringP("entry", "e", "", "reverse dns entry")
 	setIpv6.MarkFlagRequired("ip")
 	setIpv6.MarkFlagRequired("entry")
-	serverCmd.AddCommand(reverseCmd)
+	instanceCmd.AddCommand(reverseCmd)
 
 	userdataCmd := &cobra.Command{
 		Use:   "user-data",
@@ -195,14 +195,14 @@ func Server() *cobra.Command {
 	}
 	userdataCmd.AddCommand(setUserData, getUserData)
 	setUserData.Flags().StringP("userdata", "d", "/dev/stdin", "file to read userdata from")
-	serverCmd.AddCommand(userdataCmd)
+	instanceCmd.AddCommand(userdataCmd)
 
-	return serverCmd
+	return instanceCmd
 }
 
-var serverStart = &cobra.Command{
+var instanceStart = &cobra.Command{
 	Use:   "start <instanceID>",
-	Short: "starts a server",
+	Short: "starts an instance",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -213,17 +213,17 @@ var serverStart = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		if err := client.Instance.Start(context.Background(), id); err != nil {
-			fmt.Printf("error starting server : %v\n", err)
+			fmt.Printf("error starting instance : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("Started up server")
+		fmt.Println("Started up instance")
 	},
 }
 
-var serverStop = &cobra.Command{
+var instanceStop = &cobra.Command{
 	Use:   "stop <instanceID>",
-	Short: "stops a server",
+	Short: "stops an instance",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -234,17 +234,17 @@ var serverStop = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		if err := client.Instance.Halt(context.Background(), id); err != nil {
-			fmt.Printf("error stopping server : %v\n", err)
+			fmt.Printf("error stopping instance : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("Stopped the server")
+		fmt.Println("Stopped the instance")
 	},
 }
 
-var serverRestart = &cobra.Command{
+var instanceRestart = &cobra.Command{
 	Use:   "restart <instanceID>",
-	Short: "restart a server",
+	Short: "restart an instance",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -255,17 +255,17 @@ var serverRestart = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		if err := client.Instance.Reboot(context.Background(), id); err != nil {
-			fmt.Printf("error rebooting server : %v\n", err)
+			fmt.Printf("error rebooting instance : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("Rebooted server")
+		fmt.Println("Rebooted instance")
 	},
 }
 
-var serverReinstall = &cobra.Command{
+var instanceReinstall = &cobra.Command{
 	Use:   "reinstall <instanceID>",
-	Short: "reinstall a server",
+	Short: "reinstall an instance",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -276,17 +276,17 @@ var serverReinstall = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		if err := client.Instance.Reinstall(context.Background(), id); err != nil {
-			fmt.Printf("error reinstalling server : %v\n", err)
+			fmt.Printf("error reinstalling instance : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("Reinstalled server")
+		fmt.Println("Reinstalled instance")
 	},
 }
 
-var serverTag = &cobra.Command{
+var instanceTag = &cobra.Command{
 	Use:   "tag <instanceID>",
-	Short: "add/modify tag on server",
+	Short: "add/modify tag on instance",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -302,17 +302,17 @@ var serverTag = &cobra.Command{
 		}
 
 		if err := client.Instance.Update(context.Background(), id, options); err != nil {
-			fmt.Printf("error adding tag to server : %v\n", err)
+			fmt.Printf("error adding tag to instance : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Tagged server with : %s\n", tag)
+		fmt.Printf("Tagged instance with : %s\n", tag)
 	},
 }
 
-var serverDelete = &cobra.Command{
+var instanceDelete = &cobra.Command{
 	Use:     "delete <instanceID>",
-	Short:   "delete/destroy a server",
+	Short:   "delete/destroy an instance",
 	Aliases: []string{"destroy"},
 	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -324,17 +324,17 @@ var serverDelete = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		if err := client.Instance.Delete(context.Background(), id); err != nil {
-			fmt.Printf("error deleting server : %v\n", err)
+			fmt.Printf("error deleting instance : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("Deleted server")
+		fmt.Println("Deleted instance")
 	},
 }
 
-var serverLabel = &cobra.Command{
+var instanceLabel = &cobra.Command{
 	Use:   "label <instanceID>",
-	Short: "label a server",
+	Short: "label an instance",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -350,17 +350,17 @@ var serverLabel = &cobra.Command{
 		}
 
 		if err := client.Instance.Update(context.Background(), id, options); err != nil {
-			fmt.Printf("error labeling server : %v\n", err)
+			fmt.Printf("error labeling instance : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Labeled server with : %s\n", label)
+		fmt.Printf("Labeled instance with : %s\n", label)
 	},
 }
 
-var serverBandwidth = &cobra.Command{
+var instanceBandwidth = &cobra.Command{
 	Use:   "bandwidth <instanceID>",
-	Short: "bandwidth for server",
+	Short: "bandwidth for instance",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -372,18 +372,18 @@ var serverBandwidth = &cobra.Command{
 		id := args[0]
 		bw, err := client.Instance.GetBandwidth(context.Background(), id)
 		if err != nil {
-			fmt.Printf("error getting bandwidth for server : %v\n", err)
+			fmt.Printf("error getting bandwidth for instance : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.ServerBandwidth(bw)
+		printer.InstanceBandwidth(bw)
 	},
 }
 
-var serverIPV4List = &cobra.Command{
+var instanceIPV4List = &cobra.Command{
 	Use:     "list <instanceID>",
 	Aliases: []string{"v4"},
-	Short:   "list ipv4 for a server",
+	Short:   "list ipv4 for an instance",
 	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -400,14 +400,14 @@ var serverIPV4List = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.ServerIPV4(v4, meta)
+		printer.InstanceIPV4(v4, meta)
 	},
 }
 
-var serverIPV6List = &cobra.Command{
+var instanceIPV6List = &cobra.Command{
 	Use:     "list <instanceID>",
 	Aliases: []string{"v6"},
-	Short:   "list ipv6 for a server",
+	Short:   "list ipv6 for an instance",
 	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -424,30 +424,30 @@ var serverIPV6List = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.ServerIPV6(v6, meta)
+		printer.InstanceIPV6(v6, meta)
 	},
 }
 
-var serverList = &cobra.Command{
+var instanceList = &cobra.Command{
 	Use:     "list",
 	Aliases: []string{"l"},
-	Short:   "list all available servers",
+	Short:   "list all available instances",
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
 		s, meta, err := client.Instance.List(context.TODO(), options)
 		if err != nil {
-			fmt.Printf("error getting list of servers : %v\n", err)
+			fmt.Printf("error getting list of instances : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.ServerList(s, meta)
+		printer.InstanceList(s, meta)
 	},
 }
 
-var serverInfo = &cobra.Command{
+var instanceInfo = &cobra.Command{
 	Use:   "get <instanceID>",
-	Short: "get info about a specific server",
+	Short: "get info about a specific instance",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -459,17 +459,17 @@ var serverInfo = &cobra.Command{
 		id := args[0]
 		s, err := client.Instance.Get(context.TODO(), id)
 		if err != nil {
-			fmt.Printf("error getting server : %v\n", err)
+			fmt.Printf("error getting instance : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.Server(s)
+		printer.Instance(s)
 	},
 }
 
 var updateFwgGroup = &cobra.Command{
 	Use:   "update-firewall-group",
-	Short: "assign a firewall group to server",
+	Short: "assign a firewall group to instance",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := cmd.Flags().GetString("instance-id")
@@ -484,7 +484,7 @@ var updateFwgGroup = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Println("Updated firewall-group")
+		fmt.Println("Updated firewall group")
 	},
 }
 
@@ -663,7 +663,7 @@ var isoDetach = &cobra.Command{
 	},
 }
 
-var serverRestore = &cobra.Command{
+var instanceRestore = &cobra.Command{
 	Use:   "restore <instanceID>",
 	Short: "restore instance from backup/snapshot",
 	Long:  ``,
@@ -775,6 +775,29 @@ var upgradePlan = &cobra.Command{
 		}
 
 		fmt.Println("Upgraded plan")
+	},
+}
+
+var upgradePlanList = &cobra.Command{
+	Use:   "list <instanceID>",
+	Short: "available plans an instance can upgrade to.",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		plans, err := client.Instance.GetUpgrades(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error listing available plans : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.PlansList(plans.Plans)
 	},
 }
 
@@ -902,9 +925,9 @@ var setIpv6 = &cobra.Command{
 	},
 }
 
-var serverCreate = &cobra.Command{
+var instanceCreate = &cobra.Command{
 	Use:   "create",
-	Short: "Create a server instance",
+	Short: "Create an instance",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
@@ -1015,19 +1038,19 @@ var serverCreate = &cobra.Command{
 		}
 
 		//region, plan, osOpt, opt
-		server, err := client.Instance.Create(context.TODO(), opt)
+		instance, err := client.Instance.Create(context.TODO(), opt)
 		if err != nil {
 			fmt.Printf("error creating instance : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.Server(server)
+		printer.Instance(instance)
 	},
 }
 
 var setUserData = &cobra.Command{
 	Use:   "set <instanceID>",
-	Short: "Set the user-data of a server",
+	Short: "Set the user-data of an instance",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide an instanceID")
@@ -1052,13 +1075,13 @@ var setUserData = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Println("Set user-data for server")
+		fmt.Println("Set user-data for instance")
 	},
 }
 
 var getUserData = &cobra.Command{
 	Use:   "get <instanceID>",
-	Short: "Get the user-data of a server",
+	Short: "Get the user-data of an instance",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide an instanceID")
