@@ -1039,7 +1039,7 @@ var instanceCreate = &cobra.Command{
 		if osOption == "os_id" && osID != 0 {
 			opt.OsID = osID
 		} else if osOption == "" && osID == 0 {
-			fmt.Printf("error creating instance: an os ID must be provided\n")
+			fmt.Printf("error creating instance: an os_id, snapshot_id, iso_id, or app_id must be provided\n")
 			os.Exit(1)
 		}
 
