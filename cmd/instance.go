@@ -69,7 +69,7 @@ func Instance() *cobra.Command {
 	instanceCreate.Flags().StringArrayP("ssh-keys", "s", []string{}, "ssh keys you want to assign to the instance")
 	instanceCreate.Flags().BoolP("auto-backup", "b", false, "enable auto backups | true or false")
 	instanceCreate.Flags().IntP("app", "a", 0, "application ID you want this instance to have")
-	instanceCreate.Flags().StringP("userdata", "u", "", "base64 encoded userdata you want to give this instance")
+	instanceCreate.Flags().StringP("userdata", "u", "", "plain text userdata you want to give this instance which the CLI will base64 encode")
 	instanceCreate.Flags().BoolP("notify", "n", true, "notify when instance has been created | true or false")
 	instanceCreate.Flags().BoolP("ddos", "d", false, "enable ddos protection | true or false")
 	instanceCreate.Flags().StringP("reserved-ipv4", "", "", "ip address of the floating IP to use as the main IP for this instance")

@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
@@ -106,13 +107,16 @@ var bareMetalCreate = &cobra.Command{
 			SnapshotID:      snapshot,
 			Label:           label,
 			SSHKeyIDs:       sshKeys,
-			UserData:        userdata,
 			Hostname:        hostname,
 			Tag:             tag,
 			ReservedIPv4:    ripv4,
 			OsID:            osID,
 			Region:          region,
 			AppID:           app,
+		}
+
+		if userdata != "" {
+			options.UserData = base64.StdEncoding.EncodeToString([]byte(userdata))
 		}
 
 		if notify == "yes" {
