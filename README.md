@@ -1,7 +1,8 @@
 # vultr-cli
 
 The Vultr Command Line Interface
-```
+
+```sh
 vultr-cli is a command line interface for the Vultr API
 
 Usage:
@@ -48,9 +49,10 @@ There are three ways to install `vultr-cli`:
   - Brew
   - Snap (Coming soon)
   - Chocolatey (Coming soon)
+4. [Docker Hub](https://hub.docker.com/repository/docker/vultr/vultr-cli)
   
 ### GitHub Release
-If you are to visit the `vultr-cli` [releases](https://github.com/vultr/vultr-cli/releases) page. You can download a compiled version of `vultr-cli` for you Linux/MacOS/Windows in either 32/64bit.
+If you are to visit the `vultr-cli` [releases](https://github.com/vultr/vultr-cli/releases) page. You can download a compiled version of `vultr-cli` for you Linux/MacOS/Windows in 64bit.
 
 ### Building from source 
 
@@ -68,10 +70,8 @@ make build_(pass name of os + arch)
 
 The available make build options are
 - build_mac
-- build_linux_386
 - build_linux_amd64
 - build_windows_64
-- build_windows_32
 
 Note that the latter method will install the `vultr-cli` executable in `builds/vultr-cli_(name of os + arch)`.
 
