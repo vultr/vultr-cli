@@ -1,6 +1,6 @@
 # Change Log
 
-## [v2.0.0](https://github.com/vultr/vultr-cli/compare/v1.0.0..v2.0.0) (2020-11-124)
+## [v2.0.0](https://github.com/vultr/vultr-cli/compare/v1.0.0..v2.0.0) (2020-11-24)
 ### Enhancement
 * Vultr-CLI v2.0.0 release 
 
