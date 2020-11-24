@@ -23,6 +23,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v2"
+	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
 // BareMetalOS represents the baremetal operating system commands
@@ -33,7 +34,7 @@ func BareMetalOS() *cobra.Command {
 		Aliases: []string{"o"},
 	}
 
-	bareMetalOSCmd.AddCommand(bareMetalOSChange)
+	bareMetalOSCmd.AddCommand(bareMetalOSChange, bareMetalOSChangeList)
 
 	return bareMetalOSCmd
 }
@@ -60,5 +61,28 @@ var bareMetalOSChange = &cobra.Command{
 		}
 
 		fmt.Println("bare metal server's operating system changed")
+	},
+}
+
+var bareMetalOSChangeList = &cobra.Command{
+	Use:   "list <bareMetalID>",
+	Short: "available operating systems a bare metal server can change to.",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		list, err := client.BareMetalServer.GetUpgrades(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error listing available os : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.OsList(list.OS)
 	},
 }

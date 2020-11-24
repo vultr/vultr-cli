@@ -16,11 +16,14 @@ package cmd
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
@@ -32,7 +35,8 @@ func BareMetalUserData() *cobra.Command {
 		Aliases: []string{"u"},
 	}
 
-	bareMetalUserDataCmd.AddCommand(bareMetalGetUserData)
+	bareMetalSetUserData.Flags().StringP("userdata", "d", "/dev/stdin", "file to read userdata from")
+	bareMetalUserDataCmd.AddCommand(bareMetalGetUserData, bareMetalSetUserData)
 
 	return bareMetalUserDataCmd
 }
@@ -55,5 +59,37 @@ var bareMetalGetUserData = &cobra.Command{
 		}
 
 		printer.UserData(u)
+	},
+}
+
+var bareMetalSetUserData = &cobra.Command{
+	Use:   "set <bareMetalID>",
+	Short: "Set the plain text user-data of a bare metal server.",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		userData, _ := cmd.Flags().GetString("userdata")
+
+		rawData, err := ioutil.ReadFile(userData)
+		if err != nil {
+			fmt.Printf("error reading user-data : %v\n", err)
+			os.Exit(1)
+		}
+
+		options := &govultr.BareMetalUpdate{
+			UserData: base64.StdEncoding.EncodeToString(rawData),
+		}
+
+		_, err = client.BareMetalServer.Update(context.TODO(), args[0], options)
+		if err != nil {
+			fmt.Printf("error setting user-data : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Set user-data for bare metal")
 	},
 }
