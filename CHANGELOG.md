@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.0.0](https://github.com/vultr/vultr-cli/compare/v1.0.0..v2.0.0) (2020-11-24)
+### Enhancement
+* Vultr-CLI v2.0.0 release 
+
+### Changes
+* Vultr-CLI v2.0.0 is running on API v2
+* Server has been renamed to Instance to match with API v2
+
 ## [v1.0.0](https://github.com/vultr/vultr-cli/compare/v0.4.0..v1.0.0) (2020-11-19)
 ### Enhancement
 * Vultr-CLI v1.0.0 release [PR 114](https://github.com/vultr/vultr-cli/pull/114) 
