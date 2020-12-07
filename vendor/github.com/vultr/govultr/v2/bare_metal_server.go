@@ -74,12 +74,12 @@ type BareMetalCreate struct {
 	OsID            int      `json:"os_id,omitempty"`
 	StartupScriptID string   `json:"script_id,omitempty"`
 	SnapshotID      string   `json:"snapshot_id,omitempty"`
-	EnableIPv6      bool     `json:"enable_ipv6,omitempty"`
+	EnableIPv6      *bool    `json:"enable_ipv6,omitempty"`
 	Label           string   `json:"label,omitempty"`
 	SSHKeyIDs       []string `json:"sshkey_id,omitempty"`
 	AppID           int      `json:"app_id,omitempty"`
 	UserData        string   `json:"user_data,omitempty"`
-	ActivationEmail bool     `json:"activation_email,omitempty"`
+	ActivationEmail *bool    `json:"activation_email,omitempty"`
 	Hostname        string   `json:"hostname,omitempty"`
 	Tag             string   `json:"tag,omitempty"`
 	ReservedIPv4    string   `json:"reserved_ipv4,omitempty"`
@@ -88,7 +88,7 @@ type BareMetalCreate struct {
 // BareMetalUpdate represents the optional parameters that can be set when updating a Bare Metal server
 type BareMetalUpdate struct {
 	OsID       int    `json:"os_id,omitempty"`
-	EnableIPv6 bool   `json:"enable_ipv6,omitempty"`
+	EnableIPv6 *bool  `json:"enable_ipv6,omitempty"`
 	Label      string `json:"label,omitempty"`
 	AppID      int    `json:"app_id,omitempty"`
 	UserData   string `json:"user_data,omitempty"`

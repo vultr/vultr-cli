@@ -53,12 +53,12 @@ type BlockStorageUpdate struct {
 // BlockStorageAttach struct used to define if a attach should be restart the instance.
 type BlockStorageAttach struct {
 	InstanceID string `json:"instance_id"`
-	Live       bool   `json:"live,omitempty"`
+	Live       *bool  `json:"live,omitempty"`
 }
 
 // BlockStorageDetach struct used to define if a detach should be restart the instance.
 type BlockStorageDetach struct {
-	Live bool `json:"live,omitempty"`
+	Live *bool `json:"live,omitempty"`
 }
 
 type blockStoragesBase struct {

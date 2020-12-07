@@ -44,7 +44,7 @@ type InstanceService interface {
 	GetBackupSchedule(ctx context.Context, instanceID string) (*BackupSchedule, error)
 	SetBackupSchedule(ctx context.Context, instanceID string, backup *BackupScheduleReq) error
 
-	CreateIPv4(ctx context.Context, instanceID string, reboot bool) (*IPv4, error)
+	CreateIPv4(ctx context.Context, instanceID string, reboot *bool) (*IPv4, error)
 	ListIPv4(ctx context.Context, instanceID string, option *ListOptions) ([]IPv4, *Meta, error)
 	DeleteIPv4(ctx context.Context, instanceID, ip string) error
 	ListIPv6(ctx context.Context, instanceID string, option *ListOptions) ([]IPv6, *Meta, error)
@@ -151,7 +151,7 @@ type backupScheduleBase struct {
 
 // BackupSchedule information for a given instance.
 type BackupSchedule struct {
-	Enabled             bool   `json:"enabled,omitempty"`
+	Enabled             *bool  `json:"enabled,omitempty"`
 	Type                string `json:"type,omitempty"`
 	NextScheduleTimeUTC string `json:"next_scheduled_time_utc,omitempty"`
 	Hour                int    `json:"hour,omitempty"`
@@ -219,15 +219,15 @@ type InstanceCreateReq struct {
 	IPXEChainURL         string   `json:"ipxe_chain_url,omitempty"`
 	ScriptID             string   `json:"script_id,omitempty"`
 	SnapshotID           string   `json:"snapshot_id,omitempty"`
-	EnableIPv6           bool     `json:"enable_ipv6,omitempty"`
-	EnablePrivateNetwork bool     `json:"enable_private_network,omitempty"`
+	EnableIPv6           *bool    `json:"enable_ipv6,omitempty"`
+	EnablePrivateNetwork *bool    `json:"enable_private_network,omitempty"`
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
 	SSHKeys              []string `json:"sshkey_id,omitempty"`
 	Backups              string   `json:"backups,omitempty"`
-	DDOSProtection       bool     `json:"ddos_protection,omitempty"`
+	DDOSProtection       *bool    `json:"ddos_protection,omitempty"`
 	UserData             string   `json:"user_data,omitempty"`
 	ReservedIPv4         string   `json:"reserved_ipv4,omitempty"`
-	ActivationEmail      bool     `json:"activation_email,omitempty"`
+	ActivationEmail      *bool    `json:"activation_email,omitempty"`
 }
 
 // InstanceUpdateReq struct used to update an instance.
@@ -237,8 +237,8 @@ type InstanceUpdateReq struct {
 	Tag                  string   `json:"tag,omitempty"`
 	OsID                 int      `json:"os_id,omitempty"`
 	AppID                int      `json:"app_id,omitempty"`
-	EnableIPv6           bool     `json:"enable_ipv6,omitempty"`
-	EnablePrivateNetwork bool     `json:"enable_private_network,omitempty"`
+	EnableIPv6           *bool    `json:"enable_ipv6,omitempty"`
+	EnablePrivateNetwork *bool    `json:"enable_private_network,omitempty"`
 	AttachPrivateNetwork []string `json:"attach_private_network,omitempty"`
 	DetachPrivateNetwork []string `json:"detach_private_network,omitempty"`
 	Backups              string   `json:"backups,omitempty"`
@@ -569,7 +569,7 @@ func (i *InstanceServiceHandler) SetBackupSchedule(ctx context.Context, instance
 }
 
 // CreateIPv4 an additional IPv4 address for given instance.
-func (i *InstanceServiceHandler) CreateIPv4(ctx context.Context, instanceID string, reboot bool) (*IPv4, error) {
+func (i *InstanceServiceHandler) CreateIPv4(ctx context.Context, instanceID string, reboot *bool) (*IPv4, error) {
 	uri := fmt.Sprintf("%s/%s/ipv4", instancePath, instanceID)
 
 	body := RequestBody{"reboot": reboot}

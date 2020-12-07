@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	version     = "2.0.0"
+	version     = "2.2.0"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 500 * time.Millisecond
@@ -232,4 +232,9 @@ func (c *Client) vultrErrorHandler(resp *http.Response, err error, numTries int)
 		return nil, fmt.Errorf("gave up after %d attempts, last error unavailable (error reading response body: %v)", c.client.RetryMax+1, err)
 	}
 	return nil, fmt.Errorf("gave up after %d attempts, last error: %#v", c.client.RetryMax+1, strings.TrimSpace(string(buf)))
+}
+
+func BoolToBoolPtr(value bool) *bool {
+	b := value
+	return &b
 }

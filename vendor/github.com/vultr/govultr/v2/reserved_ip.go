@@ -146,7 +146,8 @@ func (r *ReservedIPServiceHandler) Convert(ctx context.Context, ripConvert *Rese
 // Attach a reserved IP to an existing subscription
 func (r *ReservedIPServiceHandler) Attach(ctx context.Context, id, instance string) error {
 	uri := fmt.Sprintf("%s/%s/attach", ripPath, id)
-	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, instance)
+	reqBody := RequestBody{"instance_id": instance}
+	req, err := r.client.NewRequest(ctx, http.MethodPost, uri, reqBody)
 	if err != nil {
 		return err
 	}

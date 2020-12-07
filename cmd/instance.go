@@ -763,7 +763,7 @@ var createIpv4 = &cobra.Command{
 		id := args[0]
 		reboot, _ := cmd.Flags().GetBool("reboot")
 
-		_, err := client.Instance.CreateIPv4(context.TODO(), id, reboot)
+		_, err := client.Instance.CreateIPv4(context.TODO(), id, govultr.BoolToBoolPtr(reboot))
 		if err != nil {
 			fmt.Printf("error creating ipv4 : %v\n", err)
 			os.Exit(1)
@@ -1028,11 +1028,11 @@ var instanceCreate = &cobra.Command{
 			Hostname:             host,
 			Tag:                  tag,
 			FirewallGroupID:      fwg,
-			EnableIPv6:           false,
-			DDOSProtection:       false,
-			ActivationEmail:      false,
+			EnableIPv6:           govultr.BoolToBoolPtr(false),
+			DDOSProtection:       govultr.BoolToBoolPtr(false),
+			ActivationEmail:      govultr.BoolToBoolPtr(false),
 			Backups:              "disabled",
-			EnablePrivateNetwork: false,
+			EnablePrivateNetwork: govultr.BoolToBoolPtr(false),
 		}
 
 		// If no osOptions were selected and osID has a real value then set the osOptions to os_id
@@ -1044,19 +1044,19 @@ var instanceCreate = &cobra.Command{
 		}
 
 		if ipv6 {
-			opt.EnableIPv6 = true
+			opt.EnableIPv6 = govultr.BoolToBoolPtr(true)
 		}
 		if ddos {
-			opt.DDOSProtection = true
+			opt.DDOSProtection = govultr.BoolToBoolPtr(true)
 		}
 		if notify {
-			opt.ActivationEmail = true
+			opt.ActivationEmail = govultr.BoolToBoolPtr(true)
 		}
 		if backup {
 			opt.Backups = "enabled"
 		}
 		if privateNetwork {
-			opt.EnablePrivateNetwork = true
+			opt.EnablePrivateNetwork = govultr.BoolToBoolPtr(true)
 		}
 
 		if userData != "" {

@@ -190,11 +190,11 @@ var lbCreate = &cobra.Command{
 		}
 
 		if sslRedirect == "yes" {
-			options.SSLRedirect = true
+			options.SSLRedirect = govultr.BoolToBoolPtr(true)
 		}
 
 		if proxyProtocol == "yes" {
-			options.ProxyProtocol = true
+			options.ProxyProtocol = govultr.BoolToBoolPtr(true)
 		}
 
 		if len(instances) > 0 {
@@ -361,15 +361,15 @@ var lbUpdate = &cobra.Command{
 		}
 
 		if proxyProtocol == "yes" {
-			options.ProxyProtocol = true
+			options.ProxyProtocol = govultr.BoolToBoolPtr(true)
 		} else if proxyProtocol == "no" {
-			options.ProxyProtocol = false
+			options.ProxyProtocol = govultr.BoolToBoolPtr(false)
 		}
 
 		if sslRedirect == "yes" {
-			options.SSLRedirect = true
+			options.SSLRedirect = govultr.BoolToBoolPtr(true)
 		} else if sslRedirect == "no" {
-			options.SSLRedirect = false
+			options.SSLRedirect = govultr.BoolToBoolPtr(false)
 		}
 
 		if cookieName != "" {

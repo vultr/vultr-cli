@@ -98,7 +98,7 @@ func AppList(app []govultr.Application) {
 func BackupsGet(b *govultr.BackupSchedule) {
 	col := columns{"ENABLED", "CRON TYPE", "NEXT RUN", "HOUR", "DOW", "DOM"}
 	display(col)
-	display(columns{b.Enabled, b.Type, b.NextScheduleTimeUTC, b.Hour, b.Dow, b.Dom})
+	display(columns{*b.Enabled, b.Type, b.NextScheduleTimeUTC, b.Hour, b.Dow, b.Dom})
 	flush()
 }
 
