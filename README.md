@@ -110,7 +110,7 @@ In order to use `vultr-cli` you will need to export your [Vultr API KEY](https:/
 ##### Create a DNS Domain
 `vultr-cli dns domain create --domain <domain-name> --ip <ip-address>`
 
-##### Example vultr-cli.yaml file
+##### Example vultr-cli.yaml config file
 `api-key: MYKEY`
 
 ##### Utilizing the config flag
