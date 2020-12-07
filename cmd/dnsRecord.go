@@ -34,7 +34,7 @@ func DnsRecord() *cobra.Command {
 		Long:  ``,
 	}
 
-	dnsRecordCmd.AddCommand(recordCreate, recordGet, recordlist, recordDelete, recordUpdate)
+	dnsRecordCmd.AddCommand(recordCreate, recordGet, recordList, recordDelete, recordUpdate)
 
 	// Create
 	recordCreate.Flags().StringP("domain", "m", "", "name of domain you want to create this record for")
@@ -54,6 +54,10 @@ func DnsRecord() *cobra.Command {
 	recordUpdate.Flags().StringP("data", "d", "", "data for the record")
 	recordUpdate.Flags().IntP("ttl", "", 0, "time to live for the record")
 	recordUpdate.Flags().IntP("priority", "p", -1, "only required for MX and SRV")
+
+	// List
+	recordList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	recordList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
 
 	return dnsRecordCmd
 }
@@ -121,7 +125,7 @@ var recordGet = &cobra.Command{
 	},
 }
 
-var recordlist = &cobra.Command{
+var recordList = &cobra.Command{
 	Use:   "list <domainName>",
 	Short: "list all dns records",
 	Long:  ``,
