@@ -18,6 +18,7 @@ Available Commands:
   firewall       firewall is used to access firewall commands
   help           Help about any command
   iso            iso is used to access iso commands
+  load-balancer  load balancer commands
   network        network interacts with network actions
   object-storage object storage commands
   os             grab all available operating systems
@@ -108,6 +109,14 @@ In order to use `vultr-cli` you will need to export your [Vultr API KEY](https:/
 
 ##### Create a DNS Domain
 `vultr-cli dns domain create --domain <domain-name> --ip <ip-address>`
+
+##### Example vultr-cli.yaml file
+`api-key: MYKEY`
+
+##### Utilizing the config flag
+The config flag can be used to specify the vultr-cli.yaml file path when it's outside the default location. If the file has the api-key defined, the CLI will use the vultr-cli.yaml config, otherwise it will default to reading the environment variable for the api key.
+
+`vultr-cli instance list --config /Users/myuser/vultr-cli.yaml`
 
 ## Contributing
 Feel free to send pull requests our way! Please see the [contributing guidelines](CONTRIBUTING.md).
