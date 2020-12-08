@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.0.1](https://github.com/vultr/vultr-cli/compare/v2.0.0..v2.0.1) (2020-12-08)
+### Bug Fixes
+* Adding paging support for DNS Records [PR 123](https://github.com/vultr/vultr-cli/pull/123)
+* Cleaned up LB output to remove artifacts [PR 125](https://github.com/vultr/vultr-cli/pull/125)
+
+### Dependencies
+* govultr 2.0.0 -> 2.2.0 [PR 125](https://github.com/vultr/vultr-cli/pull/125)
+
 ## [v2.0.0](https://github.com/vultr/vultr-cli/compare/v1.0.0..v2.0.0) (2020-11-24)
 ### Enhancement
 * Vultr-CLI v2.0.0 release 
