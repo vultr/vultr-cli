@@ -8,7 +8,7 @@ github.com/google/go-querystring/query
 github.com/hashicorp/go-cleanhttp
 # github.com/hashicorp/go-hclog v0.12.0
 ## explicit
-# github.com/hashicorp/go-retryablehttp v0.6.6
+# github.com/hashicorp/go-retryablehttp v0.6.8
 github.com/hashicorp/go-retryablehttp
 # github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
@@ -50,7 +50,7 @@ github.com/spf13/pflag
 github.com/spf13/viper
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
-# github.com/vultr/govultr/v2 v2.0.0
+# github.com/vultr/govultr/v2 v2.2.0
 ## explicit
 github.com/vultr/govultr/v2
 # golang.org/x/net v0.0.0-20190620200207-3b0461eec859

@@ -78,7 +78,7 @@ var userCreate = &cobra.Command{
 		}
 
 		if api == "yes" {
-			options.APIEnabled = true
+			options.APIEnabled = govultr.BoolToBoolPtr(true)
 		}
 
 		user, err := client.User.Create(context.Background(), options)
@@ -188,9 +188,9 @@ var userUpdate = &cobra.Command{
 		}
 
 		if api == "yes" {
-			user.APIEnabled = true
+			user.APIEnabled = govultr.BoolToBoolPtr(true)
 		} else if api == "no" {
-			user.APIEnabled = false
+			user.APIEnabled = govultr.BoolToBoolPtr(false)
 		}
 
 		if acl != nil {

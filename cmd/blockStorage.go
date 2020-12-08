@@ -86,7 +86,7 @@ var bsAttach = &cobra.Command{
 
 		bsAttach := &govultr.BlockStorageAttach{
 			InstanceID: instance,
-			Live:       live,
+			Live:       govultr.BoolToBoolPtr(live),
 		}
 
 		if err := client.BlockStorage.Attach(context.Background(), id, bsAttach); err != nil {
@@ -161,7 +161,7 @@ var bsDetach = &cobra.Command{
 		live, _ := cmd.Flags().GetBool("live")
 
 		bsDetach := &govultr.BlockStorageDetach{
-			Live: live,
+			Live: govultr.BoolToBoolPtr(live),
 		}
 
 		if err := client.BlockStorage.Detach(context.Background(), id, bsDetach); err != nil {

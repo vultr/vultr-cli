@@ -120,11 +120,11 @@ var bareMetalCreate = &cobra.Command{
 		}
 
 		if notify == "yes" {
-			options.ActivationEmail = true
+			options.ActivationEmail = govultr.BoolToBoolPtr(true)
 		}
 
 		if ipv6 == "yes" {
-			options.EnableIPv6 = true
+			options.EnableIPv6 = govultr.BoolToBoolPtr(true)
 		}
 
 		osOptions := map[string]interface{}{"app_id": app, "snapshot_id": snapshot, "os_id": osID}

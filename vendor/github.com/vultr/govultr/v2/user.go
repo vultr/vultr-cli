@@ -31,7 +31,7 @@ type User struct {
 	ID         string   `json:"id"`
 	Name       string   `json:"name"`
 	Email      string   `json:"email"`
-	APIEnabled bool     `json:"api_enabled"`
+	APIEnabled *bool    `json:"api_enabled"`
 	APIKey     string   `json:"api_key,omitempty"`
 	ACL        []string `json:"acls,omitempty"`
 }
@@ -40,7 +40,7 @@ type User struct {
 type UserReq struct {
 	Email      string   `json:"email,omitempty"`
 	Name       string   `json:"name,omitempty"`
-	APIEnabled bool     `json:"api_enabled,omitempty"`
+	APIEnabled *bool    `json:"api_enabled,omitempty"`
 	ACL        []string `json:"acls,omitempty"`
 	Password   string   `json:"password,omitempty"`
 }

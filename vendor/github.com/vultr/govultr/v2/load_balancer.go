@@ -40,7 +40,7 @@ type LoadBalancer struct {
 	Instances       []string         `json:"instances,omitempty"`
 	HealthCheck     *HealthCheck     `json:"health_check,omitempty"`
 	GenericInfo     *GenericInfo     `json:"generic_info,omitempty"`
-	SSLInfo         bool             `json:"has_ssl,omitempty"`
+	SSLInfo         *bool            `json:"has_ssl,omitempty"`
 	ForwardingRules []ForwardingRule `json:"forwarding_rules,omitempty"`
 }
 
@@ -53,8 +53,8 @@ type LoadBalancerReq struct {
 	StickySessions     *StickySessions  `json:"sticky_session,omitempty"`
 	ForwardingRules    []ForwardingRule `json:"forwarding_rules,omitempty"`
 	SSL                *SSL             `json:"ssl,omitempty"`
-	SSLRedirect        bool             `json:"ssl_redirect,omitempty"`
-	ProxyProtocol      bool             `json:"proxy_protocol,omitempty"`
+	SSLRedirect        *bool            `json:"ssl_redirect,omitempty"`
+	ProxyProtocol      *bool            `json:"proxy_protocol,omitempty"`
 	BalancingAlgorithm string           `json:"balancing_algorithm,omitempty"`
 }
 
@@ -77,9 +77,9 @@ type HealthCheck struct {
 // GenericInfo represents generic configuration of your load balancer
 type GenericInfo struct {
 	BalancingAlgorithm string          `json:"balancing_algorithm,omitempty"`
-	SSLRedirect        bool            `json:"ssl_redirect,omitempty"`
+	SSLRedirect        *bool           `json:"ssl_redirect,omitempty"`
 	StickySessions     *StickySessions `json:"sticky_sessions,omitempty"`
-	ProxyProtocol      bool            `json:"proxy_protocol,omitempty"`
+	ProxyProtocol      *bool           `json:"proxy_protocol,omitempty"`
 }
 
 // StickySessions represents cookie for your load balancer
