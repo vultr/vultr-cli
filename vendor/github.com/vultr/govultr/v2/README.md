@@ -92,7 +92,7 @@ type Links struct {
 }
 
 ```
-Pass a `per_page` value to the `list_options` struct to adjust the number of items returned per call. The default and max are 25 items per page. 
+Pass a `per_page` value to the `list_options` struct to adjust the number of items returned per call. The default is 100 items per page and max is 500 items per page. 
 
 This example demonstrates how to retrieve all of your instances, with one instance per page.
 
