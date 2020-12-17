@@ -38,7 +38,7 @@ func ReservedIP() *cobra.Command {
 
 	// List
 	reservedIPList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	reservedIPList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	reservedIPList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	// Attach
 	reservedIPAttach.Flags().StringP("instance-id", "i", "", "id of instance you want to attach")

@@ -39,7 +39,7 @@ func FirewallGroup() *cobra.Command {
 	firewallGroupCreate.Flags().StringP("description", "d", "", "(optional) Description of firewall group.")
 
 	firewallGroupList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	firewallGroupList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	firewallGroupList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return firewallGroupCmd
 }
