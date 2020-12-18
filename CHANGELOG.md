@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.1.0](https://github.com/vultr/vultr-cli/compare/v2.0.1..v2.1.0) (2020-12-18)
+### Enhancement
+* Add Bare Metal Start command
+* Update paging information
+
+### Dependencies
+* govultr 2.2.0 -> 2.3.0 [PR 127](https://github.com/vultr/vultr-cli/pull/127)
+
 ## [v2.0.1](https://github.com/vultr/vultr-cli/compare/v2.0.0..v2.0.1) (2020-12-08)
 ### Bug Fixes
 * Adding paging support for DNS Records [PR 123](https://github.com/vultr/vultr-cli/pull/123)
