@@ -36,7 +36,7 @@ func Plans() *cobra.Command {
 	planList.Flags().StringP("type", "t", "", "(optional) The type of plans to return. Possible values: 'bare-metal', 'vc2', 'vdc2', 'ssd', 'dedicated'. Defaults to all VPS plans.")
 
 	planList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	planList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	planList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return planCmd
 }

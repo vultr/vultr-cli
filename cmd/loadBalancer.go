@@ -67,7 +67,7 @@ func LoadBalancer() *cobra.Command {
 
 	// List
 	lbList.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
-	lbList.Flags().IntP("per-page", "p", 25, "(optional) number of items requested per page. default and max are 25.")
+	lbList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	// Update
 	lbUpdate.Flags().StringP("balancing-algorithm", "b", "roundrobin", "(optional) balancing algorithm that determines server selection | roundrobin or leastconn")
@@ -101,7 +101,7 @@ func LoadBalancer() *cobra.Command {
 
 	// rule list
 	ruleList.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
-	ruleList.Flags().IntP("per-page", "p", 25, "(optional) number of items requested per page. default and max are 25.")
+	ruleList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	// rule create
 	ruleCreate.Flags().String("frontend-protocol", "http", "the protocol on the Load Balancer to forward to the backend. | HTTP, HTTPS, TCP")

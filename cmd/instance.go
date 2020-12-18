@@ -78,13 +78,13 @@ func Instance() *cobra.Command {
 	instanceCreate.Flags().StringP("firewall-group", "", "", "The firewall group to assign to this instance")
 
 	instanceList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	instanceList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	instanceList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	instanceIPV4List.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	instanceIPV4List.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	instanceIPV4List.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	instanceIPV6List.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	instanceIPV6List.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	instanceIPV6List.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	// Sub commands for OS
 	osCmd := &cobra.Command{

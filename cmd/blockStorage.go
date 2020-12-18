@@ -39,7 +39,7 @@ func BlockStorageCmd() *cobra.Command {
 
 	// List
 	bsList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	bsList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	bsList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	// Attach
 	bsAttach.Flags().StringP("instance", "i", "", "instance id you want to attach to")

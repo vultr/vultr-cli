@@ -35,7 +35,7 @@ func Backups() *cobra.Command {
 	backupsCmd.AddCommand(backupsList, backupsGet)
 
 	backupsList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	backupsList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	backupsList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return backupsCmd
 }

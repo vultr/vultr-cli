@@ -40,6 +40,7 @@ func BareMetal() *cobra.Command {
 		bareMetalCreate,
 		bareMetalDelete,
 		bareMetalHalt,
+		bareMetalStart,
 		bareMetalGet,
 		bareMetalGetVNCUrl,
 		bareMetalListIPV4,
@@ -70,13 +71,13 @@ func BareMetal() *cobra.Command {
 	bareMetalCreate.Flags().StringP("ripv4", "v", "", "(optional) IP address of the floating IP to use as the main IP of this server.")
 
 	bareMetalList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	bareMetalList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	bareMetalList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	bareMetalListIPV4.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	bareMetalListIPV4.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	bareMetalListIPV4.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	bareMetalListIPV6.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	bareMetalListIPV6.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	bareMetalListIPV6.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return bareMetalCmd
 }
@@ -267,6 +268,27 @@ var bareMetalHalt = &cobra.Command{
 		}
 
 		fmt.Println("bare metal server halted.")
+	},
+}
+
+var bareMetalStart = &cobra.Command{
+	Use:     "start <bareMetalID>",
+	Short:   "Start a bare metal server.",
+	Long:    `Start a bare metal server.`,
+	Aliases: []string{"h"},
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := client.BareMetalServer.Start(context.TODO(), args[0]); err != nil {
+			fmt.Printf("%v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("bare metal server started.")
 	},
 }
 

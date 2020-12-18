@@ -46,14 +46,14 @@ func ObjectStorageCmd() *cobra.Command {
 
 	// List
 	objStorageList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	objStorageList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	objStorageList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	// Regenerate
 	objStorageS3KeyRegenerate.Flags().StringP("s3-access-key", "s", "", "access key for a given object storage subscription")
 
 	// Cluster List
 	objStorageClusterList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	objStorageClusterList.Flags().IntP("per-page", "p", 25, "(optional) Number of items requested per page. Default and Max are 25.")
+	objStorageClusterList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return objStorageCmd
 }
