@@ -25,8 +25,8 @@ import (
 
 // accountCmd represents the account command
 var accountCmd = &cobra.Command{
-		Use:   "account",
-	Short:  "Retrieve information about your account",
+	Use:   "account",
+	Short: "Retrieve information about your account",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		account, err := client.Account.Get(context.Background())

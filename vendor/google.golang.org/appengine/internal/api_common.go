@@ -21,7 +21,7 @@ var callOverrideKey = "holds []CallOverrideFunc"
 func WithCallOverride(ctx netcontext.Context, f CallOverrideFunc) netcontext.Context {
 	// We avoid appending to any existing call override
 	// so we don't risk overwriting a popped stack below.
-		var cofs []CallOverrideFunc
+	var cofs []CallOverrideFunc
 	if uf, ok := ctx.Value(&callOverrideKey).([]CallOverrideFunc); ok {
 		cofs = append(cofs, uf...)
 	}
