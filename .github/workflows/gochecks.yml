@@ -1,9 +1,6 @@
 name: Checks
 
 on:
-  push:
-    branches:
-      - gha-gofmt
   pull_request:
     branches:
       - master
