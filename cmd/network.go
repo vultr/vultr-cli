@@ -25,7 +25,7 @@ import (
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
-// networkCmd represents the network command
+// Network represents the network command
 func Network() *cobra.Command {
 	networkCmd := &cobra.Command{
 		Use:   "network",

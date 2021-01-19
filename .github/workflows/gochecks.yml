@@ -1,0 +1,52 @@
+name: Checks
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  Go-Lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.14.0'
+
+      - name: Install dependencies
+        run: |
+          go version
+          go get -u golang.org/x/lint/golint
+
+      - name: Run Lint
+        run: |
+          golint_files=$(golint cmd)
+          if [[ -n ${golint_files} ]]; then
+              echo 'fix the following linting errors:'
+              echo "${golint_files}"
+              exit 1
+          fi
+          exit 0
+
+  Go-Fmt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.14.0'
+
+      - name: Run fmt
+        run: |
+          gofmt_files=$(gofmt -l cmd)
+          if [[ -n ${gofmt_files} ]]; then
+              echo 'gofmt needs running on the following files:'
+              echo "${gofmt_files}"
+              exit 1
+          fi
+          exit 0
