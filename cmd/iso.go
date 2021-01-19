@@ -26,7 +26,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ISO() represents the iso command
+// ISO represents the iso command
 func ISO() *cobra.Command {
 	isoCmd := &cobra.Command{
 		Use:   "iso",

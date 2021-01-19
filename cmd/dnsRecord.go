@@ -26,7 +26,7 @@ import (
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
-// DNSRecordCmd represents the dnsRecord command
+// DNSRecord represents the dnsRecord command
 func DNSRecord() *cobra.Command {
 	dnsRecordCmd := &cobra.Command{
 		Use:   "record",
