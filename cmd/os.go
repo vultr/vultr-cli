@@ -22,7 +22,7 @@ import (
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
-// Iso() epresents the iso command
+// Os() represents the iso command
 func Os() *cobra.Command {
 	osCmd := &cobra.Command{
 		Use:   "os",

@@ -25,8 +25,8 @@ import (
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
-// DnsDomain represents the domain sub command
-func DnsDomain() *cobra.Command {
+// DNSDomain represents the domain sub command
+func DNSDomain() *cobra.Command {
 	dnsDomainCmd := &cobra.Command{
 		Use:   "domain",
 		Short: "dns domain",

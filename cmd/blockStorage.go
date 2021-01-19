@@ -25,7 +25,7 @@ import (
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
-// blockStorageCmd represents the blockStorage command
+// BlockStorageCmd represents the blockStorage command
 func BlockStorageCmd() *cobra.Command {
 
 	bsCmd := &cobra.Command{
