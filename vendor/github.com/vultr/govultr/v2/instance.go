@@ -489,7 +489,7 @@ func (i *InstanceServiceHandler) AttachPrivateNetwork(ctx context.Context, insta
 
 // DetachPrivateNetwork from an instance.
 func (i *InstanceServiceHandler) DetachPrivateNetwork(ctx context.Context, instanceID, networkID string) error {
-	uri := fmt.Sprintf("%s/%s/private-network/detach", instancePath, instanceID)
+	uri := fmt.Sprintf("%s/%s/private-networks/detach", instancePath, instanceID)
 	body := RequestBody{"network_id": networkID}
 
 	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, body)

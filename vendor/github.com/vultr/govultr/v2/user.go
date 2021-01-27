@@ -112,6 +112,9 @@ func (u *UserServiceHandler) Delete(ctx context.Context, userID string) error {
 // List will list all the users associated with your Vultr account
 func (u *UserServiceHandler) List(ctx context.Context, options *ListOptions) ([]User, *Meta, error) {
 	req, err := u.client.NewRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	newValues, err := query.Values(options)
 	if err != nil {
