@@ -209,7 +209,7 @@ var bareMetalGet = &cobra.Command{
 }
 
 var bareMetalGetVNCUrl = &cobra.Command{
-	Use:   "get <bareMetalID>",
+	Use:   "vnc <bareMetalID>",
 	Short: "Get a bare metal server's VNC url by <bareMetalID>",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -224,7 +224,7 @@ var bareMetalGetVNCUrl = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Println(vnc)
+		fmt.Println(vnc.URL)
 	},
 }
 

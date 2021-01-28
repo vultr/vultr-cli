@@ -35,7 +35,7 @@ func BlockStorageCmd() *cobra.Command {
 		Long:    `block-storage is used to interact with the block-storage api`,
 	}
 
-	bsCmd.AddCommand(bsAttach, bsCreate, bsDelete, bsDetach, bsLabelSet, bsList, bsResize)
+	bsCmd.AddCommand(bsAttach, bsCreate, bsDelete, bsDetach, bsLabelSet, bsList, bsGet, bsResize)
 
 	// List
 	bsList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
@@ -214,6 +214,29 @@ var bsList = &cobra.Command{
 		}
 
 		printer.BlockStorage(bs, meta)
+	},
+}
+
+// Get a block storage
+var bsGet = &cobra.Command{
+	Use:   "get <blockStorageID>",
+	Short: "retrieves a block storage",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a blockStorageID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		bs, err := client.BlockStorage.Get(context.Background(), id)
+		if err != nil {
+			fmt.Printf("error getting block storage : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.SingleBlockStorage(bs)
 	},
 }
 
