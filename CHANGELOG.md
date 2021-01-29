@@ -1,9 +1,19 @@
 # Change Log
 
+## [v2.2.0](https://github.com/vultr/vultr-cli/compare/v2.1.0..v2.2.0) (2020-01-29)
+### Enhancement
+* BareMetal : add get command [PR 135](https://github.com/vultr/vultr-cli/pull/135)
+
+### Bug Fixes
+* BareMetal : typo in VNC commands [PR 135](https://github.com/vultr/vultr-cli/pull/135)
+
+### Dependencies
+* Various dependencies [PR 134](https://github.com/vultr/vultr-cli/pull/134)
+
 ## [v2.1.0](https://github.com/vultr/vultr-cli/compare/v2.0.1..v2.1.0) (2020-12-18)
 ### Enhancement
-* Add Bare Metal Start command
-* Update paging information
+* Add Bare Metal Start command [127](https://github.com/vultr/vultr-cli/pull/127)
+* Update paging information [127](https://github.com/vultr/vultr-cli/pull/127)
 
 ### Dependencies
 * govultr 2.2.0 -> 2.3.0 [PR 127](https://github.com/vultr/vultr-cli/pull/127)
