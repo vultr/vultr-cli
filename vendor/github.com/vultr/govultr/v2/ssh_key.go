@@ -9,6 +9,7 @@ import (
 )
 
 // SSHKeyService is the interface to interact with the SSH Key endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/ssh
 type SSHKeyService interface {
 	Create(ctx context.Context, sshKeyReq *SSHKeyReq) (*SSHKey, error)
 	Get(ctx context.Context, sshKeyID string) (*SSHKey, error)

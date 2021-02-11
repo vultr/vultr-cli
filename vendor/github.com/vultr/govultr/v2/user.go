@@ -11,6 +11,7 @@ import (
 const path = "/v2/users"
 
 // UserService is the interface to interact with the user management endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/users
 type UserService interface {
 	Create(ctx context.Context, userCreate *UserReq) (*User, error)
 	Get(ctx context.Context, userID string) (*User, error)

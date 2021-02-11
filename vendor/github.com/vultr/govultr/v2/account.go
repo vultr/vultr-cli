@@ -6,6 +6,7 @@ import (
 )
 
 // AccountService is the interface to interact with Accounts endpoint on the Vultr API
+// Link : https://www.vultr.com/api/#tag/account
 type AccountService interface {
 	Get(ctx context.Context) (*Account, error)
 }

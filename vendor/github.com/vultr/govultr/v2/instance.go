@@ -11,7 +11,7 @@ import (
 const instancePath = "/v2/instances"
 
 // InstanceService is the interface to interact with the instance endpoints on the Vultr API
-// Link: https://www.vultr.com/api/v2/#tag/instances
+// Link: https://www.vultr.com/api/#tag/instances
 type InstanceService interface {
 	Create(ctx context.Context, instanceReq *InstanceCreateReq) (*Instance, error)
 	Get(ctx context.Context, instanceID string) (*Instance, error)

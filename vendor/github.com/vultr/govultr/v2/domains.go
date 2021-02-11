@@ -11,7 +11,7 @@ import (
 const domainPath = "/v2/domains"
 
 // DomainService is the interface to interact with the DNS endpoints on the Vultr API
-// https://www.vultr.com/api/v2/#tag/dns
+// https://www.vultr.com/api/#tag/dns
 type DomainService interface {
 	Create(ctx context.Context, domainReq *DomainReq) (*Domain, error)
 	Get(ctx context.Context, domain string) (*Domain, error)

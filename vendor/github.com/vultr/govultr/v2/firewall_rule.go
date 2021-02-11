@@ -9,6 +9,7 @@ import (
 )
 
 // FireWallRuleService is the interface to interact with the firewall rule endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/firewall
 type FireWallRuleService interface {
 	Create(ctx context.Context, fwGroupID string, fwRuleReq *FirewallRuleReq) (*FirewallRule, error)
 	Get(ctx context.Context, fwGroupID string, fwRuleID int) (*FirewallRule, error)

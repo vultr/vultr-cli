@@ -9,6 +9,7 @@ import (
 )
 
 // RegionService is the interface to interact with Region endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/region
 type RegionService interface {
 	Availability(ctx context.Context, regionID string, planType string) (*PlanAvailability, error)
 	List(ctx context.Context, options *ListOptions) ([]Region, *Meta, error)
