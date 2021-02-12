@@ -11,6 +11,7 @@ import (
 const scriptPath = "/v2/startup-scripts"
 
 // StartupScriptService is the interface to interact with the startup script endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/startup
 type StartupScriptService interface {
 	Create(ctx context.Context, req *StartupScriptReq) (*StartupScript, error)
 	Get(ctx context.Context, scriptID string) (*StartupScript, error)

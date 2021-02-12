@@ -8,6 +8,7 @@ import (
 )
 
 // OSService is the interface to interact with the operating system endpoint on the Vultr API
+// Link : https://www.vultr.com/api/#tag/os
 type OSService interface {
 	List(ctx context.Context, options *ListOptions) ([]OS, *Meta, error)
 }

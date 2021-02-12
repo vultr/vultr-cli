@@ -8,6 +8,7 @@ import (
 )
 
 // PlanService is the interface to interact with the Plans endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/plans
 type PlanService interface {
 	List(ctx context.Context, planType string, options *ListOptions) ([]Plan, *Meta, error)
 	ListBareMetal(ctx context.Context, options *ListOptions) ([]BareMetalPlan, *Meta, error)
@@ -26,6 +27,7 @@ type BareMetalPlan struct {
 	CPUThreads  int      `json:"cpu_threads"`
 	RAM         int      `json:"ram"`
 	Disk        int      `json:"disk"`
+	DiskCount   int      `json:"disk_count"`
 	Bandwidth   int      `json:"bandwidth"`
 	MonthlyCost int      `json:"monthly_cost"`
 	Type        string   `json:"type"`
@@ -38,6 +40,7 @@ type Plan struct {
 	VCPUCount   int      `json:"vcpu_count"`
 	RAM         int      `json:"ram"`
 	Disk        int      `json:"disk"`
+	DiskCount   int      `json:"disk_count"`
 	Bandwidth   int      `json:"bandwidth"`
 	MonthlyCost int      `json:"monthly_cost"`
 	Type        string   `json:"type"`

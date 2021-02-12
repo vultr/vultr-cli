@@ -9,6 +9,7 @@ import (
 )
 
 // FirewallGroupService is the interface to interact with the firewall group endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/firewall
 type FirewallGroupService interface {
 	Create(ctx context.Context, fwGroupReq *FirewallGroupReq) (*FirewallGroup, error)
 	Get(ctx context.Context, groupID string) (*FirewallGroup, error)

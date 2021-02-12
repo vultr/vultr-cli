@@ -11,6 +11,7 @@ import (
 const lbPath = "/v2/load-balancers"
 
 // LoadBalancerService is the interface to interact with the server endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/load-balancer
 type LoadBalancerService interface {
 	Create(ctx context.Context, createReq *LoadBalancerReq) (*LoadBalancer, error)
 	Get(ctx context.Context, ID string) (*LoadBalancer, error)

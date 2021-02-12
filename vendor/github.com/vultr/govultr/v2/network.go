@@ -11,6 +11,7 @@ import (
 const netPath = "/v2/private-networks"
 
 // NetworkService is the interface to interact with the network endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/private-Networks
 type NetworkService interface {
 	Create(ctx context.Context, createReq *NetworkReq) (*Network, error)
 	Get(ctx context.Context, networkID string) (*Network, error)

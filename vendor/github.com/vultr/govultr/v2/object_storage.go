@@ -9,6 +9,7 @@ import (
 )
 
 // ObjectStorageService is the interface to interact with the object storage endpoints on the Vultr API.
+// Link : https://www.vultr.com/api/#tag/s3
 type ObjectStorageService interface {
 	Create(ctx context.Context, clusterID int, label string) (*ObjectStorage, error)
 	Get(ctx context.Context, id string) (*ObjectStorage, error)

@@ -11,6 +11,7 @@ import (
 const ripPath = "/v2/reserved-ips"
 
 // ReservedIPService is the interface to interact with the reserved IP endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/reserved-ip
 type ReservedIPService interface {
 	Create(ctx context.Context, ripCreate *ReservedIPReq) (*ReservedIP, error)
 	Get(ctx context.Context, id string) (*ReservedIP, error)

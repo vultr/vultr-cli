@@ -8,6 +8,7 @@ import (
 )
 
 // ApplicationService is the interface to interact with the Application endpoint on the Vultr API.
+// Link : https://www.vultr.com/api/#tag/application
 type ApplicationService interface {
 	List(ctx context.Context, options *ListOptions) ([]Application, *Meta, error)
 }

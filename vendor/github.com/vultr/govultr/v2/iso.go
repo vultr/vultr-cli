@@ -9,6 +9,7 @@ import (
 )
 
 // ISOService is the interface to interact with the ISO endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/iso
 type ISOService interface {
 	Create(ctx context.Context, isoReq *ISOReq) (*ISO, error)
 	Get(ctx context.Context, isoID string) (*ISO, error)

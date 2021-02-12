@@ -11,6 +11,7 @@ import (
 const bmPath = "/v2/bare-metals"
 
 // BareMetalServerService is the interface to interact with the Bare Metal endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/baremetal
 type BareMetalServerService interface {
 	Create(ctx context.Context, bmCreate *BareMetalCreate) (*BareMetalServer, error)
 	Get(ctx context.Context, serverID string) (*BareMetalServer, error)

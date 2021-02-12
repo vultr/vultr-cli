@@ -9,7 +9,7 @@ import (
 )
 
 // DomainRecordService is the interface to interact with the DNS Records endpoints on the Vultr API
-// Link: https://www.vultr.com/api/v2/#tag/dns
+// Link: https://www.vultr.com/api/#tag/dns
 type DomainRecordService interface {
 	Create(ctx context.Context, domain string, domainRecordReq *DomainRecordReq) (*DomainRecord, error)
 	Get(ctx context.Context, domain, recordID string) (*DomainRecord, error)
