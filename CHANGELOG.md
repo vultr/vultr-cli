@@ -1,5 +1,18 @@
 # Change Log
 
+## [v2.3.0](https://github.com/vultr/vultr-cli/compare/v2.2.0..v2.3.0) (2020-02-12)
+### Enhancement
+* Plans : add `disk count` field [PR 140](https://github.com/vultr/vultr-cli/pull/140)
+* BlockStorage : add `mount ID` field [PR 140](https://github.com/vultr/vultr-cli/pull/140)
+
+### Dependencies
+* GoVultr v2.3.2 -> 2.4.0 [PR 140](https://github.com/vultr/vultr-cli/pull/140)
+* Cobra v1.1.1 -> v1.1.3[PR 139](https://github.com/vultr/vultr-cli/pull/139)
+
+## [v2.2.0](https://github.com/vultr/vultr-cli/compare/v2.1.0..v2.2.0) (2020-01-29)
+### Enhancement
+* BareMetal : add get command [PR 135](https://github.com/vultr/vultr-cli/pull/135)
+
 ## [v2.2.0](https://github.com/vultr/vultr-cli/compare/v2.1.0..v2.2.0) (2020-01-29)
 ### Enhancement
 * BareMetal : add get command [PR 135](https://github.com/vultr/vultr-cli/pull/135)
