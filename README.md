@@ -70,9 +70,13 @@ make build_(pass name of os + arch)
 ```
 
 The available make build options are
-- build_mac
-- build_linux_amd64
-- build_windows_64
+- make builds/vultr-cli_darwin_amd64
+- make builds/vultr-cli_darwin_arm64 
+- make builds/vultr-cli_linux_386
+- make builds/builds/vultr-cli_linux_amd64  
+- make builds/builds/vultr-cli_linux_arm64  
+- make builds/vultr-cli_windows_386.exe
+- make builds/vultr-cli_windows_amd64.exe
 
 Note that the latter method will install the `vultr-cli` executable in `builds/vultr-cli_(name of os + arch)`.
 

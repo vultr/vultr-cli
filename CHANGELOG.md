@@ -1,5 +1,9 @@
 # Change Log
 
+## [v2.4.0](https://github.com/vultr/vultr-cli/compare/v2.3.0..v2.4.0) (2021-04-01)
+### Enhancement
+* Add `darwin_arm64` support and builds [PR 143](https://github.com/vultr/vultr-cli/pull/143)
+
 ## [v2.3.0](https://github.com/vultr/vultr-cli/compare/v2.2.0..v2.3.0) (2021-02-12)
 ### Enhancement
 * Plans : add `disk count` field [PR 140](https://github.com/vultr/vultr-cli/pull/140)
