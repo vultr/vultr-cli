@@ -1,6 +1,6 @@
 module github.com/vultr/vultr-cli
 
-go 1.15
+go 1.16
 
 require (
 	github.com/pelletier/go-toml v1.8.1 // indirect
@@ -15,5 +15,4 @@ require (
 	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

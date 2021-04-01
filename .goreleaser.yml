@@ -24,6 +24,7 @@ builds:
 
     goarch:
       - amd64
+      - arm64
 
 archives:
   -
@@ -32,6 +33,7 @@ archives:
       linux: linux
       windows: windows
       amd64: 64-bit
+      arm64: arm64-bit
 
     format: tar.gz
 
