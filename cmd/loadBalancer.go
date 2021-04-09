@@ -78,10 +78,10 @@ func LoadBalancer() *cobra.Command {
 	lbUpdate.Flags().String("protocol", "http", "(optional) the protocol to use for health checks. | https, http, tcp")
 	lbUpdate.Flags().Int("port", 80, "(optional) the port to use for health checks.")
 	lbUpdate.Flags().String("path", "/", "(optional) HTTP Path to check. only applies if protocol is HTTP or HTTPS.")
-	lbUpdate.Flags().IntP("check-interval", "c", 15, "(optional) interval between health checks.")
-	lbUpdate.Flags().IntP("response-timeout", "t", 15, "(optional) timeout before health check fails.")
-	lbUpdate.Flags().IntP("unhealthy-threshold", "u", 15, "(optional) number times a check must fail before becoming unhealthy.")
-	lbUpdate.Flags().Int("healthy-threshold", 15, "(optional) number times a check must succeed before returning to healthy status.")
+	lbUpdate.Flags().IntP("check-interval", "c", 0, "(optional) interval between health checks.")
+	lbUpdate.Flags().IntP("response-timeout", "t", 0, "(optional) timeout before health check fails.")
+	lbUpdate.Flags().IntP("unhealthy-threshold", "u", 0, "(optional) number times a check must fail before becoming unhealthy.")
+	lbUpdate.Flags().Int("healthy-threshold", 0, "(optional) number times a check must succeed before returning to healthy status.")
 
 	lbUpdate.Flags().String("cookie-name", "", "(optional) the cookie name to make sticky.")
 
@@ -307,17 +307,35 @@ var lbUpdate = &cobra.Command{
 
 		options := &govultr.LoadBalancerReq{}
 
-		rules, err := formatFWRules(fwRules)
+		lb, err := client.LoadBalancer.Get(context.Background(), id)
 		if err != nil {
-			fmt.Printf("error updating load balancer : %v\n", err)
+			fmt.Printf("error getting load balancer : %v\n", err)
 			os.Exit(1)
 		}
 
-		if len(rules) > 0 {
-			options.ForwardingRules = rules
+		if len(fwRules) > 0 {
+			rules, err := formatFWRules(fwRules)
+			if err != nil {
+				fmt.Printf("error updating load balancer : %v\n", err)
+				os.Exit(1)
+			}
+
+			if len(rules) > 0 {
+				options.ForwardingRules = rules
+			}
 		}
 
 		// Health
+		options.HealthCheck = &govultr.HealthCheck{
+			Protocol:           lb.HealthCheck.Protocol,
+			Path:               lb.HealthCheck.Path,
+			Port:               lb.HealthCheck.Port,
+			CheckInterval:      lb.HealthCheck.CheckInterval,
+			ResponseTimeout:    lb.HealthCheck.ResponseTimeout,
+			UnhealthyThreshold: lb.HealthCheck.UnhealthyThreshold,
+			HealthyThreshold:   lb.HealthCheck.HealthyThreshold,
+		}
+
 		if port != 0 {
 			options.HealthCheck.Port = port
 		}
@@ -373,7 +391,9 @@ var lbUpdate = &cobra.Command{
 		}
 
 		if cookieName != "" {
-			options.StickySessions.CookieName = cookieName
+			options.StickySessions = &govultr.StickySessions{
+				CookieName: cookieName,
+			}
 		}
 
 		if algorithm != "" {
@@ -461,6 +481,7 @@ var ruleGet = &cobra.Command{
 		printer.LoadBalancerRule(rule)
 	},
 }
+
 var ruleDelete = &cobra.Command{
 	Use:     "delete rule <loadBalancerID> <ruleID>",
 	Short:   "deletes a load balancer forwarding rule",
