@@ -75,9 +75,9 @@ func LoadBalancer() *cobra.Command {
 	lbUpdate.Flags().StringP("proxy-protocol", "p", "", "(optional) if true, you must configure backend nodes to accept Proxy protocol.")
 	lbUpdate.Flags().StringArrayP("forwarding-rules", "f", []string{}, "(optional) a comma-separated, key-value pair list of forwarding rules. Use \"\" between each new rule. E.g: `frontend_port:80,frontend_protocol:http,backend_port:80,backend_protocol:http`")
 
-	lbUpdate.Flags().String("protocol", "http", "(optional) the protocol to use for health checks. | https, http, tcp")
-	lbUpdate.Flags().Int("port", 80, "(optional) the port to use for health checks.")
-	lbUpdate.Flags().String("path", "/", "(optional) HTTP Path to check. only applies if protocol is HTTP or HTTPS.")
+	lbUpdate.Flags().String("protocol", "", "(optional) the protocol to use for health checks. | https, http, tcp")
+	lbUpdate.Flags().Int("port", 0, "(optional) the port to use for health checks.")
+	lbUpdate.Flags().String("path", "", "(optional) HTTP Path to check. only applies if protocol is HTTP or HTTPS.")
 	lbUpdate.Flags().IntP("check-interval", "c", 0, "(optional) interval between health checks.")
 	lbUpdate.Flags().IntP("response-timeout", "t", 0, "(optional) timeout before health check fails.")
 	lbUpdate.Flags().IntP("unhealthy-threshold", "u", 0, "(optional) number times a check must fail before becoming unhealthy.")
@@ -305,13 +305,7 @@ var lbUpdate = &cobra.Command{
 
 		instances, _ := cmd.Flags().GetStringSlice("instances")
 
-		options := &govultr.LoadBalancerReq{}
-
-		lb, err := client.LoadBalancer.Get(context.Background(), id)
-		if err != nil {
-			fmt.Printf("error getting load balancer : %v\n", err)
-			os.Exit(1)
-		}
+		options := &govultr.LoadBalancerReq{HealthCheck: &govultr.HealthCheck{}}
 
 		if len(fwRules) > 0 {
 			rules, err := formatFWRules(fwRules)
@@ -326,16 +320,6 @@ var lbUpdate = &cobra.Command{
 		}
 
 		// Health
-		options.HealthCheck = &govultr.HealthCheck{
-			Protocol:           lb.HealthCheck.Protocol,
-			Path:               lb.HealthCheck.Path,
-			Port:               lb.HealthCheck.Port,
-			CheckInterval:      lb.HealthCheck.CheckInterval,
-			ResponseTimeout:    lb.HealthCheck.ResponseTimeout,
-			UnhealthyThreshold: lb.HealthCheck.UnhealthyThreshold,
-			HealthyThreshold:   lb.HealthCheck.HealthyThreshold,
-		}
-
 		if port != 0 {
 			options.HealthCheck.Port = port
 		}
