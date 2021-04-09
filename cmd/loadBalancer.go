@@ -305,7 +305,7 @@ var lbUpdate = &cobra.Command{
 
 		instances, _ := cmd.Flags().GetStringSlice("instances")
 
-		options := &govultr.LoadBalancerReq{HealthCheck: &govultr.HealthCheck{}}
+		options := &govultr.LoadBalancerReq{}
 
 		if len(fwRules) > 0 {
 			rules, err := formatFWRules(fwRules)
@@ -320,6 +320,10 @@ var lbUpdate = &cobra.Command{
 		}
 
 		// Health
+		if port != 0 || protocol != "" || path != "" || checkInterval != 0 || responseTimeout != 0 || unhealthyThreshold != 0 || healthyThreshold != 0 {
+			options.HealthCheck = &govultr.HealthCheck{}
+		}
+
 		if port != 0 {
 			options.HealthCheck.Port = port
 		}
