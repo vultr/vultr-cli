@@ -2,9 +2,10 @@ package users
 
 import (
 	"context"
-	"fmt"
-	"github.com/vultr/govultr/v2"
+	"reflect"
 	"testing"
+
+	"github.com/vultr/govultr/v2"
 )
 
 type mockVultrUser struct {
@@ -17,12 +18,11 @@ func (m mockVultrUser) Create(ctx context.Context, userCreate *govultr.UserReq) 
 
 func (m mockVultrUser) Get(ctx context.Context, userID string) (*govultr.User, error) {
 	return &govultr.User{
-		ID:         "1234",
-		Name:       "CLI Tests",
-		Email:      "cli@vultr.com",
-		APIEnabled: govultr.BoolToBoolPtr(true),
-		APIKey:     "1234",
-		ACL:        []string{"test"},
+		ID:     "1234",
+		Name:   "CLI Tests",
+		Email:  "cli@vultr.com",
+		APIKey: "1234",
+		ACL:    []string{"test"},
 	}, nil
 }
 
@@ -31,16 +31,38 @@ func (m mockVultrUser) Update(ctx context.Context, userID string, userReq *govul
 }
 
 func (m mockVultrUser) Delete(ctx context.Context, userID string) error {
-	panic("implement me")
+	return nil
 }
 
 func (m mockVultrUser) List(ctx context.Context, options *govultr.ListOptions) ([]govultr.User, *govultr.Meta, error) {
 	panic("implement me")
 }
 
+func TestUserOptions_Create(t *testing.T) {
+	panic("implement me")
+}
+
 func TestUserOptions_Get(t *testing.T) {
 	client := &govultr.Client{User: mockVultrUser{nil}}
+
+	userExpected := &govultr.User{
+		ID:     "1234",
+		Name:   "CLI Tests",
+		Email:  "cli@vultr.com",
+		APIKey: "1234",
+		ACL:    []string{"test"},
+	}
+
 	u := UserOptions{Client: client, Args: []string{"1234"}}
 	user := u.Get()
-	fmt.Println(user)
+	if !reflect.DeepEqual(userExpected, user) {
+		t.Errorf("UserOptions.get returned %+v, expected %+v", user, userExpected)
+	}
+}
+
+func TestUserOptions_Delete(t *testing.T) {
+	client := &govultr.Client{User: mockVultrUser{nil}}
+
+	u := UserOptions{Client: client, Args: []string{"1234"}}
+	u.Delete()
 }
