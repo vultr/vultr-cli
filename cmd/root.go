@@ -17,6 +17,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/vultr/vultr-cli/cmd/users"
 	"os"
 	"time"
 
@@ -46,6 +47,7 @@ func Execute() {
 }
 
 func init() {
+	setup()
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", configHome(), "config file (default is $HOME/.vultr-cli.yaml)")
 	viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
@@ -69,12 +71,12 @@ func init() {
 	rootCmd.AddCommand(Instance())
 	rootCmd.AddCommand(Snapshot())
 	rootCmd.AddCommand(SSHKey())
-	rootCmd.AddCommand(User())
-	cobra.OnInitialize(initConfig)
+	rootCmd.AddCommand(users.NewCmdUser(client))
+	//cobra.OnInitialize(initConfig)
 }
 
 // initConfig reads in config file and ENV variables if set.
-func initConfig() {
+func setup() {
 	var token string
 	configPath := viper.GetString("config")
 
