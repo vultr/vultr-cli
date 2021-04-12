@@ -46,7 +46,7 @@ func LoadBalancer() *cobra.Command {
 	lbCreate.Flags().StringP("balancing-algorithm", "b", "roundrobin", "(optional) balancing algorithm that determines server selection | roundrobin or leastconn")
 	lbCreate.Flags().StringP("ssl-redirect", "s", "", "(optional) if true, this will redirect HTTP traffic to HTTPS. You must have an HTTPS rule and SSL certificate installed on the load balancer to enable this option.")
 	lbCreate.Flags().StringP("proxy-protocol", "p", "", "(optional) if true, you must configure backend nodes to accept Proxy protocol.")
-	lbCreate.Flags().StringArrayP("forwarding-rules", "f", []string{}, "(optional) a comma-separated, key-value pair list of forwarding rules. Use \"\" between each new rule. E.g: `frontend_port:80,frontend_protocol:http,backend_port:80,backend_protocol:http`")
+	lbCreate.Flags().StringArrayP("forwarding-rules", "f", []string{}, "(optional) a comma-separated, key-value pair list of forwarding rules. Use an empty space between each new rule. E.g: `frontend_port:80,frontend_protocol:http,backend_port:80,backend_protocol:http,,frontend_port:81,frontend_protocol:http,backend_port:81,backend_protocol:http`")
 
 	lbCreate.Flags().String("protocol", "http", "(optional) the protocol to use for health checks. | https, http, tcp")
 	lbCreate.Flags().Int("port", 80, "(optional) the port to use for health checks.")
@@ -73,7 +73,7 @@ func LoadBalancer() *cobra.Command {
 	lbUpdate.Flags().StringP("balancing-algorithm", "b", "roundrobin", "(optional) balancing algorithm that determines server selection | roundrobin or leastconn")
 	lbUpdate.Flags().StringP("ssl-redirect", "s", "", "(optional) if true, this will redirect HTTP traffic to HTTPS. You must have an HTTPS rule and SSL certificate installed on the load balancer to enable this option.")
 	lbUpdate.Flags().StringP("proxy-protocol", "p", "", "(optional) if true, you must configure backend nodes to accept Proxy protocol.")
-	lbUpdate.Flags().StringArrayP("forwarding-rules", "f", []string{}, "(optional) a comma-separated, key-value pair list of forwarding rules. Use \"\" between each new rule. E.g: `frontend_port:80,frontend_protocol:http,backend_port:80,backend_protocol:http`")
+	lbUpdate.Flags().StringArrayP("forwarding-rules", "f", []string{}, "(optional) a comma-separated, key-value pair list of forwarding rules. Use an empty space between each new rule. E.g: `frontend_port:80,frontend_protocol:http,backend_port:80,backend_protocol:http,,frontend_port:81,frontend_protocol:http,backend_port:81,backend_protocol:http`")
 
 	lbUpdate.Flags().String("protocol", "", "(optional) the protocol to use for health checks. | https, http, tcp")
 	lbUpdate.Flags().Int("port", 0, "(optional) the port to use for health checks.")
