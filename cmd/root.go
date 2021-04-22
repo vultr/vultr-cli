@@ -17,6 +17,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/vultr/vultr-cli/cmd/plans"
 	"github.com/vultr/vultr-cli/cmd/users"
 	"os"
 	"time"
@@ -65,7 +66,7 @@ func init() {
 	rootCmd.AddCommand(Network())
 	rootCmd.AddCommand(Os())
 	rootCmd.AddCommand(ObjectStorageCmd())
-	rootCmd.AddCommand(Plans())
+	rootCmd.AddCommand(plans.NewCmdPlan(client))
 	rootCmd.AddCommand(Regions())
 	rootCmd.AddCommand(ReservedIP())
 	rootCmd.AddCommand(Script())
