@@ -17,6 +17,7 @@ package plans
 import (
 	"context"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/printer"
 	"github.com/vultr/vultr-cli/cmd/utils"
@@ -95,6 +96,7 @@ func NewCmdPlan(client *govultr.Client) *cobra.Command {
 		Long:    listLong,
 		Example: listExample,
 		Run: func(cmd *cobra.Command, args []string) {
+			p.Printer.Output = viper.GetString("output")
 			p.validate(cmd, args)
 			plans, meta, err := p.List()
 			data := &printer.Plans{Plan: plans, Meta: meta}

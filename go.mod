@@ -3,6 +3,7 @@ module github.com/vultr/vultr-cli
 go 1.16
 
 require (
+	github.com/go-yaml/yaml v2.1.0+incompatible
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/spf13/afero v1.5.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect

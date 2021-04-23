@@ -1,6 +1,9 @@
 package printer
 
 import (
+	"encoding/json"
+
+	"github.com/go-yaml/yaml"
 	"github.com/vultr/govultr/v2"
 )
 
@@ -11,12 +14,34 @@ type Plans struct {
 	Meta *govultr.Meta
 }
 
-func (p *Plans) Json() {
-
+type plansBase struct {
+	Plans []govultr.Plan `json:"plans"`
+	Meta  *govultr.Meta  `json:"meta"`
 }
 
-func (p *Plans) Yaml() {
+func (p *Plans) Json() []byte {
+	data := plansBase{
+		Plans: p.Plan,
+		Meta:  p.Meta,
+	}
+	prettyJSON, err := json.MarshalIndent(data, "", "    ")
+	if err != nil {
+		panic("move this into byte")
+	}
 
+	return prettyJSON
+}
+
+func (p *Plans) Yaml() []byte {
+	data := plansBase{
+		Plans: p.Plan,
+		Meta:  p.Meta,
+	}
+	yam, err := yaml.Marshal(data)
+	if err != nil {
+		panic("move this into byte")
+	}
+	return yam
 }
 
 func (p *Plans) Columns() map[int][]interface{} {
@@ -41,19 +66,19 @@ func (p *Plans) Paging() map[int][]interface{} {
 	return data
 }
 
-
 var _ ResourceOutput = &BaremetalPlans{}
+
 type BaremetalPlans struct {
 	Plan []govultr.BareMetalPlan
 	Meta *govultr.Meta
 }
 
-func (b *BaremetalPlans) Json() {
-
+func (b *BaremetalPlans) Json() []byte {
+	return nil
 }
 
-func (b *BaremetalPlans) Yaml(){
-
+func (b *BaremetalPlans) Yaml() []byte {
+	return nil
 }
 
 func (b *BaremetalPlans) Columns() map[int][]interface{} {

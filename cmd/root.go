@@ -29,6 +29,7 @@ import (
 )
 
 var cfgFile string
+var output string
 var client *govultr.Client
 
 // rootCmd represents the base command when called without any subcommands
@@ -49,10 +50,15 @@ func Execute() {
 }
 
 func init() {
-	setup()
+	initConfig()
+
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", configHome(), "config file (default is $HOME/.vultr-cli.yaml)")
 	viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
+
+	rootCmd.PersistentFlags().StringVar(&output, "output", "text","out of data json | yaml | text. text is default")
+	viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output"))
+
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.AddCommand(accountCmd)
 	rootCmd.AddCommand(Applications())
@@ -74,11 +80,12 @@ func init() {
 	rootCmd.AddCommand(Snapshot())
 	rootCmd.AddCommand(SSHKey())
 	rootCmd.AddCommand(users.NewCmdUser(client))
-	//cobra.OnInitialize(initConfig)
+
+	cobra.OnInitialize(initConfig)
 }
 
 // initConfig reads in config file and ENV variables if set.
-func setup() {
+func initConfig() {
 	var token string
 	configPath := viper.GetString("config")
 

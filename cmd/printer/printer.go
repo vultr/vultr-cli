@@ -3,14 +3,15 @@ package printer
 import (
 	"fmt"
 	"os"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/vultr/govultr/v2"
 )
 
 type ResourceOutput interface {
-	Json()
-	Yaml()
+	Json() []byte
+	Yaml() []byte
 	Columns() map[int][]interface{}
 	Data() map[int][]interface{}
 	Paging() map[int][]interface{}
@@ -24,10 +25,12 @@ type Printer interface {
 type Output struct {
 	Type     string
 	Resource ResourceOutput
+	Output   string
 }
 
 type columns2 map[int][]interface{}
 type columns []interface{}
+
 var tw = new(tabwriter.Writer)
 
 func init() {
@@ -36,7 +39,16 @@ func init() {
 
 func (o *Output) Display(r ResourceOutput, err error) {
 	if err != nil {
+		//todo move this so it can follow the flow of the other printers and support json/yaml
 		Error(err)
+	}
+
+	if strings.ToLower(o.Output) == "json" {
+		o.displayNonText(r.Json())
+		os.Exit(1)
+	} else if strings.ToLower(o.Output) == "yaml" {
+		o.displayNonText(r.Yaml())
+		os.Exit(1)
 	}
 
 	o.display(r.Columns())
@@ -44,7 +56,7 @@ func (o *Output) Display(r ResourceOutput, err error) {
 	if r.Paging() != nil {
 		o.display(r.Paging())
 	}
-	o.flush()
+	defer o.flush()
 }
 
 func (o *Output) display(d columns2) {
@@ -60,12 +72,13 @@ func (o *Output) display(d columns2) {
 	}
 }
 
-func (o *Output) flush(){
+func (o *Output) flush() {
 	tw.Flush()
 }
 
-
-
+func (o *Output) displayNonText(data []byte) {
+	fmt.Printf("%s\n", string(data))
+}
 
 ////////////////////////////////////////////////////////////////
 func display(values columns) {
