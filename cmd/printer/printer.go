@@ -10,7 +10,7 @@ import (
 )
 
 type ResourceOutput interface {
-	Json() []byte
+	JSON() []byte
 	Yaml() []byte
 	Columns() map[int][]interface{}
 	Data() map[int][]interface{}
@@ -44,7 +44,7 @@ func (o *Output) Display(r ResourceOutput, err error) {
 	}
 
 	if strings.ToLower(o.Output) == "json" {
-		o.displayNonText(r.Json())
+		o.displayNonText(r.JSON())
 		os.Exit(1)
 	} else if strings.ToLower(o.Output) == "yaml" {
 		o.displayNonText(r.Yaml())

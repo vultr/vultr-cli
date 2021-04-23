@@ -14,13 +14,7 @@ type Plans struct {
 	Meta *govultr.Meta
 }
 
-// why do we have this struct? when it's literally the same thing up above? go to bed your tired
-type plansBase struct {
-	Plans []govultr.Plan `json:"plans"`
-	Meta  *govultr.Meta  `json:"meta"`
-}
-
-func (p *Plans) Json() []byte {
+func (p *Plans) JSON() []byte {
 	prettyJSON, err := json.MarshalIndent(p, "", "    ")
 	if err != nil {
 		panic("move this into byte")
@@ -64,7 +58,7 @@ type BaremetalPlans struct {
 	Meta *govultr.Meta
 }
 
-func (b *BaremetalPlans) Json() []byte {
+func (b *BaremetalPlans) JSON() []byte {
 	prettyJSON, err := json.MarshalIndent(b, "", "    ")
 	if err != nil {
 		panic("move this into byte")

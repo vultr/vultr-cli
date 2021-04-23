@@ -20,26 +20,43 @@ import (
 	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
+// Interface for version
 type Interface interface {
 	Get() string
 }
 
+// Options for version
 type Options struct {
 	Version string
 	Printer *printer.Output
 }
 
-func newVersionOptions() *Options {
+var (
+	long = `Displays current version of the Vultr-CLI`
+
+	example = `
+	# example
+	vultr-cli version
+	
+	# Shortened with alias commands
+	vultr-cli v
+	`
+)
+
+// NewVersionOptions returns a VersionOptions struct
+func NewVersionOptions() *Options {
 	return &Options{Printer: &printer.Output{}}
 }
 
+// NewCmdVersion returns cobra command for version
 func NewCmdVersion() *cobra.Command {
-	v := newVersionOptions()
+	v := NewVersionOptions()
 	cmd := &cobra.Command{
-		Use:   "version",
-		Short: "Display current version of Vultr-cli",
-		Long:  ``,
-		Example: ``,
+		Use:     "version",
+		Aliases: []string{"v"},
+		Short:   "vultr-cli version",
+		Long:    long,
+		Example: example,
 		Run: func(cmd *cobra.Command, args []string) {
 			v.Printer.Output = viper.GetString("output")
 			v.Printer.Display(&printer.Version{Version: v.Get()}, nil)
@@ -49,6 +66,7 @@ func NewCmdVersion() *cobra.Command {
 	return cmd
 }
 
+// Get the version for vultr-cli
 func (v *Options) Get() string {
 	return "Vultr-cli v2.4.1"
 }

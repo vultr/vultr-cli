@@ -12,7 +12,7 @@ type Version struct {
 	Version string
 }
 
-func (v *Version) Json() []byte {
+func (v *Version) JSON() []byte {
 	prettyJSON, err := json.MarshalIndent(v, "", "    ")
 	if err != nil {
 		panic("move this into byte")
