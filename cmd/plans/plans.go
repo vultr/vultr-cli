@@ -66,12 +66,14 @@ type PlanOptions struct {
 	Args     []string
 	Client   *govultr.Client
 	Options  *govultr.ListOptions
+	Printer  *printer.Output
 	PlanType string
 }
 
 // NewPlanOptions returns a PlanOptions struct
 func NewPlanOptions(client *govultr.Client) *PlanOptions {
-	return &PlanOptions{Client: client}
+	output := &printer.Output{}
+	return &PlanOptions{Client: client, Printer: output}
 }
 
 // NewCmdPlan returns the cobra command for Plans
@@ -95,10 +97,8 @@ func NewCmdPlan(client *govultr.Client) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			p.validate(cmd, args)
 			plans, meta, err := p.List()
-			if err != nil {
-				printer.Error(err)
-			}
-			printer.Plan(plans, meta)
+			data := &printer.Plans{Plan: plans, Meta: meta}
+			p.Printer.Display(data, err)
 		},
 	}
 
@@ -115,10 +115,11 @@ func NewCmdPlan(client *govultr.Client) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			p.validate(cmd, args)
 			m, meta, err := p.MetalList()
-			if err != nil {
-				printer.Error(err)
+			data := &printer.BaremetalPlans{
+				Plan: m,
+				Meta: meta,
 			}
-			printer.PlanBareMetal(m, meta)
+			p.Printer.Display(data, err)
 		},
 	}
 	metal.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
