@@ -73,8 +73,7 @@ type PlanOptions struct {
 
 // NewPlanOptions returns a PlanOptions struct
 func NewPlanOptions(client *govultr.Client) *PlanOptions {
-	output := &printer.Output{}
-	return &PlanOptions{Client: client, Printer: output}
+	return &PlanOptions{Client: client, Printer: &printer.Output{}}
 }
 
 // NewCmdPlan returns the cobra command for Plans

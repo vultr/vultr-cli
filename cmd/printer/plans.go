@@ -14,6 +14,7 @@ type Plans struct {
 	Meta *govultr.Meta
 }
 
+// why do we have this struct? when it's literally the same thing up above? go to bed your tired
 type plansBase struct {
 	Plans []govultr.Plan `json:"plans"`
 	Meta  *govultr.Meta  `json:"meta"`
