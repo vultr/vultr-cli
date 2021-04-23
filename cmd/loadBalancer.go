@@ -46,7 +46,7 @@ func LoadBalancer() *cobra.Command {
 	lbCreate.Flags().StringP("balancing-algorithm", "b", "roundrobin", "(optional) balancing algorithm that determines server selection | roundrobin or leastconn")
 	lbCreate.Flags().StringP("ssl-redirect", "s", "", "(optional) if true, this will redirect HTTP traffic to HTTPS. You must have an HTTPS rule and SSL certificate installed on the load balancer to enable this option.")
 	lbCreate.Flags().StringP("proxy-protocol", "p", "", "(optional) if true, you must configure backend nodes to accept Proxy protocol.")
-	lbCreate.Flags().StringArrayP("forwarding-rules", "f", []string{}, "(optional) a comma-separated, key-value pair list of forwarding rules. Use \"\" between each new rule. E.g: `frontend_port:80,frontend_protocol:http,backend_port:80,backend_protocol:http`")
+	lbCreate.Flags().StringArrayP("forwarding-rules", "f", []string{}, "(optional) a comma-separated, key-value pair list of forwarding rules. Use - between each new rule. E.g: `frontend_port:80,frontend_protocol:http,backend_port:80,backend_protocol:http-frontend_port:81,frontend_protocol:http,backend_port:81,backend_protocol:http`")
 
 	lbCreate.Flags().String("protocol", "http", "(optional) the protocol to use for health checks. | https, http, tcp")
 	lbCreate.Flags().Int("port", 80, "(optional) the port to use for health checks.")
@@ -73,15 +73,15 @@ func LoadBalancer() *cobra.Command {
 	lbUpdate.Flags().StringP("balancing-algorithm", "b", "roundrobin", "(optional) balancing algorithm that determines server selection | roundrobin or leastconn")
 	lbUpdate.Flags().StringP("ssl-redirect", "s", "", "(optional) if true, this will redirect HTTP traffic to HTTPS. You must have an HTTPS rule and SSL certificate installed on the load balancer to enable this option.")
 	lbUpdate.Flags().StringP("proxy-protocol", "p", "", "(optional) if true, you must configure backend nodes to accept Proxy protocol.")
-	lbUpdate.Flags().StringArrayP("forwarding-rules", "f", []string{}, "(optional) a comma-separated, key-value pair list of forwarding rules. Use \"\" between each new rule. E.g: `frontend_port:80,frontend_protocol:http,backend_port:80,backend_protocol:http`")
+	lbUpdate.Flags().StringArrayP("forwarding-rules", "f", []string{}, "(optional) a comma-separated, key-value pair list of forwarding rules. Use - between each new rule. E.g: `frontend_port:80,frontend_protocol:http,backend_port:80,backend_protocol:http-frontend_port:81,frontend_protocol:http,backend_port:81,backend_protocol:http`")
 
-	lbUpdate.Flags().String("protocol", "http", "(optional) the protocol to use for health checks. | https, http, tcp")
-	lbUpdate.Flags().Int("port", 80, "(optional) the port to use for health checks.")
-	lbUpdate.Flags().String("path", "/", "(optional) HTTP Path to check. only applies if protocol is HTTP or HTTPS.")
-	lbUpdate.Flags().IntP("check-interval", "c", 15, "(optional) interval between health checks.")
-	lbUpdate.Flags().IntP("response-timeout", "t", 15, "(optional) timeout before health check fails.")
-	lbUpdate.Flags().IntP("unhealthy-threshold", "u", 15, "(optional) number times a check must fail before becoming unhealthy.")
-	lbUpdate.Flags().Int("healthy-threshold", 15, "(optional) number times a check must succeed before returning to healthy status.")
+	lbUpdate.Flags().String("protocol", "", "(optional) the protocol to use for health checks. | https, http, tcp")
+	lbUpdate.Flags().Int("port", 0, "(optional) the port to use for health checks.")
+	lbUpdate.Flags().String("path", "", "(optional) HTTP Path to check. only applies if protocol is HTTP or HTTPS.")
+	lbUpdate.Flags().IntP("check-interval", "c", 0, "(optional) interval between health checks.")
+	lbUpdate.Flags().IntP("response-timeout", "t", 0, "(optional) timeout before health check fails.")
+	lbUpdate.Flags().IntP("unhealthy-threshold", "u", 0, "(optional) number times a check must fail before becoming unhealthy.")
+	lbUpdate.Flags().Int("healthy-threshold", 0, "(optional) number times a check must succeed before returning to healthy status.")
 
 	lbUpdate.Flags().String("cookie-name", "", "(optional) the cookie name to make sticky.")
 
@@ -307,17 +307,23 @@ var lbUpdate = &cobra.Command{
 
 		options := &govultr.LoadBalancerReq{}
 
-		rules, err := formatFWRules(fwRules)
-		if err != nil {
-			fmt.Printf("error updating load balancer : %v\n", err)
-			os.Exit(1)
-		}
+		if len(fwRules) > 0 {
+			rules, err := formatFWRules(fwRules)
+			if err != nil {
+				fmt.Printf("error updating load balancer : %v\n", err)
+				os.Exit(1)
+			}
 
-		if len(rules) > 0 {
-			options.ForwardingRules = rules
+			if len(rules) > 0 {
+				options.ForwardingRules = rules
+			}
 		}
 
 		// Health
+		if port != 0 || protocol != "" || path != "" || checkInterval != 0 || responseTimeout != 0 || unhealthyThreshold != 0 || healthyThreshold != 0 {
+			options.HealthCheck = &govultr.HealthCheck{}
+		}
+
 		if port != 0 {
 			options.HealthCheck.Port = port
 		}
@@ -373,7 +379,9 @@ var lbUpdate = &cobra.Command{
 		}
 
 		if cookieName != "" {
-			options.StickySessions.CookieName = cookieName
+			options.StickySessions = &govultr.StickySessions{
+				CookieName: cookieName,
+			}
 		}
 
 		if algorithm != "" {
@@ -461,6 +469,7 @@ var ruleGet = &cobra.Command{
 		printer.LoadBalancerRule(rule)
 	},
 }
+
 var ruleDelete = &cobra.Command{
 	Use:     "delete rule <loadBalancerID> <ruleID>",
 	Short:   "deletes a load balancer forwarding rule",
@@ -488,7 +497,7 @@ var ruleDelete = &cobra.Command{
 // formatFWRules parses forwarding rules into proper format
 func formatFWRules(rules []string) ([]govultr.ForwardingRule, error) {
 	var formattedList []govultr.ForwardingRule
-	rulesList := strings.Split(rules[0], ",,")
+	rulesList := strings.Split(rules[0], "-")
 
 	for _, r := range rulesList {
 		rule := govultr.ForwardingRule{}
