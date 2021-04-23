@@ -21,11 +21,7 @@ type plansBase struct {
 }
 
 func (p *Plans) Json() []byte {
-	data := plansBase{
-		Plans: p.Plan,
-		Meta:  p.Meta,
-	}
-	prettyJSON, err := json.MarshalIndent(data, "", "    ")
+	prettyJSON, err := json.MarshalIndent(p, "", "    ")
 	if err != nil {
 		panic("move this into byte")
 	}
@@ -34,11 +30,7 @@ func (p *Plans) Json() []byte {
 }
 
 func (p *Plans) Yaml() []byte {
-	data := plansBase{
-		Plans: p.Plan,
-		Meta:  p.Meta,
-	}
-	yam, err := yaml.Marshal(data)
+	yam, err := yaml.Marshal(p)
 	if err != nil {
 		panic("move this into byte")
 	}
@@ -46,9 +38,7 @@ func (p *Plans) Yaml() []byte {
 }
 
 func (p *Plans) Columns() map[int][]interface{} {
-	data := map[int][]interface{}{}
-	data[0] = []interface{}{"ID", "VCPU COUNT", "RAM", "DISK", "DISK COUNT", "BANDWIDTH GB", "PRICE PER MONTH", "TYPE", "REGIONS"}
-	return data
+	return map[int][]interface{}{0: {"ID", "VCPU COUNT", "RAM", "DISK", "DISK COUNT", "BANDWIDTH GB", "PRICE PER MONTH", "TYPE", "REGIONS"}}
 }
 
 func (p *Plans) Data() map[int][]interface{} {
@@ -60,11 +50,11 @@ func (p *Plans) Data() map[int][]interface{} {
 }
 
 func (p *Plans) Paging() map[int][]interface{} {
-	data := map[int][]interface{}{}
-	data[0] = []interface{}{"======================================"}
-	data[1] = []interface{}{"TOTAL", "NEXT PAGE", "PREV PAGE"}
-	data[2] = []interface{}{p.Meta.Total, p.Meta.Links.Next, p.Meta.Links.Prev}
-	return data
+	return map[int][]interface{}{
+		0: {"======================================"},
+		1: {"TOTAL", "NEXT PAGE", "PREV PAGE"},
+		2: {p.Meta.Total, p.Meta.Links.Next, p.Meta.Links.Prev},
+	}
 }
 
 var _ ResourceOutput = &BaremetalPlans{}
@@ -75,17 +65,24 @@ type BaremetalPlans struct {
 }
 
 func (b *BaremetalPlans) Json() []byte {
-	return nil
+	prettyJSON, err := json.MarshalIndent(b, "", "    ")
+	if err != nil {
+		panic("move this into byte")
+	}
+
+	return prettyJSON
 }
 
 func (b *BaremetalPlans) Yaml() []byte {
-	return nil
+	yam, err := yaml.Marshal(b)
+	if err != nil {
+		panic("move this into byte")
+	}
+	return yam
 }
 
 func (b *BaremetalPlans) Columns() map[int][]interface{} {
-	data := map[int][]interface{}{}
-	data[0] = []interface{}{"ID", "CPU COUNT", "CPU MODEL", "CPU THREADS", "RAM", "DISK", "DISK COUNT", "BANDWIDTH GB", "PRICE PER MONTH", "TYPE", "REGIONS"}
-	return data
+	return map[int][]interface{}{0: {"ID", "CPU COUNT", "CPU MODEL", "CPU THREADS", "RAM", "DISK", "DISK COUNT", "BANDWIDTH GB", "PRICE PER MONTH", "TYPE", "REGIONS"}}
 }
 
 func (b *BaremetalPlans) Data() map[int][]interface{} {
@@ -97,9 +94,9 @@ func (b *BaremetalPlans) Data() map[int][]interface{} {
 }
 
 func (b *BaremetalPlans) Paging() map[int][]interface{} {
-	data := map[int][]interface{}{}
-	data[0] = []interface{}{"======================================"}
-	data[1] = []interface{}{"TOTAL", "NEXT PAGE", "PREV PAGE"}
-	data[2] = []interface{}{b.Meta.Total, b.Meta.Links.Next, b.Meta.Links.Prev}
-	return data
+	return map[int][]interface{}{
+		0: {"======================================"},
+		1: {"TOTAL", "NEXT PAGE", "PREV PAGE"},
+		2: {b.Meta.Total, b.Meta.Links.Next, b.Meta.Links.Prev},
+	}
 }

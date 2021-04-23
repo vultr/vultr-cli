@@ -30,15 +30,13 @@ func (v *Version) Yaml() []byte {
 }
 
 func (v *Version) Columns() map[int][]interface{} {
-	data := map[int][]interface{}{}
-	data[0] = []interface{}{"Version"}
-	return data
+	return map[int][]interface{}{0: {"version"}}
+
 }
 
 func (v *Version) Data() map[int][]interface{} {
-	data := map[int][]interface{}{}
-	data[0] = []interface{}{v.Version}
-	return data
+	return map[int][]interface{}{0: {v.Version}}
+
 }
 
 func (v Version) Paging() map[int][]interface{} {
