@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/vultr/vultr-cli/cmd/plans"
+	"github.com/vultr/vultr-cli/cmd/regions"
 	"github.com/vultr/vultr-cli/cmd/users"
 	"github.com/vultr/vultr-cli/cmd/version"
 	"os"
@@ -73,7 +74,7 @@ func init() {
 	rootCmd.AddCommand(Os())
 	rootCmd.AddCommand(ObjectStorageCmd())
 	rootCmd.AddCommand(plans.NewCmdPlan(client))
-	rootCmd.AddCommand(Regions())
+	rootCmd.AddCommand(regions.NewCmdRegion(client))
 	rootCmd.AddCommand(ReservedIP())
 	rootCmd.AddCommand(Script())
 	rootCmd.AddCommand(Instance())
