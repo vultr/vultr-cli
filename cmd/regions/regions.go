@@ -1,7 +1,3 @@
-//todo examples short long
-// move viper get into the validation function to clean it up
-// run revive on this
-
 // Copyright © 2019 The Vultr-cli Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +17,7 @@ package regions
 import (
 	"context"
 	"errors"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vultr/govultr/v2"
@@ -28,12 +25,46 @@ import (
 	"github.com/vultr/vultr-cli/cmd/utils"
 )
 
+var (
+	regionLong    = `Get all available regions for Vultr.`
+	regionExample = `
+	# Full example
+	vultr-cli regions
+	`
+
+	listLong    = `List all regions that Vultr has available.`
+	listExample = `
+	# Full example
+	vultr-cli regions list
+	
+	# Full example with paging
+	vultr-cli regions list --per-page=1 --cursor="bmV4dF9fQU1T"
+
+	# Shortened with alias commands
+	vultr-cli r l
+	`
+
+	availLong    = `Get all available plans in a given region.`
+	availExample = `
+	# Full example
+	vultr-cli regions availability ewr
+	
+	# Full example with paging
+	vultr-cli regions availability ewr 
+
+	# Shortened with alias commands
+	vultr-cli r a ewr
+	`
+)
+
+// Interface for regions
 type Interface interface {
 	Availability() (*govultr.PlanAvailability, error)
 	List() ([]govultr.Region, *govultr.Meta, error)
 	validate(cmd *cobra.Command, args []string)
 }
 
+// Options for regions
 type Options struct {
 	Args     []string
 	Client   *govultr.Client
@@ -42,10 +73,12 @@ type Options struct {
 	PlanType string
 }
 
+// NewRegionOptions returns Options struct
 func NewRegionOptions(client *govultr.Client) *Options {
 	return &Options{Client: client, Printer: &printer.Output{}}
 }
 
+// NewCmdRegion creates a cobra command for Regions
 func NewCmdRegion(client *govultr.Client) *cobra.Command {
 	o := NewRegionOptions(client)
 
@@ -53,16 +86,16 @@ func NewCmdRegion(client *govultr.Client) *cobra.Command {
 		Use:     "regions",
 		Short:   "get regions",
 		Aliases: []string{"r", "region"},
-		Long:    ``,
-		Example: ``,
+		Long:    regionLong,
+		Example: regionExample,
 	}
 
 	list := &cobra.Command{
 		Use:     "list",
 		Short:   "list regions",
 		Aliases: []string{"l"},
-		Long:    ``,
-		Example: ``,
+		Long:    listLong,
+		Example: listExample,
 		Run: func(cmd *cobra.Command, args []string) {
 			o.validate(cmd, args)
 			o.Options = utils.GetPaging(cmd)
@@ -79,8 +112,8 @@ func NewCmdRegion(client *govultr.Client) *cobra.Command {
 		Use:     "availability <regionID>",
 		Short:   "list available plans in region",
 		Aliases: []string{"a"},
-		Long:    ``,
-		Example: ``,
+		Long:    availLong,
+		Example: availExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a regionID")
@@ -106,10 +139,12 @@ func (o *Options) validate(cmd *cobra.Command, args []string) {
 	o.Args = args
 }
 
+// List all regions
 func (o *Options) List() ([]govultr.Region, *govultr.Meta, error) {
 	return o.Client.Region.List(context.Background(), o.Options)
 }
 
+// Availability returns all available plans for a given region
 func (o *Options) Availability() (*govultr.PlanAvailability, error) {
 	return o.Client.Region.Availability(context.Background(), o.Args[0], o.PlanType)
 }
