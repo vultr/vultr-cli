@@ -17,6 +17,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/vultr/vultr-cli/cmd/applications"
 	"github.com/vultr/vultr-cli/cmd/plans"
 	"github.com/vultr/vultr-cli/cmd/regions"
 	"github.com/vultr/vultr-cli/cmd/users"
@@ -36,9 +37,9 @@ var client *govultr.Client
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "vultr-cli",
-	Short: "vultr-cli is a command line interface for the Vultr API",
-	Long:  ``,
+	Use:     "vultr-cli",
+	Short:   "vultr-cli is a command line interface for the Vultr API",
+	Long:    ``,
 	Aliases: []string{"vultrctl"},
 }
 
@@ -57,12 +58,12 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", configHome(), "config file (default is $HOME/.vultr-cli.yaml)")
 	viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
 
-	rootCmd.PersistentFlags().StringVar(&output, "output", "text","out of data json | yaml | text. text is default")
+	rootCmd.PersistentFlags().StringVar(&output, "output", "text", "out of data json | yaml | text. text is default")
 	viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output"))
 
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.AddCommand(accountCmd)
-	rootCmd.AddCommand(Applications())
+	rootCmd.AddCommand(applications.NewCmdApplications(client))
 	rootCmd.AddCommand(Backups())
 	rootCmd.AddCommand(BareMetal())
 	rootCmd.AddCommand(BlockStorageCmd())
