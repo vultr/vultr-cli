@@ -121,6 +121,9 @@ The config flag can be used to specify the vultr-cli.yaml file path when it's ou
 `vultr-cli instance list --config /Users/myuser/vultr-cli.yaml`
 
 ### Example vultr-cli.yaml config file
+
+Currently the only available field that you can use with a config file is `api-key`. Your yaml file will have a single entry which would be:
+
 `api-key: MYKEY`
 
 ## Contributing
