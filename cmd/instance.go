@@ -53,7 +53,7 @@ func Instance() *cobra.Command {
 
 	instanceCreate.Flags().StringP("region", "r", "", "region id you wish to have the instance created in")
 	instanceCreate.Flags().StringP("plan", "p", "", "plan id you wish the instance to have")
-	instanceCreate.Flags().IntP("os", "o", 0, "os id you wish the instance to have")
+	instanceCreate.Flags().IntP("operatingSystems", "o", 0, "operatingSystems id you wish the instance to have")
 	instanceCreate.MarkFlagRequired("region")
 	instanceCreate.MarkFlagRequired("plan")
 
@@ -88,14 +88,14 @@ func Instance() *cobra.Command {
 
 	// Sub commands for OS
 	osCmd := &cobra.Command{
-		Use:   "os",
+		Use:   "operatingSystems",
 		Short: "update operating system for an instance",
 		Long:  ``,
 	}
 
 	osCmd.AddCommand(osUpdate, osUpdateList)
-	osUpdate.Flags().IntP("os", "o", 0, "operating system ID you wish to use")
-	osUpdate.MarkFlagRequired("os")
+	osUpdate.Flags().IntP("operatingSystems", "o", 0, "operating system ID you wish to use")
+	osUpdate.MarkFlagRequired("operatingSystems")
 	instanceCmd.AddCommand(osCmd)
 
 	// Sub commands for App
@@ -500,14 +500,14 @@ var osUpdate = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		osID, _ := cmd.Flags().GetInt("os")
+		osID, _ := cmd.Flags().GetInt("operatingSystems")
 
 		options := &govultr.InstanceUpdateReq{
 			OsID: osID,
 		}
 
 		if err := client.Instance.Update(context.TODO(), id, options); err != nil {
-			fmt.Printf("error updating os : %v\n", err)
+			fmt.Printf("error updating operatingSystems : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -530,7 +530,7 @@ var osUpdateList = &cobra.Command{
 		list, err := client.Instance.GetUpgrades(context.TODO(), id)
 
 		if err != nil {
-			fmt.Printf("error listing available os : %v\n", err)
+			fmt.Printf("error listing available operatingSystems : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -978,7 +978,7 @@ var instanceCreate = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		region, _ := cmd.Flags().GetString("region")
 		plan, _ := cmd.Flags().GetString("plan")
-		osID, _ := cmd.Flags().GetInt("os")
+		osID, _ := cmd.Flags().GetInt("operatingSystems")
 
 		// Optional
 		ipxe, _ := cmd.Flags().GetString("ipxe")

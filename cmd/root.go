@@ -15,25 +15,27 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
+	"github.com/vultr/vultr-cli/cmd/operatingSystems"
+	"os"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/applications"
 	"github.com/vultr/vultr-cli/cmd/plans"
 	"github.com/vultr/vultr-cli/cmd/regions"
 	"github.com/vultr/vultr-cli/cmd/users"
 	"github.com/vultr/vultr-cli/cmd/version"
-	"os"
-	"time"
-
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/vultr/govultr/v2"
-	"golang.org/x/oauth2"
+	"github.com/vultr/vultr-cli/pkg/cli"
 )
 
-var cfgFile string
-var output string
-var client *govultr.Client
+var (
+	cfgFile string
+	output  string
+	base    *cli.Base
+	client  *govultr.Client
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -63,7 +65,7 @@ func init() {
 
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.AddCommand(accountCmd)
-	rootCmd.AddCommand(applications.NewCmdApplications(client))
+	rootCmd.AddCommand(applications.NewCmdApplications(base))
 	rootCmd.AddCommand(Backups())
 	rootCmd.AddCommand(BareMetal())
 	rootCmd.AddCommand(BlockStorageCmd())
@@ -72,19 +74,19 @@ func init() {
 	rootCmd.AddCommand(ISO())
 	rootCmd.AddCommand(LoadBalancer())
 	rootCmd.AddCommand(Network())
-	rootCmd.AddCommand(Os())
+	rootCmd.AddCommand(operatingSystems.NewCmdOS(base))
 	rootCmd.AddCommand(ObjectStorageCmd())
-	rootCmd.AddCommand(plans.NewCmdPlan(client))
-	rootCmd.AddCommand(regions.NewCmdRegion(client))
+	rootCmd.AddCommand(plans.NewCmdPlan(base))
+	rootCmd.AddCommand(regions.NewCmdRegion(base))
 	rootCmd.AddCommand(ReservedIP())
 	rootCmd.AddCommand(Script())
 	rootCmd.AddCommand(Instance())
 	rootCmd.AddCommand(Snapshot())
 	rootCmd.AddCommand(SSHKey())
-	rootCmd.AddCommand(users.NewCmdUser(client))
+	rootCmd.AddCommand(users.NewCmdUser(base))
 	rootCmd.AddCommand(version.NewCmdVersion())
-
 	cobra.OnInitialize(initConfig)
+
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -119,12 +121,7 @@ func initConfig() {
 		os.Exit(1)
 	}
 
-	config := &oauth2.Config{}
-	ts := config.TokenSource(context.Background(), &oauth2.Token{AccessToken: token})
-	client = govultr.NewClient(oauth2.NewClient(context.Background(), ts))
-
-	client.SetRateLimit(1 * time.Second)
-
+	base = cli.NewCLIBase(token, viper.GetString("output"))
 }
 
 func getPaging(cmd *cobra.Command) *govultr.ListOptions {

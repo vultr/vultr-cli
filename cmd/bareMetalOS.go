@@ -29,8 +29,8 @@ import (
 // BareMetalOS represents the baremetal operating system commands
 func BareMetalOS() *cobra.Command {
 	bareMetalOSCmd := &cobra.Command{
-		Use:     "os",
-		Short:   "os is used to access bare metal server operating system commands",
+		Use:     "operatingSystems",
+		Short:   "operatingSystems is used to access bare metal server operating system commands",
 		Aliases: []string{"o"},
 	}
 
@@ -79,7 +79,7 @@ var bareMetalOSChangeList = &cobra.Command{
 		list, err := client.BareMetalServer.GetUpgrades(context.TODO(), id)
 
 		if err != nil {
-			fmt.Printf("error listing available os : %v\n", err)
+			fmt.Printf("error listing available operatingSystems : %v\n", err)
 			os.Exit(1)
 		}
 

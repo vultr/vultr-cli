@@ -23,6 +23,7 @@ import (
 	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/printer"
 	"github.com/vultr/vultr-cli/cmd/utils"
+	"github.com/vultr/vultr-cli/pkg/cli"
 )
 
 var (
@@ -66,21 +67,18 @@ type Interface interface {
 
 // Options for regions
 type Options struct {
-	Args     []string
-	Client   *govultr.Client
-	Options  *govultr.ListOptions
-	Printer  *printer.Output
+	Base     *cli.Base
 	PlanType string
 }
 
 // NewRegionOptions returns Options struct
-func NewRegionOptions(client *govultr.Client) *Options {
-	return &Options{Client: client, Printer: &printer.Output{}}
+func NewRegionOptions(base *cli.Base) *Options {
+	return &Options{Base: base}
 }
 
 // NewCmdRegion creates a cobra command for Regions
-func NewCmdRegion(client *govultr.Client) *cobra.Command {
-	o := NewRegionOptions(client)
+func NewCmdRegion(base *cli.Base) *cobra.Command {
+	o := NewRegionOptions(base)
 
 	cmd := &cobra.Command{
 		Use:     "regions",
@@ -98,11 +96,10 @@ func NewCmdRegion(client *govultr.Client) *cobra.Command {
 		Example: listExample,
 		Run: func(cmd *cobra.Command, args []string) {
 			o.validate(cmd, args)
-			o.Options = utils.GetPaging(cmd)
-			o.Printer.Output = viper.GetString("output")
+			o.Base.Options = utils.GetPaging(cmd)
 			regions, meta, err := o.List()
 			data := &printer.Regions{Regions: regions, Meta: meta}
-			o.Printer.Display(data, err)
+			o.Base.Printer.Display(data, err)
 		},
 	}
 	list.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
@@ -122,10 +119,9 @@ func NewCmdRegion(client *govultr.Client) *cobra.Command {
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			o.validate(cmd, args)
-			o.Printer.Output = viper.GetString("output")
 			avail, err := o.Availability()
 			data := &printer.RegionsAvailability{AvailablePlans: avail}
-			o.Printer.Display(data, err)
+			o.Base.Printer.Display(data, err)
 		},
 	}
 	availability.Flags().StringP("type", "t", "", "type of plans for which to include availability. Possible values: 'vc2', 'vdc, 'vhf', 'vbm'. Defaults to all Instances plans.")
@@ -135,16 +131,17 @@ func NewCmdRegion(client *govultr.Client) *cobra.Command {
 }
 
 func (o *Options) validate(cmd *cobra.Command, args []string) {
+	o.Base.Args = args
 	o.PlanType, _ = cmd.Flags().GetString("type")
-	o.Args = args
+	o.Base.Printer.Output = viper.GetString("output")
 }
 
 // List all regions
 func (o *Options) List() ([]govultr.Region, *govultr.Meta, error) {
-	return o.Client.Region.List(context.Background(), o.Options)
+	return o.Base.Client.Region.List(context.Background(), o.Base.Options)
 }
 
 // Availability returns all available plans for a given region
 func (o *Options) Availability() (*govultr.PlanAvailability, error) {
-	return o.Client.Region.Availability(context.Background(), o.Args[0], o.PlanType)
+	return o.Base.Client.Region.Availability(context.Background(), o.Base.Args[0], o.PlanType)
 }

@@ -57,7 +57,7 @@ func BareMetal() *cobra.Command {
 	bareMetalCreate.MarkFlagRequired("region")
 	bareMetalCreate.Flags().StringP("plan", "p", "", "ID of the plan that the server will subscribe to.")
 	bareMetalCreate.MarkFlagRequired("plan")
-	bareMetalCreate.Flags().IntP("os", "o", 0, "ID of the operating system that will be installed on the server.")
+	bareMetalCreate.Flags().IntP("operatingSystems", "o", 0, "ID of the operating system that will be installed on the server.")
 	bareMetalCreate.Flags().StringP("script", "s", "", "(optional) ID of the startup script that will run after the server is created.")
 	bareMetalCreate.Flags().StringP("snapshot", "", "", "(optional) ID of the snapshot that the server will be restored from.")
 	bareMetalCreate.Flags().StringP("ipv6", "i", "", "(optional) Whether IPv6 is enabled on the server. Possible values: 'yes', 'no'. Defaults to 'no'.")
@@ -89,7 +89,7 @@ var bareMetalCreate = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		region, _ := cmd.Flags().GetString("region")
 		plan, _ := cmd.Flags().GetString("plan")
-		osID, _ := cmd.Flags().GetInt("os")
+		osID, _ := cmd.Flags().GetInt("operatingSystems")
 		script, _ := cmd.Flags().GetString("script")
 		snapshot, _ := cmd.Flags().GetString("snapshot")
 		ipv6, _ := cmd.Flags().GetString("ipv6")
@@ -138,7 +138,7 @@ var bareMetalCreate = &cobra.Command{
 
 		// If no osOptions were selected and osID has a real value then set the osOptions to os_id
 		if osOption == "" && osID == 0 {
-			fmt.Printf("error creating bare metal server : an app, snapshot, or os ID must be provided\n")
+			fmt.Printf("error creating bare metal server : an app, snapshot, or operatingSystems ID must be provided\n")
 			os.Exit(1)
 		}
 

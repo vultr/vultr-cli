@@ -2,9 +2,11 @@ package plans
 
 import (
 	"context"
-	"github.com/vultr/govultr/v2"
 	"reflect"
 	"testing"
+
+	"github.com/vultr/govultr/v2"
+	"github.com/vultr/vultr-cli/pkg/cli"
 )
 
 type mockVultrPlans struct {
@@ -58,8 +60,7 @@ func (m mockVultrPlans) ListBareMetal(ctx context.Context, options *govultr.List
 }
 
 func TestPlanOptions_List(t *testing.T) {
-	client := &govultr.Client{Plan: mockVultrPlans{nil}}
-	planOption := NewPlanOptions(client)
+	planOption := NewPlanOptions(&cli.Base{Client: &govultr.Client{Plan: mockVultrPlans{nil}}})
 
 	expectedPlan := []govultr.Plan{
 		{
@@ -91,8 +92,7 @@ func TestPlanOptions_List(t *testing.T) {
 }
 
 func TestPlanOptions_Metal(t *testing.T) {
-	client := &govultr.Client{Plan: mockVultrPlans{nil}}
-	planMetal := NewPlanOptions(client)
+	planMetal := NewPlanOptions(&cli.Base{Client: &govultr.Client{Plan: mockVultrPlans{nil}}})
 
 	expectedMetal := []govultr.BareMetalPlan{
 		{
@@ -126,9 +126,7 @@ func TestPlanOptions_Metal(t *testing.T) {
 }
 
 func TestNewCmdPlan(t *testing.T) {
-	client := &govultr.Client{Plan: mockVultrPlans{nil}}
-
-	planOptions := NewPlanOptions(client)
+	planOptions := NewPlanOptions(&cli.Base{Client: &govultr.Client{Plan: mockVultrPlans{nil}}})
 
 	ref := reflect.TypeOf(planOptions)
 	if _, ok := ref.MethodByName("List"); !ok {
@@ -144,16 +142,13 @@ func TestNewCmdPlan(t *testing.T) {
 	}
 
 	pInterface := reflect.TypeOf(new(PlanOptionsInterface)).Elem()
-	if !ref.Implements(pInterface){
+	if !ref.Implements(pInterface) {
 		t.Errorf("PlanOptions does not implement PlanOptionsInterface")
 	}
 }
 
-
 func TestNewPlanOptions(t *testing.T) {
-	client := &govultr.Client{Plan: mockVultrPlans{nil}}
-	cmd := NewCmdPlan(client)
-
+	cmd := NewCmdPlan(&cli.Base{Client: &govultr.Client{Plan: mockVultrPlans{nil}}})
 
 	if cmd.Short != "get information about Vultr plans" {
 		t.Errorf("invalid short")
@@ -167,5 +162,4 @@ func TestNewPlanOptions(t *testing.T) {
 	if !reflect.DeepEqual(cmd.Aliases, alias) {
 		t.Errorf("expected alias %v got %v", alias, cmd.Aliases)
 	}
-
 }

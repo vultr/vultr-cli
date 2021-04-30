@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/vultr/vultr-cli/pkg/cli"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -86,20 +87,18 @@ type UserOptionsInterface interface {
 
 // UserOptions ...
 type UserOptions struct {
-	Args    []string
-	Client  *govultr.Client
-	Options *govultr.ListOptions
-	User    *govultr.UserReq
+	Base *cli.Base
+	User *govultr.UserReq
 }
 
 // NewUserOptions ...
-func NewUserOptions(client *govultr.Client) *UserOptions {
-	return &UserOptions{Client: client, User: &govultr.UserReq{}}
+func NewUserOptions(base *cli.Base) *UserOptions {
+	return &UserOptions{Base: base}
 }
 
 // NewCmdUser ...
-func NewCmdUser(client *govultr.Client) *cobra.Command {
-	u := NewUserOptions(client)
+func NewCmdUser(base *cli.Base) *cobra.Command {
+	u := NewUserOptions(base)
 
 	cmd := &cobra.Command{
 		Use:     "user",
@@ -168,7 +167,7 @@ func NewCmdUser(client *govultr.Client) *cobra.Command {
 		Example: listExample,
 		Run: func(cmd *cobra.Command, args []string) {
 			u.validate(cmd, args)
-			u.Options = utils.GetPaging(cmd)
+			u.Base.Options = utils.GetPaging(cmd)
 			user, meta, err := u.List()
 			if err != nil {
 				printer.Error(err)
@@ -246,12 +245,12 @@ func (u *UserOptions) validate(cmd *cobra.Command, args []string) {
 		u.User.APIEnabled = govultr.BoolToBoolPtr(false)
 	}
 
-	u.Args = args
+	u.Base.Args = args
 }
 
 // Create ...
 func (u *UserOptions) Create() (*govultr.User, error) {
-	user, err := u.Client.User.Create(context.Background(), u.User)
+	user, err := u.Base.Client.User.Create(context.Background(), u.User)
 	if err != nil {
 		return nil, err
 	}
@@ -260,7 +259,7 @@ func (u *UserOptions) Create() (*govultr.User, error) {
 
 // Get a single user based on ID
 func (u *UserOptions) Get() (*govultr.User, error) {
-	user, err := u.Client.User.Get(context.Background(), u.Args[0])
+	user, err := u.Base.Client.User.Get(context.Background(), u.Base.Args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -268,7 +267,7 @@ func (u *UserOptions) Get() (*govultr.User, error) {
 }
 
 func (u *UserOptions) List() ([]govultr.User, *govultr.Meta, error) {
-	user, meta, err := u.Client.User.List(context.Background(), u.Options)
+	user, meta, err := u.Base.Client.User.List(context.Background(), u.Base.Options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -277,7 +276,7 @@ func (u *UserOptions) List() ([]govultr.User, *govultr.Meta, error) {
 
 // Update ...
 func (u *UserOptions) Update() error {
-	if err := u.Client.User.Update(context.Background(), u.Args[0], u.User); err != nil {
+	if err := u.Base.Client.User.Update(context.Background(), u.Base.Args[0], u.User); err != nil {
 		return err
 	}
 	return nil
@@ -285,7 +284,7 @@ func (u *UserOptions) Update() error {
 
 // Delete ...
 func (u *UserOptions) Delete() error {
-	if err := u.Client.User.Delete(context.Background(), u.Args[0]); err != nil {
+	if err := u.Base.Client.User.Delete(context.Background(), u.Base.Args[0]); err != nil {
 		return err
 	}
 	return nil

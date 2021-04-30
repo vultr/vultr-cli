@@ -16,11 +16,13 @@ package plans
 
 import (
 	"context"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/printer"
 	"github.com/vultr/vultr-cli/cmd/utils"
+	"github.com/vultr/vultr-cli/pkg/cli"
 )
 
 var (
@@ -64,21 +66,18 @@ type PlanOptionsInterface interface {
 
 // PlanOptions struct specific for plans
 type PlanOptions struct {
-	Args     []string
-	Client   *govultr.Client
-	Options  *govultr.ListOptions
-	Printer  *printer.Output
+	Base     *cli.Base
 	PlanType string
 }
 
 // NewPlanOptions returns a PlanOptions struct
-func NewPlanOptions(client *govultr.Client) *PlanOptions {
-	return &PlanOptions{Client: client, Printer: &printer.Output{}}
+func NewPlanOptions(Base *cli.Base) *PlanOptions {
+	return &PlanOptions{Base: Base}
 }
 
 // NewCmdPlan returns the cobra command for Plans
-func NewCmdPlan(client *govultr.Client) *cobra.Command {
-	p := NewPlanOptions(client)
+func NewCmdPlan(Base *cli.Base) *cobra.Command {
+	p := NewPlanOptions(Base)
 
 	cmd := &cobra.Command{
 		Use:     "plans",
@@ -95,11 +94,10 @@ func NewCmdPlan(client *govultr.Client) *cobra.Command {
 		Long:    listLong,
 		Example: listExample,
 		Run: func(cmd *cobra.Command, args []string) {
-			p.Printer.Output = viper.GetString("output")
 			p.validate(cmd, args)
 			plans, meta, err := p.List()
 			data := &printer.Plans{Plan: plans, Meta: meta}
-			p.Printer.Display(data, err)
+			p.Base.Printer.Display(data, err)
 		},
 	}
 
@@ -120,7 +118,7 @@ func NewCmdPlan(client *govultr.Client) *cobra.Command {
 				Plan: m,
 				Meta: meta,
 			}
-			p.Printer.Display(data, err)
+			p.Base.Printer.Display(data, err)
 		},
 	}
 	metal.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
@@ -131,14 +129,15 @@ func NewCmdPlan(client *govultr.Client) *cobra.Command {
 }
 
 func (p *PlanOptions) validate(cmd *cobra.Command, args []string) {
+	p.Base.Args = args
+	p.Base.Options = utils.GetPaging(cmd)
 	p.PlanType, _ = cmd.Flags().GetString("type")
-	p.Options = utils.GetPaging(cmd)
-	p.Args = args
+	p.Base.Printer.Output = viper.GetString("output")
 }
 
 // List retrieves all available instance plans
 func (p *PlanOptions) List() ([]govultr.Plan, *govultr.Meta, error) {
-	plans, meta, err := p.Client.Plan.List(context.Background(), p.PlanType, p.Options)
+	plans, meta, err := p.Base.Client.Plan.List(context.Background(), p.PlanType, p.Base.Options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -148,7 +147,7 @@ func (p *PlanOptions) List() ([]govultr.Plan, *govultr.Meta, error) {
 
 // MetalList retrieves all available bare metal plans
 func (p *PlanOptions) MetalList() ([]govultr.BareMetalPlan, *govultr.Meta, error) {
-	plans, meta, err := p.Client.Plan.ListBareMetal(context.Background(), p.Options)
+	plans, meta, err := p.Base.Client.Plan.ListBareMetal(context.Background(), p.Base.Options)
 	if err != nil {
 		return nil, nil, err
 	}
