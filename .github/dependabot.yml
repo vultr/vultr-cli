@@ -1,0 +1,14 @@
+version: 2
+updates:
+- package-ecosystem: gomod
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: github.com/vultr/govultr/v2
+    versions:
+    - 2.4.0
+  - dependency-name: github.com/spf13/cobra
+    versions:
+    - 1.1.2
