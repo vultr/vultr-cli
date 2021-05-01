@@ -83,6 +83,7 @@ var (
 	`
 )
 
+// Interface for ssh-keys
 type Interface interface {
 	validate(cmd *cobra.Command, args []string)
 	Create() (*govultr.SSHKey, error)
@@ -92,15 +93,18 @@ type Interface interface {
 	Delete() error
 }
 
+// Options for ssh-keys
 type Options struct {
 	Base   *cli.Base
 	SSHKey *govultr.SSHKeyReq
 }
 
+// NewSSHKeyOptions returns Options struct
 func NewSSHKeyOptions(base *cli.Base) *Options {
 	return &Options{Base: base}
 }
 
+// NewCmdSSHKey creates a cobra command for Regions
 func NewCmdSSHKey(base *cli.Base) *cobra.Command {
 	o := NewSSHKeyOptions(base)
 
@@ -121,7 +125,7 @@ func NewCmdSSHKey(base *cli.Base) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			o.validate(cmd, args)
 			key, err := o.Create()
-			o.Base.Printer.Display(&SSHKey{SSHKey: key}, err)
+			o.Base.Printer.Display(&SSHKeyPrinter{SSHKey: key}, err)
 		},
 	}
 	create.Flags().StringP("name", "n", "", "Name of the SSH key")
@@ -144,7 +148,7 @@ func NewCmdSSHKey(base *cli.Base) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			o.validate(cmd, args)
 			key, err := o.Get()
-			o.Base.Printer.Display(&SSHKey{SSHKey: key}, err)
+			o.Base.Printer.Display(&SSHKeyPrinter{SSHKey: key}, err)
 		},
 	}
 
@@ -157,7 +161,7 @@ func NewCmdSSHKey(base *cli.Base) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			o.validate(cmd, args)
 			list, meta, err := o.List()
-			data := &SSHKeys{SSHKeys: list, Meta: meta}
+			data := &SSHKeysPrinter{SSHKeys: list, Meta: meta}
 			o.Base.Printer.Display(data, err)
 		},
 	}

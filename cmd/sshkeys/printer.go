@@ -7,12 +7,14 @@ import (
 	"github.com/vultr/govultr/v2"
 )
 
-type SSHKeys struct {
+// SSHKeysPrinter ...
+type SSHKeysPrinter struct {
 	SSHKeys []govultr.SSHKey `json:"ssh_keys"`
 	Meta    *govultr.Meta
 }
 
-func (s *SSHKeys) JSON() []byte {
+// JSON ...
+func (s *SSHKeysPrinter) JSON() []byte {
 	prettyJSON, err := json.MarshalIndent(s, "", "    ")
 	if err != nil {
 		panic("move this into byte")
@@ -21,7 +23,8 @@ func (s *SSHKeys) JSON() []byte {
 	return prettyJSON
 }
 
-func (s *SSHKeys) Yaml() []byte {
+// Yaml ...
+func (s *SSHKeysPrinter) Yaml() []byte {
 	yam, err := yaml.Marshal(s)
 	if err != nil {
 		panic("move this into byte")
@@ -29,11 +32,13 @@ func (s *SSHKeys) Yaml() []byte {
 	return yam
 }
 
-func (s *SSHKeys) Columns() map[int][]interface{} {
+// Columns ...
+func (s *SSHKeysPrinter) Columns() map[int][]interface{} {
 	return map[int][]interface{}{0: {"ID", "DATE CREATED", "NAME", "KEY"}}
 }
 
-func (s *SSHKeys) Data() map[int][]interface{} {
+// Data ...
+func (s *SSHKeysPrinter) Data() map[int][]interface{} {
 	data := map[int][]interface{}{}
 	for k, v := range s.SSHKeys {
 		data[k] = []interface{}{v.ID, v.DateCreated, v.Name, v.SSHKey}
@@ -41,7 +46,8 @@ func (s *SSHKeys) Data() map[int][]interface{} {
 	return data
 }
 
-func (s *SSHKeys) Paging() map[int][]interface{} {
+// Paging ...
+func (s *SSHKeysPrinter) Paging() map[int][]interface{} {
 	return map[int][]interface{}{
 		0: {"======================================"},
 		1: {"TOTAL", "NEXT PAGE", "PREV PAGE"},
@@ -49,11 +55,13 @@ func (s *SSHKeys) Paging() map[int][]interface{} {
 	}
 }
 
-type SSHKey struct {
+// SSHKeyPrinter ...
+type SSHKeyPrinter struct {
 	SSHKey *govultr.SSHKey `json:"ssh_key"`
 }
 
-func (s *SSHKey) JSON() []byte {
+// JSON ...
+func (s SSHKeyPrinter) JSON() []byte {
 	prettyJSON, err := json.MarshalIndent(s, "", "    ")
 	if err != nil {
 		panic("move this into byte")
@@ -62,7 +70,8 @@ func (s *SSHKey) JSON() []byte {
 	return prettyJSON
 }
 
-func (s *SSHKey) Yaml() []byte {
+// Yaml ...
+func (s SSHKeyPrinter) Yaml() []byte {
 	yam, err := yaml.Marshal(s)
 	if err != nil {
 		panic("move this into byte")
@@ -70,14 +79,17 @@ func (s *SSHKey) Yaml() []byte {
 	return yam
 }
 
-func (s *SSHKey) Columns() map[int][]interface{} {
+// Columns ...
+func (s SSHKeyPrinter) Columns() map[int][]interface{} {
 	return map[int][]interface{}{0: {"ID", "DATE CREATED", "NAME", "KEY"}}
 }
 
-func (s *SSHKey) Data() map[int][]interface{} {
+// Data ...
+func (s SSHKeyPrinter) Data() map[int][]interface{} {
 	return map[int][]interface{}{0: {s.SSHKey.ID, s.SSHKey.DateCreated, s.SSHKey.Name, s.SSHKey.SSHKey}}
 }
 
-func (s *SSHKey) Paging() map[int][]interface{} {
+// Paging ...
+func (s SSHKeyPrinter) Paging() map[int][]interface{} {
 	return nil
 }
