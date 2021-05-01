@@ -16,8 +16,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/vultr/vultr-cli/cmd/operatingSystems"
 	"os"
+
+	"github.com/vultr/vultr-cli/cmd/operatingSystems"
+	"github.com/vultr/vultr-cli/cmd/sshkeys"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -82,7 +84,7 @@ func init() {
 	rootCmd.AddCommand(Script())
 	rootCmd.AddCommand(Instance())
 	rootCmd.AddCommand(Snapshot())
-	rootCmd.AddCommand(SSHKey())
+	rootCmd.AddCommand(sshkeys.NewCmdSSHKey(base))
 	rootCmd.AddCommand(users.NewCmdUser(base))
 	rootCmd.AddCommand(version.NewCmdVersion())
 	cobra.OnInitialize(initConfig)
