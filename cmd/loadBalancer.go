@@ -357,14 +357,16 @@ var lbUpdate = &cobra.Command{
 			}
 		}
 
-		frules, err := formatFirewallRules(firewallRules)
-		if err != nil {
-			fmt.Printf("error updating load balancer : %v\n", err)
-			os.Exit(1)
-		}
+		if len(firewallRules) > 0 {
+			frules, err := formatFirewallRules(firewallRules)
+			if err != nil {
+				fmt.Printf("error updating load balancer : %v\n", err)
+				os.Exit(1)
+			}
 
-		if len(frules) > 0 {
-			options.FirewallRules = frules
+			if len(frules) > 0 {
+				options.FirewallRules = frules
+			}
 		}
 
 		// Health
