@@ -23,8 +23,8 @@ func LoadBalancerList(loadbalancer []govultr.LoadBalancer, meta *govultr.Meta) {
 
 		display(columns{" "})
 		display(columns{"GENERIC INFO"})
-		display(columns{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL"})
-		display(columns{lb.GenericInfo.BalancingAlgorithm, *lb.GenericInfo.SSLRedirect, lb.GenericInfo.StickySessions.CookieName, *lb.GenericInfo.ProxyProtocol})
+		display(columns{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "PRIVATE NETWORK"})
+		display(columns{lb.GenericInfo.BalancingAlgorithm, *lb.GenericInfo.SSLRedirect, lb.GenericInfo.StickySessions.CookieName, *lb.GenericInfo.ProxyProtocol, lb.GenericInfo.PrivateNetwork})
 
 		display(columns{" "})
 		display(columns{"FORWARDING RULES"})
@@ -32,6 +32,17 @@ func LoadBalancerList(loadbalancer []govultr.LoadBalancer, meta *govultr.Meta) {
 		for _, r := range lb.ForwardingRules {
 			display(columns{r.RuleID, r.FrontendProtocol, r.FrontendPort, r.BackendProtocol, r.BackendPort})
 		}
+
+		display(columns{" "})
+		display(columns{"FIREWALL RULES"})
+		display(columns{"RULEID", "PORT", "SOURCE", "IP_TYPE"})
+		for _, r := range lb.FirewallRules {
+			display(columns{r.RuleID, r.Port, r.Source, r.IPType})
+		}
+		if len(lb.FirewallRules) < 1 {
+			display(columns{"-", "-", "-"})
+		}
+
 		display(columns{"---------------------------"})
 	}
 
@@ -57,14 +68,24 @@ func LoadBalancer(lb *govultr.LoadBalancer) {
 
 	display(columns{" "})
 	display(columns{"GENERIC INFO"})
-	display(columns{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL"})
-	display(columns{lb.GenericInfo.BalancingAlgorithm, *lb.GenericInfo.SSLRedirect, lb.GenericInfo.StickySessions.CookieName, *lb.GenericInfo.ProxyProtocol})
+	display(columns{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "PRIVATE NETWORK"})
+	display(columns{lb.GenericInfo.BalancingAlgorithm, *lb.GenericInfo.SSLRedirect, lb.GenericInfo.StickySessions.CookieName, *lb.GenericInfo.ProxyProtocol, lb.GenericInfo.PrivateNetwork})
 
 	display(columns{" "})
 	display(columns{"FORWARDING RULES"})
 	display(columns{"RULEID", "FRONTEND PROTOCOL", "FRONTEND PORT", "BACKEND PROTOCOL", "BACKEND PORT"})
 	for _, r := range lb.ForwardingRules {
 		display(columns{r.RuleID, r.FrontendProtocol, r.FrontendPort, r.BackendProtocol, r.BackendPort})
+	}
+
+	display(columns{" "})
+	display(columns{"FIREWALL RULES"})
+	display(columns{"RULEID", "PORT", "SOURCE", "IP_TYPE"})
+	for _, r := range lb.FirewallRules {
+		display(columns{r.RuleID, r.Port, r.Source, r.IPType})
+	}
+	if len(lb.FirewallRules) < 1 {
+		display(columns{"-", "-", "-"})
 	}
 	flush()
 }
@@ -83,6 +104,24 @@ func LoadBalancerRuleList(rules []govultr.ForwardingRule, meta *govultr.Meta) {
 func LoadBalancerRule(rule *govultr.ForwardingRule) {
 	display(columns{"RULEID", "FRONTEND PROTOCOL", "FRONTEND PORT", "BACKEND PROTOCOL", "BACKEND PORT"})
 	display(columns{rule.RuleID, rule.FrontendProtocol, rule.FrontendPort, rule.BackendProtocol, rule.BackendPort})
+
+	flush()
+}
+
+func LoadBalancerFWRuleList(rules []govultr.LBFirewallRule, meta *govultr.Meta) {
+	display(columns{"RULEID", "PORT", "SOURCE", "IP_TYPE"})
+
+	for _, r := range rules {
+		display(columns{r.RuleID, r.Port, r.Source, r.IPType})
+	}
+
+	Meta(meta)
+	flush()
+}
+
+func LoadBalancerFWRule(rule *govultr.LBFirewallRule) {
+	display(columns{"RULEID", "PORT", "SOURCE", "IP_TYPE"})
+	display(columns{rule.RuleID, rule.Port, rule.Source, rule.IPType})
 
 	flush()
 }

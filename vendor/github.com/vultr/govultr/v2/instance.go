@@ -33,7 +33,7 @@ type InstanceService interface {
 	GetBandwidth(ctx context.Context, instanceID string) (*Bandwidth, error)
 	GetNeighbors(ctx context.Context, instanceID string) (*Neighbors, error)
 
-	ListPrivateNetworks(ctx context.Context, instanceID string) ([]PrivateNetwork, *Meta, error)
+	ListPrivateNetworks(ctx context.Context, instanceID string, options *ListOptions) ([]PrivateNetwork, *Meta, error)
 	AttachPrivateNetwork(ctx context.Context, instanceID, networkID string) error
 	DetachPrivateNetwork(ctx context.Context, instanceID, networkID string) error
 
@@ -459,12 +459,19 @@ func (i *InstanceServiceHandler) GetNeighbors(ctx context.Context, instanceID st
 }
 
 // ListPrivateNetworks currently attached to an instance.
-func (i *InstanceServiceHandler) ListPrivateNetworks(ctx context.Context, instanceID string) ([]PrivateNetwork, *Meta, error) {
+func (i *InstanceServiceHandler) ListPrivateNetworks(ctx context.Context, instanceID string, options *ListOptions) ([]PrivateNetwork, *Meta, error) {
 	uri := fmt.Sprintf("%s/%s/private-networks", instancePath, instanceID)
 	req, err := i.client.NewRequest(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, nil, err
 	}
+
+	newValues, err := query.Values(options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req.URL.RawQuery = newValues.Encode()
 
 	networks := new(privateNetworksBase)
 	if err = i.client.DoWithContext(ctx, req, networks); err != nil {

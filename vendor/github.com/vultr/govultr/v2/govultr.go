@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	version     = "2.4.0"
+	version     = "2.5.0"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 500 * time.Millisecond
@@ -237,4 +237,9 @@ func (c *Client) vultrErrorHandler(resp *http.Response, err error, numTries int)
 func BoolToBoolPtr(value bool) *bool {
 	b := value
 	return &b
+}
+
+// StringToStringPtr helper function that returns a pointer from your string value
+func StringToStringPtr(value string) *string {
+	return &value
 }
