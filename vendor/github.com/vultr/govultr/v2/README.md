@@ -63,8 +63,8 @@ Create a VPS
 instanceOptions := &govultr.InstanceCreateReq{
   Label:                "awesome-go-app",
   Hostname:             "awesome-go.com",
-  Backups:              true,
-  EnableIPv6:           true,
+  Backups:              "enabled",
+  EnableIPv6:           BoolToBoolPtr(false),
   OsID:                 362,
   Plan:                 "vc2-1c-2gb",   
   Region:               "ewr",
