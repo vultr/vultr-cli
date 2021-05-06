@@ -1,8 +1,12 @@
 # Change Log
 
-## [v2.4.1](https://github.com/vultr/vultr-cli/compare/v2.4.0..v2.4.1) (2021-04-12)
-### Bug Fixes
-* LoadBalancers: fix update issues [PR 145](https://github.com/vultr/vultr-cli/pull/145)
+## [v2.5.0](https://github.com/vultr/vultr-cli/compare/v2.4.1..v2.5.0) (2021-05-06)
+### Enhancement
+* LoadBalancers : New Features [149](https://github.com/vultr/vultr-cli/pull/149)
+  * Ability to attach private networks
+  * Ability to set firewalls
+  * Get Firewall Rules
+  * List Firewall Rules
 
 ## [v2.4.0](https://github.com/vultr/vultr-cli/compare/v2.3.0..v2.4.0) (2021-04-01)
 ### Enhancement
