@@ -630,8 +630,8 @@ var backupCreate = &cobra.Command{
 
 		backup := &govultr.BackupScheduleReq{
 			Type: crontType,
-			Hour: hour,
-			Dow:  dow,
+			Hour: govultr.IntToIntPtr(hour),
+			Dow:  govultr.IntToIntPtr(dow),
 			Dom:  dom,
 		}
 
