@@ -1,5 +1,9 @@
 # Change Log
 
+## [v2.5.1](https://github.com/vultr/vultr-cli/compare/v2.5.0..v2.5.1) (2021-05-12)
+### Dependencies
+* GoVultr v2.5.0 -> 2.5.1 (fixes issue with backup schedules) [PR 151](https://github.com/vultr/vultr-cli/pull/151)
+
 ## [v2.5.0](https://github.com/vultr/vultr-cli/compare/v2.4.1..v2.5.0) (2021-05-06)
 ### Enhancement
 * LoadBalancers : New Features [149](https://github.com/vultr/vultr-cli/pull/149)
