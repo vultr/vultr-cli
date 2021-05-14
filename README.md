@@ -47,6 +47,7 @@ There are three ways to install `vultr-cli`:
 1. Download a release from GitHub
 2. From source
 3. Package Manager
+  - Arch Linux
   - Brew
   - Snap (Coming soon)
   - Chocolatey (Coming soon)
@@ -79,6 +80,12 @@ The available make build options are
 - make builds/vultr-cli_windows_amd64.exe
 
 Note that the latter method will install the `vultr-cli` executable in `builds/vultr-cli_(name of os + arch)`.
+
+### Installing on Arch Linux
+
+```sh
+pacman -S vultr-cli
+```
 
 ### Installing via Brew
 
