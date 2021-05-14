@@ -131,14 +131,28 @@ func getPaging(cmd *cobra.Command) *govultr.ListOptions {
 }
 
 func configHome() string {
-	configHome, err := os.UserHomeDir()
+	// check for a config file at ~/.config/vultr-cli.yaml
+	configFolder, err := os.UserConfigDir()
 	if err != nil {
 		os.Exit(1)
 	}
 
-	configHome = fmt.Sprintf("%s/.vultr-cli.yaml", configHome)
-	if _, err := os.Stat(configHome); err != nil {
-		f, err := os.Create(configHome)
+	configFile := fmt.Sprintf("%s/vultr-cli.yaml", configFolder)
+	if _, err := os.Stat(configFile); err == nil {
+		// if one exists, return the path
+		return configFile
+	}
+
+	// check for a config file at ~/.vultr-cli.yaml
+	configFolder, err = os.UserHomeDir()
+	if err != nil {
+		os.Exit(1)
+	}
+
+	configFile = fmt.Sprintf("%s/.vultr-cli.yaml", configFolder)
+	if _, err := os.Stat(configFile); err != nil {
+		// if it doesn't exist, create one
+		f, err := os.Create(configFile)
 		if err != nil {
 			os.Exit(1)
 		}
@@ -146,5 +160,5 @@ func configHome() string {
 
 	}
 
-	return configHome
+	return configFile
 }
