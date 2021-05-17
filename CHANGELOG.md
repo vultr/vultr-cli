@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.5.2](https://github.com/vultr/vultr-cli/compare/v2.5.1..v2.5.2) (2021-05-17)
+### Enhancement
+* Support config files in $XDG_CONFIG_HOME [PR 153](https://github.com/vultr/vultr-cli/pull/153)
+
+### Documentation 
+* Add Arch Linux install instructions [PR 154](https://github.com/vultr/vultr-cli/pull/154)
+
 ## [v2.5.1](https://github.com/vultr/vultr-cli/compare/v2.5.0..v2.5.1) (2021-05-12)
 ### Dependencies
 * GoVultr v2.5.0 -> 2.5.1 (fixes issue with backup schedules) [PR 151](https://github.com/vultr/vultr-cli/pull/151)
