@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/vultr/vultr-cli/cmd/account"
 	"github.com/vultr/vultr-cli/cmd/operatingSystems"
 	"github.com/vultr/vultr-cli/cmd/sshkeys"
 
@@ -66,7 +67,7 @@ func init() {
 	viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output"))
 
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.AddCommand(accountCmd)
+	rootCmd.AddCommand(account.NewCmdAccount(base))
 	rootCmd.AddCommand(applications.NewCmdApplications(base))
 	rootCmd.AddCommand(Backups())
 	rootCmd.AddCommand(BareMetal())
