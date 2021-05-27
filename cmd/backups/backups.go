@@ -51,8 +51,8 @@ var (
 // BackupOptionsInterface ...
 type BackupOptionsInterface interface {
 	validate(cmd *cobra.Command, args []string)
-	List() []govultr.Backup
-	Get() *govultr.Backup
+	List() ([]govultr.Backup, *govultr.Meta, error)
+	Get() (*govultr.Backup, error)
 }
 
 // Options for backups
