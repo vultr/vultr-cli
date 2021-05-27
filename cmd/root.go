@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/vultr/vultr-cli/cmd/backups"
 	"github.com/vultr/vultr-cli/cmd/operatingSystems"
 	"github.com/vultr/vultr-cli/cmd/sshkeys"
 
@@ -68,7 +69,7 @@ func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.AddCommand(accountCmd)
 	rootCmd.AddCommand(applications.NewCmdApplications(base))
-	rootCmd.AddCommand(Backups())
+	rootCmd.AddCommand(backups.NewCmdBackup(base))
 	rootCmd.AddCommand(BareMetal())
 	rootCmd.AddCommand(BlockStorageCmd())
 	rootCmd.AddCommand(DNS())
