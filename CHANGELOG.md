@@ -1,5 +1,9 @@
 # Change Log
 
+## [v2.5.3](https://github.com/vultr/vultr-cli/compare/v2.5.2..v2.5.3) (2021-06-28)
+### Dependencies
+* Bump github.com/spf13/viper from 1.7.1 to 1.8.1 [PR 160](https://github.com/vultr/vultr-cli/pull/160)
+
 ## [v2.5.2](https://github.com/vultr/vultr-cli/compare/v2.5.1..v2.5.2) (2021-05-17)
 ### Enhancement
 * Support config files in $XDG_CONFIG_HOME [PR 153](https://github.com/vultr/vultr-cli/pull/153)
