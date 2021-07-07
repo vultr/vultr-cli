@@ -2,6 +2,10 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v2.6.0](https://github.com/vultr/govultr/compare/v2.5.1..v2.6.0) (2021-07-02)
+### Enhancement
+* BareMetal : Add support for `persistent_pxe` [148](https://github.com/vultr/govultr/pull/148)
+
 ## [v2.5.1](https://github.com/vultr/govultr/compare/v2.5.0..v2.5.1) (2021-05-10)
 ### Bug fix
 * Instances : BackupScheduleReq change DOW + Hour to pointers  [145](https://github.com/vultr/govultr/pull/145)
