@@ -85,6 +85,7 @@ type BareMetalCreate struct {
 	Hostname        string   `json:"hostname,omitempty"`
 	Tag             string   `json:"tag,omitempty"`
 	ReservedIPv4    string   `json:"reserved_ipv4,omitempty"`
+	PersistentPxe   *bool    `json:"persistent_pxe,omitempty"`
 }
 
 // BareMetalUpdate represents the optional parameters that can be set when updating a Bare Metal server

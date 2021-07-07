@@ -69,6 +69,7 @@ func BareMetal() *cobra.Command {
 	bareMetalCreate.Flags().StringP("hostname", "m", "", "(optional) The hostname to assign to the server.")
 	bareMetalCreate.Flags().StringP("tag", "t", "", "(optional) The tag to assign to the server.")
 	bareMetalCreate.Flags().StringP("ripv4", "v", "", "(optional) IP address of the floating IP to use as the main IP of this server.")
+	bareMetalCreate.Flags().BoolP("persistent_pxe", "x", false, "enable persistent_pxe | true or false")
 
 	bareMetalList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	bareMetalList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
@@ -101,6 +102,7 @@ var bareMetalCreate = &cobra.Command{
 		hostname, _ := cmd.Flags().GetString("hostname")
 		tag, _ := cmd.Flags().GetString("tag")
 		ripv4, _ := cmd.Flags().GetString("ripv4")
+		pxe, _ := cmd.Flags().GetBool("persistent_pxe")
 
 		options := &govultr.BareMetalCreate{
 			StartupScriptID: script,
@@ -114,6 +116,7 @@ var bareMetalCreate = &cobra.Command{
 			OsID:            osID,
 			Region:          region,
 			AppID:           app,
+			PersistentPxe:   govultr.BoolToBoolPtr(pxe),
 		}
 
 		if userdata != "" {
