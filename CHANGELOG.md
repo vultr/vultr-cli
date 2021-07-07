@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.6.0](https://github.com/vultr/vultr-cli/compare/v2.5.3..v2.6.0) (2021-07-07)
+### Dependencies
+* Bump github.com/spf13/viper from 1.7.1 to 1.8.1 [PR 163](https://github.com/vultr/vultr-cli/pull/163)
+* GoVultr v2.5.1 -> 2.6.0 (added support for persistent_pxe) [PR 164](https://github.com/vultr/vultr-cli/pull/164)
+
+### Enhancements 
+* Bare-metal : Support `persistent_pxe` on create [PR 164](https://github.com/vultr/vultr-cli/pull/164)
+
 ## [v2.5.3](https://github.com/vultr/vultr-cli/compare/v2.5.2..v2.5.3) (2021-06-28)
 ### Dependencies
 * Bump github.com/spf13/viper from 1.7.1 to 1.8.1 [PR 160](https://github.com/vultr/vultr-cli/pull/160)
