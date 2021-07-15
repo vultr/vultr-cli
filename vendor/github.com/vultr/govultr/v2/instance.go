@@ -93,6 +93,7 @@ type Instance struct {
 	Tag              string   `json:"tag"`
 	OsID             int      `json:"os_id"`
 	AppID            int      `json:"app_id"`
+	ImageID          string   `json:"image_id"`
 	FirewallGroupID  string   `json:"firewall_group_id"`
 	Features         []string `json:"features"`
 }
@@ -214,6 +215,7 @@ type InstanceCreateReq struct {
 	OsID                 int      `json:"os_id,omitempty"`
 	ISOID                string   `json:"iso_id,omitempty"`
 	AppID                int      `json:"app_id,omitempty"`
+	ImageID              string   `json:"image_id,omitempty"`
 	FirewallGroupID      string   `json:"firewall_group_id,omitempty"`
 	Hostname             string   `json:"hostname,omitempty"`
 	IPXEChainURL         string   `json:"ipxe_chain_url,omitempty"`

@@ -2,6 +2,12 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v2.7.0](https://github.com/vultr/govultr/compare/v2.6.0..v2.7.0) (2021-07-14)
+### Enhancement
+* BareMetal : Add support for `image_id` [150](https://github.com/vultr/govultr/pull/150)
+* Instances : Add support for `image_id` [150](https://github.com/vultr/govultr/pull/150)
+* Applications : added support for marketplace applications [150](https://github.com/vultr/govultr/pull/150)
+
 ## [v2.6.0](https://github.com/vultr/govultr/compare/v2.5.1..v2.6.0) (2021-07-02)
 ### Enhancement
 * BareMetal : Add support for `persistent_pxe` [148](https://github.com/vultr/govultr/pull/148)
