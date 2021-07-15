@@ -69,6 +69,7 @@ func Instance() *cobra.Command {
 	instanceCreate.Flags().StringArrayP("ssh-keys", "s", []string{}, "ssh keys you want to assign to the instance")
 	instanceCreate.Flags().BoolP("auto-backup", "b", false, "enable auto backups | true or false")
 	instanceCreate.Flags().IntP("app", "a", 0, "application ID you want this instance to have")
+	instanceCreate.Flags().StringP("image", "", "", "(optional) image ID of the application that will be installed on the server.")
 	instanceCreate.Flags().StringP("userdata", "u", "", "plain text userdata you want to give this instance which the CLI will base64 encode")
 	instanceCreate.Flags().BoolP("notify", "n", true, "notify when instance has been created | true or false")
 	instanceCreate.Flags().BoolP("ddos", "d", false, "enable ddos protection | true or false")
@@ -108,6 +109,17 @@ func Instance() *cobra.Command {
 	appUpdate.Flags().IntP("app", "a", 0, "application ID you wish to use")
 	appUpdate.MarkFlagRequired("app")
 	instanceCmd.AddCommand(appCMD)
+
+	// Sub commands for Image
+	imageCMD := &cobra.Command{
+		Use:   "image",
+		Short: "update image for an instance",
+		Long:  ``,
+	}
+	imageCMD.AddCommand(imageUpdate, appUpdateList)
+	imageUpdate.Flags().StringP("image", "", "", "application image ID you wish to use")
+	imageUpdate.MarkFlagRequired("image")
+	instanceCmd.AddCommand(imageCMD)
 
 	// Sub commands for Backup
 	backupCMD := &cobra.Command{
@@ -535,6 +547,33 @@ var osUpdateList = &cobra.Command{
 		}
 
 		printer.OsList(list.OS)
+	},
+}
+
+var imageUpdate = &cobra.Command{
+	Use:   "change <instanceID>",
+	Short: "changes application",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		imageID, _ := cmd.Flags().GetString("image")
+
+		options := &govultr.InstanceUpdateReq{
+			ImageID: imageID,
+		}
+
+		if err := client.Instance.Update(context.TODO(), id, options); err != nil {
+			fmt.Printf("error updating application : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Updated Application")
 	},
 }
 
@@ -992,6 +1031,7 @@ var instanceCreate = &cobra.Command{
 		ssh, _ := cmd.Flags().GetStringArray("ssh-keys")
 		backup, _ := cmd.Flags().GetBool("auto-backup")
 		app, _ := cmd.Flags().GetInt("app")
+		image, _ := cmd.Flags().GetString("image")
 		userData, _ := cmd.Flags().GetString("userdata")
 		notify, _ := cmd.Flags().GetBool("notify")
 		ddos, _ := cmd.Flags().GetBool("ddos")
@@ -1000,7 +1040,7 @@ var instanceCreate = &cobra.Command{
 		tag, _ := cmd.Flags().GetString("tag")
 		fwg, _ := cmd.Flags().GetString("firewall-group")
 
-		osOptions := map[string]interface{}{"iso_id": iso, "os_id": osID, "app_id": app, "snapshot_id": snapshot}
+		osOptions := map[string]interface{}{"iso_id": iso, "os_id": osID, "app_id": app, "snapshot_id": snapshot, "image_id": image}
 
 		if iso != "" {
 			osOptions["iso_id"] = iso
@@ -1033,13 +1073,14 @@ var instanceCreate = &cobra.Command{
 			ActivationEmail:      govultr.BoolToBoolPtr(false),
 			Backups:              "disabled",
 			EnablePrivateNetwork: govultr.BoolToBoolPtr(false),
+			ImageID:              image,
 		}
 
 		// If no osOptions were selected and osID has a real value then set the osOptions to os_id
 		if osOption == "os_id" && osID != 0 {
 			opt.OsID = osID
 		} else if osOption == "" && osID == 0 {
-			fmt.Printf("error creating instance: an os_id, snapshot_id, iso_id, or app_id must be provided\n")
+			fmt.Printf("error creating instance: an os_id, image_id, snapshot_id, iso_id, or app_id must be provided\n")
 			os.Exit(1)
 		}
 

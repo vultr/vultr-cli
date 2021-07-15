@@ -36,6 +36,7 @@ func BareMetal() *cobra.Command {
 
 	bareMetalCmd.AddCommand(
 		BareMetalApp(),
+		BareMetalImage(),
 		bareMetalBandwidth,
 		bareMetalCreate,
 		bareMetalDelete,
@@ -64,6 +65,7 @@ func BareMetal() *cobra.Command {
 	bareMetalCreate.Flags().StringP("label", "l", "", "(optional) The label to assign to the server.")
 	bareMetalCreate.Flags().StringSliceP("ssh", "k", []string{}, "(optional) Comma separated list of SSH key IDs that will be added to the server.")
 	bareMetalCreate.Flags().IntP("app", "a", 0, "(optional) ID of the application that will be installed on the server.")
+	bareMetalCreate.Flags().StringP("image", "", "", "(optional) Image ID of the application that will be installed on the server.")
 	bareMetalCreate.Flags().StringP("userdata", "u", "", "(optional) A generic data store, which some provisioning tools and cloud operating systems use as a configuration file.")
 	bareMetalCreate.Flags().StringP("notify", "n", "", "(optional) Whether an activation email will be sent when the server is ready. Possible values: 'yes', 'no'. Defaults to 'yes'.")
 	bareMetalCreate.Flags().StringP("hostname", "m", "", "(optional) The hostname to assign to the server.")
@@ -103,6 +105,7 @@ var bareMetalCreate = &cobra.Command{
 		tag, _ := cmd.Flags().GetString("tag")
 		ripv4, _ := cmd.Flags().GetString("ripv4")
 		pxe, _ := cmd.Flags().GetBool("persistent_pxe")
+		image, _ := cmd.Flags().GetString("image")
 
 		options := &govultr.BareMetalCreate{
 			StartupScriptID: script,
@@ -116,6 +119,7 @@ var bareMetalCreate = &cobra.Command{
 			OsID:            osID,
 			Region:          region,
 			AppID:           app,
+			ImageID:         image,
 			PersistentPxe:   govultr.BoolToBoolPtr(pxe),
 		}
 
@@ -131,7 +135,7 @@ var bareMetalCreate = &cobra.Command{
 			options.EnableIPv6 = govultr.BoolToBoolPtr(true)
 		}
 
-		osOptions := map[string]interface{}{"app_id": app, "snapshot_id": snapshot, "os_id": osID}
+		osOptions := map[string]interface{}{"app_id": app, "snapshot_id": snapshot, "os_id": osID, "image_id": image}
 		osOption, err := optionCheckBM(osOptions)
 
 		if err != nil {
@@ -141,7 +145,7 @@ var bareMetalCreate = &cobra.Command{
 
 		// If no osOptions were selected and osID has a real value then set the osOptions to os_id
 		if osOption == "" && osID == 0 {
-			fmt.Printf("error creating bare metal server : an app, snapshot, or os ID must be provided\n")
+			fmt.Printf("error creating bare metal server : an app, image, snapshot, or os ID must be provided\n")
 			os.Exit(1)
 		}
 
