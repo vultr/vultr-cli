@@ -1,4 +1,12 @@
 # Change Log
+## [v2.7.0](https://github.com/vultr/vultr-cli/compare/v2.6.0..v2.7.0) (2021-07-16)
+### Dependencies
+* GoVultr 2.6.0 -> 2.7.1 (added image_id support for instance and bare metal updates) [PR 169](https://github.com/vultr/vultr-cli/pull/169)
+
+### Enhancements 
+* Instances: Add image_id support [PR 169](https://github.com/vultr/vultr-cli/pull/169)
+* Bare-metal: Add image_id support [PR 169](https://github.com/vultr/vultr-cli/pull/169)
+* Add documentation for autocompletions in README
 
 ## [v2.6.0](https://github.com/vultr/vultr-cli/compare/v2.5.3..v2.6.0) (2021-07-07)
 ### Dependencies
