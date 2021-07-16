@@ -66,6 +66,7 @@ type BareMetalServer struct {
 	Tag             string   `json:"tag"`
 	OsID            int      `json:"os_id"`
 	AppID           int      `json:"app_id"`
+	ImageID         string   `json:"image_id"`
 	Features        []string `json:"features"`
 }
 
@@ -80,6 +81,7 @@ type BareMetalCreate struct {
 	Label           string   `json:"label,omitempty"`
 	SSHKeyIDs       []string `json:"sshkey_id,omitempty"`
 	AppID           int      `json:"app_id,omitempty"`
+	ImageID         string   `json:"image_id,omitempty"`
 	UserData        string   `json:"user_data,omitempty"`
 	ActivationEmail *bool    `json:"activation_email,omitempty"`
 	Hostname        string   `json:"hostname,omitempty"`
@@ -94,6 +96,7 @@ type BareMetalUpdate struct {
 	EnableIPv6 *bool  `json:"enable_ipv6,omitempty"`
 	Label      string `json:"label,omitempty"`
 	AppID      int    `json:"app_id,omitempty"`
+	ImageID    string `json:"image_id,omitempty"`
 	UserData   string `json:"user_data,omitempty"`
 	Tag        string `json:"tag,omitempty"`
 }
