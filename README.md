@@ -133,5 +133,46 @@ Currently the only available field that you can use with a config file is `api-k
 
 `api-key: MYKEY`
 
+### CLI Autocompletion 
+`vultr-cli completion` will return autocompletions, but this feature requires setup. 
+
+Some guides:
+
+<pre>
+<h4>Bash:</h4>
+  $ source <(yourprogram completion bash)
+
+  <b>To load completions for each session, execute once:</b>
+  <b>Linux:</b>
+  $ yourprogram completion bash > /etc/bash_completion.d/yourprogram
+  
+  <b>macOS:</b>
+  $ yourprogram completion bash > /usr/local/etc/bash_completion.d/yourprogram
+
+<h4>Zsh:</h4>
+  <b>If shell completion is not already enabled in your environment,
+  you will need to enable it.  You can execute the following once:</b>
+
+  $ echo "autoload -U compinit; compinit" >> ~/.zshrc
+
+  <b>To load completions for each session, execute once:</b>
+  $ yourprogram completion zsh > "${fpath[1]}/_yourprogram"
+
+  You will need to start a new shell for this setup to take effect.
+
+<h4>fish:</h4>
+  $ yourprogram completion fish | source
+
+  <b>To load completions for each session, execute once:</b>
+  $ yourprogram completion fish > ~/.config/fish/completions/yourprogram.fish
+
+<h4>PowerShell:</h4>
+  PS> yourprogram completion powershell | Out-String | Invoke-Expression
+
+  <b>To load completions for every new session, run:</b>
+  PS> yourprogram completion powershell > yourprogram.ps1
+  <b>and source this file from your PowerShell profile.</b>
+</pre>
+
 ## Contributing
 Feel free to send pull requests our way! Please see the [contributing guidelines](CONTRIBUTING.md).
