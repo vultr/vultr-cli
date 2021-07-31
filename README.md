@@ -67,15 +67,15 @@ Another way to build from source is to
 ```
 git clone git@github.com:vultr/vultr-cli.git or git clone https://github.com/vultr/vultr-cli.git
 cd vultr-cli
-make build_(pass name of os + arch)
+make builds/vultr-cli_(pass name of os + arch, as shown below)
 ```
 
 The available make build options are
 - make builds/vultr-cli_darwin_amd64
-- make builds/vultr-cli_darwin_arm64 
+- make builds/vultr-cli_darwin_arm64
 - make builds/vultr-cli_linux_386
-- make builds/builds/vultr-cli_linux_amd64  
-- make builds/builds/vultr-cli_linux_arm64  
+- make builds/vultr-cli_linux_amd64
+- make builds/vultr-cli_linux_arm64
 - make builds/vultr-cli_windows_386.exe
 - make builds/vultr-cli_windows_amd64.exe
 
