@@ -112,11 +112,11 @@ In order to use `vultr-cli` you will need to export your [Vultr API KEY](https:/
 
 `vultr-cli` can interact with all of your Vultr resources. Here are some basic examples to get you started:
 
-##### List all available servers
-`vultr-cli server list`
+##### List all available instances
+`vultr-cli instance list`
 
-##### Create a server
-`vultr-cli server create --region <region-id> --plan <plan-id> --os <os-id> --hostname <hostname>` 
+##### Create an instance
+`vultr-cli instance create --region <region-id> --plan <plan-id> --os <os-id> --hostname <hostname>`
 
 ##### Create a DNS Domain
 `vultr-cli dns domain create --domain <domain-name> --ip <ip-address>`
