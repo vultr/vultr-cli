@@ -2,6 +2,10 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v2.8.0](https://github.com/vultr/govultr/compare/v2.7.1..v2.8.0) (2021-08-18)
+### Enhancement
+* Added support for Vultr Kubernetes Engine [156](https://github.com/vultr/govultr/pull/156)
+
 ## [v2.7.1](https://github.com/vultr/govultr/compare/v2.7.0..v2.7.1) (2021-07-15)
 ### Enhancement
 * BareMetal : Add support for `image_id` on update [152](https://github.com/vultr/govultr/pull/152)
