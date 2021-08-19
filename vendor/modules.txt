@@ -45,7 +45,7 @@ github.com/spf13/pflag
 github.com/spf13/viper
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
-# github.com/vultr/govultr/v2 v2.7.1
+# github.com/vultr/govultr/v2 v2.8.0
 ## explicit
 github.com/vultr/govultr/v2
 # golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
