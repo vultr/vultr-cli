@@ -229,12 +229,12 @@ func Kubernetes() *cobra.Command {
 	// Node Instance SubCommands
 	nodeCmd := &cobra.Command{
 		Use:     "node",
-		Short:   "delete/recycle nodes in a cluster's node pool",
+		Short:   "delete/recycle instances in a cluster's node pool",
 		Long:    nodepoolInstanceLong,
 		Example: nodepoolInstanceExample,
 	}
 
-	nodeCmd.AddCommand(npNodeDelete, npNodeRecycle)
+	nodeCmd.AddCommand(npInstanceDelete, npInstanceRecycle)
 	nodepoolsCmd.AddCommand(nodeCmd, npCreate, npGet, npList, npDelete, npUpdate)
 	kubernetesCmd.AddCommand(nodepoolsCmd)
 
@@ -483,7 +483,7 @@ var npDelete = &cobra.Command{
 	},
 }
 
-var npNodeDelete = &cobra.Command{
+var npInstanceDelete = &cobra.Command{
 	Use:     "delete <clusterID> <nodePoolID> <nodeID>",
 	Short:   "deletes a node in a cluster's node pool",
 	Aliases: []string{"destroy", "d"},
@@ -509,7 +509,7 @@ var npNodeDelete = &cobra.Command{
 	},
 }
 
-var npNodeRecycle = &cobra.Command{
+var npInstanceRecycle = &cobra.Command{
 	Use:     "recycle <clusterID> <nodePoolID> <nodeID>",
 	Short:   "recycles a node in a cluster's node pool",
 	Aliases: []string{"r"},
