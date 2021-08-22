@@ -58,6 +58,7 @@ func init() {
 	rootCmd.AddCommand(DNS())
 	rootCmd.AddCommand(Firewall())
 	rootCmd.AddCommand(ISO())
+	rootCmd.AddCommand(Kubernetes())
 	rootCmd.AddCommand(LoadBalancer())
 	rootCmd.AddCommand(Network())
 	rootCmd.AddCommand(Os())
