@@ -38,10 +38,9 @@ var (
 	createLong    = `Create kubernetes cluster on your Vultr account`
 	createExample = `
 	# Full Example
-	vultr-cli kubernetes create --label="my cluster" --region="ewr" --version="1.20" --node-pools="quantity:3,plan:vc2-1c-2gb,label:my-nodepool"
-	
+	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.20.0+1" --node-pools="quantity:3,plan:vc2-1c-2gb,label:my-nodepool"	
 	# Shortened with alias commands
-	vultr-cli k c -l="my cluster" -r="ewr" -v="1.20" --n="quantity:3,plan:vc2-1c-2gb,label:my-nodepool"
+	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.20.0+1" -n="quantity:3,plan:vc2-1c-2gb,label:my-nodepool"
 	`
 
 	getLong    = `Get a single kubernetes cluster from your account`
@@ -83,7 +82,7 @@ var (
 	vultr-cli k d ffd31f18-5f77-454c-9065-212f942c3c35'
 	`
 
-	getConfigLong    = `Delete a specific kubernetes cluster off your Vultr Account`
+	getConfigLong    = `Returns a base64 encoded config of a specified kubernetes cluster on your Vultr Account`
 	getConfigExample = `
 	# Full example
 	vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35
@@ -95,7 +94,7 @@ var (
 	nodepoolLong    = `Get all available commands for Kubernetes node pools`
 	nodepoolExample = `
 	# Full example
-	vultr-cli kubernetes node-pools
+	vultr-cli kubernetes node-pool
 
 	# Shortened with alias commands
 	vultr-cli k n	
@@ -149,7 +148,7 @@ var (
 	nodepoolInstanceLong    = `Get all available commands for Kubernetes node pool instances`
 	nodepoolInstanceExample = `
 	# Full example
-	vultr-cli kubernetes node-pools node
+	vultr-cli kubernetes node-pool node
 
 	# Shortened with alias commands
 	vultr-cli k n node
@@ -187,7 +186,7 @@ func Kubernetes() *cobra.Command {
 	k8Create.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
 	k8Create.Flags().StringP("region", "r", "", "region you want your kubernetes cluster to be located in")
 	k8Create.Flags().StringP("version", "v", "", "the kubernetes version you want for your cluster")
-	k8Create.Flags().StringArrayP("node-pools", "n", []string{}, "a comma-separated, key-value pair list of node pools. At least one node pool is required. At least one node is required in node pool. Use - between each new node pool. E.g: `plan:vhf-8c-32gb,label:mynodepool,quantity:3-plan:vhf-8c-32gb,label:mynodepool2,quantity:3`")
+	k8Create.Flags().StringArrayP("node-pools", "n", []string{}, "a comma-separated, key-value pair list of node pools. At least one node pool is required. At least one node is required in node pool. Use / between each new node pool. E.g: `plan:vhf-8c-32gb,label:mynodepool,quantity:3/plan:vhf-8c-32gb,label:mynodepool2,quantity:3`")
 
 	k8Create.MarkFlagRequired("label")
 	k8Create.MarkFlagRequired("region")
@@ -210,6 +209,14 @@ func Kubernetes() *cobra.Command {
 	}
 
 	// Node Pools
+	npCreate.Flags().StringP("label", "l", "", "label you want for your node pool.")
+	npCreate.Flags().StringP("plan", "p", "", "the plan you want for your node pool.")
+	npCreate.Flags().IntP("quantity", "q", 1, "Number of nodes in your node pool. Note that at least one node is required for a node pool.")
+
+	npCreate.MarkFlagRequired("label")
+	npCreate.MarkFlagRequired("quantity")
+	npCreate.MarkFlagRequired("plan")
+
 	npList.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
 	npList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
@@ -289,6 +296,7 @@ var k8Get = &cobra.Command{
 	Short:   "retrieves a kubernetes cluster",
 	Long:    getLong,
 	Example: getExample,
+	Aliases: []string{"g"},
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a clusterID")
@@ -310,7 +318,7 @@ var k8Get = &cobra.Command{
 var k8Update = &cobra.Command{
 	Use:     "update <clusterID>",
 	Short:   "updates a kubernetes cluster",
-	Aliases: []string{"update", "u"},
+	Aliases: []string{"u"},
 	Long:    updateLong,
 	Example: updateExample,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -362,7 +370,6 @@ var k8Delete = &cobra.Command{
 var k8GetConfig = &cobra.Command{
 	Use:     "config <clusterID>",
 	Short:   "gets a kubernetes cluster's config",
-	Aliases: []string{"config"},
 	Long:    getConfigLong,
 	Example: getConfigExample,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -379,19 +386,19 @@ var k8GetConfig = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Println(config)
+		fmt.Println(config.KubeConfig)
 	},
 }
 
 var npCreate = &cobra.Command{
-	Use:     "create node-pool <clusterID>",
+	Use:     "create <clusterID>",
 	Short:   "creates a node pool in a kubernetes cluster",
-	Aliases: []string{"create", "c"},
+	Aliases: []string{"c"},
 	Long:    createNPLong,
 	Example: createNPExample,
 	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 2 {
-			return errors.New("please provide a clusterID and nodePoolID")
+		if len(args) < 1 {
+			return errors.New("please provide a clusterID")
 		}
 		return nil
 	},
@@ -418,9 +425,9 @@ var npCreate = &cobra.Command{
 }
 
 var npUpdate = &cobra.Command{
-	Use:     "update node-pool <clusterID>",
+	Use:     "update <clusterID> <nodePoolID>",
 	Short:   "updates a cluster's node pool quantity",
-	Aliases: []string{"update", "u"},
+	Aliases: []string{"u"},
 	Long:    updateNPLong,
 	Example: updateNPExample,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -449,7 +456,7 @@ var npUpdate = &cobra.Command{
 }
 
 var npDelete = &cobra.Command{
-	Use:     "delete node-pool <clusterID> <nodeID>",
+	Use:     "delete <clusterID> <nodeID>",
 	Short:   "delete a cluster node pool",
 	Aliases: []string{"destroy", "d"},
 	Long:    deleteNPLong,
@@ -502,7 +509,7 @@ var npNodeDelete = &cobra.Command{
 var npNodeRecycle = &cobra.Command{
 	Use:     "recycle <clusterID> <nodePoolID> <nodeID>",
 	Short:   "recycles a node in a cluster's node pool",
-	Aliases: []string{"recycle", "r"},
+	Aliases: []string{"r"},
 	Long:    deleteNPInstanceRecycleLong,
 	Example: deleteNPInstanceRecycleExample,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -526,9 +533,9 @@ var npNodeRecycle = &cobra.Command{
 }
 
 var npList = &cobra.Command{
-	Use:     "list node-pool <clusterID>",
+	Use:     "list <clusterID>",
 	Short:   "list nodepools",
-	Aliases: []string{"list", "l"},
+	Aliases: []string{"l"},
 	Long:    listNPLong,
 	Example: listNPExample,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -551,9 +558,9 @@ var npList = &cobra.Command{
 }
 
 var npGet = &cobra.Command{
-	Use:     "get node-pool <clusterID> <nodePoolID>",
-	Short:   "get nodepool",
-	Aliases: []string{"get", "g"},
+	Use:     "get <clusterID> <nodePoolID>",
+	Short:   "get nodepool in kubernetes cluster",
+	Aliases: []string{"g"},
 	Long:    getNPLong,
 	Example: getNPExample,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -578,8 +585,9 @@ var npGet = &cobra.Command{
 // formatNodePools parses node pools into proper format
 func formatNodePools(nodePools []string) ([]govultr.NodePoolReq, error) {
 	var formattedList []govultr.NodePoolReq
-	npList := strings.Split(nodePools[0], "-")
+	npList := strings.Split(nodePools[0], "/")
 
+	fmt.Print(nodePools[0])
 	for _, r := range npList {
 		np := govultr.NodePoolReq{}
 		node := strings.Split(r, ",")
