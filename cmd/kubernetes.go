@@ -39,6 +39,7 @@ var (
 	createExample = `
 	# Full Example
 	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.20.0+1" --node-pools="quantity:3,plan:vc2-1c-2gb,label:my-nodepool"	
+	
 	# Shortened with alias commands
 	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.20.0+1" -n="quantity:3,plan:vc2-1c-2gb,label:my-nodepool"
 	`
@@ -67,10 +68,10 @@ var (
 	updateLong    = `Update a specific kubernetes cluster on your Vultr Account`
 	updateExample = `
 	# Full example
-	vultr-cli kubernetes update ffd31f18-5f77-454c-9065-212f942c3c35 --label="updated label"
+	vultr-cli kubernetes update ffd31f18-5f77-454c-9065-212f942c3c35 --label="updated-label"
 
 	# Shortened with alias commands
-	vultr-cli k u ffd31f18-5f77-454c-9065-212f942c3c35 -l="updated label"
+	vultr-cli k u ffd31f18-5f77-454c-9065-212f942c3c35 -l="updated-label"
 	`
 
 	deleteLong    = `Delete a specific kubernetes cluster off your Vultr Account`
@@ -103,10 +104,10 @@ var (
 	createNPLong    = `Create node pool for your kubernetes cluster on your Vultr account`
 	createNPExample = `
 	# Full Example
-	vultr-cli kubernetes node-pool create --label="nodepool" --quantity=3  --plan=vc2-1c-2gb
+	vultr-cli kubernetes node-pool create --label="nodepool" --quantity=3  --plan="vc2-1c-2gb"
 	
 	# Shortened with alias commands
-	vultr-cli k n c ffd31f18-5f77-454c-9064-212f942c3c34 -l="nodepool" -q=3  -p=vc2-1c-2gb
+	vultr-cli k n c ffd31f18-5f77-454c-9064-212f942c3c34 -l="nodepool" -q=3  -p="vc2-1c-2gb"
 	`
 
 	getNPLong    = `Get a node pool in a single kubernetes cluster from your account`
@@ -133,6 +134,7 @@ var (
 	updateNPExample = `
 	# Full example
 	vultr-cli kubernetes node-pool update ffd31f18-5f77-454c-9064-212f942c3c34 abd31f18-3f77-454c-9064-212f942c3c34 --quantity=4
+	
 	# Shortened with alias commands
 	vultr-cli k n u ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 --q=4
 	`
@@ -141,6 +143,7 @@ var (
 	deleteNPExample = `
 	# Full example
 	vultr-cli kubernetes node-pool delete ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34
+	
 	# Shortened with alias commands
 	vultr-cli k n d ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34'
 	`
@@ -154,7 +157,7 @@ var (
 	vultr-cli k n node
 	`
 
-	deleteNPInstanceLong    = `Delete a specific node pool instance in a kubernetes cluster off your Vultr Account`
+	deleteNPInstanceLong    = `Delete a specific node pool instance in a kubernetes cluster from your Vultr Account`
 	deleteNPInstanceExample = `
 	# Full example
 	vultr-cli kubernetes node-pool node delete ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421
@@ -163,7 +166,7 @@ var (
 	vultr-cli k n node d ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421'
 	`
 
-	deleteNPInstanceRecycleLong    = `Recycles a specific node pool instance in a kubernetes cluster off your Vultr Account`
+	deleteNPInstanceRecycleLong    = `Recycles a specific node pool instance in a kubernetes cluster from your Vultr Account`
 	deleteNPInstanceRecycleExample = `
 	# Full example
 	vultr-cli kubernetes node-pool node recycle ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421
