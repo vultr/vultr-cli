@@ -22,10 +22,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v2"
 	"github.com/vultr/vultr-cli/cmd/printer"
-
-	"github.com/spf13/cobra"
 )
 
 var (
@@ -183,6 +182,7 @@ func Kubernetes() *cobra.Command {
 		Aliases: []string{"k"},
 		Short:   "kubernetes is used to access kubernetes commands",
 		Long:    kubernetesLong,
+		Example: kubernetesExample,
 	}
 
 	kubernetesCmd.AddCommand(k8Create, k8Get, k8List, k8GetConfig, k8Update, k8Delete)
@@ -590,7 +590,6 @@ func formatNodePools(nodePools []string) ([]govultr.NodePoolReq, error) {
 	var formattedList []govultr.NodePoolReq
 	npList := strings.Split(nodePools[0], "/")
 
-	fmt.Print(nodePools[0])
 	for _, r := range npList {
 		np := govultr.NodePoolReq{}
 		node := strings.Split(r, ",")
