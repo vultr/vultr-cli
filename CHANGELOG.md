@@ -1,4 +1,13 @@
 # Change Log
+## [v2.8.0](https://github.com/vultr/vultr-cli/compare/v2.7.0..v2.8.0) (2021-08-23)
+### Dependencies
+* GoVultr 2.7.1 -> 2.8.0 (added kubernetes support)[PR 156](https://github.com/vultr/govultr/pull/156)
+
+### Enhancements 
+* Kubernetes: Add support for Kubernetes (VKE) [PR 178](https://github.com/vultr/vultr-cli/pull/178)
+* README: update commands needed for building from source [PR 173](https://github.com/vultr/vultr-cli/pull/173)
+* README: update examples  [PR 174](https://github.com/vultr/vultr-cli/pull/174)
+
 ## [v2.7.0](https://github.com/vultr/vultr-cli/compare/v2.6.0..v2.7.0) (2021-07-16)
 ### Dependencies
 * GoVultr 2.6.0 -> 2.7.1 (added image_id support for instance and bare metal updates) [PR 169](https://github.com/vultr/vultr-cli/pull/169)
