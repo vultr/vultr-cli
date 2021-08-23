@@ -1,0 +1,627 @@
+// Copyright © 2019 The Vultr-cli Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package cmd
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+
+	"github.com/spf13/cobra"
+	"github.com/vultr/govultr/v2"
+	"github.com/vultr/vultr-cli/cmd/printer"
+)
+
+var (
+	kubernetesLong    = `Get all available commands for Kubernetes`
+	kubernetesExample = `
+	# Full example
+	vultr-cli kubernetes
+	`
+
+	createLong    = `Create kubernetes cluster on your Vultr account`
+	createExample = `
+	# Full Example
+	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.20.0+1" --node-pools="quantity:3,plan:vc2-1c-2gb,label:my-nodepool"	
+	
+	# Shortened with alias commands
+	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.20.0+1" -n="quantity:3,plan:vc2-1c-2gb,label:my-nodepool"
+	`
+
+	getLong    = `Get a single kubernetes cluster from your account`
+	getExample = `
+	# Full example
+	vultr-cli kubernetes get ffd31f18-5f77-454c-9064-212f942c3c34
+
+	# Shortened with alias commands
+	vultr-cli k g ffd31f18-5f77-454c-9064-212f942c3c34
+	`
+
+	listLong    = `Get all kubernetes clusters available on your Vultr account`
+	listExample = `
+	# Full example
+	vultr-cli kubernetes list 
+	
+	# Full example with paging
+	vultr-cli kubernetes list --per-page=1 --cursor="bmV4dF9fQU1T"
+
+	# Shortened with alias commands
+	vultr-cli k l 	
+	`
+
+	updateLong    = `Update a specific kubernetes cluster on your Vultr Account`
+	updateExample = `
+	# Full example
+	vultr-cli kubernetes update ffd31f18-5f77-454c-9065-212f942c3c35 --label="updated-label"
+
+	# Shortened with alias commands
+	vultr-cli k u ffd31f18-5f77-454c-9065-212f942c3c35 -l="updated-label"
+	`
+
+	deleteLong    = `Delete a specific kubernetes cluster off your Vultr Account`
+	deleteExample = `
+	# Full example
+	vultr-cli kubernetes delete ffd31f18-5f77-454c-9065-212f942c3c35
+
+	# Shortened with alias commands
+	vultr-cli k d ffd31f18-5f77-454c-9065-212f942c3c35'
+	`
+
+	getConfigLong    = `Returns a base64 encoded config of a specified kubernetes cluster on your Vultr Account`
+	getConfigExample = `
+	# Full example
+	vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35
+
+	# Shortened with alias commands
+	vultr-cli k config ffd31f18-5f77-454c-9065-212f942c3c35'
+	`
+
+	nodepoolLong    = `Get all available commands for Kubernetes node pools`
+	nodepoolExample = `
+	# Full example
+	vultr-cli kubernetes node-pool
+
+	# Shortened with alias commands
+	vultr-cli k n	
+	`
+
+	createNPLong    = `Create node pool for your kubernetes cluster on your Vultr account`
+	createNPExample = `
+	# Full Example
+	vultr-cli kubernetes node-pool create --label="nodepool" --quantity=3  --plan="vc2-1c-2gb"
+	
+	# Shortened with alias commands
+	vultr-cli k n c ffd31f18-5f77-454c-9064-212f942c3c34 -l="nodepool" -q=3  -p="vc2-1c-2gb"
+	`
+
+	getNPLong    = `Get a node pool in a single kubernetes cluster from your account`
+	getNPExample = `
+	# Full example
+	vultr-cli kubernetes node-pool get ffd31f18-5f77-454c-9064-212f942c3c34 abd31f18-3f77-454c-9064-212f942c3c34
+	# Shortened with alias commands
+	vultr-cli k n g ffd31f18-5f77-454c-9064-212f942c3c34 abd31f18-3f77-454c-9064-212f942c3c34
+	`
+
+	listNPLong    = `Get all nodepools from a kubernetes cluster on your Vultr account`
+	listNPExample = `
+	# Full example
+	vultr-cli kubernetes node-pool list ffd31f18-5f77-454c-9064-212f942c3c34
+	
+	# Full example with paging
+	vultr-cli kubernetes node-pool list ffd31f18-5f77-454c-9064-212f942c3c34 --per-page=1 --cursor="bmV4dF9fQU1T"
+	
+	# Shortened with alias commands
+	vultr-cli k n l ffd31f18-5f77-454c-9064-212f942c3c34	
+	`
+
+	updateNPLong    = `Update a specific node pool in a kubernetes cluster on your Vultr Account`
+	updateNPExample = `
+	# Full example
+	vultr-cli kubernetes node-pool update ffd31f18-5f77-454c-9064-212f942c3c34 abd31f18-3f77-454c-9064-212f942c3c34 --quantity=4
+	
+	# Shortened with alias commands
+	vultr-cli k n u ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 --q=4
+	`
+
+	deleteNPLong    = `Delete a specific node pool in a kubernetes cluster off your Vultr Account`
+	deleteNPExample = `
+	# Full example
+	vultr-cli kubernetes node-pool delete ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34
+	
+	# Shortened with alias commands
+	vultr-cli k n d ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34'
+	`
+
+	nodepoolInstanceLong    = `Get all available commands for Kubernetes node pool instances`
+	nodepoolInstanceExample = `
+	# Full example
+	vultr-cli kubernetes node-pool node
+
+	# Shortened with alias commands
+	vultr-cli k n node
+	`
+
+	deleteNPInstanceLong    = `Delete a specific node pool instance in a kubernetes cluster from your Vultr Account`
+	deleteNPInstanceExample = `
+	# Full example
+	vultr-cli kubernetes node-pool node delete ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421
+	
+	# Shortened with alias commands
+	vultr-cli k n node d ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421'
+	`
+
+	deleteNPInstanceRecycleLong    = `Recycles a specific node pool instance in a kubernetes cluster from your Vultr Account`
+	deleteNPInstanceRecycleExample = `
+	# Full example
+	vultr-cli kubernetes node-pool node recycle ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421
+	
+	# Shortened with alias commands
+	vultr-cli k n node r ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421'
+	`
+)
+
+// Kubernetes represents the kubernetes command
+func Kubernetes() *cobra.Command {
+	kubernetesCmd := &cobra.Command{
+		Use:     "kubernetes",
+		Aliases: []string{"k"},
+		Short:   "kubernetes is used to access kubernetes commands",
+		Long:    kubernetesLong,
+		Example: kubernetesExample,
+	}
+
+	kubernetesCmd.AddCommand(k8Create, k8Get, k8List, k8GetConfig, k8Update, k8Delete)
+	k8Create.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
+	k8Create.Flags().StringP("region", "r", "", "region you want your kubernetes cluster to be located in")
+	k8Create.Flags().StringP("version", "v", "", "the kubernetes version you want for your cluster")
+	k8Create.Flags().StringArrayP("node-pools", "n", []string{}, "a comma-separated, key-value pair list of node pools. At least one node pool is required. At least one node is required in node pool. Use / between each new node pool. E.g: `plan:vhf-8c-32gb,label:mynodepool,quantity:3/plan:vhf-8c-32gb,label:mynodepool2,quantity:3`")
+
+	k8Create.MarkFlagRequired("label")
+	k8Create.MarkFlagRequired("region")
+	k8Create.MarkFlagRequired("version")
+	k8Create.MarkFlagRequired("node-pools")
+
+	k8List.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
+	k8List.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+
+	k8Update.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
+	k8Update.MarkFlagRequired("label")
+
+	// Node Pools SubCommands
+	nodepoolsCmd := &cobra.Command{
+		Use:     "node-pool",
+		Aliases: []string{"n"},
+		Short:   "node pools commands for a kubernetes cluster",
+		Long:    nodepoolLong,
+		Example: nodepoolExample,
+	}
+
+	// Node Pools
+	npCreate.Flags().StringP("label", "l", "", "label you want for your node pool.")
+	npCreate.Flags().StringP("plan", "p", "", "the plan you want for your node pool.")
+	npCreate.Flags().IntP("quantity", "q", 1, "Number of nodes in your node pool. Note that at least one node is required for a node pool.")
+
+	npCreate.MarkFlagRequired("label")
+	npCreate.MarkFlagRequired("quantity")
+	npCreate.MarkFlagRequired("plan")
+
+	npList.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
+	npList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+
+	npUpdate.Flags().IntP("quantity", "q", 1, "Number of nodes in your node pool. Note that at least one node is required for a node pool.")
+	npUpdate.MarkFlagRequired("quantity")
+
+	// Node Instance SubCommands
+	nodeCmd := &cobra.Command{
+		Use:     "node",
+		Short:   "delete/recycle instances in a cluster's node pool",
+		Long:    nodepoolInstanceLong,
+		Example: nodepoolInstanceExample,
+	}
+
+	nodeCmd.AddCommand(npInstanceDelete, npInstanceRecycle)
+	nodepoolsCmd.AddCommand(nodeCmd, npCreate, npGet, npList, npDelete, npUpdate)
+	kubernetesCmd.AddCommand(nodepoolsCmd)
+
+	return kubernetesCmd
+}
+
+var k8Create = &cobra.Command{
+	Use:     "create",
+	Short:   "create kubernetes cluster",
+	Long:    createLong,
+	Example: createExample,
+	Aliases: []string{"c"},
+	Run: func(cmd *cobra.Command, args []string) {
+		label, _ := cmd.Flags().GetString("label")
+		region, _ := cmd.Flags().GetString("region")
+		nodepools, _ := cmd.Flags().GetStringArray("node-pools")
+		version, _ := cmd.Flags().GetString("version")
+
+		nps, err := formatNodePools(nodepools)
+		if err != nil {
+			fmt.Printf("error creating kubernetes cluster: %v\n", err)
+			os.Exit(1)
+		}
+
+		options := &govultr.ClusterReq{
+			Label:     label,
+			Region:    region,
+			NodePools: nps,
+			Version:   version,
+		}
+
+		kubernetes, err := client.Kubernetes.CreateCluster(context.Background(), options)
+		if err != nil {
+			fmt.Printf("error creating kubernetes cluster : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.Cluster(kubernetes)
+	},
+}
+
+var k8List = &cobra.Command{
+	Use:     "list <clusterID>",
+	Short:   "list kubernetes clusters",
+	Aliases: []string{"l"},
+	Long:    listLong,
+	Example: listExample,
+	Run: func(cmd *cobra.Command, args []string) {
+		options := getPaging(cmd)
+
+		k8s, meta, err := client.Kubernetes.ListClusters(context.Background(), options)
+		if err != nil {
+			fmt.Printf("error listing kubernetes clusters : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.Clusters(k8s, meta)
+	},
+}
+
+var k8Get = &cobra.Command{
+	Use:     "get <clusterID>",
+	Short:   "retrieves a kubernetes cluster",
+	Long:    getLong,
+	Example: getExample,
+	Aliases: []string{"g"},
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a clusterID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		lb, err := client.Kubernetes.GetCluster(context.Background(), id)
+		if err != nil {
+			fmt.Printf("error getting cluster : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.Cluster(lb)
+	},
+}
+
+var k8Update = &cobra.Command{
+	Use:     "update <clusterID>",
+	Short:   "updates a kubernetes cluster",
+	Aliases: []string{"u"},
+	Long:    updateLong,
+	Example: updateExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a clusterID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		label, _ := cmd.Flags().GetString("label")
+
+		options := &govultr.ClusterReqUpdate{
+			Label: label,
+		}
+
+		if err := client.Kubernetes.UpdateCluster(context.Background(), id, options); err != nil {
+			fmt.Printf("error updating kubernetes cluster : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Updated kubernetes cluster")
+	},
+}
+
+var k8Delete = &cobra.Command{
+	Use:     "delete <clusterID>",
+	Short:   "delete a kubernetes cluster",
+	Aliases: []string{"destroy", "d"},
+	Long:    deleteLong,
+	Example: deleteExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a clusterID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		if err := client.Kubernetes.DeleteCluster(context.Background(), id); err != nil {
+			fmt.Printf("error deleting kubernetes cluster : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("kubernetes cluster has been deleted")
+	},
+}
+
+var k8GetConfig = &cobra.Command{
+	Use:     "config <clusterID>",
+	Short:   "gets a kubernetes cluster's config",
+	Long:    getConfigLong,
+	Example: getConfigExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a clusterID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		config, err := client.Kubernetes.GetKubeConfig(context.Background(), id)
+		if err != nil {
+			fmt.Printf("error retrieving kube config : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println(config.KubeConfig)
+	},
+}
+
+var npCreate = &cobra.Command{
+	Use:     "create <clusterID>",
+	Short:   "creates a node pool in a kubernetes cluster",
+	Aliases: []string{"c"},
+	Long:    createNPLong,
+	Example: createNPExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a clusterID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		quantity, _ := cmd.Flags().GetInt("quantity")
+		label, _ := cmd.Flags().GetString("label")
+		plan, _ := cmd.Flags().GetString("plan")
+
+		options := &govultr.NodePoolReq{
+			NodeQuantity: quantity,
+			Label:        label,
+			Plan:         plan,
+		}
+
+		np, err := client.Kubernetes.CreateNodePool(context.Background(), id, options)
+		if err != nil {
+			fmt.Printf("error creating cluster node pool : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.NodePool(np)
+	},
+}
+
+var npUpdate = &cobra.Command{
+	Use:     "update <clusterID> <nodePoolID>",
+	Short:   "updates a cluster's node pool quantity",
+	Aliases: []string{"u"},
+	Long:    updateNPLong,
+	Example: updateNPExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a clusterID and nodePoolID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		nodeID := args[1]
+		quantity, _ := cmd.Flags().GetInt("quantity")
+
+		options := &govultr.NodePoolReqUpdate{
+			NodeQuantity: quantity,
+		}
+
+		np, err := client.Kubernetes.UpdateNodePool(context.Background(), id, nodeID, options)
+		if err != nil {
+			fmt.Printf("error updating cluster node pool : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.NodePool(np)
+	},
+}
+
+var npDelete = &cobra.Command{
+	Use:     "delete <clusterID> <nodeID>",
+	Short:   "delete a cluster node pool",
+	Aliases: []string{"destroy", "d"},
+	Long:    deleteNPLong,
+	Example: deleteNPExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a clusterID and nodeID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		nodePoolID := args[1]
+
+		if err := client.Kubernetes.DeleteNodePool(context.Background(), id, nodePoolID); err != nil {
+			fmt.Printf("error deleting cluster nodepool : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("kubernetes cluster has been deleted")
+	},
+}
+
+var npInstanceDelete = &cobra.Command{
+	Use:     "delete <clusterID> <nodePoolID> <nodeID>",
+	Short:   "deletes a node in a cluster's node pool",
+	Aliases: []string{"destroy", "d"},
+	Long:    deleteNPInstanceLong,
+	Example: deleteNPInstanceExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 3 {
+			return errors.New("please provide a clusterID, nodePoolID, and nodeID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		nodePoolID := args[1]
+		nodeID := args[2]
+
+		if err := client.Kubernetes.DeleteNodePoolInstance(context.Background(), id, nodePoolID, nodeID); err != nil {
+			fmt.Printf("error deleting node pool node : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("node pool node deleted")
+	},
+}
+
+var npInstanceRecycle = &cobra.Command{
+	Use:     "recycle <clusterID> <nodePoolID> <nodeID>",
+	Short:   "recycles a node in a cluster's node pool",
+	Aliases: []string{"r"},
+	Long:    deleteNPInstanceRecycleLong,
+	Example: deleteNPInstanceRecycleExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 3 {
+			return errors.New("please provide a clusterID, nodePoolID, and nodeID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		nodePoolID := args[1]
+		nodeID := args[2]
+
+		if err := client.Kubernetes.RecycleNodePoolInstance(context.Background(), id, nodePoolID, nodeID); err != nil {
+			fmt.Printf("error recycling node pool node : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("node pool node recycled")
+	},
+}
+
+var npList = &cobra.Command{
+	Use:     "list <clusterID>",
+	Short:   "list nodepools",
+	Aliases: []string{"l"},
+	Long:    listNPLong,
+	Example: listNPExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a clusterID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		options := getPaging(cmd)
+		nps, meta, err := client.Kubernetes.ListNodePools(context.Background(), id, options)
+		if err != nil {
+			fmt.Printf("error listing cluster node pools : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.NodePools(nps, meta)
+	},
+}
+
+var npGet = &cobra.Command{
+	Use:     "get <clusterID> <nodePoolID>",
+	Short:   "get nodepool in kubernetes cluster",
+	Aliases: []string{"g"},
+	Long:    getNPLong,
+	Example: getNPExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a clusterID and nodePoolID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		nodeID := args[1]
+		np, err := client.Kubernetes.GetNodePool(context.Background(), id, nodeID)
+		if err != nil {
+			fmt.Printf("error getting cluster node pool : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.NodePool(np)
+	},
+}
+
+// formatNodePools parses node pools into proper format
+func formatNodePools(nodePools []string) ([]govultr.NodePoolReq, error) {
+	var formattedList []govultr.NodePoolReq
+	npList := strings.Split(nodePools[0], "/")
+
+	for _, r := range npList {
+		np := govultr.NodePoolReq{}
+		node := strings.Split(r, ",")
+
+		if len(node) != 3 {
+			return nil, fmt.Errorf("unable to format node pool. each node pool must include label, quantity, and plan")
+		}
+
+		for _, f := range node {
+			npKeyVal := strings.Split(f, ":")
+
+			if len(npKeyVal) != 2 {
+				return nil, fmt.Errorf("invalid node pool format")
+			}
+
+			field := npKeyVal[0]
+			val := npKeyVal[1]
+
+			switch true {
+			case field == "plan":
+				np.Plan = val
+			case field == "quantity":
+				port, _ := strconv.Atoi(val)
+				np.NodeQuantity = port
+			case field == "label":
+				np.Label = val
+			}
+		}
+
+		formattedList = append(formattedList, np)
+	}
+
+	return formattedList, nil
+}
