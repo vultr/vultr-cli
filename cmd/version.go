@@ -31,5 +31,5 @@ var versionCmd = &cobra.Command{
 }
 
 func version() string {
-	return "Vultr-cli v2.7.0"
+	return "Vultr-cli v2.8.0"
 }
