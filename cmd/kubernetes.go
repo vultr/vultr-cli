@@ -246,6 +246,7 @@ var k8Create = &cobra.Command{
 	Short:   "create kubernetes cluster",
 	Long:    createLong,
 	Example: createExample,
+	Aliases: []string{"c"},
 	Run: func(cmd *cobra.Command, args []string) {
 		label, _ := cmd.Flags().GetString("label")
 		region, _ := cmd.Flags().GetString("region")
