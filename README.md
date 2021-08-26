@@ -19,6 +19,7 @@ Available Commands:
   firewall       firewall is used to access firewall commands
   help           Help about any command
   iso            iso is used to access iso commands
+  kubernetes     kubernetes is used to access kubernetes commands
   load-balancer  load balancer commands
   network        network interacts with network actions
   object-storage object storage commands
