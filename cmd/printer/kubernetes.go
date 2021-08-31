@@ -123,3 +123,12 @@ func NodePool(np *govultr.NodePool) {
 
 	flush()
 }
+
+func K8Versions(versions *govultr.Versions) {
+	display(columns{"VERSIONS"})
+	for _, v := range versions.Versions {
+		display(columns{v})
+	}
+
+	flush()
+}

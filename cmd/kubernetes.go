@@ -82,6 +82,12 @@ var (
 	vultr-cli k d ffd31f18-5f77-454c-9065-212f942c3c35'
 	`
 
+	deleteWithResourcesLong    = `Delete a specific kubernetes cluster and all linked load balancers and block storages off your Vultr Account`
+	deleteWithResourcesExample = `
+	# Full example
+	vultr-cli kubernetes delete-with-resources ffd31f18-5f77-454c-9065-212f942c3c35
+	`
+
 	getConfigLong    = `Returns a base64 encoded config of a specified kubernetes cluster on your Vultr Account`
 	getConfigExample = `
 	# Full example
@@ -89,6 +95,15 @@ var (
 
 	# Shortened with alias commands
 	vultr-cli k config ffd31f18-5f77-454c-9065-212f942c3c35'
+	`
+
+	getVersionsLong    = `Returns a list of supported kubernetes versions you can deploy`
+	getVersionsExample = `
+	# Full example
+	vultr-cli kubernetes versions
+
+	# Shortened with alias commands
+	vultr-cli k v'
 	`
 
 	nodepoolLong    = `Get all available commands for Kubernetes node pools`
@@ -185,7 +200,7 @@ func Kubernetes() *cobra.Command {
 		Example: kubernetesExample,
 	}
 
-	kubernetesCmd.AddCommand(k8Create, k8Get, k8List, k8GetConfig, k8Update, k8Delete)
+	kubernetesCmd.AddCommand(k8Create, k8Get, k8List, k8GetConfig, k8Update, k8Delete, k8DeleteWithResources, k8GetVersions)
 	k8Create.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
 	k8Create.Flags().StringP("region", "r", "", "region you want your kubernetes cluster to be located in")
 	k8Create.Flags().StringP("version", "v", "", "the kubernetes version you want for your cluster")
@@ -371,6 +386,28 @@ var k8Delete = &cobra.Command{
 	},
 }
 
+var k8DeleteWithResources = &cobra.Command{
+	Use:     "delete-with-resources <clusterID>",
+	Short:   "delete a kubernetes cluster and related resources",
+	Long:    deleteWithResourcesLong,
+	Example: deleteWithResourcesExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a clusterID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		if err := client.Kubernetes.DeleteClusterWithResources(context.Background(), id); err != nil {
+			fmt.Printf("error deleting kubernetes cluster : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("kubernetes cluster and related resources have been deleted")
+	},
+}
+
 var k8GetConfig = &cobra.Command{
 	Use:     "config <clusterID>",
 	Short:   "gets a kubernetes cluster's config",
@@ -391,6 +428,23 @@ var k8GetConfig = &cobra.Command{
 		}
 
 		fmt.Println(config.KubeConfig)
+	},
+}
+
+var k8GetVersions = &cobra.Command{
+	Use:     "versions",
+	Short:   "gets supported kubernetes versions",
+	Long:    getVersionsLong,
+	Example: getVersionsExample,
+	Aliases: []string{"v"},
+	Run: func(cmd *cobra.Command, args []string) {
+		versions, err := client.Kubernetes.GetVersions(context.Background())
+		if err != nil {
+			fmt.Printf("error retrieving supported versions : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.K8Versions(versions)
 	},
 }
 
