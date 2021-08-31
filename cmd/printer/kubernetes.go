@@ -124,9 +124,9 @@ func NodePool(np *govultr.NodePool) {
 	flush()
 }
 
-func K8Versions(versions *govultr.K8Versions) {
+func K8Versions(versions *govultr.Versions) {
 	display(columns{"VERSIONS"})
-	for _, v := range versions.K8Versions {
+	for _, v := range versions.Versions {
 		display(columns{v})
 	}
 

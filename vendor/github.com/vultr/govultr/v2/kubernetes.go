@@ -18,6 +18,7 @@ type KubernetesService interface {
 	ListClusters(ctx context.Context, options *ListOptions) ([]Cluster, *Meta, error)
 	UpdateCluster(ctx context.Context, vkeID string, updateReq *ClusterReqUpdate) error
 	DeleteCluster(ctx context.Context, id string) error
+	DeleteClusterWithResources(ctx context.Context, id string) error
 
 	CreateNodePool(ctx context.Context, vkeID string, nodePoolReq *NodePoolReq) (*NodePool, error)
 	ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, error)
@@ -29,6 +30,7 @@ type KubernetesService interface {
 	RecycleNodePoolInstance(ctx context.Context, vkeID, nodePoolID, nodeID string) error
 
 	GetKubeConfig(ctx context.Context, vkeID string) (*KubeConfig, error)
+	GetVersions(ctx context.Context) (*Versions, error)
 }
 
 // KubernetesHandler handles interaction with the kubernetes methods for the Vultr API
@@ -119,6 +121,11 @@ type vkeNodePoolBase struct {
 	NodePool *NodePool `json:"node_pool"`
 }
 
+// Versions that are supported for VKE
+type Versions struct {
+	Versions []string `json:"versions"`
+}
+
 // CreateCluster will create a Kubernetes cluster.
 func (k *KubernetesHandler) CreateCluster(ctx context.Context, createReq *ClusterReq) (*Cluster, error) {
 	req, err := k.client.NewRequest(ctx, http.MethodPost, vkePath, createReq)
@@ -184,6 +191,16 @@ func (k *KubernetesHandler) UpdateCluster(ctx context.Context, vkeID string, upd
 // DeleteCluster will delete a Kubernetes cluster.
 func (k *KubernetesHandler) DeleteCluster(ctx context.Context, id string) error {
 	req, err := k.client.NewRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", vkePath, id), nil)
+	if err != nil {
+		return err
+	}
+
+	return k.client.DoWithContext(ctx, req, nil)
+}
+
+// DeleteClusterWithResources will delete a Kubernetes cluster and all related resources.
+func (k *KubernetesHandler) DeleteClusterWithResources(ctx context.Context, id string) error {
+	req, err := k.client.NewRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s/delete-with-linked-resources", vkePath, id), nil)
 	if err != nil {
 		return err
 	}
@@ -302,4 +319,20 @@ func (k *KubernetesHandler) GetKubeConfig(ctx context.Context, vkeID string) (*K
 	}
 
 	return kc, nil
+}
+
+// GetVersions returns the supported kubernetes versions
+func (k *KubernetesHandler) GetVersions(ctx context.Context) (*Versions, error) {
+	uri := "/v2/kubernetes/versions"
+	req, err := k.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	versions := new(Versions)
+	if err = k.client.DoWithContext(ctx, req, &versions); err != nil {
+		return nil, err
+	}
+
+	return versions, nil
 }

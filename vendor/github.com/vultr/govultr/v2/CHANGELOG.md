@@ -2,6 +2,14 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v2.8.1](https://github.com/vultr/govultr/compare/v2.8.0..v2.8.1) (2021-08-31)
+### Enhancement
+* Kubernetes : Add support for deletion with resources [159](https://github.com/vultr/govultr/pull/159)
+* Kubernetes : Add support for getting available versions[159](https://github.com/vultr/govultr/pull/159)
+
+### Dependency Update
+* Bump Go version to 1.16 [158](https://github.com/vultr/govultr/pull/158)
+
 ## [v2.8.0](https://github.com/vultr/govultr/compare/v2.7.1..v2.8.0) (2021-08-18)
 ### Enhancement
 * Added support for Vultr Kubernetes Engine [156](https://github.com/vultr/govultr/pull/156)

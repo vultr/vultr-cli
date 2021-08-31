@@ -26,10 +26,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const (
-	userAgent = "vultr-cli/" + version
-)
-
 var cfgFile string
 var client *govultr.Client
 
@@ -115,7 +111,7 @@ func initConfig() {
 	client = govultr.NewClient(oauth2.NewClient(context.Background(), ts))
 
 	client.SetRateLimit(1 * time.Second)
-	client.SetUserAgent(userAgent)
+
 }
 
 func getPaging(cmd *cobra.Command) *govultr.ListOptions {
