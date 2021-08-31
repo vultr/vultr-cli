@@ -389,8 +389,8 @@ var k8Delete = &cobra.Command{
 var k8DeleteWithResources = &cobra.Command{
 	Use:     "delete-with-resources <clusterID>",
 	Short:   "delete a kubernetes cluster and related resources",
-	Long:    deleteLong,
-	Example: deleteExample,
+	Long:    deleteWithResourcesLong,
+	Example: deleteWithResourcesExample,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a clusterID")
