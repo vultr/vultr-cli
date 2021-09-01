@@ -20,16 +20,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	version = "v2.8.0"
+)
+
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Display current version of Vultr-cli",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(version())
+		fmt.Println(getVersion())
 	},
 }
 
-func version() string {
-	return "Vultr-cli v2.8.0"
+func getVersion() string {
+	return fmt.Sprintf("Vultr-cli %s", version)
 }
