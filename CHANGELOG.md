@@ -6,7 +6,7 @@
 
 ### Enhancements
 * Kubernetes: Add support for new Kubernetes calls [PR 181](https://github.com/vultr/vultr-cli/pull/181)
-* Add User-Agent: [PR 182]https://github.com/vultr/vultr-cli/pull/182
+* Add User-Agent: [PR 182](https://github.com/vultr/vultr-cli/pull/182)
 
 ## [v2.8.0](https://github.com/vultr/vultr-cli/compare/v2.7.0..v2.8.0) (2021-08-23)
 ### Dependencies
