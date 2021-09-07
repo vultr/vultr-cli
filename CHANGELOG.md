@@ -1,4 +1,9 @@
 # Change Log
+## [v2.8.2](https://github.com/vultr/vultr-cli/compare/v2.8.1..v2.8.2) (2021-09-7)
+
+### Enhancements
+* Instances: change default value for notify flag [PR 185](https://github.com/vultr/vultr-cli/pull/185)
+* README: add example using boolean flag [PR 186](https://github.com/vultr/vultr-cli/pull/186)
 
 ## [v2.8.1](https://github.com/vultr/vultr-cli/compare/v2.8.0..v2.8.1) (2021-09-01)
 ### Dependencies
