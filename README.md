@@ -122,6 +122,10 @@ In order to use `vultr-cli` you will need to export your [Vultr API KEY](https:/
 ##### Create a DNS Domain
 `vultr-cli dns domain create --domain <domain-name> --ip <ip-address>`
 
+##### Utilizing a boolean flag
+You should use = when using a boolean flag.
+
+`vultr-cli instance create --region <region-id> --plan <plan-id> --os <os-id> --hostname <hostname> --notify=true`
 
 ##### Utilizing the config flag
 The config flag can be used to specify the vultr-cli.yaml file path when it's outside the default location. If the file has the `api-key` defined, the CLI will use the vultr-cli.yaml config, otherwise it will default to reading the environment variable for the api key.
