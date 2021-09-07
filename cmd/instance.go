@@ -71,7 +71,7 @@ func Instance() *cobra.Command {
 	instanceCreate.Flags().IntP("app", "a", 0, "application ID you want this instance to have")
 	instanceCreate.Flags().StringP("image", "", "", "(optional) image ID of the application that will be installed on the server.")
 	instanceCreate.Flags().StringP("userdata", "u", "", "plain text userdata you want to give this instance which the CLI will base64 encode")
-	instanceCreate.Flags().BoolP("notify", "n", true, "notify when instance has been created | true or false")
+	instanceCreate.Flags().BoolP("notify", "n", false, "notify when instance has been created | true or false")
 	instanceCreate.Flags().BoolP("ddos", "d", false, "enable ddos protection | true or false")
 	instanceCreate.Flags().StringP("reserved-ipv4", "", "", "ip address of the floating IP to use as the main IP for this instance")
 	instanceCreate.Flags().StringP("host", "", "", "The hostname to assign to this instance")
