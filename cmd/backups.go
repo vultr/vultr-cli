@@ -28,7 +28,7 @@ import (
 func Backups() *cobra.Command {
 	backupsCmd := &cobra.Command{
 		Use:     "backups",
-		Aliases: []string{"a"},
+		Aliases: []string{"b"},
 		Short:   "Display backups",
 	}
 
