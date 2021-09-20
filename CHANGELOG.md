@@ -1,5 +1,12 @@
 # Change Log
-## [v2.8.2](https://github.com/vultr/vultr-cli/compare/v2.8.1..v2.8.2) (2021-09-7)
+## [v2.8.3](https://github.com/vultr/vultr-cli/compare/v2.8.2..v2.8.3) (2021-09-20)
+### Dependencies
+* Bump github.com/spf13/viper from 1.8.1 to 1.9.0 [PR 189](https://github.com/vultr/vultr-cli/pull/189)
+
+### Bug Fixes
+* Backups: Fix typo in backups alias [PR 188](https://github.com/vultr/vultr-cli/pull/188). Thanks @rmorey for your contribution
+
+## [v2.8.2](https://github.com/vultr/vultr-cli/compare/v2.8.1..v2.8.2) (2021-09-07)
 ### Enhancements
 * Instances: change default value for notify flag [PR 185](https://github.com/vultr/vultr-cli/pull/185)
 * README: add example using boolean flag [PR 186](https://github.com/vultr/vultr-cli/pull/186)
