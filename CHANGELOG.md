@@ -1,4 +1,12 @@
 # Change Log
+## [v2.8.4](https://github.com/vultr/vultr-cli/compare/v2.8.3..v2.8.4) (2021-09-28)
+### Dependencies
+* Update GoVultr from 2.8.1 to 2.9.0 and update necessary fields [PR 192](https://github.com/vultr/vultr-cli/pull/192)
+
+### Enhancements
+* Snapshots: `COMPRESSED SIZE` has been added to printer output [PR 192](https://github.com/vultr/vultr-cli/pull/192)
+* Kubernetes: `COUNT` has changed to `NODE QUANTITY` and `PLAN ID` has changed to `PLAN` for kubernetes printer output [PR 192](https://github.com/vultr/vultr-cli/pull/192)
+
 ## [v2.8.3](https://github.com/vultr/vultr-cli/compare/v2.8.2..v2.8.3) (2021-09-20)
 ### Dependencies
 * Bump github.com/spf13/viper from 1.8.1 to 1.9.0 [PR 189](https://github.com/vultr/vultr-cli/pull/189)
