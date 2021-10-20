@@ -24,6 +24,7 @@ func Clusters(cluster []govultr.Cluster, meta *govultr.Meta) {
 			display(columns{"DATE CREATED", np.DateCreated})
 			display(columns{"DATE UPDATED", np.DateUpdated})
 			display(columns{"LABEL", np.Label})
+			display(columns{"TAG", np.Tag})
 			display(columns{"PLAN", np.Plan})
 			display(columns{"STATUS", np.Status})
 			display(columns{"NODE QUANTITY", np.NodeQuantity})
@@ -35,6 +36,7 @@ func Clusters(cluster []govultr.Cluster, meta *govultr.Meta) {
 				display(columns{"ID", "DATE CREATED", "LABEL", "STATUS"})
 				display(columns{n.ID, n.DateCreated, n.Label, n.Status})
 			}
+			display(columns{" "})
 		}
 
 		display(columns{"---------------------------"})
@@ -63,6 +65,7 @@ func Cluster(k *govultr.Cluster) {
 		display(columns{"DATE CREATED", np.DateCreated})
 		display(columns{"DATE UPDATED", np.DateUpdated})
 		display(columns{"LABEL", np.Label})
+		display(columns{"TAG", np.Tag})
 		display(columns{"PLAN", np.Plan})
 		display(columns{"STATUS", np.Status})
 		display(columns{"NODE QUANTITY", np.NodeQuantity})
@@ -74,6 +77,7 @@ func Cluster(k *govultr.Cluster) {
 			display(columns{"ID", "DATE CREATED", "LABEL", "STATUS"})
 			display(columns{n.ID, n.DateCreated, n.Label, n.Status})
 		}
+		display(columns{" "})
 	}
 
 	flush()
@@ -86,6 +90,7 @@ func NodePools(nodepool []govultr.NodePool, meta *govultr.Meta) {
 		display(columns{"DATE CREATED", np.DateCreated})
 		display(columns{"DATE UPDATED", np.DateUpdated})
 		display(columns{"LABEL", np.Label})
+		display(columns{"TAG", np.Tag})
 		display(columns{"PLAN", np.Plan})
 		display(columns{"STATUS", np.Status})
 		display(columns{"NODE QUANTITY", np.NodeQuantity})
@@ -109,6 +114,7 @@ func NodePool(np *govultr.NodePool) {
 	display(columns{"DATE CREATED", np.DateCreated})
 	display(columns{"DATE UPDATED", np.DateUpdated})
 	display(columns{"LABEL", np.Label})
+	display(columns{"TAG", np.Tag})
 	display(columns{"PLAN", np.Plan})
 	display(columns{"STATUS", np.Status})
 	display(columns{"NODE QUANTITY", np.NodeQuantity})

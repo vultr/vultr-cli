@@ -37,10 +37,10 @@ var (
 	createLong    = `Create kubernetes cluster on your Vultr account`
 	createExample = `
 	# Full Example
-	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.20.0+1" --node-pools="quantity:3,plan:vc2-1c-2gb,label:my-nodepool"	
+	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.20.0+1" --node-pools="quantity:3,plan:vc2-1c-2gb,label:my-nodepool,tag:my-tag"	
 	
 	# Shortened with alias commands
-	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.20.0+1" -n="quantity:3,plan:vc2-1c-2gb,label:my-nodepool"
+	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.20.0+1" -n="quantity:3,plan:vc2-1c-2gb,label:my-nodepool,tag:my-tag"
 	`
 
 	getLong    = `Get a single kubernetes cluster from your account`
@@ -204,7 +204,7 @@ func Kubernetes() *cobra.Command {
 	k8Create.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
 	k8Create.Flags().StringP("region", "r", "", "region you want your kubernetes cluster to be located in")
 	k8Create.Flags().StringP("version", "v", "", "the kubernetes version you want for your cluster")
-	k8Create.Flags().StringArrayP("node-pools", "n", []string{}, "a comma-separated, key-value pair list of node pools. At least one node pool is required. At least one node is required in node pool. Use / between each new node pool. E.g: `plan:vhf-8c-32gb,label:mynodepool,quantity:3/plan:vhf-8c-32gb,label:mynodepool2,quantity:3`")
+	k8Create.Flags().StringArrayP("node-pools", "n", []string{}, "a comma-separated, key-value pair list of node pools. At least one node pool is required. At least one node is required in node pool. Use / between each new node pool. E.g: `plan:vhf-8c-32gb,label:mynodepool,tag:my-tag,quantity:3/plan:vhf-8c-32gb,label:mynodepool2,quantity:3`")
 
 	k8Create.MarkFlagRequired("label")
 	k8Create.MarkFlagRequired("region")
@@ -228,6 +228,7 @@ func Kubernetes() *cobra.Command {
 
 	// Node Pools
 	npCreate.Flags().StringP("label", "l", "", "label you want for your node pool.")
+	npCreate.Flags().StringP("tag", "t", "", "tag you want for your node pool.")
 	npCreate.Flags().StringP("plan", "p", "", "the plan you want for your node pool.")
 	npCreate.Flags().IntP("quantity", "q", 1, "Number of nodes in your node pool. Note that at least one node is required for a node pool.")
 
@@ -239,7 +240,7 @@ func Kubernetes() *cobra.Command {
 	npList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	npUpdate.Flags().IntP("quantity", "q", 1, "Number of nodes in your node pool. Note that at least one node is required for a node pool.")
-	npUpdate.MarkFlagRequired("quantity")
+	npUpdate.Flags().StringP("tag", "t", "", "tag you want for your node pool.")
 
 	// Node Instance SubCommands
 	nodeCmd := &cobra.Command{
@@ -464,12 +465,14 @@ var npCreate = &cobra.Command{
 		id := args[0]
 		quantity, _ := cmd.Flags().GetInt("quantity")
 		label, _ := cmd.Flags().GetString("label")
+		tag, _ := cmd.Flags().GetString("tag")
 		plan, _ := cmd.Flags().GetString("plan")
 
 		options := &govultr.NodePoolReq{
 			NodeQuantity: quantity,
 			Label:        label,
 			Plan:         plan,
+			Tag:          tag,
 		}
 
 		np, err := client.Kubernetes.CreateNodePool(context.Background(), id, options)
@@ -498,9 +501,11 @@ var npUpdate = &cobra.Command{
 		id := args[0]
 		nodeID := args[1]
 		quantity, _ := cmd.Flags().GetInt("quantity")
+		tag, _ := cmd.Flags().GetString("tag")
 
 		options := &govultr.NodePoolReqUpdate{
 			NodeQuantity: quantity,
+			Tag:          tag,
 		}
 
 		np, err := client.Kubernetes.UpdateNodePool(context.Background(), id, nodeID, options)
@@ -649,14 +654,14 @@ func formatNodePools(nodePools []string) ([]govultr.NodePoolReq, error) {
 		np := govultr.NodePoolReq{}
 		node := strings.Split(r, ",")
 
-		if len(node) != 3 {
+		if len(node) != 3 && len(node) != 4 {
 			return nil, fmt.Errorf("unable to format node pool. each node pool must include label, quantity, and plan")
 		}
 
 		for _, f := range node {
 			npKeyVal := strings.Split(f, ":")
 
-			if len(npKeyVal) != 2 {
+			if len(npKeyVal) != 2 && len(npKeyVal) != 3 {
 				return nil, fmt.Errorf("invalid node pool format")
 			}
 
@@ -671,6 +676,8 @@ func formatNodePools(nodePools []string) ([]govultr.NodePoolReq, error) {
 				np.NodeQuantity = port
 			case field == "label":
 				np.Label = val
+			case field == "tag":
+				np.Tag = val
 			}
 		}
 
