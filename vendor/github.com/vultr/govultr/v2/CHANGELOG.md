@@ -2,6 +2,13 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v2.9.2](https://github.com/vultr/govultr/compare/v2.9.1..v2.9.2) (2021-10-20)
+### Change
+* Iso : Changed `client` field to be unexported [168](https://github.com/vultr/govultr/pull/168)
+* Snapshot : Changed `client` field to be unexported  [168](https://github.com/vultr/govultr/pull/168)
+* Plans : Changed `client` field to be unexported  [168](https://github.com/vultr/govultr/pull/168)
+* Regions : Changed `client` field to be unexported  [168](https://github.com/vultr/govultr/pull/168)
+
 ## [v2.9.1](https://github.com/vultr/govultr/compare/v2.9.0..v2.9.1) (2021-10-18)
 ### Enhancement
 * Kubernetes : Added `Tag` support for nodepools [164](https://github.com/vultr/govultr/pull/164)
