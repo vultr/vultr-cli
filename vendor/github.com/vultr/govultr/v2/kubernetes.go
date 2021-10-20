@@ -62,6 +62,7 @@ type NodePool struct {
 	Plan         string `json:"plan"`
 	Status       string `json:"status"`
 	NodeQuantity int    `json:"node_quantity"`
+	Tag          string `json:"tag"`
 	Nodes        []Node `json:"nodes"`
 }
 
@@ -96,11 +97,13 @@ type NodePoolReq struct {
 	NodeQuantity int    `json:"node_quantity"`
 	Label        string `json:"label"`
 	Plan         string `json:"plan"`
+	Tag          string `json:"tag"`
 }
 
 // NodePoolReqUpdate struct used to update a node pool
 type NodePoolReqUpdate struct {
-	NodeQuantity int `json:"node_quantity"`
+	NodeQuantity int    `json:"node_quantity,omitempty"`
+	Tag          string `json:"tag,omitempty"`
 }
 
 type vkeClustersBase struct {
