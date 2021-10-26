@@ -61,7 +61,7 @@ If you are to visit the `vultr-cli` [releases](https://github.com/vultr/vultr-cl
 
 You will need Go installed on your machine in order to work with the source (and make if you decide to pull the repo down).
 
-`go get -u github.com/vultr/vultr-cli`
+`go get -u github.com/vultr/vultr-cli/v2`
 
 Another way to build from source is to 
 
