@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
 // Backups  represents the application command
