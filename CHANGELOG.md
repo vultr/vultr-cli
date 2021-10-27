@@ -1,4 +1,9 @@
 # Change Log
+
+## [v2.9.0](https://github.com/vultr/vultr-cli/compare/v2.8.5..v2.9.0) (2021-10-27)
+### Bug Fixes
+* Allow `go get` and `go install` to work with `github.com/vultr/vultr-cli/v2` [PR 199](https://github.com/vultr/vultr-cli/pull/199)
+
 ## [v2.8.5](https://github.com/vultr/vultr-cli/compare/v2.8.4..v2.8.5) (2021-10-20)
 ### Dependencies
 * Update GoVultr from 2.9.0 to 2.9.1 and update necessary fields [PR 196](https://github.com/vultr/vultr-cli/pull/196)
