@@ -19,7 +19,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
 // Os represents the iso command

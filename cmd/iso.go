@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/vultr/govultr/v2"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 
 	"github.com/spf13/cobra"
 )

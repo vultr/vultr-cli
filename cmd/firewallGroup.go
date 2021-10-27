@@ -22,7 +22,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v2"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
 // FirewallGroup represents the firewall group commands
