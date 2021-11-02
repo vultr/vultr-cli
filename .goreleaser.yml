@@ -8,14 +8,9 @@ builds:
       - CGO_ENABLED=0
 
     binary: vultr-cli
-
-    asmflags:
-      - -D mysymbol
-      - all=-trimpath={{.Env.GOPATH}}
-
-    gcflags:
-      - all=-trimpath={{.Env.GOPATH}}
-      - ./dontoptimizeme=-N
+    
+    flags:
+      - -trimpath #removes all file system paths from the compiled executable
 
     goos:
       - linux
