@@ -138,7 +138,7 @@ var billingHistoryList = &cobra.Command{
 	Example: historyListExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		history, meta, err := client.Billing.ListHistory(context.TODO(), options)
+		history, meta, err := client.Billing.ListHistory(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting billing history : %v\n", err)
 			os.Exit(1)
@@ -156,7 +156,7 @@ var invoicesList = &cobra.Command{
 	Example: invoiceListExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		history, meta, err := client.Billing.ListInvoices(context.TODO(), options)
+		history, meta, err := client.Billing.ListInvoices(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting invoices : %v\n", err)
 			os.Exit(1)
@@ -181,7 +181,7 @@ var invoiceItemsList = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := strconv.Atoi(args[0])
 		options := getPaging(cmd)
-		items, meta, err := client.Billing.ListInvoiceItems(context.TODO(), id, options)
+		items, meta, err := client.Billing.ListInvoiceItems(context.Background(), id, options)
 		if err != nil {
 			fmt.Printf("error getting invoice items : %v\n", err)
 			os.Exit(1)
@@ -204,7 +204,7 @@ var invoiceGet = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		invoice, err := client.Billing.GetInvoice(context.TODO(), args[0])
+		invoice, err := client.Billing.GetInvoice(context.Background(), args[0])
 		if err != nil {
 			fmt.Printf("error getting invoice : %v\n", err)
 			os.Exit(1)
