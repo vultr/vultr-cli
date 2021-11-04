@@ -88,6 +88,8 @@ dockers:
     image_templates:
       - "vultr/vultr-cli:release"
       - "vultr/vultr-cli:{{ .Tag }}"
+    extra_files:
+      - scripts/entrypoint.sh
 
 release:
   github:
