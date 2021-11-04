@@ -2,6 +2,10 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v2.10.0](https://github.com/vultr/govultr/compare/v2.9.2..v2.10.0) (2021-11-03)
+### Enhancement
+* Billing : Added support for billing [178](https://github.com/vultr/govultr/pull/178)
+
 ## [v2.9.2](https://github.com/vultr/govultr/compare/v2.9.1..v2.9.2) (2021-10-20)
 ### Change
 * Iso : Changed `client` field to be unexported [168](https://github.com/vultr/govultr/pull/168)

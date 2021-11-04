@@ -14,6 +14,7 @@ Available Commands:
   apps           Display all available applications
   backups        display all available backups
   bare-metal     bare-metal is used to access bare metal server commands
+  billing        Display billing information
   block-storage  block storage commands
   dns            dns is used to access dns commands
   firewall       firewall is used to access firewall commands
