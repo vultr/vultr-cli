@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.10.0](https://github.com/vultr/vultr-cli/compare/v2.9.0..v2.10.0) (2021-11-04)
+### Enhancements
+* Billing: Add support for retrieving billing information [PR 203](https://github.com/vultr/vultr-cli/pull/203)
+
+### Dependencies
+* Update GoVultr from 2.9.2 to 2.10.0 [PR 203](https://github.com/vultr/vultr-cli/pull/203)
+
 ## [v2.9.0](https://github.com/vultr/vultr-cli/compare/v2.8.5..v2.9.0) (2021-10-27)
 ### Bug Fixes
 * Allow `go get` and `go install` to work with `github.com/vultr/vultr-cli/v2` [PR 199](https://github.com/vultr/vultr-cli/pull/199)
