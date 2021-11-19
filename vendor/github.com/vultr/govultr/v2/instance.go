@@ -15,14 +15,14 @@ const instancePath = "/v2/instances"
 type InstanceService interface {
 	Create(ctx context.Context, instanceReq *InstanceCreateReq) (*Instance, error)
 	Get(ctx context.Context, instanceID string) (*Instance, error)
-	Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) error
+	Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) (*Instance, error)
 	Delete(ctx context.Context, instanceID string) error
 	List(ctx context.Context, options *ListOptions) ([]Instance, *Meta, error)
 
 	Start(ctx context.Context, instanceID string) error
 	Halt(ctx context.Context, instanceID string) error
 	Reboot(ctx context.Context, instanceID string) error
-	Reinstall(ctx context.Context, instanceID string) error
+	Reinstall(ctx context.Context, instanceID string, reinstallReq *ReinstallReq) (*Instance, error)
 
 	MassStart(ctx context.Context, instanceList []string) error
 	MassHalt(ctx context.Context, instanceList []string) error
@@ -96,6 +96,7 @@ type Instance struct {
 	ImageID          string   `json:"image_id"`
 	FirewallGroupID  string   `json:"firewall_group_id"`
 	Features         []string `json:"features"`
+	Hostname         string   `json:"hostname"`
 }
 
 type instanceBase struct {
@@ -250,6 +251,11 @@ type InstanceUpdateReq struct {
 	FirewallGroupID      string   `json:"firewall_group_id,omitempty"`
 }
 
+// ReinstallReq struct used to allow changes during a reinstall
+type ReinstallReq struct {
+	Hostname string `json:"hostname,omitempty"`
+}
+
 // Create will create the server with the given parameters
 func (i *InstanceServiceHandler) Create(ctx context.Context, instanceReq *InstanceCreateReq) (*Instance, error) {
 	uri := fmt.Sprintf("%s", instancePath)
@@ -285,15 +291,20 @@ func (i *InstanceServiceHandler) Get(ctx context.Context, instanceID string) (*I
 }
 
 // Update will update the server with the given parameters
-func (i *InstanceServiceHandler) Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) error {
+func (i *InstanceServiceHandler) Update(ctx context.Context, instanceID string, instanceReq *InstanceUpdateReq) (*Instance, error) {
 	uri := fmt.Sprintf("%s/%s", instancePath, instanceID)
 
 	req, err := i.client.NewRequest(ctx, http.MethodPatch, uri, instanceReq)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return i.client.DoWithContext(ctx, req, nil)
+	instance := new(instanceBase)
+	if err := i.client.DoWithContext(ctx, req, instance); err != nil {
+		return nil, err
+	}
+
+	return instance.Instance, nil
 }
 
 // Delete an instance. All data will be permanently lost, and the IP address will be released
@@ -367,15 +378,19 @@ func (i *InstanceServiceHandler) Reboot(ctx context.Context, instanceID string) 
 }
 
 // Reinstall an instance.
-func (i *InstanceServiceHandler) Reinstall(ctx context.Context, instanceID string) error {
+func (i *InstanceServiceHandler) Reinstall(ctx context.Context, instanceID string, reinstallReq *ReinstallReq) (*Instance, error) {
 	uri := fmt.Sprintf("%s/%s/reinstall", instancePath, instanceID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, reinstallReq)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return i.client.DoWithContext(ctx, req, nil)
+	instance := new(instanceBase)
+	if err := i.client.DoWithContext(ctx, req, instance); err != nil {
+		return nil, err
+	}
+	return instance.Instance, nil
 }
 
 // MassStart will start a list of instances the machine is already running, it will be restarted.
