@@ -37,6 +37,8 @@ func Instance() *cobra.Command {
 
 	instanceCmd.AddCommand(instanceStart, instanceStop, instanceRestart, instanceReinstall, instanceTag, instanceDelete, instanceLabel, instanceBandwidth, instanceList, instanceInfo, updateFwgGroup, instanceRestore, instanceCreate)
 
+	instanceReinstall.Flags().StringP("host", "", "", "The hostname to assign to this instance")
+
 	instanceTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	instanceTag.MarkFlagRequired("tag")
 
@@ -287,10 +289,10 @@ var instanceReinstall = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		h, _ := cmd.Flags().GetString("hostname")
+		h, _ := cmd.Flags().GetString("host")
 
 		hostname := &govultr.ReinstallReq{}
-		if h == "" {
+		if h != "" {
 			hostname = &govultr.ReinstallReq{Hostname: h}
 		}
 
