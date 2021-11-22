@@ -1,5 +1,13 @@
 # Change Log
 
+## [v2.11.0](https://github.com/vultr/vultr-cli/compare/v2.10.0..v2.11.0) (2021-11-22)
+### Enhancements
+* DNS: Add support for getting a domains dns sec status [PR 211](https://github.com/vultr/vultr-cli/pull/211)
+* Instance : Support changing hostname on reinstall [PR 209](https://github.com/vultr/vultr-cli/pull/209) [PR 210](https://github.com/vultr/vultr-cli/pull/210)
+
+### Dependencies
+* Update GoVultr from 2.10.0 to 2.11.0 [PR 209](https://github.com/vultr/vultr-cli/pull/209)
+
 ## [v2.10.0](https://github.com/vultr/vultr-cli/compare/v2.9.0..v2.10.0) (2021-11-04)
 ### Enhancements
 * Billing: Add support for retrieving billing information [PR 203](https://github.com/vultr/vultr-cli/pull/203)
