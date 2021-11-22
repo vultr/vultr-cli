@@ -287,7 +287,14 @@ var instanceReinstall = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.Instance.Reinstall(context.Background(), id); err != nil {
+		h, _ := cmd.Flags().GetString("hostname")
+
+		hostname := &govultr.ReinstallReq{}
+		if h == "" {
+			hostname = &govultr.ReinstallReq{Hostname: h}
+		}
+
+		if _, err := client.Instance.Reinstall(context.Background(), id, hostname); err != nil {
 			fmt.Printf("error reinstalling instance : %v\n", err)
 			os.Exit(1)
 		}
@@ -313,7 +320,7 @@ var instanceTag = &cobra.Command{
 			Tag: tag,
 		}
 
-		if err := client.Instance.Update(context.Background(), id, options); err != nil {
+		if _, err := client.Instance.Update(context.Background(), id, options); err != nil {
 			fmt.Printf("error adding tag to instance : %v\n", err)
 			os.Exit(1)
 		}
@@ -361,7 +368,7 @@ var instanceLabel = &cobra.Command{
 			Label: label,
 		}
 
-		if err := client.Instance.Update(context.Background(), id, options); err != nil {
+		if _, err := client.Instance.Update(context.Background(), id, options); err != nil {
 			fmt.Printf("error labeling instance : %v\n", err)
 			os.Exit(1)
 		}
@@ -491,7 +498,7 @@ var updateFwgGroup = &cobra.Command{
 			FirewallGroupID: fwgID,
 		}
 
-		if err := client.Instance.Update(context.TODO(), id, options); err != nil {
+		if _, err := client.Instance.Update(context.TODO(), id, options); err != nil {
 			fmt.Printf("error setting firewall group : %v\n", err)
 			os.Exit(1)
 		}
@@ -518,7 +525,7 @@ var osUpdate = &cobra.Command{
 			OsID: osID,
 		}
 
-		if err := client.Instance.Update(context.TODO(), id, options); err != nil {
+		if _, err := client.Instance.Update(context.TODO(), id, options); err != nil {
 			fmt.Printf("error updating os : %v\n", err)
 			os.Exit(1)
 		}
@@ -568,7 +575,7 @@ var imageUpdate = &cobra.Command{
 			ImageID: imageID,
 		}
 
-		if err := client.Instance.Update(context.TODO(), id, options); err != nil {
+		if _, err := client.Instance.Update(context.TODO(), id, options); err != nil {
 			fmt.Printf("error updating application : %v\n", err)
 			os.Exit(1)
 		}
@@ -595,7 +602,7 @@ var appUpdate = &cobra.Command{
 			AppID: appID,
 		}
 
-		if err := client.Instance.Update(context.TODO(), id, options); err != nil {
+		if _, err := client.Instance.Update(context.TODO(), id, options); err != nil {
 			fmt.Printf("error updating application : %v\n", err)
 			os.Exit(1)
 		}
@@ -854,7 +861,7 @@ var upgradePlan = &cobra.Command{
 			Plan: plan,
 		}
 
-		if err := client.Instance.Update(context.TODO(), id, options); err != nil {
+		if _, err := client.Instance.Update(context.TODO(), id, options); err != nil {
 			fmt.Printf("error upgrading plans : %v\n", err)
 			os.Exit(1)
 		}
@@ -1137,7 +1144,7 @@ var setUserData = &cobra.Command{
 			UserData: base64.StdEncoding.EncodeToString(rawData),
 		}
 
-		if err = client.Instance.Update(context.TODO(), args[0], options); err != nil {
+		if _, err := client.Instance.Update(context.TODO(), args[0], options); err != nil {
 			fmt.Printf("error setting user-data : %v\n", err)
 			os.Exit(1)
 		}
