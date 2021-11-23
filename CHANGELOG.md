@@ -1,6 +1,6 @@
 # Change Log
 
-## [v2.11.0](https://github.com/vultr/vultr-cli/compare/v2.10.0..v2.11.0) (2021-11-22)
+## [v2.11.0](https://github.com/vultr/vultr-cli/compare/v2.10.0..v2.11.0) (2021-11-23)
 ### Enhancements
 * DNS: Add support for getting a domains dns sec status [PR 211](https://github.com/vultr/vultr-cli/pull/211)
 * Instance : Support changing hostname on reinstall [PR 209](https://github.com/vultr/vultr-cli/pull/209) [PR 210](https://github.com/vultr/vultr-cli/pull/210)
