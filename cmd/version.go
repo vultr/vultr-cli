@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	version = "v2.11.0"
+	version = "v2.11.1"
 )
 
 // versionCmd represents the version command
