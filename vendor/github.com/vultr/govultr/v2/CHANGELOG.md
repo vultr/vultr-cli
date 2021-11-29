@@ -2,6 +2,10 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v2.11.1](https://github.com/vultr/govultr/compare/v2.11.0..v2.11.1) (2021-11-26)
+### Bug fixes
+* LoadBalancers : Fixed SSL struct json params to the proper API fields [189](https://github.com/vultr/govultr/pull/189)
+
 ## [v2.11.0](https://github.com/vultr/govultr/compare/v2.10.0..v2.11.0) (2021-11-18)
 ### Breaking Changes
 * Instances : Update call will now return `*Instance` in addition to `error` [185](https://github.com/vultr/govultr/pull/185)
