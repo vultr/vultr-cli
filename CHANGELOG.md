@@ -5,7 +5,7 @@
 * Bump github.com/vultr/govultr/v2 from 2.11.0 to 2.11.1 [PR 213](https://github.com/vultr/vultr-cli/pull/213)
 
 ### Bug Fixes
-* Load Balancers : allow SSL certificates to be passed in on Create and Update [PR 213](https://github.com/vultr/vultr-cli/pull/213)
+* Load Balancers : Allow SSL certificates to be passed in on Create and Update [PR 213](https://github.com/vultr/vultr-cli/pull/213)
 
 ## [v2.11.0](https://github.com/vultr/vultr-cli/compare/v2.10.0..v2.11.0) (2021-11-23)
 ### Enhancements
