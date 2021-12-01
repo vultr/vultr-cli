@@ -1,6 +1,6 @@
 # Change Log
 
-## [v2.11.1](https://github.com/vultr/vultr-cli/compare/v2.11.1..v2.11.2) (2021-12-01)
+## [v2.11.2](https://github.com/vultr/vultr-cli/compare/v2.11.1..v2.11.2) (2021-12-01)
 ### Dependencies
 * Update GoVultr from 2.11.1 to 2.12.0 [PR 215](https://github.com/vultr/vultr-cli/pull/215)
 
