@@ -29,7 +29,7 @@ type BareMetalPlan struct {
 	Disk        int      `json:"disk"`
 	DiskCount   int      `json:"disk_count"`
 	Bandwidth   int      `json:"bandwidth"`
-	MonthlyCost int      `json:"monthly_cost"`
+	MonthlyCost float32  `json:"monthly_cost"`
 	Type        string   `json:"type"`
 	Locations   []string `json:"locations"`
 }
@@ -42,7 +42,7 @@ type Plan struct {
 	Disk        int      `json:"disk"`
 	DiskCount   int      `json:"disk_count"`
 	Bandwidth   int      `json:"bandwidth"`
-	MonthlyCost int      `json:"monthly_cost"`
+	MonthlyCost float32  `json:"monthly_cost"`
 	Type        string   `json:"type"`
 	Locations   []string `json:"locations"`
 }
