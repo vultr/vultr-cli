@@ -51,6 +51,7 @@ There are three ways to install `vultr-cli`:
 3. Package Manager
   - Arch Linux
   - Brew
+  - OpenBSD (-current)
   - Snap (Coming soon)
   - Chocolatey (Coming soon)
 4. [Docker Hub](https://hub.docker.com/repository/docker/vultr/vultr-cli)
@@ -100,6 +101,12 @@ Then install the formula
 
 ```sh 
 brew install vultr-cli
+```
+
+### Installing on OpenBSD (-current)
+
+```sh
+pkg_add vultr-cli
 ```
 
 ## Using Vultr-cli
