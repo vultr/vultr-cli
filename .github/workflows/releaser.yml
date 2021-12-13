@@ -17,7 +17,7 @@ jobs:
       - name: Check Message
         id: check-msg
         run: |
-          pattern="^Release v[0-9].[0-9].[0-9] #(minor|major|patch)$"
+          pattern="^Release v[0-9]+.[0-9]+.[0-9]+ #(minor|major|patch)$"
           if [[ "${{ github.event.head_commit.message }}" =~ ${pattern} ]]; then
               echo ::set-output name=match::true
           fi
