@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.11.3](https://github.com/vultr/vultr-cli/compare/v2.11.2..v2.11.3) (2021-12-13)
+### Dependencies
+* Bump github.com/spf13/viper from 1.9.0 to 1.10.0 [PR 219](https://github.com/vultr/vultr-cli/pull/219)
+
+### Enhancements
+* Add OpenBSD install instructions [PR 218](https://github.com/vultr/vultr-cli/pull/218)
+
 ## [v2.11.2](https://github.com/vultr/vultr-cli/compare/v2.11.1..v2.11.2) (2021-12-01)
 ### Dependencies
 * Update GoVultr from 2.11.1 to 2.12.0 [PR 215](https://github.com/vultr/vultr-cli/pull/215)
