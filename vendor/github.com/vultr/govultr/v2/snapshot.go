@@ -43,7 +43,8 @@ type SnapshotReq struct {
 
 // SnapshotURLReq struct is used to create snapshots from a URL.
 type SnapshotURLReq struct {
-	URL string `json:"url"`
+	URL         string `json:"url"`
+	Description string `json:"description,omitempty"`
 }
 
 type snapshotsBase struct {
