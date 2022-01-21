@@ -7,7 +7,10 @@
 * Bump github.com/spf13/cobra from 1.2.1 to 1.3.0 [PR 223](https://github.com/vultr/vultr-cli/pull/223)
 
 ### Enhancements
-* Return b64 script when getting script by id [PR 229](https://github.com/vultr/vultr-cli/pull/229) - Note: startup get command will display data vertically now instead of horizontal
+* Script : Return b64 script when getting script by id [PR 229](https://github.com/vultr/vultr-cli/pull/229)
+
+### Breaking Changes
+* Script : get command will display data vertically now instead of horizontal [PR 229](https://github.com/vultr/vultr-cli/pull/229) 
 
 ### Bug Fixes
 * Firewalls : change source from int to string [PR 228](https://github.com/vultr/vultr-cli/pull/228)
