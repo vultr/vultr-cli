@@ -1,5 +1,17 @@
 # Change Log
 
+## [v2.12.0](https://github.com/vultr/vultr-cli/compare/v2.11.3..v2.12.0) (2022-01-21)
+### Dependencies
+* Bump github.com/vultr/govultr/v2 from 2.12.0 to 2.14.0 [PR 230](https://github.com/vultr/vultr-cli/pull/230)
+* Bump github.com/spf13/viper from 1.10.0 to 1.10.1 [PR 224](https://github.com/vultr/vultr-cli/pull/224)
+* Bump github.com/spf13/cobra from 1.2.1 to 1.3.0 [PR 223](https://github.com/vultr/vultr-cli/pull/223)
+
+### Enhancements
+* Return b64 script when getting script by id [PR 229](https://github.com/vultr/vultr-cli/pull/229) - Note: startup get command will display data vertically now instead of horizontal
+
+### Bug Fixes
+* Firewalls : change source from int to string [PR 228](https://github.com/vultr/vultr-cli/pull/228)
+
 ## [v2.11.3](https://github.com/vultr/vultr-cli/compare/v2.11.2..v2.11.3) (2021-12-13)
 ### Dependencies
 * Bump github.com/spf13/viper from 1.9.0 to 1.10.0 [PR 219](https://github.com/vultr/vultr-cli/pull/219)
