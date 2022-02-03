@@ -348,8 +348,8 @@ github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/subosito/gotenv v1.2.0 h1:Slr1R9HxAlEKefgq5jn9U+DnETlIUa6HfgEzj0g5d7s=
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
 github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926/go.mod h1:9ESjWnEqriFuLhtthL60Sar/7RFoluCcXsuvEwTV5KM=
-github.com/vultr/govultr/v2 v2.14.0 h1:A1iThmqkZwn4PRwBbnDmrgDzGdEyiQmbVtR9u3zA3ZU=
-github.com/vultr/govultr/v2 v2.14.0/go.mod h1:JjUljQdSZx+MELCAJvZ/JH32bJotmflnsyS0NOjb8Jg=
+github.com/vultr/govultr/v2 v2.14.1 h1:Z4nd9mXNQ5wd63aw0MZOalFeTkJ8L6Sed3PTqagp4TA=
+github.com/vultr/govultr/v2 v2.14.1/go.mod h1:JjUljQdSZx+MELCAJvZ/JH32bJotmflnsyS0NOjb8Jg=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
