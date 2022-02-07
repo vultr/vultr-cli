@@ -1,6 +1,6 @@
 # Change Log
 
-## [v2.12.1](https://github.com/vultr/vultr-cli/compare/v2.11.3..v2.12.0) (2022-01-21)
+## [v2.12.1](https://github.com/vultr/vultr-cli/compare/v2.12.0..v2.12.1) (2022-02-07)
 ### Dependencies
 * Bump github.com/vultr/govultr/v2 from 2.14.0 to 2.14.1 [PR 232](https://github.com/vultr/vultr-cli/pull/232)
 
