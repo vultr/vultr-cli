@@ -1,5 +1,12 @@
 # Change Log
 
+## [v2.12.1](https://github.com/vultr/vultr-cli/compare/v2.12.0..v2.12.1) (2022-02-07)
+### Dependencies
+* Bump github.com/vultr/govultr/v2 from 2.14.0 to 2.14.1 [PR 232](https://github.com/vultr/vultr-cli/pull/232)
+
+### Enhancements
+* Firewall Rule : Add ip type, source and subnet size to firewall rule printer [PR 234](https://github.com/vultr/vultr-cli/pull/234)
+
 ## [v2.12.0](https://github.com/vultr/vultr-cli/compare/v2.11.3..v2.12.0) (2022-01-21)
 ### Dependencies
 * Bump github.com/vultr/govultr/v2 from 2.12.0 to 2.14.0 [PR 230](https://github.com/vultr/vultr-cli/pull/230)
