@@ -436,7 +436,7 @@ func (i *InstanceServiceHandler) MassReboot(ctx context.Context, instanceList []
 func (i *InstanceServiceHandler) Restore(ctx context.Context, instanceID string, restoreReq *RestoreReq) error {
 	uri := fmt.Sprintf("%s/%s/restore", instancePath, instanceID)
 
-	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, nil)
+	req, err := i.client.NewRequest(ctx, http.MethodPost, uri, restoreReq)
 	if err != nil {
 		return err
 	}

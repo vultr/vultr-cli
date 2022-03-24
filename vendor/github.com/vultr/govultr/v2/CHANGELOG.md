@@ -2,6 +2,10 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v2.14.2](https://github.com/vultr/govultr/compare/v2.14.1..v2.14.2) (2022-03-23)
+### Bug Fix
+* Instances : restore support requestBody [206](https://github.com/vultr/govultr/pull/206) Thanks @andrake81
+
 ## [v2.14.1](https://github.com/vultr/govultr/compare/v2.14.0..v2.14.1) (2022-02-02)
 ### Enhancement
 * Improved retry error response [204](https://github.com/vultr/govultr/pull/204)
