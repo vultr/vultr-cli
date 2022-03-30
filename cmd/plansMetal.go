@@ -43,7 +43,7 @@ var (
 	`
 )
 
-// Plans represents the meal sub command
+// PlansMetal represents the meal sub command
 func PlansMetal() *cobra.Command {
 	planMetalCmd := &cobra.Command{
 		Use:     "metal",
