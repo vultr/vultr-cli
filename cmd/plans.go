@@ -32,6 +32,7 @@ func Plans() *cobra.Command {
 	}
 
 	planCmd.AddCommand(planList)
+	planCmd.AddCommand(PlansMetal())
 
 	planList.Flags().StringP("type", "t", "", "(optional) The type of plans to return. Possible values: 'bare-metal', 'vc2', 'vdc2', 'ssd', 'dedicated'. Defaults to all VPS plans.")
 
