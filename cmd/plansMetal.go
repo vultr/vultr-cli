@@ -24,13 +24,13 @@ import (
 )
 
 var (
-	plansMetalLong = `Get commands available to metal`
+	plansMetalLong    = `Get commands available to metal`
 	plansMetalExample = `
 	#Full example
 	vultr-cli plans metal
 	`
 
-	plansMetalListLong = `Get all Vultr bare metal plans`
+	plansMetalListLong    = `Get all Vultr bare metal plans`
 	plansMetalListExample = `
 	#Full example
 	vultr-cli plans metal list

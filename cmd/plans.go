@@ -24,13 +24,13 @@ import (
 )
 
 var (
-	plansLong = `Get commands available to plans`
+	plansLong    = `Get commands available to plans`
 	plansExample = `
 	#Full example
 	vultr-cli plans
 	`
 
-	plansListLong = `Get all Vultr plans`
+	plansListLong    = `Get all Vultr plans`
 	plansListExample = `
 	#Full example
 	vultr-cli plans list
@@ -49,7 +49,7 @@ func Plans() *cobra.Command {
 		Use:     "plans",
 		Short:   "get information about Vultr plans",
 		Aliases: []string{"p"},
-		Long:	 plansLong,
+		Long:    plansLong,
 		Example: plansExample,
 	}
 
@@ -68,7 +68,7 @@ var planList = &cobra.Command{
 	Use:     "list",
 	Short:   "list plans",
 	Aliases: []string{"l"},
-	Long:	 plansListLong,
+	Long:    plansListLong,
 	Example: plansListExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		planType, _ := cmd.Flags().GetString("type")
