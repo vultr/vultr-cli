@@ -23,12 +23,34 @@ import (
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
+var (
+	plansLong = `Get commands available to plans`
+	plansExample = `
+	#Full example
+	vultr-cli plans
+	`
+
+	plansListLong = `Get all Vultr plans`
+	plansListExample = `
+	#Full example
+	vultr-cli plans list
+
+	#Full example with paging
+	vultr-cli plans list --type=vc2 --per-page=5 --cursor="bmV4dF9fdmMyLTJjLTRnYg=="
+	
+	#Shortened with aliased commands
+	vultr-cli p l
+	`
+)
+
 // Plans represents the plans command
 func Plans() *cobra.Command {
 	planCmd := &cobra.Command{
 		Use:     "plans",
 		Short:   "get information about Vultr plans",
 		Aliases: []string{"p"},
+		Long:	 plansLong,
+		Example: plansExample,
 	}
 
 	planCmd.AddCommand(planList)
@@ -46,6 +68,8 @@ var planList = &cobra.Command{
 	Use:     "list",
 	Short:   "list plans",
 	Aliases: []string{"l"},
+	Long:	 plansListLong,
+	Example: plansListExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		planType, _ := cmd.Flags().GetString("type")
 		options := getPaging(cmd)
