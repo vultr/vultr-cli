@@ -28,6 +28,9 @@ var (
 	plansMetalExample = `
 	#Full example
 	vultr-cli plans metal
+
+	#Shortened with aliased commands
+	vultr-cli p m
 	`
 
 	plansMetalListLong    = `Get all Vultr bare metal plans`
@@ -47,7 +50,7 @@ var (
 func PlansMetal() *cobra.Command {
 	planMetalCmd := &cobra.Command{
 		Use:     "metal",
-		Aliases: []string{"m"},
+		Aliases: []string{"m", "metals"},
 		Short:   "metal is used to access bare metal commands",
 		Long:    plansMetalLong,
 		Example: plansMetalExample,

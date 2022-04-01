@@ -28,6 +28,15 @@ var (
 	plansExample = `
 	#Full example
 	vultr-cli plans
+
+	#Shortened with aliased plans commands
+	vultr-cli p
+
+	#Get plans metal example
+	vultr-cli plans metal
+
+	#Shortened with aliased plans metal commands
+	vultr-cli p m
 	`
 
 	plansListLong    = `Get all Vultr plans`
@@ -48,7 +57,7 @@ func Plans() *cobra.Command {
 	planCmd := &cobra.Command{
 		Use:     "plans",
 		Short:   "get information about Vultr plans",
-		Aliases: []string{"p"},
+		Aliases: []string{"p", "plan"},
 		Long:    plansLong,
 		Example: plansExample,
 	}
@@ -56,7 +65,7 @@ func Plans() *cobra.Command {
 	planCmd.AddCommand(planList)
 	planCmd.AddCommand(PlansMetal())
 
-	planList.Flags().StringP("type", "t", "", "(optional) The type of plans to return. Possible values: 'bare-metal', 'vc2', 'vdc2', 'ssd', 'dedicated'. Defaults to all VPS plans.")
+	planList.Flags().StringP("type", "t", "", "(optional) The type of plans to return. Possible values: 'bare-metal', 'vdc', 'vhp', 'vhp', 'vhf', 'vc2', 'voc', 'voc-g', 'voc-s', 'voc-c', 'voc-m'. Defaults to all VPS plans.")
 
 	planList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	planList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
