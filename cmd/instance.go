@@ -27,6 +27,32 @@ import (
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
+var (
+	instanceLong = ``
+	instanceExample = ``
+	instanceCreateLong = `Create a new instance with specified plan, region and os (from image, snapshot, app or ISO)`
+	instanceCreateExample = `
+	# Full example
+	vultr-cli instance create --region="ewr" --plan="vc2-1c-1gb" --os=244
+	
+	You must pass one of these in addition to the required --region and --plan flags:
+		--os 
+		--snapshot_id
+		--iso
+		--app
+
+	# Shortened example with aliases
+	vultr-cli instance c -r="ewr" -p="vc2-1c-1gb" -o=244
+
+	# Full example with attached networks
+	vultr-cli instance create --region="ewr" --plan="vc2-1c-1gb" --os=244 --network="08422775-5be0-4371-afba-64b03f9ad22d,13a45caa-9c06-4b5d-8f76-f5281ab172b7" 
+
+	# Full example with assigned ssh keys
+	vultr-cli instance create --region ewr --plan vc2-1c-1gb --os 244 --ssh-keys="a14b6539-5583-41e8-a035-c07a76897f2b,be624232-56c7-4d5c-bf87-9bdaae7a1fbd"
+	`
+)
+	
+
 // Instance represents the instance command
 func Instance() *cobra.Command {
 	instanceCmd := &cobra.Command{
@@ -1022,8 +1048,9 @@ var setIpv6 = &cobra.Command{
 var instanceCreate = &cobra.Command{
 	Use:   "create",
 	Short: "Create an instance",
-	Long:  ``,
 	Aliases: []string{"c"},
+	Long:  instanceCreateLong,
+	Example: instanceCreateExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		region, _ := cmd.Flags().GetString("region")
 		plan, _ := cmd.Flags().GetString("plan")
