@@ -28,6 +28,9 @@ var (
 	plansMetalExample = `
 	#Full example
 	vultr-cli plans metal
+
+	#Shortened with aliased commands
+	vultr-cli p m
 	`
 
 	plansMetalListLong    = `Get all Vultr bare metal plans`
