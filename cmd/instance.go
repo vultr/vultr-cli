@@ -28,8 +28,11 @@ import (
 )
 
 var (
-	instanceLong = ``
-	instanceExample = ``
+	instanceLong = `Get commands available to instance`
+	instanceExample = `
+	# Full example
+	vultr-cli instance
+	`
 	instanceCreateLong = `Create a new instance with specified plan, region and os (from image, snapshot, app or ISO)`
 	instanceCreateExample = `
 	# Full example
@@ -58,7 +61,8 @@ func Instance() *cobra.Command {
 	instanceCmd := &cobra.Command{
 		Use:   "instance",
 		Short: "commands to interact with instances on vultr",
-		Long:  ``,
+		Long:  instanceLong,
+		Example: instanceExample,
 	}
 
 	instanceCmd.AddCommand(instanceStart, instanceStop, instanceRestart, instanceReinstall, instanceTag, instanceDelete, instanceLabel, instanceBandwidth, instanceList, instanceInfo, updateFwgGroup, instanceRestore, instanceCreate)
