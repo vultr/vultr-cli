@@ -27,12 +27,41 @@ import (
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
+var (
+	instanceLong    = `Get commands available to instance`
+	instanceExample = `
+	# Full example
+	vultr-cli instance
+	`
+	instanceCreateLong    = `Create a new instance with specified plan, region and os (from image, snapshot, app or ISO)`
+	instanceCreateExample = `
+	# Full example
+	vultr-cli instance create --region="ewr" --plan="vc2-1c-1gb" --os=244
+	
+	You must pass one of these in addition to the required --region and --plan flags:
+		--os 
+		--snapshot_id
+		--iso
+		--app
+
+	# Shortened example with aliases
+	vultr-cli instance c -r="ewr" -p="vc2-1c-1gb" -o=244
+
+	# Full example with attached networks
+	vultr-cli instance create --region="ewr" --plan="vc2-1c-1gb" --os=244 --network="08422775-5be0-4371-afba-64b03f9ad22d,13a45caa-9c06-4b5d-8f76-f5281ab172b7" 
+
+	# Full example with assigned ssh keys
+	vultr-cli instance create --region ewr --plan vc2-1c-1gb --os 244 --ssh-keys="a14b6539-5583-41e8-a035-c07a76897f2b,be624232-56c7-4d5c-bf87-9bdaae7a1fbd"
+	`
+)
+
 // Instance represents the instance command
 func Instance() *cobra.Command {
 	instanceCmd := &cobra.Command{
-		Use:   "instance",
-		Short: "commands to interact with instances on vultr",
-		Long:  ``,
+		Use:     "instance",
+		Short:   "commands to interact with instances on vultr",
+		Long:    instanceLong,
+		Example: instanceExample,
 	}
 
 	instanceCmd.AddCommand(instanceStart, instanceStop, instanceRestart, instanceReinstall, instanceTag, instanceDelete, instanceLabel, instanceBandwidth, instanceList, instanceInfo, updateFwgGroup, instanceRestore, instanceCreate)
@@ -66,9 +95,9 @@ func Instance() *cobra.Command {
 	instanceCreate.Flags().StringP("script-id", "", "", "script id of the startup script")
 	instanceCreate.Flags().BoolP("ipv6", "", false, "enable ipv6 | true or false")
 	instanceCreate.Flags().BoolP("private-network", "", false, "enable private network | true or false")
-	instanceCreate.Flags().StringArrayP("network", "", []string{}, "network IDs you want to assign to the instance")
+	instanceCreate.Flags().StringSliceP("network", "", []string{}, "network IDs you want to assign to the instance")
 	instanceCreate.Flags().StringP("label", "l", "", "label you want to give this instance")
-	instanceCreate.Flags().StringArrayP("ssh-keys", "s", []string{}, "ssh keys you want to assign to the instance")
+	instanceCreate.Flags().StringSliceP("ssh-keys", "s", []string{}, "ssh keys you want to assign to the instance")
 	instanceCreate.Flags().BoolP("auto-backup", "b", false, "enable auto backups | true or false")
 	instanceCreate.Flags().IntP("app", "a", 0, "application ID you want this instance to have")
 	instanceCreate.Flags().StringP("image", "", "", "(optional) image ID of the application that will be installed on the server.")
@@ -1020,9 +1049,11 @@ var setIpv6 = &cobra.Command{
 }
 
 var instanceCreate = &cobra.Command{
-	Use:   "create",
-	Short: "Create an instance",
-	Long:  ``,
+	Use:     "create",
+	Short:   "Create an instance",
+	Aliases: []string{"c"},
+	Long:    instanceCreateLong,
+	Example: instanceCreateExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		region, _ := cmd.Flags().GetString("region")
 		plan, _ := cmd.Flags().GetString("plan")
@@ -1035,9 +1066,9 @@ var instanceCreate = &cobra.Command{
 		script, _ := cmd.Flags().GetString("script-id")
 		ipv6, _ := cmd.Flags().GetBool("ipv6")
 		privateNetwork, _ := cmd.Flags().GetBool("private-network")
-		networks, _ := cmd.Flags().GetStringArray("network")
+		networks, _ := cmd.Flags().GetStringSlice("network")
 		label, _ := cmd.Flags().GetString("label")
-		ssh, _ := cmd.Flags().GetStringArray("ssh-keys")
+		ssh, _ := cmd.Flags().GetStringSlice("ssh-keys")
 		backup, _ := cmd.Flags().GetBool("auto-backup")
 		app, _ := cmd.Flags().GetInt("app")
 		image, _ := cmd.Flags().GetString("image")
