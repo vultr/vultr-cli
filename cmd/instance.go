@@ -28,12 +28,12 @@ import (
 )
 
 var (
-	instanceLong = `Get commands available to instance`
+	instanceLong    = `Get commands available to instance`
 	instanceExample = `
 	# Full example
 	vultr-cli instance
 	`
-	instanceCreateLong = `Create a new instance with specified plan, region and os (from image, snapshot, app or ISO)`
+	instanceCreateLong    = `Create a new instance with specified plan, region and os (from image, snapshot, app or ISO)`
 	instanceCreateExample = `
 	# Full example
 	vultr-cli instance create --region="ewr" --plan="vc2-1c-1gb" --os=244
@@ -54,14 +54,13 @@ var (
 	vultr-cli instance create --region ewr --plan vc2-1c-1gb --os 244 --ssh-keys="a14b6539-5583-41e8-a035-c07a76897f2b,be624232-56c7-4d5c-bf87-9bdaae7a1fbd"
 	`
 )
-	
 
 // Instance represents the instance command
 func Instance() *cobra.Command {
 	instanceCmd := &cobra.Command{
-		Use:   "instance",
-		Short: "commands to interact with instances on vultr",
-		Long:  instanceLong,
+		Use:     "instance",
+		Short:   "commands to interact with instances on vultr",
+		Long:    instanceLong,
 		Example: instanceExample,
 	}
 
@@ -1050,10 +1049,10 @@ var setIpv6 = &cobra.Command{
 }
 
 var instanceCreate = &cobra.Command{
-	Use:   "create",
-	Short: "Create an instance",
+	Use:     "create",
+	Short:   "Create an instance",
 	Aliases: []string{"c"},
-	Long:  instanceCreateLong,
+	Long:    instanceCreateLong,
 	Example: instanceCreateExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		region, _ := cmd.Flags().GetString("region")
