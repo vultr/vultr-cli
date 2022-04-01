@@ -1023,6 +1023,7 @@ var instanceCreate = &cobra.Command{
 	Use:   "create",
 	Short: "Create an instance",
 	Long:  ``,
+	Aliases: []string{"c"},
 	Run: func(cmd *cobra.Command, args []string) {
 		region, _ := cmd.Flags().GetString("region")
 		plan, _ := cmd.Flags().GetString("plan")
