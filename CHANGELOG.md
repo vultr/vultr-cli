@@ -1,5 +1,17 @@
 # Change Log
 
+## [v2.12.2](https://github.com/vultr/vultr-cli/compare/v2.12.1..v2.12.2) (2022-04-01)
+### Enhancements
+* Instances : fix csv flags `ssh-keys` and `network` [PR 244](https://github.com/vultr/vultr-cli/pull/244) @optik-aper
+* Plans + Regions: Add new plan types in examples [PR 241](https://github.com/vultr/vultr-cli/pull/241/) @AFatalErrror
+* Plans Metal : new command to retrieve just bare metal plans [PR 240](https://github.com/vultr/vultr-cli/pull/240) @optik-aper
+* Readme : fix command example [PR 239](https://github.com/vultr/vultr-cli/pull/239) @travispaul
+
+### Dependencies
+* Bump github.com/vultr/govultr/v2 from 2.14.1 to 2.14.2 [PR 238](https://github.com/vultr/vultr-cli/pull/238)
+* Bump github.com/spf13/cobra from 1.3.0 to 1.4.0 [PR 236](https://github.com/vultr/vultr-cli/pull/236)
+* Bump builds from go 1.16 -> 1.17 [PR 243](https://github.com/vultr/vultr-cli/pull/243)
+
 ## [v2.12.1](https://github.com/vultr/vultr-cli/compare/v2.12.0..v2.12.1) (2022-02-07)
 ### Dependencies
 * Bump github.com/vultr/govultr/v2 from 2.14.0 to 2.14.1 [PR 232](https://github.com/vultr/vultr-cli/pull/232)
