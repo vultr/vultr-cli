@@ -50,7 +50,7 @@ var (
 func PlansMetal() *cobra.Command {
 	planMetalCmd := &cobra.Command{
 		Use:     "metal",
-		Aliases: []string{"m"},
+		Aliases: []string{"m", "metals"},
 		Short:   "metal is used to access bare metal commands",
 		Long:    plansMetalLong,
 		Example: plansMetalExample,
