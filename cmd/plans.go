@@ -28,6 +28,15 @@ var (
 	plansExample = `
 	#Full example
 	vultr-cli plans
+
+	#Shortened with aliased plans commands
+	vultr-cli p
+
+	#Get plans metal example
+	vultr-cli plans metal
+
+	#Shortened with aliased plans metal commands
+	vultr-cli p m
 	`
 
 	plansListLong    = `Get all Vultr plans`
@@ -48,7 +57,7 @@ func Plans() *cobra.Command {
 	planCmd := &cobra.Command{
 		Use:     "plans",
 		Short:   "get information about Vultr plans",
-		Aliases: []string{"p"},
+		Aliases: []string{"p", "plan"},
 		Long:    plansLong,
 		Example: plansExample,
 	}
