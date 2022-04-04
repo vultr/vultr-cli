@@ -103,6 +103,12 @@ Then install the formula
 brew install vultr-cli
 ```
 
+### Installing on Fedora
+
+```sh
+dnf install vultr-cli
+```
+
 ### Installing on OpenBSD (-current)
 
 ```sh
