@@ -25,6 +25,86 @@ import (
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
+var (
+	attachBlockStorageLong    = `Attaches a block storage resource to an specified instance`
+	attachBlockStorageExample = `
+	#Full example
+	vultr-cli block-storage attach <blockStorageID> --instance <instanceID>
+
+	#Shortened with aliased commands
+	vultr-cli bs a <blockStorageID> -i <instanceID>
+	`
+
+	createBlockStorageLong    = `Create a new block storage resource in a specified region`
+	createBlockStorageExample = `
+	#Full example
+	vultr-cli block-storage create --region <regionID> --size <sizeGB>
+
+	#Full example with block_type
+	vultr-cli block-storage create --region <regionID> --size <sizeGB> --block_type <blockType>
+	
+	#Shortened with aliased commands
+	vultr-cli bs c -r <regionID> -s <sizeGB>
+
+	#Shortened with aliased commands and block_type
+	vultr-cli bs c -r <regionID> -s <sizeGB> -b <blockType>
+	`
+
+	deleteBlockStorageLong    = `Delete a block storage resource`
+	deleteBlockStorageExample = `
+	#Full example
+	vultr-cli block-storage delete <blockStorageID>
+	
+	#Shortened with aliased commands
+	vultr-cli bs d <blockStorageID>
+	`
+
+	detachBlockStorageLong    = `Detatch a block storage resource from an instance`
+	detachBlockStorageExample = `
+	#Full example
+	vultr-cli block-storage detach <blockStorageID>
+	
+	#Shortened with aliased commands
+	vultr-cli bs detach <blockStorageID>
+	`
+
+	labelBlockStorageLong    = `Set a label for a block storage resource`
+	labelBlockStorageExample = `
+	#Full example
+	vultr-cli block-storage label <blockStorageID> --label "Example Label"
+	
+	#Shortened with aliased commands
+	vultr-cli bs label <blockStorageID> -l "Example Label"
+	`
+
+	listBlockStorageLong    = `Retrieves a list of active block storage resources`
+	listBlockStorageExample = `
+	#Full example
+	vultr-cli block-storage list
+	
+	#Shortened with aliased commands
+	vultr-cli bs l
+	`
+
+	getBlockStorageLong    = `Retrieves a specified block storage resource`
+	getBlockStorageExample = `
+	#Full example
+	vultr-cli block-storage get <blockStorageID>
+	
+	#Shortened with aliased commands
+	vultr-cli bs g <blockStorageID>
+	`
+
+	resizeBlockStorageLong    = `Resizes a specified block storage resource`
+	resizeBlockStorageExample = `
+	#Full example
+	vultr-cli block-storage resize <blockStorageID> --size <sizeGB>
+	
+	#Shortened with aliased commands
+	vultr-cli bs r <blockStorageID> -s <sizeGB>
+	`
+)
+
 // BlockStorageCmd represents the blockStorage command
 func BlockStorageCmd() *cobra.Command {
 
@@ -58,7 +138,7 @@ func BlockStorageCmd() *cobra.Command {
 
 	bsCreate.Flags().StringP("label", "l", "", "label you want to give the block storage")
 
-	bsCreate.Flags().StringP("block_type", "b", "", "block type you want to give the block storage")
+	bsCreate.Flags().StringP("block_type", "b", "", "(optional) Block type you want to give the block storage. Possible values: 'high_perf', 'storage_opt'. Currently defaults to 'high_perf'.")
 
 	// Label
 	bsLabelSet.Flags().StringP("label", "l", "", "label you want your block storage to have")
@@ -72,9 +152,11 @@ func BlockStorageCmd() *cobra.Command {
 }
 
 var bsAttach = &cobra.Command{
-	Use:   "attach <blockStorageID>",
-	Short: "attaches a block storage to an instance",
-	Long:  ``,
+	Use:     "attach <blockStorageID>",
+	Short:   "attaches a block storage to an instance",
+	Aliases: []string{"a"},
+	Long:    attachBlockStorageLong,
+	Example: attachBlockStorageExample,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a blockStorageID")
@@ -101,9 +183,11 @@ var bsAttach = &cobra.Command{
 }
 
 var bsCreate = &cobra.Command{
-	Use:   "create",
-	Short: "create a new block storage",
-	Long:  ``,
+	Use:     "create",
+	Short:   "create a new block storage",
+	Aliases: []string{"c"},
+	Long:    createBlockStorageLong,
+	Example: createBlockStorageExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		region, _ := cmd.Flags().GetString("region")
 		size, _ := cmd.Flags().GetInt("size")
@@ -131,8 +215,9 @@ var bsCreate = &cobra.Command{
 var bsDelete = &cobra.Command{
 	Use:     "delete <blockStorageID>",
 	Short:   "delete a block storage",
-	Aliases: []string{"destroy"},
-	Long:    ``,
+	Aliases: []string{"d", "destroy"},
+	Long:    deleteBlockStorageLong,
+	Example: deleteBlockStorageExample,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a blockStorageID")
@@ -151,9 +236,10 @@ var bsDelete = &cobra.Command{
 }
 
 var bsDetach = &cobra.Command{
-	Use:   "detach <blockStorageID>",
-	Short: "detaches a block storage from an instance",
-	Long:  ``,
+	Use:     "detach <blockStorageID>",
+	Short:   "detaches a block storage from an instance",
+	Long:    detachBlockStorageLong,
+	Example: detachBlockStorageExample,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a blockStorageID")
@@ -178,9 +264,10 @@ var bsDetach = &cobra.Command{
 }
 
 var bsLabelSet = &cobra.Command{
-	Use:   "label <blockStorageID>",
-	Short: "sets a label for a block storage",
-	Long:  ``,
+	Use:     "label <blockStorageID>",
+	Short:   "sets a label for a block storage",
+	Long:    labelBlockStorageLong,
+	Example: labelBlockStorageExample,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a blockStorageID")
@@ -206,9 +293,11 @@ var bsLabelSet = &cobra.Command{
 
 // List all of individual block storage
 var bsList = &cobra.Command{
-	Use:   "list",
-	Short: "retrieves a list of active block storage",
-	Long:  ``,
+	Use:     "list",
+	Short:   "retrieves a list of active block storage",
+	Aliases: []string{"l"},
+	Long:    listBlockStorageLong,
+	Example: listBlockStorageExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
 		bs, meta, err := client.BlockStorage.List(context.Background(), options)
@@ -223,9 +312,11 @@ var bsList = &cobra.Command{
 
 // Get a block storage
 var bsGet = &cobra.Command{
-	Use:   "get <blockStorageID>",
-	Short: "retrieves a block storage",
-	Long:  ``,
+	Use:     "get <blockStorageID>",
+	Short:   "retrieves a block storage",
+	Aliases: []string{"g"},
+	Long:    getBlockStorageLong,
+	Example: getBlockStorageExample,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a blockStorageID")
@@ -245,9 +336,11 @@ var bsGet = &cobra.Command{
 }
 
 var bsResize = &cobra.Command{
-	Use:   "resize <blockStorageID>",
-	Short: "resize a block storage",
-	Long:  ``,
+	Use:     "resize <blockStorageID>",
+	Short:   "resize a block storage",
+	Aliases: []string{"r"},
+	Long:    resizeBlockStorageLong,
+	Example: resizeBlockStorageExample,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a blockStorageID")
