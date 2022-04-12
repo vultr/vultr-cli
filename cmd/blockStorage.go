@@ -29,52 +29,52 @@ var (
 	attachBlockStorageLong    = `Attaches a block storage resource to an specified instance`
 	attachBlockStorageExample = `
 	#Full example
-	vultr-cli block-storage attach <blockStorageID> --instance <instanceID>
+	vultr-cli block-storage attach 67181686-5455-4ebb-81eb-7299f3506e2c --instance a7898453-dd9e-4b47-bdab-9dd7a3448f1f
 
 	#Shortened with aliased commands
-	vultr-cli bs a <blockStorageID> -i <instanceID>
+	vultr-cli bs a 67181686-5455-4ebb-81eb-7299f3506e2c -i a7898453-dd9e-4b47-bdab-9dd7a3448f1f
 	`
 
 	createBlockStorageLong    = `Create a new block storage resource in a specified region`
 	createBlockStorageExample = `
 	#Full example
-	vultr-cli block-storage create --region <regionID> --size <sizeGB>
+	vultr-cli block-storage create --region 'lax' --size 10
 
 	#Full example with block-type
-	vultr-cli block-storage create --region <regionID> --size <sizeGB> --block-type <blockType>
+	vultr-cli block-storage create --region 'lax' --size 10 --block-type 'high_perf'
 	
 	#Shortened with aliased commands
-	vultr-cli bs c -r <regionID> -s <sizeGB>
+	vultr-cli bs c -r 'lax' -s 10
 
 	#Shortened with aliased commands and block-type
-	vultr-cli bs c -r <regionID> -s <sizeGB> -b <blockType>
+	vultr-cli bs c -r 'lax' -s 10 -b 'high_perf'
 	`
 
 	deleteBlockStorageLong    = `Delete a block storage resource`
 	deleteBlockStorageExample = `
 	#Full example
-	vultr-cli block-storage delete <blockStorageID>
+	vultr-cli block-storage delete 67181686-5455-4ebb-81eb-7299f3506e2c
 	
 	#Shortened with aliased commands
-	vultr-cli bs d <blockStorageID>
+	vultr-cli bs d 67181686-5455-4ebb-81eb-7299f3506e2c
 	`
 
 	detachBlockStorageLong    = `Detatch a block storage resource from an instance`
 	detachBlockStorageExample = `
 	#Full example
-	vultr-cli block-storage detach <blockStorageID>
+	vultr-cli block-storage detach 67181686-5455-4ebb-81eb-7299f3506e2c
 	
 	#Shortened with aliased commands
-	vultr-cli bs detach <blockStorageID>
+	vultr-cli bs detach 67181686-5455-4ebb-81eb-7299f3506e2c
 	`
 
 	labelBlockStorageLong    = `Set a label for a block storage resource`
 	labelBlockStorageExample = `
 	#Full example
-	vultr-cli block-storage label <blockStorageID> --label "Example Label"
+	vultr-cli block-storage label 67181686-5455-4ebb-81eb-7299f3506e2c --label "Example Label"
 	
 	#Shortened with aliased commands
-	vultr-cli bs label <blockStorageID> -l "Example Label"
+	vultr-cli bs label 67181686-5455-4ebb-81eb-7299f3506e2c -l "Example Label"
 	`
 
 	listBlockStorageLong    = `Retrieves a list of active block storage resources`
@@ -89,19 +89,19 @@ var (
 	getBlockStorageLong    = `Retrieves a specified block storage resource`
 	getBlockStorageExample = `
 	#Full example
-	vultr-cli block-storage get <blockStorageID>
+	vultr-cli block-storage get 67181686-5455-4ebb-81eb-7299f3506e2c
 	
 	#Shortened with aliased commands
-	vultr-cli bs g <blockStorageID>
+	vultr-cli bs g 67181686-5455-4ebb-81eb-7299f3506e2c
 	`
 
 	resizeBlockStorageLong    = `Resizes a specified block storage resource`
 	resizeBlockStorageExample = `
 	#Full example
-	vultr-cli block-storage resize <blockStorageID> --size <sizeGB>
+	vultr-cli block-storage resize 67181686-5455-4ebb-81eb-7299f3506e2c --size 20
 	
 	#Shortened with aliased commands
-	vultr-cli bs r <blockStorageID> -s <sizeGB>
+	vultr-cli bs r 67181686-5455-4ebb-81eb-7299f3506e2c -s 20
 	`
 )
 
