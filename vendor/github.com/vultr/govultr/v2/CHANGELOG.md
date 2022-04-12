@@ -2,6 +2,15 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v2.15.0](https://github.com/vultr/govultr/compare/v2.14.2..v2.15.0) (2022-04-12)
+### Enhancement 
+* Block : New optional field `block_type`. This new field is currently optional but may become required at a later release [209](https://github.com/vultr/govultr/pull/209)
+* VPC : New API endpoints that will be replacing `network` [210](https://github.com/vultr/govultr/pull/210)
+* Updated Go version from 1.16 to 1.17 [208](https://github.com/vultr/govultr/pull/208)
+
+### Deprecations
+* Network : The network resource and all related private network fields on structs are deprecated. You should now be using the VPC provided replacements [210](https://github.com/vultr/govultr/pull/210)
+
 ## [v2.14.2](https://github.com/vultr/govultr/compare/v2.14.1..v2.14.2) (2022-03-23)
 ### Bug Fix
 * Instances : restore support requestBody [206](https://github.com/vultr/govultr/pull/206) Thanks @andrake81
