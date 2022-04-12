@@ -58,6 +58,8 @@ func BlockStorageCmd() *cobra.Command {
 
 	bsCreate.Flags().StringP("label", "l", "", "label you want to give the block storage")
 
+	bsCreate.Flags().StringP("block_type", "b", "", "block type you want to give the block storage")
+
 	// Label
 	bsLabelSet.Flags().StringP("label", "l", "", "label you want your block storage to have")
 	bsLabelSet.MarkFlagRequired("label")
@@ -106,11 +108,13 @@ var bsCreate = &cobra.Command{
 		region, _ := cmd.Flags().GetString("region")
 		size, _ := cmd.Flags().GetInt("size")
 		label, _ := cmd.Flags().GetString("label")
+		block_type, _ := cmd.Flags().GetString("block_type")
 
 		bsCreate := &govultr.BlockStorageCreate{
-			Region: region,
-			SizeGB: size,
-			Label:  label,
+			Region:    region,
+			SizeGB:    size,
+			Label:     label,
+			BlockType: block_type,
 		}
 
 		bs, err := client.BlockStorage.Create(context.Background(), bsCreate)
