@@ -40,13 +40,13 @@ var (
 	#Full example
 	vultr-cli block-storage create --region <regionID> --size <sizeGB>
 
-	#Full example with block_type
-	vultr-cli block-storage create --region <regionID> --size <sizeGB> --block_type <blockType>
+	#Full example with block-type
+	vultr-cli block-storage create --region <regionID> --size <sizeGB> --block-type <blockType>
 	
 	#Shortened with aliased commands
 	vultr-cli bs c -r <regionID> -s <sizeGB>
 
-	#Shortened with aliased commands and block_type
+	#Shortened with aliased commands and block-type
 	vultr-cli bs c -r <regionID> -s <sizeGB> -b <blockType>
 	`
 
@@ -138,7 +138,7 @@ func BlockStorageCmd() *cobra.Command {
 
 	bsCreate.Flags().StringP("label", "l", "", "label you want to give the block storage")
 
-	bsCreate.Flags().StringP("block_type", "b", "", "(optional) Block type you want to give the block storage. Possible values: 'high_perf', 'storage_opt'. Currently defaults to 'high_perf'.")
+	bsCreate.Flags().StringP("block-type", "b", "", "(optional) Block type you want to give the block storage. Possible values: 'high_perf', 'storage_opt'. Currently defaults to 'high_perf'.")
 
 	// Label
 	bsLabelSet.Flags().StringP("label", "l", "", "label you want your block storage to have")
@@ -192,13 +192,13 @@ var bsCreate = &cobra.Command{
 		region, _ := cmd.Flags().GetString("region")
 		size, _ := cmd.Flags().GetInt("size")
 		label, _ := cmd.Flags().GetString("label")
-		block_type, _ := cmd.Flags().GetString("block_type")
+		blockType, _ := cmd.Flags().GetString("block-type")
 
 		bsCreate := &govultr.BlockStorageCreate{
 			Region:    region,
 			SizeGB:    size,
 			Label:     label,
-			BlockType: block_type,
+			BlockType: blockType,
 		}
 
 		bs, err := client.BlockStorage.Create(context.Background(), bsCreate)
