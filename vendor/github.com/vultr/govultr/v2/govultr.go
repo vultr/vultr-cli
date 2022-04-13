@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	version     = "2.14.2"
+	version     = "2.15.1"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 500 * time.Millisecond
@@ -58,16 +58,18 @@ type Client struct {
 	ISO             ISOService
 	Kubernetes      KubernetesService
 	LoadBalancer    LoadBalancerService
-	Network         NetworkService
-	ObjectStorage   ObjectStorageService
-	OS              OSService
-	Plan            PlanService
-	Region          RegionService
-	ReservedIP      ReservedIPService
-	Snapshot        SnapshotService
-	SSHKey          SSHKeyService
-	StartupScript   StartupScriptService
-	User            UserService
+	// Deprecated: Network should no longer be used. Instead, use VPC.
+	Network       NetworkService
+	ObjectStorage ObjectStorageService
+	OS            OSService
+	Plan          PlanService
+	Region        RegionService
+	ReservedIP    ReservedIPService
+	Snapshot      SnapshotService
+	SSHKey        SSHKeyService
+	StartupScript StartupScriptService
+	User          UserService
+	VPC           VPCService
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
@@ -121,6 +123,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.SSHKey = &SSHKeyServiceHandler{client}
 	client.StartupScript = &StartupScriptServiceHandler{client}
 	client.User = &UserServiceHandler{client}
+	client.VPC = &VPCServiceHandler{client}
 
 	return client
 }
