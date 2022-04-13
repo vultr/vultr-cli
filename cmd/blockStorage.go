@@ -59,7 +59,7 @@ var (
 	vultr-cli bs d 67181686-5455-4ebb-81eb-7299f3506e2c
 	`
 
-	detachBlockStorageLong    = `Detatch a block storage resource from an instance`
+	detachBlockStorageLong    = `Detach a block storage resource from an instance`
 	detachBlockStorageExample = `
 	#Full example
 	vultr-cli block-storage detach 67181686-5455-4ebb-81eb-7299f3506e2c
