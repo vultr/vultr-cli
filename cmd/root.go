@@ -76,6 +76,7 @@ func init() {
 	rootCmd.AddCommand(Snapshot())
 	rootCmd.AddCommand(SSHKey())
 	rootCmd.AddCommand(User())
+	rootCmd.AddCommand(VPC())
 	cobra.OnInitialize(initConfig)
 }
 

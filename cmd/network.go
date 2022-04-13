@@ -25,12 +25,22 @@ import (
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
+var (
+	netLong       = ``
+	netGetLong    = ``
+	netCreateLong = ``
+	netUpdateLong = ``
+	netDeleteLong = ``
+	netListLong   = ``
+)
+
 // Network represents the network command
 func Network() *cobra.Command {
 	networkCmd := &cobra.Command{
-		Use:   "network",
-		Short: "network interacts with network actions",
-		Long:  ``,
+		Use:        "network",
+		Short:      "network interacts with network actions",
+		Long:       netLong,
+		Deprecated: "Use vpc instead.",
 	}
 
 	networkCmd.AddCommand(networkGet, networkList, networkDelete, networkCreate)
@@ -50,9 +60,10 @@ func Network() *cobra.Command {
 }
 
 var networkGet = &cobra.Command{
-	Use:   "get <networkID>",
-	Short: "get a private network",
-	Long:  ``,
+	Use:        "get <networkID>",
+	Short:      "get a private network",
+	Long:       netGetLong,
+	Deprecated: "Use vpc get instead.",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a networkID")
@@ -72,9 +83,10 @@ var networkGet = &cobra.Command{
 }
 
 var networkList = &cobra.Command{
-	Use:   "list",
-	Short: "list all private networks",
-	Long:  ``,
+	Use:        "list",
+	Short:      "list all private networks",
+	Long:       netListLong,
+	Deprecated: "Use vpc list instead.",
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
 		network, meta, err := client.Network.List(context.Background(), options)
@@ -88,10 +100,11 @@ var networkList = &cobra.Command{
 }
 
 var networkDelete = &cobra.Command{
-	Use:     "delete <networkID>",
-	Short:   "delete a private network",
-	Aliases: []string{"destroy"},
-	Long:    ``,
+	Use:        "delete <networkID>",
+	Short:      "delete a private network",
+	Aliases:    []string{"destroy"},
+	Long:       netDeleteLong,
+	Deprecated: "Use vpc delete instead.",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a networkID")
@@ -110,9 +123,10 @@ var networkDelete = &cobra.Command{
 }
 
 var networkCreate = &cobra.Command{
-	Use:   "create",
-	Short: "create a private network",
-	Long:  ``,
+	Use:        "create",
+	Short:      "create a private network",
+	Long:       netCreateLong,
+	Deprecated: "Use vpc create instead.",
 	Run: func(cmd *cobra.Command, args []string) {
 		region, _ := cmd.Flags().GetString("region-id")
 		description, _ := cmd.Flags().GetString("description")
