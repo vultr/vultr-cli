@@ -274,6 +274,11 @@ var lbCreate = &cobra.Command{
 			options.Instances = instances
 		}
 
+		if privateNetwork != "" && vpc != "" {
+			fmt.Println("--private-network is deprecated.  Instead, use only --vpc.")
+			os.Exit(1)
+		}
+
 		if privateNetwork != "" && vpc == "" {
 			options.VPC = govultr.StringToStringPtr(privateNetwork)
 		} else {
