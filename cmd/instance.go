@@ -48,7 +48,7 @@ var (
 	vultr-cli instance c -r="ewr" -p="vc2-1c-1gb" -o=244
 
 	# Full example with attached VPCs 
-	vultr-cli instance create --region="ewr" --plan="vc2-1c-1gb" --os=244 --vpc-attach="08422775-5be0-4371-afba-64b03f9ad22d,13a45caa-9c06-4b5d-8f76-f5281ab172b7" 
+	vultr-cli instance create --region="ewr" --plan="vc2-1c-1gb" --os=244 --vpc-ids="08422775-5be0-4371-afba-64b03f9ad22d,13a45caa-9c06-4b5d-8f76-f5281ab172b7" 
 
 	# Full example with assigned ssh keys
 	vultr-cli instance create --region ewr --plan vc2-1c-1gb --os 244 --ssh-keys="a14b6539-5583-41e8-a035-c07a76897f2b,be624232-56c7-4d5c-bf87-9bdaae7a1fbd"
@@ -95,9 +95,9 @@ func Instance() *cobra.Command {
 	instanceCreate.Flags().StringP("script-id", "", "", "script id of the startup script")
 	instanceCreate.Flags().BoolP("ipv6", "", false, "enable ipv6 | true or false")
 	instanceCreate.Flags().BoolP("private-network", "", false, "Deprecated: use vpc-enable instead. enable private network | true or false")
-	instanceCreate.Flags().StringSliceP("network", "", []string{}, "Deprecated: use vpc-attach instead. network IDs you want to assign to the instance")
+	instanceCreate.Flags().StringSliceP("network", "", []string{}, "Deprecated: use vpc-ids instead. network IDs you want to assign to the instance")
 	instanceCreate.Flags().BoolP("vpc-enable", "", false, "enable VPC | true or false")
-	instanceCreate.Flags().StringSliceP("vpc-attach", "", []string{}, "VPC IDs you want to assign to the instance")
+	instanceCreate.Flags().StringSliceP("vpc-ids", "", []string{}, "VPC IDs you want to assign to the instance")
 	instanceCreate.Flags().StringP("label", "l", "", "label you want to give this instance")
 	instanceCreate.Flags().StringSliceP("ssh-keys", "s", []string{}, "ssh keys you want to assign to the instance")
 	instanceCreate.Flags().BoolP("auto-backup", "b", false, "enable auto backups | true or false")
@@ -1070,7 +1070,7 @@ var instanceCreate = &cobra.Command{
 		privateNetwork, _ := cmd.Flags().GetBool("private-network")
 		networks, _ := cmd.Flags().GetStringSlice("network")
 		vpcEnable, _ := cmd.Flags().GetBool("vpc-enable")
-		vpcAttach, _ := cmd.Flags().GetStringSlice("vpc-attach")
+		vpcAttach, _ := cmd.Flags().GetStringSlice("vpc-ids")
 		label, _ := cmd.Flags().GetString("label")
 		ssh, _ := cmd.Flags().GetStringSlice("ssh-keys")
 		backup, _ := cmd.Flags().GetBool("auto-backup")
@@ -1142,6 +1142,10 @@ var instanceCreate = &cobra.Command{
 		}
 		if privateNetwork || vpcEnable {
 			opt.EnableVPC = govultr.BoolToBoolPtr(true)
+		}
+		if privateNetwork && vpcEnable {
+			fmt.Println("--private-network is deprecated.  Instead, use only --vpc-enable.")
+			os.Exit(1)
 		}
 		if userData != "" {
 			opt.UserData = base64.StdEncoding.EncodeToString([]byte(userData))
