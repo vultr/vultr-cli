@@ -27,6 +27,38 @@ import (
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
+var (
+	lbLong    = `Get commands available to Load Balancers`
+	lbExample = `
+	# Full example
+	vultr-cli load-balancer
+	`
+	lbCreateLong    = `Create a new Load Balancer with the desired settings`
+	lbCreateExample = `
+	# Full example
+	vultr-cli load-balancer create --region="lax" --balancing-algorithm="roundrobin" --label="Example Load Balancer" --port=80 --check-interval=10 --healthy-threshold=15
+
+	You must pass --region; other arguments are optional
+
+	#Shortened example with aliases
+	vultr-cli lb c -r="lax" -b="roundrobin" -l="Example Load Balancer" -p=80 -c=10 
+
+	#Full example with attached VPC
+	vultr-cli load-balancer create --region="lax"  --label="Example Load Balancer with VPC" --vpc="e951822b-10b2-4c5e-b333-bf38033e7175" --balancing-algorithm="leastconn"
+	`
+	lbUpdateLong    = `Update a Load Balancer with the desired settings`
+	lbUpdateExample = `
+	# Full example
+	vultr-cli load-balancer update 57539f6f-66a2-4580-936b-d0af934bce5d --label="Updated Load Balancer Label" --balancing-algorithm="leastconn" --unhealthy-threshold=20
+
+	#Shortened example with aliases
+	vultr-cli lb u 57539f6f-66a2-4580-936b-d0af934bce5d -l="Updated Load Balancer Label" -b="leastconn" -u=20
+
+	#Full example with attached VPC
+	vultr-cli load-balancer update 57539f6f-66a2-4580-936b-d0af934bce5d --vpc="bff36707-977e-4357-8f30-bef3339155cc"
+	`
+)
+
 // LoadBalancer represents the load-balancer command
 func LoadBalancer() *cobra.Command {
 
@@ -34,7 +66,8 @@ func LoadBalancer() *cobra.Command {
 		Use:     "load-balancer",
 		Aliases: []string{"lb"},
 		Short:   "load balancer commands",
-		Long:    `load-balancer is used to interact with the load-balancer api`,
+		Long:    lbLong,
+		Example: lbExample,
 	}
 
 	lbCmd.AddCommand(lbCreate, lbDelete, lbGet, lbList, lbUpdate)
@@ -47,7 +80,8 @@ func LoadBalancer() *cobra.Command {
 	lbCreate.Flags().StringP("ssl-redirect", "s", "", "(optional) if true, this will redirect HTTP traffic to HTTPS. You must have an HTTPS rule and SSL certificate installed on the load balancer to enable this option.")
 	lbCreate.Flags().StringP("proxy-protocol", "p", "", "(optional) if true, you must configure backend nodes to accept Proxy protocol.")
 	lbCreate.Flags().StringArrayP("forwarding-rules", "f", []string{}, "(optional) a comma-separated, key-value pair list of forwarding rules. Use - between each new rule. E.g: `frontend_port:80,frontend_protocol:http,backend_port:80,backend_protocol:http-frontend_port:81,frontend_protocol:http,backend_port:81,backend_protocol:http`")
-	lbCreate.Flags().StringP("private-network", "", "", "(optional) the private network for your load balancer. When not provided, load balancer defaults to public network.")
+	lbCreate.Flags().StringP("private-network", "", "", "(optional) Deprecated: use vpc instead. the private network for your load balancer. When not provided, load balancer defaults to public network.")
+	lbCreate.Flags().StringP("vpc", "v", "", "(optional) the VPC ID to attach to your load balancer. When not provided, load balancer defaults to public network.")
 
 	lbCreate.Flags().StringArrayP("firewall-rules", "", []string{}, "(optional) a comma-separated, key-value pair list of firewall rules. Use - between each new rule. E.g: `port:80,ip_type:v4,source:0.0.0.0/0-port:8080,ip_type:v4,source:1.1.1.1/4`")
 
@@ -78,6 +112,7 @@ func LoadBalancer() *cobra.Command {
 	lbUpdate.Flags().StringP("proxy-protocol", "p", "", "(optional) if true, you must configure backend nodes to accept Proxy protocol.")
 	lbUpdate.Flags().StringArrayP("forwarding-rules", "f", []string{}, "(optional) a comma-separated, key-value pair list of forwarding rules. Use - between each new rule. E.g: `frontend_port:80,frontend_protocol:http,backend_port:80,backend_protocol:http-frontend_port:81,frontend_protocol:http,backend_port:81,backend_protocol:http`")
 	lbUpdate.Flags().StringArrayP("firewall-rules", "", []string{}, "(optional) a comma-separated, key-value pair list of firewall rules. Use - between each new rule. E.g: `port:80,ip_type:v4,source:0.0.0.0/0-port:8080,ip_type:v4,source:1.1.1.1/4`")
+	lbUpdate.Flags().StringP("vpc", "v", "", "(optional) the VPC ID to attach to your load balancer.")
 
 	lbUpdate.Flags().String("protocol", "", "(optional) the protocol to use for health checks. | https, http, tcp")
 	lbUpdate.Flags().Int("port", 0, "(optional) the port to use for health checks.")
@@ -139,9 +174,11 @@ func LoadBalancer() *cobra.Command {
 }
 
 var lbCreate = &cobra.Command{
-	Use:   "create",
-	Short: "create a load balancer",
-	Long:  ``,
+	Use:     "create",
+	Aliases: []string{"c"},
+	Short:   "create a load balancer",
+	Long:    lbCreateLong,
+	Example: lbCreateExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		region, _ := cmd.Flags().GetString("region")
 		label, _ := cmd.Flags().GetString("label")
@@ -169,6 +206,7 @@ var lbCreate = &cobra.Command{
 		instances, _ := cmd.Flags().GetStringSlice("instances")
 
 		privateNetwork, _ := cmd.Flags().GetString("private-network")
+		vpc, _ := cmd.Flags().GetString("vpc")
 
 		healthCheck := &govultr.HealthCheck{
 			Protocol:           protocol,
@@ -192,7 +230,6 @@ var lbCreate = &cobra.Command{
 			BalancingAlgorithm: algorithm,
 			HealthCheck:        healthCheck,
 			SSL:                ssl,
-			PrivateNetwork:     govultr.StringToStringPtr(privateNetwork),
 		}
 
 		if cookieName != "" {
@@ -235,6 +272,12 @@ var lbCreate = &cobra.Command{
 
 		if len(instances) > 0 {
 			options.Instances = instances
+		}
+
+		if privateNetwork != "" && vpc == "" {
+			options.VPC = govultr.StringToStringPtr(privateNetwork)
+		} else {
+			options.VPC = govultr.StringToStringPtr(vpc)
 		}
 
 		lb, err := client.LoadBalancer.Create(context.Background(), options)
@@ -307,9 +350,11 @@ var lbList = &cobra.Command{
 }
 
 var lbUpdate = &cobra.Command{
-	Use:   "update <loadBalancerID>",
-	Short: "updates a load balancer",
-	Long:  ``,
+	Use:     "update <loadBalancerID>",
+	Aliases: []string{"u"},
+	Short:   "updates a load balancer",
+	Long:    lbUpdateLong,
+	Example: lbUpdateExample,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a loadBalancerID")
@@ -324,7 +369,7 @@ var lbUpdate = &cobra.Command{
 		sslRedirect, _ := cmd.Flags().GetString("ssl-redirect")
 		proxyProtocol, _ := cmd.Flags().GetString("proxy-protocol")
 		cookieName, _ := cmd.Flags().GetString("cookie-name")
-		privateNetwork, _ := cmd.Flags().GetString("private-network")
+		vpc, _ := cmd.Flags().GetString("vpc")
 
 		fwRules, _ := cmd.Flags().GetStringArray("forwarding-rules")
 		firewallRules, _ := cmd.Flags().GetStringArray("firewall-rules")
@@ -416,7 +461,7 @@ var lbUpdate = &cobra.Command{
 			options.Label = label
 		}
 
-		options.PrivateNetwork = govultr.StringToStringPtr(privateNetwork)
+		options.VPC = govultr.StringToStringPtr(vpc)
 
 		if proxyProtocol == "yes" {
 			options.ProxyProtocol = govultr.BoolToBoolPtr(true)
