@@ -9,7 +9,7 @@
 ### Deprecations 
 * Network : These commands have been replaced by `vpc` [PR 251](https://github.com/vultr/vultr-cli/pull/251)
 * Instance : The following fields have been deprecated on the `create` command `private-network` and `network`. Please use `vpc-enable` or `vpc-ids` [PR 251](https://github.com/vultr/vultr-cli/pull/251)
-* LoadBalancer : The following fields have been deprecated on the `create` command `private-network`. Please use `vpc` instead PR 251](https://github.com/vultr/vultr-cli/pull/251)
+* LoadBalancer : The following fields have been deprecated on the `create` command `private-network`. Please use `vpc` instead [PR 251](https://github.com/vultr/vultr-cli/pull/251)
 
 ### Dependencies
 * Bump github.com/vultr/govultr/v2 from 2.14.1 to 2.15.1 [PR 249](https://github.com/vultr/vultr-cli/pull/249)
