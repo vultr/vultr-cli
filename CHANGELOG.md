@@ -1,5 +1,23 @@
 # Change Log
 
+## [v2.13.0](https://github.com/vultr/vultr-cli/compare/v2.12.2..v2.13.0) (2022-04-15)
+### Enhancements
+* VPC : new commands which will be replacing `network` (private networks) [PR 251](https://github.com/vultr/vultr-cli/pull/251) 
+* BlockStorage : adding support for new `block_type` field [PR 249](https://github.com/vultr/vultr-cli/pull/249/) 
+* LoadBalancer : Updating `vpc` functionality added [PR 251](https://github.com/vultr/vultr-cli/pull/251)
+
+### Deprecations 
+* Network : These commands have been replaced by `vpc` [PR 251](https://github.com/vultr/vultr-cli/pull/251)
+* Instance : The following fields have been deprecated on the `create` command `private-network` and `network`. Please use `vpc-enable` or `vpc-ids` [PR 251](https://github.com/vultr/vultr-cli/pull/251)
+* LoadBalancer : The following fields have been deprecated on the `create` command `private-network`. Please use `vpc` instead PR 251](https://github.com/vultr/vultr-cli/pull/251)
+
+### Dependencies
+* Bump github.com/vultr/govultr/v2 from 2.14.1 to 2.15.1 [PR 249](https://github.com/vultr/vultr-cli/pull/249)
+* Bump github.com/spf13/viper from 1.10.1 to 1.11.0 [PR 252](https://github.com/vultr/vultr-cli/pull/252)
+
+### Documentation
+* Add Fedora installation instructions [PR 246](https://github.com/vultr/vultr-cli/pull/246)
+
 ## [v2.12.2](https://github.com/vultr/vultr-cli/compare/v2.12.1..v2.12.2) (2022-04-01)
 ### Enhancements
 * Instances : fix csv flags `ssh-keys` and `network` [PR 244](https://github.com/vultr/vultr-cli/pull/244) @optik-aper
