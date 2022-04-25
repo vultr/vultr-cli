@@ -10,33 +10,33 @@ Usage:
 
 Available Commands:
   account        Retrieve information about your account
-  api-key        retrieve information about the current API key
   apps           Display all available applications
-  backups        display all available backups
+  backups        Display backups
   bare-metal     bare-metal is used to access bare metal server commands
   billing        Display billing information
   block-storage  block storage commands
+  completion     Generate the autocompletion script for the specified shell
   dns            dns is used to access dns commands
   firewall       firewall is used to access firewall commands
   help           Help about any command
+  instance       commands to interact with instances on vultr
   iso            iso is used to access iso commands
   kubernetes     kubernetes is used to access kubernetes commands
   load-balancer  load balancer commands
-  network        network interacts with network actions
   object-storage object storage commands
-  os             grab all available operating systems
+  os             os is used to access os commands
   plans          get information about Vultr plans
   regions        get regions
-  reserved-ip    reserved-ip lets you interact with reserved-ip
+  reserved-ip    reserved-ip lets you interact with reserved-ip 
   script         startup script commands
-  instance       commands to interact with instances on vultr
   snapshot       snapshot commands
   ssh-key        ssh-key commands
   user           user commands
   version        Display current version of Vultr-cli
+  vpc            Interact with VPCs
 
 Flags:
-      --config string   config file (default is $HOME/.vultr-cli.yaml)
+  --config string   config file (default is $HOME/.vultr-cli.yaml) (default "#HOME/.vultr-cli.yaml")
   -h, --help            help for vultr-cli
   -t, --toggle          Help message for toggle
 
