@@ -40,7 +40,7 @@ var (
 	
 	You must pass one of these in addition to the required --region and --plan flags:
 		--os 
-		--snapshot_id
+		--snapshot
 		--iso
 		--app
 
@@ -1124,7 +1124,7 @@ var instanceCreate = &cobra.Command{
 		if osOption == "os_id" && osID != 0 {
 			opt.OsID = osID
 		} else if osOption == "" && osID == 0 {
-			fmt.Printf("error creating instance: an os_id, image_id, snapshot_id, iso_id, or app_id must be provided\n")
+			fmt.Println("error creating instance: an os, image, snapshot, iso, or app must be provided")
 			os.Exit(1)
 		}
 
