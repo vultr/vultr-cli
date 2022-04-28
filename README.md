@@ -109,7 +109,7 @@ brew install vultr-cli
 dnf install vultr-cli
 ```
 
-### Installing on OpenBSD (-current)
+### Installing on OpenBSD
 
 ```sh
 pkg_add vultr-cli
