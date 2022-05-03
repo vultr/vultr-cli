@@ -124,7 +124,6 @@ var bareMetalCreate = &cobra.Command{
 		userdata, _ := cmd.Flags().GetString("userdata")
 		notify, _ := cmd.Flags().GetString("notify")
 		hostname, _ := cmd.Flags().GetString("hostname")
-		// Deprecated: Use `tags` instead
 		tag, _ := cmd.Flags().GetString("tag")
 		tags, _ := cmd.Flags().GetStringSlice("tags")
 		ripv4, _ := cmd.Flags().GetString("ripv4")
