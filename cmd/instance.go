@@ -53,6 +53,15 @@ var (
 	# Full example with assigned ssh keys
 	vultr-cli instance create --region ewr --plan vc2-1c-1gb --os 244 --ssh-keys="a14b6539-5583-41e8-a035-c07a76897f2b,be624232-56c7-4d5c-bf87-9bdaae7a1fbd"
 	`
+
+	instanceTagsLong    = `Modify the tags of the specified instance`
+	instanceTagsExample = `
+	# Full example
+	vultr-cli instance tags <instanceID> --tags="example-tag-1,example-tag-2"
+
+	# Shortened example with aliases
+	vultr-cli instance tags <instanceID> -t="example-tag-1,example-tag-2"
+	`
 )
 
 // Instance represents the instance command
@@ -64,12 +73,15 @@ func Instance() *cobra.Command {
 		Example: instanceExample,
 	}
 
-	instanceCmd.AddCommand(instanceStart, instanceStop, instanceRestart, instanceReinstall, instanceTag, instanceDelete, instanceLabel, instanceBandwidth, instanceList, instanceInfo, updateFwgGroup, instanceRestore, instanceCreate)
+	instanceCmd.AddCommand(instanceStart, instanceStop, instanceRestart, instanceReinstall, instanceTag, instanceTags, instanceDelete, instanceLabel, instanceBandwidth, instanceList, instanceInfo, updateFwgGroup, instanceRestore, instanceCreate)
 
 	instanceReinstall.Flags().StringP("host", "", "", "The hostname to assign to this instance")
 
 	instanceTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
 	instanceTag.MarkFlagRequired("tag")
+
+	instanceTags.Flags().StringSliceP("tags", "t", []string{}, "A comma separated list of tags to apply to the instance")
+	instanceTags.MarkFlagRequired("tags")
 
 	instanceLabel.Flags().StringP("label", "l", "", "label you want to set for a given instance")
 	instanceLabel.MarkFlagRequired("label")
@@ -108,7 +120,8 @@ func Instance() *cobra.Command {
 	instanceCreate.Flags().BoolP("ddos", "d", false, "enable ddos protection | true or false")
 	instanceCreate.Flags().StringP("reserved-ipv4", "", "", "ip address of the floating IP to use as the main IP for this instance")
 	instanceCreate.Flags().StringP("host", "", "", "The hostname to assign to this instance")
-	instanceCreate.Flags().StringP("tag", "t", "", "The tag to assign to this instance")
+	instanceCreate.Flags().StringP("tag", "t", "", "Deprecated: use tags instead. The tag to assign to this instance")
+	instanceCreate.Flags().StringSliceP("tags", "", []string{}, "A comma-separated list of tags to assign to this instance")
 	instanceCreate.Flags().StringP("firewall-group", "", "", "The firewall group to assign to this instance")
 
 	instanceList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
@@ -359,6 +372,33 @@ var instanceTag = &cobra.Command{
 		}
 
 		fmt.Printf("Tagged instance with : %s\n", tag)
+	},
+}
+
+var instanceTags = &cobra.Command{
+	Use:     "tags <instanceID>",
+	Short:   "add/modify tags on an instance",
+	Long:    instanceTagsLong,
+	Example: instanceTagsExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instanceID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		tags, _ := cmd.Flags().GetStringSlice("tags")
+		options := &govultr.InstanceUpdateReq{
+			Tags: tags,
+		}
+
+		if _, err := client.Instance.Update(context.Background(), id, options); err != nil {
+			fmt.Printf("error adding tag to instance : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Instance tags updated")
 	},
 }
 
@@ -1082,6 +1122,7 @@ var instanceCreate = &cobra.Command{
 		ipv4, _ := cmd.Flags().GetString("reserved-ipv4")
 		host, _ := cmd.Flags().GetString("host")
 		tag, _ := cmd.Flags().GetString("tag")
+		tags, _ := cmd.Flags().GetStringSlice("tags")
 		fwg, _ := cmd.Flags().GetString("firewall-group")
 
 		osOptions := map[string]interface{}{"iso_id": iso, "os_id": osID, "app_id": app, "snapshot_id": snapshot, "image_id": image}
@@ -1110,6 +1151,7 @@ var instanceCreate = &cobra.Command{
 			ReservedIPv4:    ipv4,
 			Hostname:        host,
 			Tag:             tag,
+			Tags:            tags,
 			FirewallGroupID: fwg,
 			EnableIPv6:      govultr.BoolToBoolPtr(false),
 			DDOSProtection:  govultr.BoolToBoolPtr(false),

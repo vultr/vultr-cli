@@ -26,6 +26,23 @@ import (
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
+var (
+	bareMetalLong    = `Show all commands available to bare-metal`
+	bareMetalExample = `
+	# Full example
+	vultr-cli bare-metal
+	`
+
+	bareMetalTagsLong    = `Update the tags on a bare metal server`
+	bareMetalTagsExample = `
+	# Full example
+	vultr-cli bare-metal tags <bareMetalID> tags="tag-1,tag-2"
+
+	# Shortened example with aliases
+	vultr-cli bm tags <bareMetalID> -t="tag-1,tag-2"
+	`
+)
+
 // BareMetal represents the baremetal commands
 func BareMetal() *cobra.Command {
 	bareMetalCmd := &cobra.Command{
@@ -50,6 +67,7 @@ func BareMetal() *cobra.Command {
 		BareMetalOS(),
 		bareMetalReboot,
 		bareMetalReinstall,
+		bareMetalTags,
 		BareMetalUserData(),
 	)
 
@@ -69,7 +87,8 @@ func BareMetal() *cobra.Command {
 	bareMetalCreate.Flags().StringP("userdata", "u", "", "(optional) A generic data store, which some provisioning tools and cloud operating systems use as a configuration file.")
 	bareMetalCreate.Flags().StringP("notify", "n", "", "(optional) Whether an activation email will be sent when the server is ready. Possible values: 'yes', 'no'. Defaults to 'yes'.")
 	bareMetalCreate.Flags().StringP("hostname", "m", "", "(optional) The hostname to assign to the server.")
-	bareMetalCreate.Flags().StringP("tag", "t", "", "(optional) The tag to assign to the server.")
+	bareMetalCreate.Flags().StringP("tag", "t", "", "Deprecated: use `tags` instead. (optional) The tag to assign to the server.")
+	bareMetalCreate.Flags().StringSliceP("tags", "", []string{}, "(optional) A comma separated list of tags to assign to the server.")
 	bareMetalCreate.Flags().StringP("ripv4", "v", "", "(optional) IP address of the floating IP to use as the main IP of this server.")
 	bareMetalCreate.Flags().BoolP("persistent_pxe", "x", false, "enable persistent_pxe | true or false")
 
@@ -81,6 +100,9 @@ func BareMetal() *cobra.Command {
 
 	bareMetalListIPV6.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	bareMetalListIPV6.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+
+	bareMetalTags.Flags().StringSliceP("tags", "t", []string{}, "A comma separated list of tags to apply to the server")
+	bareMetalTags.MarkFlagRequired("tags")
 
 	return bareMetalCmd
 }
@@ -102,7 +124,9 @@ var bareMetalCreate = &cobra.Command{
 		userdata, _ := cmd.Flags().GetString("userdata")
 		notify, _ := cmd.Flags().GetString("notify")
 		hostname, _ := cmd.Flags().GetString("hostname")
+		// Deprecated: Use `tags` instead
 		tag, _ := cmd.Flags().GetString("tag")
+		tags, _ := cmd.Flags().GetStringSlice("tags")
 		ripv4, _ := cmd.Flags().GetString("ripv4")
 		pxe, _ := cmd.Flags().GetBool("persistent_pxe")
 		image, _ := cmd.Flags().GetString("image")
@@ -115,6 +139,7 @@ var bareMetalCreate = &cobra.Command{
 			SSHKeyIDs:       sshKeys,
 			Hostname:        hostname,
 			Tag:             tag,
+			Tags:            tags,
 			ReservedIPv4:    ripv4,
 			OsID:            osID,
 			Region:          region,
@@ -381,6 +406,33 @@ var bareMetalReinstall = &cobra.Command{
 		}
 
 		fmt.Println("bare metal server reinstalled.")
+	},
+}
+
+var bareMetalTags = &cobra.Command{
+	Use:     "tags <bareMetalID>",
+	Short:   "Add or modify tags on the bare metal server.",
+	Long:    bareMetalTagsLong,
+	Example: bareMetalTagsExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		tags, _ := cmd.Flags().GetStringSlice("tags")
+		options := &govultr.BareMetalUpdate{
+			Tags: tags,
+		}
+
+		if _, err := client.BareMetalServer.Update(context.Background(), id, options); err != nil {
+			fmt.Printf("%v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Server tags updated")
 	},
 }
 
