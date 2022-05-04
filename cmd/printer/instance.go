@@ -34,10 +34,10 @@ func InstanceIPV6(ip []govultr.IPv6, meta *govultr.Meta) {
 }
 
 func InstanceList(instance []govultr.Instance, meta *govultr.Meta) {
-	col := columns{"ID", "IP", "TAGS", "LABEL", "OS", "STATUS", "Region", "CPU", "RAM", "DISK", "BANDWIDTH"}
+	col := columns{"ID", "IP", "LABEL", "OS", "STATUS", "Region", "CPU", "RAM", "DISK", "BANDWIDTH", "TAGS"}
 	display(col)
 	for _, s := range instance {
-		display(columns{s.ID, s.MainIP, s.Tags, s.Label, s.Os, s.Status, s.Region, s.VCPUCount, s.RAM, s.Disk, s.AllowedBandwidth})
+		display(columns{s.ID, s.MainIP, s.Label, s.Os, s.Status, s.Region, s.VCPUCount, s.RAM, s.Disk, s.AllowedBandwidth, s.Tags})
 	}
 
 	Meta(meta)
@@ -66,7 +66,6 @@ func Instance(instance *govultr.Instance) {
 	display(columns{"INTERNAL IP", instance.InternalIP})
 	display(columns{"KVM URL", instance.KVM})
 	display(columns{"TAG", instance.Tag})
-	display(columns{"TAGS", instance.Tags})
 	display(columns{"OsID", instance.OsID})
 	display(columns{"AppID", instance.AppID})
 	display(columns{"FIREWALL GROUP ID", instance.FirewallGroupID})
@@ -74,6 +73,7 @@ func Instance(instance *govultr.Instance) {
 	display(columns{"V6 NETWORK", instance.V6Network})
 	display(columns{"V6 NETWORK SIZE", instance.V6NetworkSize})
 	display(columns{"FEATURES", instance.Features})
+	display(columns{"TAGS", instance.Tags})
 
 	flush()
 }
