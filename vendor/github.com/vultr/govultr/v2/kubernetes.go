@@ -31,6 +31,9 @@ type KubernetesService interface {
 
 	GetKubeConfig(ctx context.Context, vkeID string) (*KubeConfig, error)
 	GetVersions(ctx context.Context) (*Versions, error)
+
+	GetUpgrades(ctx context.Context, vkeID string) ([]string, error)
+	Upgrade(ctx context.Context, vkeID string, body *ClusterUpgradeReq) error
 }
 
 // KubernetesHandler handles interaction with the kubernetes methods for the Vultr API
@@ -62,6 +65,9 @@ type NodePool struct {
 	Plan         string `json:"plan"`
 	Status       string `json:"status"`
 	NodeQuantity int    `json:"node_quantity"`
+	MinNodes     int    `json:"min_nodes"`
+	MaxNodes     int    `json:"max_nodes"`
+	AutoScaler   bool   `json:"auto_scaler"`
 	Tag          string `json:"tag"`
 	Nodes        []Node `json:"nodes"`
 }
@@ -98,12 +104,18 @@ type NodePoolReq struct {
 	Label        string `json:"label"`
 	Plan         string `json:"plan"`
 	Tag          string `json:"tag"`
+	MinNodes     int    `json:"min_nodes,omitempty"`
+	MaxNodes     int    `json:"max_nodes,omitempty"`
+	AutoScaler   *bool  `json:"auto_scaler"`
 }
 
 // NodePoolReqUpdate struct used to update a node pool
 type NodePoolReqUpdate struct {
 	NodeQuantity int    `json:"node_quantity,omitempty"`
 	Tag          string `json:"tag,omitempty"`
+	MinNodes     int    `json:"min_nodes,omitempty"`
+	MaxNodes     int    `json:"max_nodes,omitempty"`
+	AutoScaler   *bool  `json:"auto_scaler"`
 }
 
 type vkeClustersBase struct {
@@ -127,6 +139,16 @@ type vkeNodePoolBase struct {
 // Versions that are supported for VKE
 type Versions struct {
 	Versions []string `json:"versions"`
+}
+
+// AvailableUpgrades for a given VKE cluster
+type availableUpgrades struct {
+	AvailableUpgrades []string `json:"available_upgrades"`
+}
+
+// ClusterUpgradeReq struct for vke upgradse
+type ClusterUpgradeReq struct {
+	UpgradeVersion string `json:"upgrade_version,omitempty"`
 }
 
 // CreateCluster will create a Kubernetes cluster.
@@ -338,4 +360,30 @@ func (k *KubernetesHandler) GetVersions(ctx context.Context) (*Versions, error) 
 	}
 
 	return versions, nil
+}
+
+// GetUpgrades returns all version a VKE cluster can upgrade to
+func (k *KubernetesHandler) GetUpgrades(ctx context.Context, vkeID string) ([]string, error) {
+	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/available-upgrades", vkePath, vkeID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	upgrades := new(availableUpgrades)
+	if err = k.client.DoWithContext(ctx, req, &upgrades); err != nil {
+		return nil, err
+	}
+
+	return upgrades.AvailableUpgrades, nil
+}
+
+// Upgrade beings a VKE cluster upgrade
+func (k *KubernetesHandler) Upgrade(ctx context.Context, vkeID string, body *ClusterUpgradeReq) error {
+
+	req, err := k.client.NewRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/upgrades", vkePath, vkeID), body)
+	if err != nil {
+		return err
+	}
+
+	return k.client.DoWithContext(ctx, req, nil)
 }
