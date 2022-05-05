@@ -10,7 +10,7 @@ func FirewallRules(fwr []govultr.FirewallRule, meta *govultr.Meta) {
 	col := columns{"RULE NUMBER", "ACTION", "TYPE", "PROTOCOL", "PORT", "NETWORK", "SOURCE", "NOTES"}
 	display(col)
 	for _, f := range fwr {
-		display(columns{f.ID, f.Action, f.Type, f.Protocol, f.Port, getFirewallNetwork(f.Subnet, f.SubnetSize), getFirewallSource(f.Source), f.Notes})
+		display(columns{f.ID, f.Action, f.IPType, f.Protocol, f.Port, getFirewallNetwork(f.Subnet, f.SubnetSize), getFirewallSource(f.Source), f.Notes})
 	}
 
 	Meta(meta)
@@ -20,7 +20,7 @@ func FirewallRules(fwr []govultr.FirewallRule, meta *govultr.Meta) {
 func FirewallRule(fwr *govultr.FirewallRule) {
 	col := columns{"RULE NUMBER", "ACTION", "TYPE", "PROTOCOL", "PORT", "NETWORK", "SOURCE", "NOTES"}
 	display(col)
-	display(columns{fwr.ID, fwr.Action, fwr.Type, fwr.Protocol, fwr.Port, getFirewallNetwork(fwr.Subnet, fwr.SubnetSize), getFirewallSource(fwr.Source), fwr.Notes})
+	display(columns{fwr.ID, fwr.Action, fwr.IPType, fwr.Protocol, fwr.Port, getFirewallNetwork(fwr.Subnet, fwr.SubnetSize), getFirewallSource(fwr.Source), fwr.Notes})
 	flush()
 }
 
