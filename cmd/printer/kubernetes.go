@@ -28,6 +28,9 @@ func Clusters(cluster []govultr.Cluster, meta *govultr.Meta) {
 			display(columns{"PLAN", np.Plan})
 			display(columns{"STATUS", np.Status})
 			display(columns{"NODE QUANTITY", np.NodeQuantity})
+			display(columns{"AUTO SCALER", np.AutoScaler})
+			display(columns{"MIN NODES", np.MinNodes})
+			display(columns{"MAX NODES", np.MaxNodes})
 
 			display(columns{" "})
 			display(columns{"NODES"})
@@ -69,6 +72,9 @@ func Cluster(k *govultr.Cluster) {
 		display(columns{"PLAN", np.Plan})
 		display(columns{"STATUS", np.Status})
 		display(columns{"NODE QUANTITY", np.NodeQuantity})
+		display(columns{"AUTO SCALER", np.AutoScaler})
+		display(columns{"MIN NODES", np.MinNodes})
+		display(columns{"MAX NODES", np.MaxNodes})
 
 		display(columns{" "})
 		display(columns{"NODES"})
@@ -94,6 +100,9 @@ func NodePools(nodepool []govultr.NodePool, meta *govultr.Meta) {
 		display(columns{"PLAN", np.Plan})
 		display(columns{"STATUS", np.Status})
 		display(columns{"NODE QUANTITY", np.NodeQuantity})
+		display(columns{"AUTO SCALER", np.AutoScaler})
+		display(columns{"MIN NODES", np.MinNodes})
+		display(columns{"MAX NODES", np.MaxNodes})
 
 		display(columns{" "})
 		display(columns{"NODES"})
@@ -118,6 +127,9 @@ func NodePool(np *govultr.NodePool) {
 	display(columns{"PLAN", np.Plan})
 	display(columns{"STATUS", np.Status})
 	display(columns{"NODE QUANTITY", np.NodeQuantity})
+	display(columns{"AUTO SCALER", np.AutoScaler})
+	display(columns{"MIN NODES", np.MinNodes})
+	display(columns{"MAX NODES", np.MaxNodes})
 
 	display(columns{" "})
 	display(columns{"NODES"})
