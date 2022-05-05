@@ -45,29 +45,31 @@ type BareMetalServerServiceHandler struct {
 
 // BareMetalServer represents a Bare Metal server on Vultr
 type BareMetalServer struct {
-	ID              string   `json:"id"`
-	Os              string   `json:"os"`
-	RAM             string   `json:"ram"`
-	Disk            string   `json:"disk"`
-	MainIP          string   `json:"main_ip"`
-	CPUCount        int      `json:"cpu_count"`
-	Region          string   `json:"region"`
-	DefaultPassword string   `json:"default_password"`
-	DateCreated     string   `json:"date_created"`
-	Status          string   `json:"status"`
-	NetmaskV4       string   `json:"netmask_v4"`
-	GatewayV4       string   `json:"gateway_v4"`
-	Plan            string   `json:"plan"`
-	V6Network       string   `json:"v6_network"`
-	V6MainIP        string   `json:"v6_main_ip"`
-	V6NetworkSize   int      `json:"v6_network_size"`
-	MacAddress      int      `json:"mac_address"`
-	Label           string   `json:"label"`
-	Tag             string   `json:"tag"`
-	OsID            int      `json:"os_id"`
-	AppID           int      `json:"app_id"`
-	ImageID         string   `json:"image_id"`
-	Features        []string `json:"features"`
+	ID              string `json:"id"`
+	Os              string `json:"os"`
+	RAM             string `json:"ram"`
+	Disk            string `json:"disk"`
+	MainIP          string `json:"main_ip"`
+	CPUCount        int    `json:"cpu_count"`
+	Region          string `json:"region"`
+	DefaultPassword string `json:"default_password"`
+	DateCreated     string `json:"date_created"`
+	Status          string `json:"status"`
+	NetmaskV4       string `json:"netmask_v4"`
+	GatewayV4       string `json:"gateway_v4"`
+	Plan            string `json:"plan"`
+	V6Network       string `json:"v6_network"`
+	V6MainIP        string `json:"v6_main_ip"`
+	V6NetworkSize   int    `json:"v6_network_size"`
+	MacAddress      int    `json:"mac_address"`
+	Label           string `json:"label"`
+	// Deprecated: Tag should no longer be used. Instead, use Tags.
+	Tag      string   `json:"tag"`
+	OsID     int      `json:"os_id"`
+	AppID    int      `json:"app_id"`
+	ImageID  string   `json:"image_id"`
+	Features []string `json:"features"`
+	Tags     []string `json:"tags"`
 }
 
 // BareMetalCreate represents the optional parameters that can be set when creating a Bare Metal server
@@ -85,9 +87,11 @@ type BareMetalCreate struct {
 	UserData        string   `json:"user_data,omitempty"`
 	ActivationEmail *bool    `json:"activation_email,omitempty"`
 	Hostname        string   `json:"hostname,omitempty"`
-	Tag             string   `json:"tag,omitempty"`
-	ReservedIPv4    string   `json:"reserved_ipv4,omitempty"`
-	PersistentPxe   *bool    `json:"persistent_pxe,omitempty"`
+	// Deprecated: Tag should no longer be used. Instead, use Tags.
+	Tag           string   `json:"tag,omitempty"`
+	ReservedIPv4  string   `json:"reserved_ipv4,omitempty"`
+	PersistentPxe *bool    `json:"persistent_pxe,omitempty"`
+	Tags          []string `json:"tags"`
 }
 
 // BareMetalUpdate represents the optional parameters that can be set when updating a Bare Metal server
@@ -98,7 +102,9 @@ type BareMetalUpdate struct {
 	AppID      int    `json:"app_id,omitempty"`
 	ImageID    string `json:"image_id,omitempty"`
 	UserData   string `json:"user_data,omitempty"`
-	Tag        string `json:"tag,omitempty"`
+	// Deprecated: Tag should no longer be used. Instead, use Tags.
+	Tag  string   `json:"tag,omitempty"`
+	Tags []string `json:"tags"`
 }
 
 // BareMetalServerBandwidth represents bandwidth information for a Bare Metal server

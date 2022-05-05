@@ -75,35 +75,37 @@ type InstanceServiceHandler struct {
 
 // Instance represents a VPS
 type Instance struct {
-	ID               string   `json:"id"`
-	Os               string   `json:"os"`
-	RAM              int      `json:"ram"`
-	Disk             int      `json:"disk"`
-	Plan             string   `json:"plan"`
-	MainIP           string   `json:"main_ip"`
-	VCPUCount        int      `json:"vcpu_count"`
-	Region           string   `json:"region"`
-	DefaultPassword  string   `json:"default_password,omitempty"`
-	DateCreated      string   `json:"date_created"`
-	Status           string   `json:"status"`
-	AllowedBandwidth int      `json:"allowed_bandwidth"`
-	NetmaskV4        string   `json:"netmask_v4"`
-	GatewayV4        string   `json:"gateway_v4"`
-	PowerStatus      string   `json:"power_status"`
-	ServerStatus     string   `json:"server_status"`
-	V6Network        string   `json:"v6_network"`
-	V6MainIP         string   `json:"v6_main_ip"`
-	V6NetworkSize    int      `json:"v6_network_size"`
-	Label            string   `json:"label"`
-	InternalIP       string   `json:"internal_ip"`
-	KVM              string   `json:"kvm"`
-	Tag              string   `json:"tag"`
-	OsID             int      `json:"os_id"`
-	AppID            int      `json:"app_id"`
-	ImageID          string   `json:"image_id"`
-	FirewallGroupID  string   `json:"firewall_group_id"`
-	Features         []string `json:"features"`
-	Hostname         string   `json:"hostname"`
+	ID               string `json:"id"`
+	Os               string `json:"os"`
+	RAM              int    `json:"ram"`
+	Disk             int    `json:"disk"`
+	Plan             string `json:"plan"`
+	MainIP           string `json:"main_ip"`
+	VCPUCount        int    `json:"vcpu_count"`
+	Region           string `json:"region"`
+	DefaultPassword  string `json:"default_password,omitempty"`
+	DateCreated      string `json:"date_created"`
+	Status           string `json:"status"`
+	AllowedBandwidth int    `json:"allowed_bandwidth"`
+	NetmaskV4        string `json:"netmask_v4"`
+	GatewayV4        string `json:"gateway_v4"`
+	PowerStatus      string `json:"power_status"`
+	ServerStatus     string `json:"server_status"`
+	V6Network        string `json:"v6_network"`
+	V6MainIP         string `json:"v6_main_ip"`
+	V6NetworkSize    int    `json:"v6_network_size"`
+	Label            string `json:"label"`
+	InternalIP       string `json:"internal_ip"`
+	KVM              string `json:"kvm"`
+	// Deprecated: Tag should no longer be used. Instead, use Tags.
+	Tag             string   `json:"tag"`
+	OsID            int      `json:"os_id"`
+	AppID           int      `json:"app_id"`
+	ImageID         string   `json:"image_id"`
+	FirewallGroupID string   `json:"firewall_group_id"`
+	Features        []string `json:"features"`
+	Hostname        string   `json:"hostname"`
+	Tags            []string `json:"tags"`
 }
 
 type instanceBase struct {
@@ -229,20 +231,22 @@ type Upgrades struct {
 
 // InstanceCreateReq struct used to create an instance.
 type InstanceCreateReq struct {
-	Region          string `json:"region,omitempty"`
-	Plan            string `json:"plan,omitempty"`
-	Label           string `json:"label,omitempty"`
-	Tag             string `json:"tag,omitempty"`
-	OsID            int    `json:"os_id,omitempty"`
-	ISOID           string `json:"iso_id,omitempty"`
-	AppID           int    `json:"app_id,omitempty"`
-	ImageID         string `json:"image_id,omitempty"`
-	FirewallGroupID string `json:"firewall_group_id,omitempty"`
-	Hostname        string `json:"hostname,omitempty"`
-	IPXEChainURL    string `json:"ipxe_chain_url,omitempty"`
-	ScriptID        string `json:"script_id,omitempty"`
-	SnapshotID      string `json:"snapshot_id,omitempty"`
-	EnableIPv6      *bool  `json:"enable_ipv6,omitempty"`
+	Region string `json:"region,omitempty"`
+	Plan   string `json:"plan,omitempty"`
+	Label  string `json:"label,omitempty"`
+	// Deprecated: Tag should no longer be used. Instead, use Tags.
+	Tag             string   `json:"tag,omitempty"`
+	Tags            []string `json:"tags"`
+	OsID            int      `json:"os_id,omitempty"`
+	ISOID           string   `json:"iso_id,omitempty"`
+	AppID           int      `json:"app_id,omitempty"`
+	ImageID         string   `json:"image_id,omitempty"`
+	FirewallGroupID string   `json:"firewall_group_id,omitempty"`
+	Hostname        string   `json:"hostname,omitempty"`
+	IPXEChainURL    string   `json:"ipxe_chain_url,omitempty"`
+	ScriptID        string   `json:"script_id,omitempty"`
+	SnapshotID      string   `json:"snapshot_id,omitempty"`
+	EnableIPv6      *bool    `json:"enable_ipv6,omitempty"`
 	// Deprecated:  EnablePrivateNetwork should no longer be used. Instead, use EnableVPC.
 	EnablePrivateNetwork *bool `json:"enable_private_network,omitempty"`
 	// Deprecated:  AttachPrivateNetwork should no longer be used. Instead, use AttachVPC.
@@ -259,13 +263,15 @@ type InstanceCreateReq struct {
 
 // InstanceUpdateReq struct used to update an instance.
 type InstanceUpdateReq struct {
-	Plan       string `json:"plan,omitempty"`
-	Label      string `json:"label,omitempty"`
-	Tag        string `json:"tag,omitempty"`
-	OsID       int    `json:"os_id,omitempty"`
-	AppID      int    `json:"app_id,omitempty"`
-	ImageID    string `json:"image_id,omitempty"`
-	EnableIPv6 *bool  `json:"enable_ipv6,omitempty"`
+	Plan  string `json:"plan,omitempty"`
+	Label string `json:"label,omitempty"`
+	// Deprecated: Tag should no longer be used. Instead, use Tags.
+	Tag        string   `json:"tag,omitempty"`
+	Tags       []string `json:"tags"`
+	OsID       int      `json:"os_id,omitempty"`
+	AppID      int      `json:"app_id,omitempty"`
+	ImageID    string   `json:"image_id,omitempty"`
+	EnableIPv6 *bool    `json:"enable_ipv6,omitempty"`
 	// Deprecated:  EnablePrivateNetwork should no longer be used. Instead, use EnableVPC.
 	EnablePrivateNetwork *bool `json:"enable_private_network,omitempty"`
 	// Deprecated:  AttachPrivateNetwork should no longer be used. Instead, use AttachVPC.
