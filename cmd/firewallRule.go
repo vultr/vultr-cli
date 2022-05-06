@@ -49,7 +49,7 @@ var (
 	vultr-cli firewall rule create --id=f04ae5aa-ff6a-4078-900d-78cc17dca2d5 --ip-type=v4 --protocol=icmp --size=24 --subnet=127.0.0.0
 
 	# Shortened example with aliases
-	vultr-cli fw r c -i=f04ae5aa-ff6a-4078-900d-78cc17dca2d5 --ip-type=v4 -p=tcp -z=24 -s=127.0.0.0 -r=30000
+	vultr-cli fw r c -i=f04ae5aa-ff6a-4078-900d-78cc17dca2d5 --t=v4 -p=tcp -z=24 -s=127.0.0.0 -r=30000
 	`
 	firewallRuleDeleteLong    = `Delete a firewall rule in the provided firewall group`
 	firewallRuleDeleteExample = `
@@ -94,8 +94,8 @@ func FirewallRule() *cobra.Command {
 	firewallRuleCreate.Flags().StringP("subnet", "s", "", "The IPv4 network in CIDR notation.")
 	firewallRuleCreate.Flags().IntP("size", "z", 0, "The number of bits for the netmask in CIDR notation.")
 	firewallRuleCreate.Flags().StringP("source", "o", "", "(optional) When empty, uses value from subnet and size. If \"cloudflare\", allows all Cloudflare IP space through firewall.")
-	firewallRuleCreate.Flags().StringP("type", "t", "", "Deprecated: use ip-type instead. The type of IP rule - v4 or v6.")
-	firewallRuleCreate.Flags().StringP("ip-type", "", "", "The type of IP rule - v4 or v6.")
+	firewallRuleCreate.Flags().StringP("type", "", "", "Deprecated: use ip-type instead. The type of IP rule - v4 or v6.")
+	firewallRuleCreate.Flags().StringP("ip-type", "t", "", "The type of IP rule - v4 or v6.")
 
 	firewallRuleCreate.Flags().StringP("port", "r", "", "(optional) TCP/UDP only. This field can be an integer value specifying a port or a colon separated port range.")
 	firewallRuleCreate.Flags().StringP("notes", "n", "", "(optional) This field supports notes up to 255 characters.")
