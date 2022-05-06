@@ -150,3 +150,12 @@ func K8Versions(versions *govultr.Versions) {
 
 	flush()
 }
+
+func K8Upgrades(upgrades []string) {
+	display(columns{"UPGRADES"})
+	for _, v := range upgrades {
+		display(columns{v})
+	}
+
+	flush()
+}
