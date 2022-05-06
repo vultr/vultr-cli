@@ -118,7 +118,7 @@ var (
 	createNPLong    = `Create node pool for your kubernetes cluster on your Vultr account`
 	createNPExample = `
 	# Full Example
-	vultr-cli kubernetes node-pool create --label="nodepool" --quantity=3  --plan="vc2-1c-2gb"
+	vultr-cli kubernetes node-pool create ffd31f18-5f77-454c-9064-212f942c3c34 --label="nodepool" --quantity=3  --plan="vc2-1c-2gb"
 	
 	# Shortened with alias commands
 	vultr-cli k n c ffd31f18-5f77-454c-9064-212f942c3c34 -l="nodepool" -q=3  -p="vc2-1c-2gb"
@@ -231,6 +231,9 @@ func Kubernetes() *cobra.Command {
 	npCreate.Flags().StringP("tag", "t", "", "tag you want for your node pool.")
 	npCreate.Flags().StringP("plan", "p", "", "the plan you want for your node pool.")
 	npCreate.Flags().IntP("quantity", "q", 1, "Number of nodes in your node pool. Note that at least one node is required for a node pool.")
+	npCreate.Flags().BoolP("auto-scaler", "", false, "Enable the auto scaler with your cluster")
+	npCreate.Flags().IntP("min-nodes", "", 1, "Minimum nodes for auto scaler")
+	npCreate.Flags().IntP("max-nodes", "", 1, "Maximum nodes for auto scaler")
 
 	npCreate.MarkFlagRequired("label")
 	npCreate.MarkFlagRequired("quantity")
@@ -241,6 +244,9 @@ func Kubernetes() *cobra.Command {
 
 	npUpdate.Flags().IntP("quantity", "q", 1, "Number of nodes in your node pool. Note that at least one node is required for a node pool.")
 	npUpdate.Flags().StringP("tag", "t", "", "tag you want for your node pool.")
+	npUpdate.Flags().BoolP("auto-scaler", "", false, "Enable the auto scaler with your cluster")
+	npUpdate.Flags().IntP("min-nodes", "", 1, "Minimum nodes for auto scaler")
+	npUpdate.Flags().IntP("max-nodes", "", 1, "Maximum nodes for auto scaler")
 
 	// Node Instance SubCommands
 	nodeCmd := &cobra.Command{
@@ -467,12 +473,22 @@ var npCreate = &cobra.Command{
 		label, _ := cmd.Flags().GetString("label")
 		tag, _ := cmd.Flags().GetString("tag")
 		plan, _ := cmd.Flags().GetString("plan")
+		autoscaler, _ := cmd.Flags().GetBool("auto-scaler")
+		min, _ := cmd.Flags().GetInt("min-nodes")
+		max, _ := cmd.Flags().GetInt("max-nodes")
 
 		options := &govultr.NodePoolReq{
 			NodeQuantity: quantity,
 			Label:        label,
 			Plan:         plan,
 			Tag:          tag,
+			AutoScaler:   govultr.BoolToBoolPtr(false),
+			MinNodes:     min,
+			MaxNodes:     max,
+		}
+
+		if autoscaler {
+			options.AutoScaler = govultr.BoolToBoolPtr(true)
 		}
 
 		np, err := client.Kubernetes.CreateNodePool(context.Background(), id, options)
@@ -502,10 +518,20 @@ var npUpdate = &cobra.Command{
 		nodeID := args[1]
 		quantity, _ := cmd.Flags().GetInt("quantity")
 		tag, _ := cmd.Flags().GetString("tag")
+		autoscaler, _ := cmd.Flags().GetBool("auto-scaler")
+		min, _ := cmd.Flags().GetInt("min-nodes")
+		max, _ := cmd.Flags().GetInt("max-nodes")
 
 		options := &govultr.NodePoolReqUpdate{
 			NodeQuantity: quantity,
 			Tag:          tag,
+			AutoScaler:   govultr.BoolToBoolPtr(false),
+			MinNodes:     min,
+			MaxNodes:     max,
+		}
+
+		if autoscaler {
+			options.AutoScaler = govultr.BoolToBoolPtr(true)
 		}
 
 		np, err := client.Kubernetes.UpdateNodePool(context.Background(), id, nodeID, options)
@@ -654,8 +680,8 @@ func formatNodePools(nodePools []string) ([]govultr.NodePoolReq, error) {
 		np := govultr.NodePoolReq{}
 		node := strings.Split(r, ",")
 
-		if len(node) != 3 && len(node) != 4 {
-			return nil, fmt.Errorf("unable to format node pool. each node pool must include label, quantity, and plan")
+		if len(node) < 3 || len(node) > 7 {
+			return nil, fmt.Errorf("unable to format node pool. each node pool must include label, quantity, and plan.  Optionally you can include tag, auto-scaler, min-nodes and max-nodes")
 		}
 
 		for _, f := range node {
@@ -672,12 +698,33 @@ func formatNodePools(nodePools []string) ([]govultr.NodePoolReq, error) {
 			case field == "plan":
 				np.Plan = val
 			case field == "quantity":
-				port, _ := strconv.Atoi(val)
+				port, err := strconv.Atoi(val)
+				if err != nil {
+					return nil, fmt.Errorf("invalid value for node pool quantity: %v", err)
+				}
 				np.NodeQuantity = port
 			case field == "label":
 				np.Label = val
 			case field == "tag":
 				np.Tag = val
+			case field == "auto-scaler":
+				v, err := strconv.ParseBool(val)
+				if err != nil {
+					return nil, fmt.Errorf("invalid value for node pool auto-scaler: %v", err)
+				}
+				np.AutoScaler = govultr.BoolToBoolPtr(v)
+			case field == "min-nodes":
+				v, err := strconv.Atoi(val)
+				if err != nil {
+					return nil, fmt.Errorf("invalid value for node pool min-nodes: %v", err)
+				}
+				np.MinNodes = v
+			case field == "max-nodes":
+				v, err := strconv.Atoi(val)
+				if err != nil {
+					return nil, fmt.Errorf("invalid value for node pool max-nodes: %v", err)
+				}
+				np.MaxNodes = v
 			}
 		}
 
