@@ -528,9 +528,7 @@ var k8Upgrade = &cobra.Command{
 			UpgradeVersion: version,
 		}
 
-		err := client.Kubernetes.Upgrade(context.Background(), id, options)
-
-		if err != nil {
+		if err := client.Kubernetes.Upgrade(context.Background(), id, options); err != nil {
 			fmt.Printf("error performing cluster upgrade : %v\n", err)
 			os.Exit(1)
 		}
