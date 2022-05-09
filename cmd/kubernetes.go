@@ -127,10 +127,10 @@ var (
 	upgradeLong    = `Initiate an upgrade of the kubernetes version on a given cluster`
 	upgradeExample = `
 	# Full example
-	vultr-cli kubernetes upgrades upgrade d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 --version="v1.23.5+3"
+	vultr-cli kubernetes upgrades start d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 --version="v1.23.5+3"
 
 	# Shortened with alias commands
-	vultr-cli k e u d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 -v="v1.23.5+3"
+	vultr-cli k e s d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 -v="v1.23.5+3"
 	`
 
 	nodepoolLong    = `Get all available commands for Kubernetes node pools`
@@ -515,11 +515,11 @@ var k8GetUpgrades = &cobra.Command{
 }
 
 var k8Upgrade = &cobra.Command{
-	Use:     "upgrade <clusterID>",
+	Use:     "start <clusterID>",
 	Short:   "perform upgrade on a cluster",
 	Long:    upgradeLong,
 	Example: upgradeExample,
-	Aliases: []string{"u"},
+	Aliases: []string{"s"},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		version, _ := cmd.Flags().GetString("version")
