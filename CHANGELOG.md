@@ -1,5 +1,25 @@
 # Change Log
 
+## [v2.14.0](https://github.com/vultr/vultr-cli/compare/v2.13.0..v2.14.0) (2022-05-09)
+### Enhancements
+* Kubernetes : Add support for kubernetes version upgrades on individual clusters [PR 263](https://github.com/vultr/vultr-cli/pull/263)
+* Kubernetes : Add support for node pool auto scaler options [PR 261](https://github.com/vultr/vultr-cli/pull/261)
+* Firewall Rule : Update IP type option to match API verbiage for firewall rules [PR 262](https://github.com/vultr/vultr-cli/pull/262)
+* Baremetal : Add support for multiple tags via the `tags` field [PR 259](https://github.com/vultr/vultr-cli/pull/259)
+* Instances : Add support for multiple tags via the `tags` field [PR 259](https://github.com/vultr/vultr-cli/pull/259)
+
+### Deprecations 
+* Firewall Rule : The `type` option on firewall rules has been replaced by `ip-type` [PR 262](https://github.com/vultr/vultr-cli/pull/262)
+* Baremetal : the `tag` field has been replaced by `tags` which supports multiple tags [PR 259](https://github.com/vultr/vultr-cli/pull/259)
+* Instances : the `tag` field has been replaced by `tags` which supports multiple tags [PR 259](https://github.com/vultr/vultr-cli/pull/259)
+
+### Dependencies
+* Bump github.com/vultr/govultr/v2 from 2.15.1 to 2.16.0 [PR 260](https://github.com/vultr/vultr-cli/pull/260)
+
+### Documentation
+* Update BSD install instructions [PR 258](https://github.com/vultr/vultr-cli/pull/258)
+* Update README and improve verbiage for snapshots [PR 257](https://github.com/vultr/vultr-cli/pull/257)
+
 ## [v2.13.0](https://github.com/vultr/vultr-cli/compare/v2.12.2..v2.13.0) (2022-04-15)
 ### Enhancements
 * VPC : new commands which will be replacing `network` (private networks) [PR 251](https://github.com/vultr/vultr-cli/pull/251) 
