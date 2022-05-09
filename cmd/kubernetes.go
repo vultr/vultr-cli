@@ -106,22 +106,31 @@ var (
 	vultr-cli k v
 	`
 
+	upgradesLong    = `Display available kubernetes upgrade commands`
+	upgradesExample = `
+	# Full example
+	vultr-cli kubernetes upgrades
+
+	# Shortened example with aliases
+	vultr-cli k e
+	`
+
 	getUpgradesLong    = `Returns a list of available kubernetes version the cluster can be upgraded to`
 	getUpgradesExample = `
 	# Full example
-	vultr-cli kubernetes upgrade list d4908765-b82a-4e7d-83d9-c0bc4c6a36d0
+	vultr-cli kubernetes upgrades list d4908765-b82a-4e7d-83d9-c0bc4c6a36d0
 
 	# Shortened with alias commands
-	vultr-cli k k d4908765-b82a-4e7d-83d9-c0bc4c6a36d0
+	vultr-cli k e l d4908765-b82a-4e7d-83d9-c0bc4c6a36d0
 	`
 
 	upgradeLong    = `Initiate an upgrade of the kubernetes version on a given cluster`
 	upgradeExample = `
 	# Full example
-	vultr-cli kubernetes upgrade d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 --version="v1.23.5+3"
+	vultr-cli kubernetes upgrades upgrade d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 --version="v1.23.5+3"
 
 	# Shortened with alias commands
-	vultr-cli k g d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 -v="v1.23.5+3"
+	vultr-cli k e u d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 -v="v1.23.5+3"
 	`
 
 	nodepoolLong    = `Get all available commands for Kubernetes node pools`
@@ -218,7 +227,7 @@ func Kubernetes() *cobra.Command {
 		Example: kubernetesExample,
 	}
 
-	kubernetesCmd.AddCommand(k8Create, k8Get, k8List, k8GetConfig, k8Update, k8Delete, k8DeleteWithResources, k8GetVersions, k8GetUpgrades, k8Upgrade)
+	kubernetesCmd.AddCommand(k8Create, k8Get, k8List, k8GetConfig, k8Update, k8Delete, k8DeleteWithResources, k8GetVersions)
 	k8Create.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
 	k8Create.Flags().StringP("region", "r", "", "region you want your kubernetes cluster to be located in")
 	k8Create.Flags().StringP("version", "v", "", "the kubernetes version you want for your cluster")
@@ -235,8 +244,19 @@ func Kubernetes() *cobra.Command {
 	k8Update.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
 	k8Update.MarkFlagRequired("label")
 
+	// Sub command for upgrade functions
+	k8UpgradeCmd := &cobra.Command{
+		Use:     "upgrades",
+		Aliases: []string{"upgrade", "e"},
+		Short:   `upgrade commands for kubernetes version upgrades`,
+		Long:    upgradesLong,
+		Example: upgradesExample,
+	}
+
+	k8UpgradeCmd.AddCommand(k8Upgrade, k8GetUpgrades)
 	k8Upgrade.Flags().StringP("version", "v", "", "the version to upgrade the cluster to")
 	k8Upgrade.MarkFlagRequired("version")
+	kubernetesCmd.AddCommand(k8UpgradeCmd)
 
 	// Node Pools SubCommands
 	nodepoolsCmd := &cobra.Command{
@@ -477,11 +497,11 @@ var k8GetVersions = &cobra.Command{
 }
 
 var k8GetUpgrades = &cobra.Command{
-	Use:     "upgrades list <clusterID>",
+	Use:     "list <clusterID>",
 	Short:   "gets available upgrades for a cluster",
 	Long:    getUpgradesLong,
 	Example: getUpgradesExample,
-	Aliases: []string{"k"},
+	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		upgrades, err := client.Kubernetes.GetUpgrades(context.Background(), id)
@@ -499,7 +519,7 @@ var k8Upgrade = &cobra.Command{
 	Short:   "perform upgrade on a cluster",
 	Long:    upgradeLong,
 	Example: upgradeExample,
-	Aliases: []string{"g"},
+	Aliases: []string{"u"},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		version, _ := cmd.Flags().GetString("version")
