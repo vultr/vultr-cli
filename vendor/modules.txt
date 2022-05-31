@@ -73,7 +73,7 @@ github.com/spf13/viper/internal/encoding/yaml
 # github.com/subosito/gotenv v1.3.0
 ## explicit; go 1.18
 github.com/subosito/gotenv
-# github.com/vultr/govultr/v2 v2.16.0
+# github.com/vultr/govultr/v2 v2.17.0
 ## explicit; go 1.17
 github.com/vultr/govultr/v2
 # golang.org/x/net v0.0.0-20220520000938-2e3eb7b945c2

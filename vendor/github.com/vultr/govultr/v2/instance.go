@@ -266,7 +266,7 @@ type InstanceUpdateReq struct {
 	Plan  string `json:"plan,omitempty"`
 	Label string `json:"label,omitempty"`
 	// Deprecated: Tag should no longer be used. Instead, use Tags.
-	Tag        string   `json:"tag,omitempty"`
+	Tag        *string  `json:"tag,omitempty"`
 	Tags       []string `json:"tags"`
 	OsID       int      `json:"os_id,omitempty"`
 	AppID      int      `json:"app_id,omitempty"`
