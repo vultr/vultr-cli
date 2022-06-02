@@ -363,7 +363,7 @@ var instanceTag = &cobra.Command{
 		id := args[0]
 		tag, _ := cmd.Flags().GetString("tag")
 		options := &govultr.InstanceUpdateReq{
-			Tag: tag,
+			Tag: govultr.StringToStringPtr(tag),
 		}
 
 		if _, err := client.Instance.Update(context.Background(), id, options); err != nil {

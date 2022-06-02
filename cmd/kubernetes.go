@@ -606,7 +606,7 @@ var npUpdate = &cobra.Command{
 
 		options := &govultr.NodePoolReqUpdate{
 			NodeQuantity: quantity,
-			Tag:          tag,
+			Tag:          govultr.StringToStringPtr(tag),
 			AutoScaler:   govultr.BoolToBoolPtr(false),
 			MinNodes:     min,
 			MaxNodes:     max,
