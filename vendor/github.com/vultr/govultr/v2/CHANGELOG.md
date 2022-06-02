@@ -2,6 +2,26 @@
 
 ## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
 
+## [v2.17.1](https://github.com/vultr/govultr/compare/v2.17.0...v2.17.1) (2022-06-02)
+* Plans: Add GPU specific fields to plan struct [224](https://github.com/vultr/govultr/pull/224)
+
+## [v2.17.0](https://github.com/vultr/govultr/compare/v2.16.0..v2.17.0) (2022-05-17)
+
+### Enhancement
+* Kubernetes: allow `tag` update to delete existing value [222](https://github.com/vultr/govultr/pull/222)
+* Baremetal: allow `tag` update to delete existing value [222](https://github.com/vultr/govultr/pull/222)
+* Instance: allow `tag` update to delete existing value [222](https://github.com/vultr/govultr/pull/222)
+
+### Bug fixes
+* Kubernetes: fix data type for `auto_scaler` to avoid sending null values in requests when not set [222](https://github.com/vultr/govultr/pull/222)
+
+### Breaking Change
+* Kubernetes: change data type for `Tag` in node pool update requirements struct [222](https://github.com/vultr/govultr/pull/222)
+* Kubernetes: change data type for `AutoScaler` in node pool update requirements struct [222](https://github.com/vultr/govultr/pull/222)
+* Baremetal: change data type for `Tag` in update requirements struct [222](https://github.com/vultr/govultr/pull/222)
+* Instance: change data type for `Tag` in update requirements struct [222](https://github.com/vultr/govultr/pull/222)
+
+
 ## [v2.16.0](https://github.com/vultr/govultr/compare/v2.15.1..v2.16.0) (2022-05-04)
 
 ### Enhancement

@@ -103,7 +103,7 @@ type BareMetalUpdate struct {
 	ImageID    string `json:"image_id,omitempty"`
 	UserData   string `json:"user_data,omitempty"`
 	// Deprecated: Tag should no longer be used. Instead, use Tags.
-	Tag  string   `json:"tag,omitempty"`
+	Tag  *string  `json:"tag,omitempty"`
 	Tags []string `json:"tags"`
 }
 
