@@ -1,5 +1,16 @@
 # Change Log
 
+**Full Changelog**: 
+## [v2.14.1](https://github.com/vultr/vultr-cli/compare/v2.14.0...v2.14.1) (2022-06-03)
+### Enhancements
+* Plans: Add GPU fields [PR 269](https://github.com/vultr/vultr-cli/pull/269)
+* Instances: Update `tag` to string pointer [PR 268](https://github.com/vultr/vultr-cli/pull/268)
+* Kuberneted: Update `tag` to string pointer [PR 268](https://github.com/vultr/vultr-cli/pull/268)
+
+### Dependencies
+* Bump github.com/spf13/viper from 1.11.0 to 1.12.0 [PR 266](https://github.com/vultr/vultr-cli/pull/266)
+* Bump govultr version from 2.16.0 to 2.17.1 [PR 267](https://github.com/vultr/vultr-cli/pull/267)
+
 ## [v2.14.0](https://github.com/vultr/vultr-cli/compare/v2.13.0..v2.14.0) (2022-05-09)
 ### Enhancements
 * Kubernetes : Add support for kubernetes version upgrades on individual clusters [PR 263](https://github.com/vultr/vultr-cli/pull/263)
