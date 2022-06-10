@@ -34,7 +34,7 @@ func ReservedIP() *cobra.Command {
 		Long:    ``,
 	}
 
-	reservedIPCmd.AddCommand(reservedIPGet, reservedIPList, reservedIPDelete, reservedIPAttach, reservedIPDetach, reservedIPConvert, reservedIPCreate)
+	reservedIPCmd.AddCommand(reservedIPGet, reservedIPList, reservedIPDelete, reservedIPAttach, reservedIPDetach, reservedIPConvert, reservedIPCreate, reservedIPUpdate)
 
 	// List
 	reservedIPList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
@@ -58,7 +58,7 @@ func ReservedIP() *cobra.Command {
 
 	// Update
 	reservedIPUpdate.Flags().StringP("label", "l", "", "label")
-	reservedIPCreate.MarkFlagRequired("label")
+	reservedIPUpdate.MarkFlagRequired("label")
 
 	return reservedIPCmd
 }
@@ -214,17 +214,24 @@ var reservedIPCreate = &cobra.Command{
 }
 
 var reservedIPUpdate = &cobra.Command{
-	Use:   "update",
+	Use:   "update <reservedIPID>",
 	Short: "update reservedIP",
 	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a reserved IP ID")
+		}
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		label, _ := cmd.Flags().GetString("label")
+		ip := args[0]
 
 		options := &govultr.ReservedIPUpdateReq{
-			Label: label,
+			Label: govultr.StringToStringPtr(label),
 		}
 
-		r, err := client.ReservedIP.Update(context.Background(), options)
+		r, err := client.ReservedIP.Update(context.Background(), ip, options)
 		if err != nil {
 			fmt.Printf("error updating reserved IPs : %v\n", err)
 			os.Exit(1)
