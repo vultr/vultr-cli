@@ -56,6 +56,10 @@ func ReservedIP() *cobra.Command {
 	reservedIPCreate.MarkFlagRequired("type")
 	reservedIPCreate.Flags().StringP("label", "l", "", "label")
 
+	// Update
+	reservedIPUpdate.Flags().StringP("label", "l", "", "label")
+	reservedIPCreate.MarkFlagRequired("label")
+
 	return reservedIPCmd
 }
 
@@ -202,6 +206,27 @@ var reservedIPCreate = &cobra.Command{
 		r, err := client.ReservedIP.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error creating reserved IPs : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.ReservedIP(r)
+	},
+}
+
+var reservedIPUpdate = &cobra.Command{
+	Use:   "update",
+	Short: "update reservedIP",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		label, _ := cmd.Flags().GetString("label")
+
+		options := &govultr.ReservedIPUpdateReq{
+			Label: label,
+		}
+
+		r, err := client.ReservedIP.Update(context.Background(), options)
+		if err != nil {
+			fmt.Printf("error updating reserved IPs : %v\n", err)
 			os.Exit(1)
 		}
 
