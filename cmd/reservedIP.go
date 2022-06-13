@@ -25,13 +25,94 @@ import (
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
+var (
+	reservedIPLong    = `Get all available commands for reserved IPs`
+	reservedIPExample = `
+	# Full example
+	vultr-cli reserved-ip
+
+	# Shortened with aliased commands
+	vultr-cli rip
+	`
+
+	reservedIPCreateLong    = `Create a reserved IP on your Vultr account`
+	reservedIPCreateExample = `
+	# Full Example
+	vultr-cli reserved-ip create --region="yto" --type="v4" --label="new IP"
+	
+	# Shortened with alias commands
+	vultr-cli rip c -r="yto" -t="v4" -l="new IP"
+	`
+
+	reservedIPGetLong    = `Get info for a reserved IP on your Vultr account`
+	reservedIPGetExample = `
+	# Full example
+	vultr-cli reserved-ip get 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5
+
+	# Shortened with alias commands
+	vultr-cli rip g 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5
+	`
+
+	reservedIPListLong    = `List all reserved IPs on your Vultr account`
+	reservedIPListExample = `
+	# Full example
+	vultr-cli reserved-ip list 
+	
+	# Shortened with alias commands
+	vultr-cli rip l
+	`
+
+	reservedIPAttachLong    = `Attach a reserved IP to an instance on your Vultr account`
+	reservedIPAttachExample = `
+	# Full example
+	vultr-cli reserved-ip attach 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5 --instance-id="2b9bf5fb-1644-4e0a-b706-1116ab64d783" 
+	
+	# Shortened with alias commands
+	vultr-cli rip a 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5 -i="2b9bf5fb-1644-4e0a-b706-1116ab64d783" 
+	`
+
+	reservedIPDetachLong    = `Detach a reserved IP from an instance on your Vultr account`
+	reservedIPDetachExample = `
+	# Full example
+	vultr-cli reserved-ip detach 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5
+	
+	# Shortened with alias commands
+	vultr-cli rip d 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5
+	`
+
+	reservedIPConvertLong    = `Convert an instance IP to a reserved IP on your Vultr account`
+	reservedIPConvertExample = `
+	# Full example
+	vultr-cli reserved-ip convert --ip="192.0.2.123" --label="new label converted"
+	
+	# Shortened with alias commands
+	vultr-cli rip v -i="192.0.2.123" -l="new label converted"
+	`
+
+	reservedIPUpdateLong    = `Update a reserved IP on your Vultr account`
+	reservedIPUpdateExample = `
+	# Full example
+	vultr-cli reserved-ip update 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5 --label="new label"
+
+	# Shortened with alias commands
+	vultr-cli rip u 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5 -l="new label"
+	`
+
+	reservedIPDeleteLong    = `Delete a reserved IP from your Vultr account`
+	reservedIPDeleteExample = `
+	# Full example
+	vultr-cli reserved-ip delete 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5
+	`
+)
+
 // ReservedIP represents the reservedip command
 func ReservedIP() *cobra.Command {
 	reservedIPCmd := &cobra.Command{
 		Use:     "reserved-ip",
 		Aliases: []string{"rip"},
 		Short:   "reserved-ip lets you interact with reserved-ip ",
-		Long:    ``,
+		Long:    reservedIPLong,
+		Example: reservedIPExample,
 	}
 
 	reservedIPCmd.AddCommand(reservedIPGet, reservedIPList, reservedIPDelete, reservedIPAttach, reservedIPDetach, reservedIPConvert, reservedIPCreate, reservedIPUpdate)
@@ -64,9 +145,11 @@ func ReservedIP() *cobra.Command {
 }
 
 var reservedIPGet = &cobra.Command{
-	Use:   "get <reservedIPID",
-	Short: "get a reserved IP",
-	Long:  ``,
+	Use:     "get <reservedIPID>",
+	Short:   "get a reserved IP",
+	Long:    reservedIPGetLong,
+	Example: reservedIPGetExample,
+	Aliases: []string{"g"},
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a reservedIP ID")
@@ -86,9 +169,11 @@ var reservedIPGet = &cobra.Command{
 }
 
 var reservedIPList = &cobra.Command{
-	Use:   "list",
-	Short: "list all reserved IPs",
-	Long:  ``,
+	Use:     "list",
+	Short:   "list all reserved IPs",
+	Long:    reservedIPListLong,
+	Example: reservedIPListExample,
+	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
 		rip, meta, err := client.ReservedIP.List(context.Background(), options)
@@ -104,8 +189,9 @@ var reservedIPList = &cobra.Command{
 var reservedIPDelete = &cobra.Command{
 	Use:     "delete <reservedIPID>",
 	Short:   "delete a reserved ip",
+	Long:    reservedIPDeleteLong,
+	Example: reservedIPDeleteExample,
 	Aliases: []string{"destroy"},
-	Long:    ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a reservedIP ID")
@@ -124,9 +210,11 @@ var reservedIPDelete = &cobra.Command{
 }
 
 var reservedIPAttach = &cobra.Command{
-	Use:   "attach <reservedIPID>",
-	Short: "attach a reservedIP to an instance",
-	Long:  ``,
+	Use:     "attach <reservedIPID>",
+	Short:   "attach a reservedIP to an instance",
+	Long:    reservedIPAttachLong,
+	Example: reservedIPAttachExample,
+	Aliases: []string{"a"},
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a reservedIP ID")
@@ -146,9 +234,11 @@ var reservedIPAttach = &cobra.Command{
 }
 
 var reservedIPDetach = &cobra.Command{
-	Use:   "detach <reservedIPID>",
-	Short: "detach a reservedIP to an instance",
-	Long:  ``,
+	Use:     "detach <reservedIPID>",
+	Short:   "detach a reservedIP to an instance",
+	Long:    reservedIPDetachLong,
+	Example: reservedIPDetachExample,
+	Aliases: []string{"d"},
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a reservedIP ID")
@@ -167,9 +257,11 @@ var reservedIPDetach = &cobra.Command{
 }
 
 var reservedIPConvert = &cobra.Command{
-	Use:   "convert ",
-	Short: "convert IP address to reservedIP",
-	Long:  ``,
+	Use:     "convert ",
+	Short:   "convert IP address to reservedIP",
+	Long:    reservedIPConvertLong,
+	Example: reservedIPConvertExample,
+	Aliases: []string{"v"},
 	Run: func(cmd *cobra.Command, args []string) {
 		ip, _ := cmd.Flags().GetString("ip")
 		label, _ := cmd.Flags().GetString("label")
@@ -189,9 +281,11 @@ var reservedIPConvert = &cobra.Command{
 }
 
 var reservedIPCreate = &cobra.Command{
-	Use:   "create ",
-	Short: "create reservedIP",
-	Long:  ``,
+	Use:     "create ",
+	Short:   "create reservedIP",
+	Long:    reservedIPCreateLong,
+	Example: reservedIPCreateExample,
+	Aliases: []string{"c"},
 	Run: func(cmd *cobra.Command, args []string) {
 		region, _ := cmd.Flags().GetString("region")
 		ipType, _ := cmd.Flags().GetString("type")
@@ -214,9 +308,11 @@ var reservedIPCreate = &cobra.Command{
 }
 
 var reservedIPUpdate = &cobra.Command{
-	Use:   "update <reservedIPID>",
-	Short: "update reservedIP",
-	Long:  ``,
+	Use:     "update <reservedIPID>",
+	Short:   "update reservedIP",
+	Long:    reservedIPUpdateLong,
+	Example: reservedIPUpdateExample,
+	Aliases: []string{"u"},
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a reserved IP ID")
