@@ -1,6 +1,11 @@
 # Change Log
+## [v2.14.2](https://github.com/vultr/vultr-cli/compare/v2.14.1...v2.14.2) (2022-06-14)
+### Enhancements
+* Reserved IP: Add support for reserved IP label updates [PR 272](https://github.com/vultr/vultr-cli/pull/272)
 
-**Full Changelog**: 
+### Dependencies
+* Bump govultr version from 2.17.1 to 2.17.2 [PR 272](https://github.com/vultr/vultr-cli/pull/272)
+
 ## [v2.14.1](https://github.com/vultr/vultr-cli/compare/v2.14.0...v2.14.1) (2022-06-03)
 ### Enhancements
 * Plans: Add GPU fields [PR 269](https://github.com/vultr/vultr-cli/pull/269)
