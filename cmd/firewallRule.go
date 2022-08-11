@@ -49,7 +49,7 @@ var (
 	vultr-cli firewall rule create --id=f04ae5aa-ff6a-4078-900d-78cc17dca2d5 --ip-type=v4 --protocol=icmp --size=24 --subnet=127.0.0.0
 
 	# Shortened example with aliases
-	vultr-cli fw r c -i=f04ae5aa-ff6a-4078-900d-78cc17dca2d5 --t=v4 -p=tcp -z=24 -s=127.0.0.0 -r=30000
+	vultr-cli fw r c -i=f04ae5aa-ff6a-4078-900d-78cc17dca2d5 -t=v4 -p=tcp -z=24 -s=127.0.0.0 -r=30000
 	`
 	firewallRuleDeleteLong    = `Delete a firewall rule in the provided firewall group`
 	firewallRuleDeleteExample = `
