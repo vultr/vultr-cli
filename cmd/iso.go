@@ -36,7 +36,10 @@ func ISO() *cobra.Command {
 
 	isoCmd.AddCommand(isoCreate, isoDelete, isoPrivateGet, isoPrivateList, isoPublic)
 	isoCreate.Flags().StringP("url", "u", "", "url from where the ISO will be downloaded")
-	isoCreate.MarkFlagRequired("url")
+	if err := isoCreate.MarkFlagRequired("url"); err != nil {
+		fmt.Printf("error marking iso create 'url' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	isoPrivateList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	isoPrivateList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")

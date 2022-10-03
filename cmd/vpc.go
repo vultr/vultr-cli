@@ -89,13 +89,19 @@ func VPC() *cobra.Command {
 	vpcCreate.Flags().StringP("description", "d", "", "The description of the VPC")
 	vpcCreate.Flags().StringP("subnet", "s", "", "The IPv4 VPC in CIDR notation.")
 	vpcCreate.Flags().IntP("size", "z", 0, "The number of bits for the netmask in CIDR notation.")
-	vpcCreate.MarkFlagRequired("region")
+	if err := vpcCreate.MarkFlagRequired("region"); err != nil {
+		fmt.Printf("error marking vpc create 'region' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	vpcList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	vpcList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	vpcUpdate.Flags().StringP("description", "d", "", "The description of the VPC")
-	vpcUpdate.MarkFlagRequired("description")
+	if err := vpcUpdate.MarkFlagRequired("description"); err != nil {
+		fmt.Printf("error marking vpc update 'description' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	return vpcCmd
 }

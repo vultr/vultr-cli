@@ -49,6 +49,8 @@ func BareMetal() *cobra.Command {
 		Use:     "bare-metal",
 		Short:   "bare-metal is used to access bare metal server commands",
 		Aliases: []string{"bm"},
+		Long:    bareMetalLong,
+		Example: bareMetalExample,
 	}
 
 	bareMetalCmd.AddCommand(
@@ -452,7 +454,7 @@ func optionCheckBM(options map[string]interface{}) (string, error) {
 	}
 
 	if len(result) > 1 {
-		return "", fmt.Errorf("Too many options have been selected : %v : please select one", result)
+		return "", fmt.Errorf("too many options have been selected : %v : please select one", result)
 	}
 
 	// Return back an empty slice so we can possibly add in osID

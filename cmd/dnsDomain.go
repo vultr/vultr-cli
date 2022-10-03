@@ -37,16 +37,25 @@ func DNSDomain() *cobra.Command {
 
 	// Create
 	domainCreate.Flags().StringP("domain", "d", "", "name of the domain")
-	domainCreate.MarkFlagRequired("domain")
+	if err := domainCreate.MarkFlagRequired("domain"); err != nil {
+		fmt.Printf("error marking domain create 'domain' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	domainCreate.Flags().StringP("ip", "i", "", "instance ip you want to assign this domain to")
 
 	// Dns Sec
 	secEnable.Flags().StringP("enabled", "e", "", "set whether dns sec is enabled or not. true or false")
-	secEnable.MarkFlagRequired("enabled")
+	if err := secEnable.MarkFlagRequired("enabled"); err != nil {
+		fmt.Printf("error marking domain security 'enabled' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	// Soa Update
 	soaUpdate.Flags().StringP("ns-primary", "n", "", "primary nameserver to store in the SOA record")
-	soaUpdate.MarkFlagRequired("ns-primary")
+	if err := soaUpdate.MarkFlagRequired("ns-primary"); err != nil {
+		fmt.Printf("error marking domain soa update 'ns-primary' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	soaUpdate.Flags().StringP("email", "e", "", "administrative email to store in the SOA record")
 
 	// List

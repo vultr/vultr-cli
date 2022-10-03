@@ -41,10 +41,22 @@ func DNSRecord() *cobra.Command {
 	recordCreate.Flags().StringP("type", "t", "", "record type you want to create : Possible values A, AAAA, CNAME, NS, MX, SRV, TXT CAA, SSHFP")
 	recordCreate.Flags().StringP("name", "n", "", "name of record")
 	recordCreate.Flags().StringP("data", "d", "", "data for the record")
-	recordCreate.MarkFlagRequired("domain")
-	recordCreate.MarkFlagRequired("type")
-	recordCreate.MarkFlagRequired("name")
-	recordCreate.MarkFlagRequired("data")
+	if err := recordCreate.MarkFlagRequired("domain"); err != nil {
+		fmt.Printf("error marking dns record create 'domain' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := recordCreate.MarkFlagRequired("type"); err != nil {
+		fmt.Printf("error marking dns record create 'type' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := recordCreate.MarkFlagRequired("name"); err != nil {
+		fmt.Printf("error marking dns record create 'name' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := recordCreate.MarkFlagRequired("data"); err != nil {
+		fmt.Printf("error marking dns record create 'data' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	// Create Optional
 	recordCreate.Flags().IntP("ttl", "", 0, "time to live for the record")
 	recordCreate.Flags().IntP("priority", "p", 0, "only required for MX and SRV")
