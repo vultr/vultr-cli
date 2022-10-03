@@ -76,6 +76,7 @@ func DNSRecord() *cobra.Command {
 
 // Temporary solution to determine if the record type is TXT, in order to
 // add quotes around the value. The API does not accept TXT records without
+//
 //	quotes.
 var regRecordTxt = regexp.MustCompile("([A-Z]|=|_)")
 
