@@ -8,7 +8,7 @@ func BareMetal(b *govultr.BareMetalServer) {
 	col := columns{"ID", "IP", "TAG", "MAC ADDRESS", "LABEL", "OS", "STATUS", "REGION", "CPU", "RAM", "DISK", "FEATURES", "TAGS"}
 	display(col)
 
-	display(columns{b.ID, b.MainIP, b.Tag, b.MacAddress, b.Label, b.Os, b.Status, b.Region, b.CPUCount, b.RAM, b.Disk, b.Features, b.Tags})
+	display(columns{b.ID, b.MainIP, b.Tag, b.MacAddress, b.Label, b.Os, b.Status, b.Region, b.CPUCount, b.RAM, b.Disk, b.Features, b.Tags}) //nolint:all
 
 	flush()
 }
@@ -17,7 +17,7 @@ func BareMetalList(bms []govultr.BareMetalServer, meta *govultr.Meta) {
 	col := columns{"ID", "IP", "TAG", "MAC ADDRESS", "LABEL", "OS", "STATUS", "REGION", "CPU", "RAM", "DISK", "FEATURES", "TAGS"}
 	display(col)
 	for _, b := range bms {
-		display(columns{b.ID, b.MainIP, b.Tag, b.MacAddress, b.Label, b.Os, b.Status, b.Region, b.CPUCount, b.RAM, b.Disk, b.Features, b.Tags})
+		display(columns{b.ID, b.MainIP, b.Tag, b.MacAddress, b.Label, b.Os, b.Status, b.Region, b.CPUCount, b.RAM, b.Disk, b.Features, b.Tags}) //nolint:all
 	}
 
 	Meta(meta)

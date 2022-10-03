@@ -83,7 +83,7 @@ var networkGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		network, err := client.Network.Get(context.Background(), id)
+		network, err := client.Network.Get(context.Background(), id) //nolint:all
 		if err != nil {
 			fmt.Printf("error getting network : %v\n", err)
 			os.Exit(1)
@@ -100,7 +100,7 @@ var networkList = &cobra.Command{
 	Deprecated: "Use vpc list instead.",
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		network, meta, err := client.Network.List(context.Background(), options)
+		network, meta, err := client.Network.List(context.Background(), options) //nolint:all
 		if err != nil {
 			fmt.Printf("error getting network list : %v\n", err)
 			os.Exit(1)
@@ -124,7 +124,7 @@ var networkDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.Network.Delete(context.Background(), id); err != nil {
+		if err := client.Network.Delete(context.Background(), id); err != nil { //nolint:all
 			fmt.Printf("error deleting network : %v\n", err)
 			os.Exit(1)
 		}
@@ -151,7 +151,7 @@ var networkCreate = &cobra.Command{
 			V4SubnetMask: size,
 		}
 
-		network, err := client.Network.Create(context.Background(), options)
+		network, err := client.Network.Create(context.Background(), options) //nolint:all
 		if err != nil {
 			fmt.Printf("error creating network : %v\n", err)
 			os.Exit(1)
