@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  Go-Lint:
+  Golangci-Lint:
     runs-on: ubuntu-latest
 
     steps:
