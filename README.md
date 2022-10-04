@@ -81,6 +81,7 @@ The available make build options are
 - make builds/vultr-cli_linux_arm64
 - make builds/vultr-cli_windows_386.exe
 - make builds/vultr-cli_windows_amd64.exe
+- make builds/vultr-cli_linux_arm
 
 Note that the latter method will install the `vultr-cli` executable in `builds/vultr-cli_(name of os + arch)`.
 
