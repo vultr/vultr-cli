@@ -39,8 +39,14 @@ func SSHKey() *cobra.Command {
 	sshCreate.Flags().StringP("name", "n", "", "Name of the SSH key")
 	sshCreate.Flags().StringP("key", "k", "", "SSH public key (in authorized_keys format)")
 
-	sshCreate.MarkFlagRequired("name")
-	sshCreate.MarkFlagRequired("key")
+	if err := sshCreate.MarkFlagRequired("name"); err != nil {
+		fmt.Printf("error marking ssh-key create 'name' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := sshCreate.MarkFlagRequired("key"); err != nil {
+		fmt.Printf("error marking ssh-key create 'key' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	sshUpdate.Flags().StringP("name", "n", "", "Name of the SSH key")
 	sshUpdate.Flags().StringP("key", "k", "", "SSH public key (in authorized_keys format)")

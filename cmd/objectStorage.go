@@ -38,11 +38,17 @@ func ObjectStorageCmd() *cobra.Command {
 	// Create
 	objStorageCreate.Flags().StringP("label", "l", "", "label you want your object storage to have")
 	objStorageCreate.Flags().IntP("obj-store-clusterid", "o", 0, "obj-store-clusterid you want to create the object storage in")
-	objStorageCreate.MarkFlagRequired("obj-store-clusterid")
+	if err := objStorageCreate.MarkFlagRequired("obj-store-clusterid"); err != nil {
+		fmt.Printf("error marking object-storage create 'obj-store-clusterid' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	// Label
 	objStorageLabelSet.Flags().StringP("label", "l", "", "label you want your object storage to have")
-	objStorageLabelSet.MarkFlagRequired("label")
+	if err := objStorageLabelSet.MarkFlagRequired("label"); err != nil {
+		fmt.Printf("error marking object-storage create 'label' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	// List
 	objStorageList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")

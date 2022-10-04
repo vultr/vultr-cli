@@ -49,6 +49,8 @@ func BareMetal() *cobra.Command {
 		Use:     "bare-metal",
 		Short:   "bare-metal is used to access bare metal server commands",
 		Aliases: []string{"bm"},
+		Long:    bareMetalLong,
+		Example: bareMetalExample,
 	}
 
 	bareMetalCmd.AddCommand(
@@ -73,9 +75,15 @@ func BareMetal() *cobra.Command {
 
 	// create server
 	bareMetalCreate.Flags().StringP("region", "r", "", "ID of the region where the server will be created.")
-	bareMetalCreate.MarkFlagRequired("region")
+	if err := bareMetalCreate.MarkFlagRequired("region"); err != nil {
+		fmt.Printf("error marking bare metal create 'region' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	bareMetalCreate.Flags().StringP("plan", "p", "", "ID of the plan that the server will subscribe to.")
-	bareMetalCreate.MarkFlagRequired("plan")
+	if err := bareMetalCreate.MarkFlagRequired("plan"); err != nil {
+		fmt.Printf("error marking bare metal create 'plan' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	bareMetalCreate.Flags().IntP("os", "o", 0, "ID of the operating system that will be installed on the server.")
 	bareMetalCreate.Flags().StringP("script", "s", "", "(optional) ID of the startup script that will run after the server is created.")
 	bareMetalCreate.Flags().StringP("snapshot", "", "", "(optional) ID of the snapshot that the server will be restored from.")
@@ -102,7 +110,10 @@ func BareMetal() *cobra.Command {
 	bareMetalListIPV6.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	bareMetalTags.Flags().StringSliceP("tags", "t", []string{}, "A comma separated list of tags to apply to the server")
-	bareMetalTags.MarkFlagRequired("tags")
+	if err := bareMetalTags.MarkFlagRequired("tags"); err != nil {
+		fmt.Printf("error marking bare metal create 'tags' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	return bareMetalCmd
 }
@@ -452,7 +463,7 @@ func optionCheckBM(options map[string]interface{}) (string, error) {
 	}
 
 	if len(result) > 1 {
-		return "", fmt.Errorf("Too many options have been selected : %v : please select one", result)
+		return "", fmt.Errorf("too many options have been selected : %v : please select one", result)
 	}
 
 	// Return back an empty slice so we can possibly add in osID

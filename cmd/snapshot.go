@@ -38,10 +38,16 @@ func Snapshot() *cobra.Command {
 
 	snapshotCreate.Flags().StringP("id", "i", "", "ID of the virtual machine to create a snapshot from.")
 	snapshotCreate.Flags().StringP("description", "d", "", "(optional) Description of snapshot contents")
-	snapshotCreate.MarkFlagRequired("id")
+	if err := snapshotCreate.MarkFlagRequired("id"); err != nil {
+		fmt.Printf("error marking snapshot create 'id' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	snapshotCreateFromURL.Flags().StringP("url", "u", "", "Remote URL from where the snapshot will be downloaded.")
-	snapshotCreateFromURL.MarkFlagRequired("url")
+	if err := snapshotCreateFromURL.MarkFlagRequired("url"); err != nil {
+		fmt.Printf("error marking snapshot create 'url' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	snapshotList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	snapshotList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")

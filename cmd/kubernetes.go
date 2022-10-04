@@ -37,8 +37,8 @@ var (
 	createLong    = `Create kubernetes cluster on your Vultr account`
 	createExample = `
 	# Full Example
-	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.20.0+1" --node-pools="quantity:3,plan:vc2-1c-2gb,label:my-nodepool,tag:my-tag"	
-	
+	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.20.0+1" --node-pools="quantity:3,plan:vc2-1c-2gb,label:my-nodepool,tag:my-tag"
+
 	# Shortened with alias commands
 	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.20.0+1" -n="quantity:3,plan:vc2-1c-2gb,label:my-nodepool,tag:my-tag"
 	`
@@ -55,13 +55,13 @@ var (
 	listLong    = `Get all kubernetes clusters available on your Vultr account`
 	listExample = `
 	# Full example
-	vultr-cli kubernetes list 
-	
+	vultr-cli kubernetes list
+
 	# Full example with paging
 	vultr-cli kubernetes list --per-page=1 --cursor="bmV4dF9fQU1T"
 
 	# Shortened with alias commands
-	vultr-cli k l 	
+	vultr-cli k l
 	`
 
 	updateLong    = `Update a specific kubernetes cluster on your Vultr Account`
@@ -139,14 +139,14 @@ var (
 	vultr-cli kubernetes node-pool
 
 	# Shortened with alias commands
-	vultr-cli k n	
+	vultr-cli k n
 	`
 
 	createNPLong    = `Create node pool for your kubernetes cluster on your Vultr account`
 	createNPExample = `
 	# Full Example
 	vultr-cli kubernetes node-pool create ffd31f18-5f77-454c-9064-212f942c3c34 --label="nodepool" --quantity=3  --plan="vc2-1c-2gb"
-	
+
 	# Shortened with alias commands
 	vultr-cli k n c ffd31f18-5f77-454c-9064-212f942c3c34 -l="nodepool" -q=3  -p="vc2-1c-2gb"
 	`
@@ -163,19 +163,19 @@ var (
 	listNPExample = `
 	# Full example
 	vultr-cli kubernetes node-pool list ffd31f18-5f77-454c-9064-212f942c3c34
-	
+
 	# Full example with paging
 	vultr-cli kubernetes node-pool list ffd31f18-5f77-454c-9064-212f942c3c34 --per-page=1 --cursor="bmV4dF9fQU1T"
-	
+
 	# Shortened with alias commands
-	vultr-cli k n l ffd31f18-5f77-454c-9064-212f942c3c34	
+	vultr-cli k n l ffd31f18-5f77-454c-9064-212f942c3c34
 	`
 
 	updateNPLong    = `Update a specific node pool in a kubernetes cluster on your Vultr Account`
 	updateNPExample = `
 	# Full example
 	vultr-cli kubernetes node-pool update ffd31f18-5f77-454c-9064-212f942c3c34 abd31f18-3f77-454c-9064-212f942c3c34 --quantity=4
-	
+
 	# Shortened with alias commands
 	vultr-cli k n u ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 --q=4
 	`
@@ -184,7 +184,7 @@ var (
 	deleteNPExample = `
 	# Full example
 	vultr-cli kubernetes node-pool delete ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34
-	
+
 	# Shortened with alias commands
 	vultr-cli k n d ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34'
 	`
@@ -202,7 +202,7 @@ var (
 	deleteNPInstanceExample = `
 	# Full example
 	vultr-cli kubernetes node-pool node delete ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421
-	
+
 	# Shortened with alias commands
 	vultr-cli k n node d ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421'
 	`
@@ -211,7 +211,7 @@ var (
 	deleteNPInstanceRecycleExample = `
 	# Full example
 	vultr-cli kubernetes node-pool node recycle ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421
-	
+
 	# Shortened with alias commands
 	vultr-cli k n node r ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421'
 	`
@@ -233,16 +233,31 @@ func Kubernetes() *cobra.Command {
 	k8Create.Flags().StringP("version", "v", "", "the kubernetes version you want for your cluster")
 	k8Create.Flags().StringArrayP("node-pools", "n", []string{}, "a comma-separated, key-value pair list of node pools. At least one node pool is required. At least one node is required in node pool. Use / between each new node pool. E.g: `plan:vhf-8c-32gb,label:mynodepool,tag:my-tag,quantity:3/plan:vhf-8c-32gb,label:mynodepool2,quantity:3`")
 
-	k8Create.MarkFlagRequired("label")
-	k8Create.MarkFlagRequired("region")
-	k8Create.MarkFlagRequired("version")
-	k8Create.MarkFlagRequired("node-pools")
+	if err := k8Create.MarkFlagRequired("label"); err != nil {
+		fmt.Printf("error marking kubernetes create 'label' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := k8Create.MarkFlagRequired("region"); err != nil {
+		fmt.Printf("error marking kubernetes create 'region' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := k8Create.MarkFlagRequired("version"); err != nil {
+		fmt.Printf("error marking kubernetes create 'version' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := k8Create.MarkFlagRequired("node-pools"); err != nil {
+		fmt.Printf("error marking kubernetes create 'ns-primary' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	k8List.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
 	k8List.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	k8Update.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
-	k8Update.MarkFlagRequired("label")
+	if err := k8Update.MarkFlagRequired("label"); err != nil {
+		fmt.Printf("error marking kubernetes update 'label' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	// Sub command for upgrade functions
 	k8UpgradeCmd := &cobra.Command{
@@ -255,7 +270,10 @@ func Kubernetes() *cobra.Command {
 
 	k8UpgradeCmd.AddCommand(k8Upgrade, k8GetUpgrades)
 	k8Upgrade.Flags().StringP("version", "v", "", "the version to upgrade the cluster to")
-	k8Upgrade.MarkFlagRequired("version")
+	if err := k8Upgrade.MarkFlagRequired("version"); err != nil {
+		fmt.Printf("error marking kubernetes upgrade 'version' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	kubernetesCmd.AddCommand(k8UpgradeCmd)
 
 	// Node Pools SubCommands
@@ -276,9 +294,18 @@ func Kubernetes() *cobra.Command {
 	npCreate.Flags().IntP("min-nodes", "", 1, "Minimum nodes for auto scaler")
 	npCreate.Flags().IntP("max-nodes", "", 1, "Maximum nodes for auto scaler")
 
-	npCreate.MarkFlagRequired("label")
-	npCreate.MarkFlagRequired("quantity")
-	npCreate.MarkFlagRequired("plan")
+	if err := npCreate.MarkFlagRequired("label"); err != nil {
+		fmt.Printf("error marking kubernetes node-pool create 'label' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := npCreate.MarkFlagRequired("quantity"); err != nil {
+		fmt.Printf("error marking kubernetes node-pool create 'quantity' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := npCreate.MarkFlagRequired("plan"); err != nil {
+		fmt.Printf("error marking kubernetes node-pool create 'plan' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	npList.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
 	npList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")

@@ -23,8 +23,8 @@ func LoadBalancerList(loadbalancer []govultr.LoadBalancer, meta *govultr.Meta) {
 
 		display(columns{" "})
 		display(columns{"GENERIC INFO"})
-		display(columns{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "PRIVATE NETWORK"})
-		display(columns{lb.GenericInfo.BalancingAlgorithm, *lb.GenericInfo.SSLRedirect, lb.GenericInfo.StickySessions.CookieName, *lb.GenericInfo.ProxyProtocol, lb.GenericInfo.PrivateNetwork})
+		display(columns{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "VPC"})
+		display(columns{lb.GenericInfo.BalancingAlgorithm, *lb.GenericInfo.SSLRedirect, lb.GenericInfo.StickySessions.CookieName, *lb.GenericInfo.ProxyProtocol, lb.GenericInfo.VPC})
 
 		display(columns{" "})
 		display(columns{"FORWARDING RULES"})
@@ -68,8 +68,8 @@ func LoadBalancer(lb *govultr.LoadBalancer) {
 
 	display(columns{" "})
 	display(columns{"GENERIC INFO"})
-	display(columns{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "PRIVATE NETWORK"})
-	display(columns{lb.GenericInfo.BalancingAlgorithm, *lb.GenericInfo.SSLRedirect, lb.GenericInfo.StickySessions.CookieName, *lb.GenericInfo.ProxyProtocol, lb.GenericInfo.PrivateNetwork})
+	display(columns{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "VPC"})
+	display(columns{lb.GenericInfo.BalancingAlgorithm, *lb.GenericInfo.SSLRedirect, lb.GenericInfo.StickySessions.CookieName, *lb.GenericInfo.ProxyProtocol, lb.GenericInfo.VPC})
 
 	display(columns{" "})
 	display(columns{"FORWARDING RULES"})

@@ -19,7 +19,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -37,9 +36,9 @@ var (
 	instanceCreateExample = `
 	# Full example
 	vultr-cli instance create --region="ewr" --plan="vc2-1c-1gb" --os=244
-	
+
 	You must pass one of these in addition to the required --region and --plan flags:
-		--os 
+		--os
 		--snapshot
 		--iso
 		--app
@@ -47,8 +46,8 @@ var (
 	# Shortened example with aliases
 	vultr-cli instance c -r="ewr" -p="vc2-1c-1gb" -o=244
 
-	# Full example with attached VPCs 
-	vultr-cli instance create --region="ewr" --plan="vc2-1c-1gb" --os=244 --vpc-ids="08422775-5be0-4371-afba-64b03f9ad22d,13a45caa-9c06-4b5d-8f76-f5281ab172b7" 
+	# Full example with attached VPCs
+	vultr-cli instance create --region="ewr" --plan="vc2-1c-1gb" --os=244 --vpc-ids="08422775-5be0-4371-afba-64b03f9ad22d,13a45caa-9c06-4b5d-8f76-f5281ab172b7"
 
 	# Full example with assigned ssh keys
 	vultr-cli instance create --region ewr --plan vc2-1c-1gb --os 244 --ssh-keys="a14b6539-5583-41e8-a035-c07a76897f2b,be624232-56c7-4d5c-bf87-9bdaae7a1fbd"
@@ -78,18 +77,33 @@ func Instance() *cobra.Command {
 	instanceReinstall.Flags().StringP("host", "", "", "The hostname to assign to this instance")
 
 	instanceTag.Flags().StringP("tag", "t", "", "tag you want to set for a given instance")
-	instanceTag.MarkFlagRequired("tag")
+	if err := instanceTag.MarkFlagRequired("tag"); err != nil {
+		fmt.Printf("error marking instance tag 'tag' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	instanceTags.Flags().StringSliceP("tags", "t", []string{}, "A comma separated list of tags to apply to the instance")
-	instanceTags.MarkFlagRequired("tags")
+	if err := instanceTags.MarkFlagRequired("tags"); err != nil {
+		fmt.Printf("error marking instance tags 'tags' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	instanceLabel.Flags().StringP("label", "l", "", "label you want to set for a given instance")
-	instanceLabel.MarkFlagRequired("label")
+	if err := instanceLabel.MarkFlagRequired("label"); err != nil {
+		fmt.Printf("error marking instance label 'label' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	updateFwgGroup.Flags().StringP("instance-id", "i", "", "instance id of the instance you want to use")
 	updateFwgGroup.Flags().StringP("firewall-group-id", "f", "", "firewall group id that you want to assign. 0 Value will unset the firewall-group")
-	updateFwgGroup.MarkFlagRequired("instance-id")
-	updateFwgGroup.MarkFlagRequired("firewall-group-id")
+	if err := updateFwgGroup.MarkFlagRequired("instance-id"); err != nil {
+		fmt.Printf("error marking instance firewall group 'instance-id' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := updateFwgGroup.MarkFlagRequired("firewall-group-id"); err != nil {
+		fmt.Printf("error marking instance firewall group 'firewall-group-id' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	instanceRestore.Flags().StringP("backup", "b", "", "id of backup you wish to restore the instance with")
 	instanceRestore.Flags().StringP("snapshot", "s", "", "id of snapshot you wish to restore the instance with")
@@ -97,8 +111,14 @@ func Instance() *cobra.Command {
 	instanceCreate.Flags().StringP("region", "r", "", "region id you wish to have the instance created in")
 	instanceCreate.Flags().StringP("plan", "p", "", "plan id you wish the instance to have")
 	instanceCreate.Flags().IntP("os", "o", 0, "os id you wish the instance to have")
-	instanceCreate.MarkFlagRequired("region")
-	instanceCreate.MarkFlagRequired("plan")
+	if err := instanceCreate.MarkFlagRequired("region"); err != nil {
+		fmt.Printf("error marking instance create 'region' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := instanceCreate.MarkFlagRequired("plan"); err != nil {
+		fmt.Printf("error marking instance create 'plan' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	// Optional Params
 	instanceCreate.Flags().StringP("ipxe", "", "", "if you've selected the 'custom' operating system, this can be set to chainload the specified URL on bootup")
@@ -142,7 +162,10 @@ func Instance() *cobra.Command {
 
 	osCmd.AddCommand(osUpdate, osUpdateList)
 	osUpdate.Flags().IntP("os", "o", 0, "operating system ID you wish to use")
-	osUpdate.MarkFlagRequired("os")
+	if err := osUpdate.MarkFlagRequired("os"); err != nil {
+		fmt.Printf("error marking instance os update 'os' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	instanceCmd.AddCommand(osCmd)
 
 	// Sub commands for App
@@ -153,7 +176,10 @@ func Instance() *cobra.Command {
 	}
 	appCMD.AddCommand(appUpdate, appUpdateList)
 	appUpdate.Flags().IntP("app", "a", 0, "application ID you wish to use")
-	appUpdate.MarkFlagRequired("app")
+	if err := appUpdate.MarkFlagRequired("app"); err != nil {
+		fmt.Printf("error marking instance app update 'app' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	instanceCmd.AddCommand(appCMD)
 
 	// Sub commands for Image
@@ -164,7 +190,10 @@ func Instance() *cobra.Command {
 	}
 	imageCMD.AddCommand(imageUpdate, appUpdateList)
 	imageUpdate.Flags().StringP("image", "", "", "application image ID you wish to use")
-	imageUpdate.MarkFlagRequired("image")
+	if err := imageUpdate.MarkFlagRequired("image"); err != nil {
+		fmt.Printf("error marking instance image update 'image' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	instanceCmd.AddCommand(imageCMD)
 
 	// Sub commands for Backup
@@ -175,7 +204,10 @@ func Instance() *cobra.Command {
 	}
 	backupCMD.AddCommand(backupGet, backupCreate)
 	backupCreate.Flags().StringP("type", "t", "", "type string Backup cron type. Can be one of 'daily', 'weekly', 'monthly', 'daily_alt_even', or 'daily_alt_odd'.")
-	backupCreate.MarkFlagRequired("type")
+	if err := backupCreate.MarkFlagRequired("type"); err != nil {
+		fmt.Printf("error marking instance backup create 'type' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	backupCreate.Flags().IntP("hour", "o", 0, "Hour value (0-23). Applicable to crons: 'daily', 'weekly', 'monthly', 'daily_alt_even', 'daily_alt_odd'")
 	backupCreate.Flags().IntP("dow", "w", 0, "Day-of-week value (0-6). Applicable to crons: 'weekly'")
 	backupCreate.Flags().IntP("dom", "m", 0, "Day-of-month value (1-28). Applicable to crons: 'monthly'")
@@ -189,7 +221,10 @@ func Instance() *cobra.Command {
 	}
 	isoCmd.AddCommand(isoStatus, isoAttach, isoDetach)
 	isoAttach.Flags().StringP("iso-id", "i", "", "id of the ISO you wish to attach")
-	isoAttach.MarkFlagRequired("iso-id")
+	if err := isoAttach.MarkFlagRequired("iso-id"); err != nil {
+		fmt.Printf("error marking instance iso attach 'iso-id' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	instanceCmd.AddCommand(isoCmd)
 
 	ipv4Cmd := &cobra.Command{
@@ -200,7 +235,10 @@ func Instance() *cobra.Command {
 	ipv4Cmd.AddCommand(instanceIPV4List, createIpv4, deleteIpv4)
 	createIpv4.Flags().Bool("reboot", false, "whether to reboot instance after adding ipv4 address")
 	deleteIpv4.Flags().StringP("ipv4", "i", "", "ipv4 address you wish to delete")
-	deleteIpv4.MarkFlagRequired("ipv4")
+	if err := deleteIpv4.MarkFlagRequired("ipv4"); err != nil {
+		fmt.Printf("error marking instance delete IPv4 'ipv4' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	instanceCmd.AddCommand(ipv4Cmd)
 
 	// IPV6 Subcommands
@@ -220,7 +258,10 @@ func Instance() *cobra.Command {
 	}
 	plansCmd.AddCommand(upgradePlan, upgradePlanList)
 	upgradePlan.Flags().StringP("plan", "p", "", "plan id that you wish to upgrade to")
-	upgradePlan.MarkFlagRequired("plan")
+	if err := upgradePlan.MarkFlagRequired("plan"); err != nil {
+		fmt.Printf("error marking instance plan upgrace 'plan' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	instanceCmd.AddCommand(plansCmd)
 
 	// ReverseDNS SubCommands
@@ -231,19 +272,37 @@ func Instance() *cobra.Command {
 	}
 	reverseCmd.AddCommand(defaultIpv4, listIpv6, deleteIpv6, setIpv4, setIpv6)
 	defaultIpv4.Flags().StringP("ip", "i", "", "iPv4 address used in the reverse DNS update")
-	defaultIpv4.MarkFlagRequired("ip")
+	if err := defaultIpv4.MarkFlagRequired("ip"); err != nil {
+		fmt.Printf("error marking instance reverse-dns ipv4 'ip' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	deleteIpv6.Flags().StringP("ip", "i", "", "ipv6 address you wish to delete")
 
-	defaultIpv4.MarkFlagRequired("ip")
+	if err := defaultIpv4.MarkFlagRequired("ip"); err != nil {
+		fmt.Printf("error marking instance reverse-dns default-ipv4 'ip' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	setIpv4.Flags().StringP("ip", "i", "", "ip address you wish to set a reverse DNS on")
 	setIpv4.Flags().StringP("entry", "e", "", "reverse dns entry")
-	setIpv4.MarkFlagRequired("ip")
-	setIpv4.MarkFlagRequired("entry")
+	if err := setIpv4.MarkFlagRequired("ip"); err != nil {
+		fmt.Printf("error marking instance reverse-dns set-ipv4 'ip' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := setIpv4.MarkFlagRequired("entry"); err != nil {
+		fmt.Printf("error marking instance reverse-dns set-ipv4 'entry' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	setIpv6.Flags().StringP("ip", "i", "", "ip address you wish to set a reverse DNS on")
 	setIpv6.Flags().StringP("entry", "e", "", "reverse dns entry")
-	setIpv6.MarkFlagRequired("ip")
-	setIpv6.MarkFlagRequired("entry")
+	if err := setIpv6.MarkFlagRequired("ip"); err != nil {
+		fmt.Printf("error marking instance reverse-dns set-ipv6 'ip' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := setIpv6.MarkFlagRequired("entry"); err != nil {
+		fmt.Printf("error marking instance reverse-dns set-ipv6 'entry' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	instanceCmd.AddCommand(reverseCmd)
 
 	userdataCmd := &cobra.Command{
@@ -1216,7 +1275,7 @@ var setUserData = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		userData, _ := cmd.Flags().GetString("userdata")
 
-		rawData, err := ioutil.ReadFile(userData)
+		rawData, err := os.ReadFile(userData)
 		if err != nil {
 			fmt.Printf("error reading user-data : %v\n", err)
 			os.Exit(1)

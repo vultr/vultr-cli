@@ -29,7 +29,6 @@ var (
 	netLong       = ``
 	netGetLong    = ``
 	netCreateLong = ``
-	netUpdateLong = ``
 	netDeleteLong = ``
 	netListLong   = ``
 )
@@ -48,10 +47,22 @@ func Network() *cobra.Command {
 	networkCreate.Flags().StringP("description", "d", "", "description of the network")
 	networkCreate.Flags().StringP("subnet", "s", "", "The IPv4 network in CIDR notation.")
 	networkCreate.Flags().IntP("size", "z", 0, "The number of bits for the netmask in CIDR notation.")
-	networkCreate.MarkFlagRequired("region-id")
-	networkCreate.MarkFlagRequired("description")
-	networkCreate.MarkFlagRequired("subnet")
-	networkCreate.MarkFlagRequired("size")
+	if err := networkCreate.MarkFlagRequired("region-id"); err != nil {
+		fmt.Printf("error marking network create 'region-id' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := networkCreate.MarkFlagRequired("description"); err != nil {
+		fmt.Printf("error marking network create 'description' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := networkCreate.MarkFlagRequired("subnet"); err != nil {
+		fmt.Printf("error marking network create 'subnet' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := networkCreate.MarkFlagRequired("size"); err != nil {
+		fmt.Printf("error marking network create 'size' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	networkList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	networkList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
@@ -72,7 +83,7 @@ var networkGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		network, err := client.Network.Get(context.Background(), id)
+		network, err := client.Network.Get(context.Background(), id) //nolint:all
 		if err != nil {
 			fmt.Printf("error getting network : %v\n", err)
 			os.Exit(1)
@@ -89,7 +100,7 @@ var networkList = &cobra.Command{
 	Deprecated: "Use vpc list instead.",
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		network, meta, err := client.Network.List(context.Background(), options)
+		network, meta, err := client.Network.List(context.Background(), options) //nolint:all
 		if err != nil {
 			fmt.Printf("error getting network list : %v\n", err)
 			os.Exit(1)
@@ -113,7 +124,7 @@ var networkDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.Network.Delete(context.Background(), id); err != nil {
+		if err := client.Network.Delete(context.Background(), id); err != nil { //nolint:all
 			fmt.Printf("error deleting network : %v\n", err)
 			os.Exit(1)
 		}
@@ -140,7 +151,7 @@ var networkCreate = &cobra.Command{
 			V4SubnetMask: size,
 		}
 
-		network, err := client.Network.Create(context.Background(), options)
+		network, err := client.Network.Create(context.Background(), options) //nolint:all
 		if err != nil {
 			fmt.Printf("error creating network : %v\n", err)
 			os.Exit(1)

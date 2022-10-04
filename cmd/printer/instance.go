@@ -65,7 +65,7 @@ func Instance(instance *govultr.Instance) {
 	display(columns{"LABEL", instance.Label})
 	display(columns{"INTERNAL IP", instance.InternalIP})
 	display(columns{"KVM URL", instance.KVM})
-	display(columns{"TAG", instance.Tag})
+	display(columns{"TAG", instance.Tag}) //nolint:all
 	display(columns{"OsID", instance.OsID})
 	display(columns{"AppID", instance.AppID})
 	display(columns{"FIREWALL GROUP ID", instance.FirewallGroupID})

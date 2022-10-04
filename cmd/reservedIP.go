@@ -39,7 +39,7 @@ var (
 	reservedIPCreateExample = `
 	# Full Example
 	vultr-cli reserved-ip create --region="yto" --type="v4" --label="new IP"
-	
+
 	# Shortened with alias commands
 	vultr-cli rip c -r="yto" -t="v4" -l="new IP"
 	`
@@ -56,8 +56,8 @@ var (
 	reservedIPListLong    = `List all reserved IPs on your Vultr account`
 	reservedIPListExample = `
 	# Full example
-	vultr-cli reserved-ip list 
-	
+	vultr-cli reserved-ip list
+
 	# Shortened with alias commands
 	vultr-cli rip l
 	`
@@ -65,17 +65,17 @@ var (
 	reservedIPAttachLong    = `Attach a reserved IP to an instance on your Vultr account`
 	reservedIPAttachExample = `
 	# Full example
-	vultr-cli reserved-ip attach 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5 --instance-id="2b9bf5fb-1644-4e0a-b706-1116ab64d783" 
-	
+	vultr-cli reserved-ip attach 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5 --instance-id="2b9bf5fb-1644-4e0a-b706-1116ab64d783"
+
 	# Shortened with alias commands
-	vultr-cli rip a 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5 -i="2b9bf5fb-1644-4e0a-b706-1116ab64d783" 
+	vultr-cli rip a 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5 -i="2b9bf5fb-1644-4e0a-b706-1116ab64d783"
 	`
 
 	reservedIPDetachLong    = `Detach a reserved IP from an instance on your Vultr account`
 	reservedIPDetachExample = `
 	# Full example
 	vultr-cli reserved-ip detach 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5
-	
+
 	# Shortened with alias commands
 	vultr-cli rip d 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5
 	`
@@ -84,7 +84,7 @@ var (
 	reservedIPConvertExample = `
 	# Full example
 	vultr-cli reserved-ip convert --ip="192.0.2.123" --label="new label converted"
-	
+
 	# Shortened with alias commands
 	vultr-cli rip v -i="192.0.2.123" -l="new label converted"
 	`
@@ -123,23 +123,38 @@ func ReservedIP() *cobra.Command {
 
 	// Attach
 	reservedIPAttach.Flags().StringP("instance-id", "i", "", "id of instance you want to attach")
-	reservedIPAttach.MarkFlagRequired("instance-id")
+	if err := reservedIPAttach.MarkFlagRequired("instance-id"); err != nil {
+		fmt.Printf("error marking reserved-ip attach 'instance-id' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	// Convert
 	reservedIPConvert.Flags().StringP("ip", "i", "", "ip you wish to convert")
-	reservedIPConvert.MarkFlagRequired("ip")
+	if err := reservedIPConvert.MarkFlagRequired("ip"); err != nil {
+		fmt.Printf("error marking reserved-ip convert 'ip' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	reservedIPConvert.Flags().StringP("label", "l", "", "label")
 
 	// Create
 	reservedIPCreate.Flags().StringP("region", "r", "", "id of region")
-	reservedIPCreate.MarkFlagRequired("region")
+	if err := reservedIPCreate.MarkFlagRequired("region"); err != nil {
+		fmt.Printf("error marking reserved-ip create 'region' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	reservedIPCreate.Flags().StringP("type", "t", "", "type of IP : v4 or v6")
-	reservedIPCreate.MarkFlagRequired("type")
+	if err := reservedIPCreate.MarkFlagRequired("type"); err != nil {
+		fmt.Printf("error marking reserved-ip create 'type' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	reservedIPCreate.Flags().StringP("label", "l", "", "label")
 
 	// Update
 	reservedIPUpdate.Flags().StringP("label", "l", "", "label")
-	reservedIPUpdate.MarkFlagRequired("label")
+	if err := reservedIPUpdate.MarkFlagRequired("label"); err != nil {
+		fmt.Printf("error marking reserved-ip update 'label' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	return reservedIPCmd
 }

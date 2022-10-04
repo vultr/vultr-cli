@@ -19,7 +19,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -74,7 +73,7 @@ var bareMetalSetUserData = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		userData, _ := cmd.Flags().GetString("userdata")
 
-		rawData, err := ioutil.ReadFile(userData)
+		rawData, err := os.ReadFile(userData)
 		if err != nil {
 			fmt.Printf("error reading user-data : %v\n", err)
 			os.Exit(1)

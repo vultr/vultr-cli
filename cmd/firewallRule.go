@@ -30,8 +30,8 @@ var (
 	firewallRuleLong    = `Show commands available for firewall rules`
 	firewallRuleExample = `
 	# Full example
-	vultr-cli firewall rule 
-	
+	vultr-cli firewall rule
+
 	# Shortened example with aliases
 	vultr-cli fw r
 	`
@@ -73,7 +73,7 @@ var (
 	vultr-cli firewall rule list 704ac064-4ff2-49ca-a6e6-88262cca8f8a
 
 	# Shortened example with aliases
-	vultr-cli fw r l 704ac064-4ff2-49ca-a6e6-88262cca8f8a 
+	vultr-cli fw r l 704ac064-4ff2-49ca-a6e6-88262cca8f8a
 	`
 )
 
@@ -100,10 +100,22 @@ func FirewallRule() *cobra.Command {
 	firewallRuleCreate.Flags().StringP("port", "r", "", "(optional) TCP/UDP only. This field can be an integer value specifying a port or a colon separated port range.")
 	firewallRuleCreate.Flags().StringP("notes", "n", "", "(optional) This field supports notes up to 255 characters.")
 
-	firewallRuleCreate.MarkFlagRequired("id")
-	firewallRuleCreate.MarkFlagRequired("protocol")
-	firewallRuleCreate.MarkFlagRequired("subnet")
-	firewallRuleCreate.MarkFlagRequired("size")
+	if err := firewallRuleCreate.MarkFlagRequired("id"); err != nil {
+		fmt.Printf("error marking firewall rule create  'id' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := firewallRuleCreate.MarkFlagRequired("protocol"); err != nil {
+		fmt.Printf("error marking firewall rule create 'protocol' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := firewallRuleCreate.MarkFlagRequired("subnet"); err != nil {
+		fmt.Printf("error marking firewall rule create 'subnet' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := firewallRuleCreate.MarkFlagRequired("size"); err != nil {
+		fmt.Printf("error marking firewall rule create 'size' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	firewallRuleList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	firewallRuleList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
