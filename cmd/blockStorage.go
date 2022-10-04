@@ -42,7 +42,7 @@ var (
 
 	#Full example with block-type
 	vultr-cli block-storage create --region 'lax' --size 10 --block-type 'high_perf'
-	
+
 	#Shortened with aliased commands
 	vultr-cli bs c -r 'lax' -s 10
 
@@ -54,7 +54,7 @@ var (
 	deleteBlockStorageExample = `
 	#Full example
 	vultr-cli block-storage delete 67181686-5455-4ebb-81eb-7299f3506e2c
-	
+
 	#Shortened with aliased commands
 	vultr-cli bs d 67181686-5455-4ebb-81eb-7299f3506e2c
 	`
@@ -63,7 +63,7 @@ var (
 	detachBlockStorageExample = `
 	#Full example
 	vultr-cli block-storage detach 67181686-5455-4ebb-81eb-7299f3506e2c
-	
+
 	#Shortened with aliased commands
 	vultr-cli bs detach 67181686-5455-4ebb-81eb-7299f3506e2c
 	`
@@ -72,7 +72,7 @@ var (
 	labelBlockStorageExample = `
 	#Full example
 	vultr-cli block-storage label 67181686-5455-4ebb-81eb-7299f3506e2c --label "Example Label"
-	
+
 	#Shortened with aliased commands
 	vultr-cli bs label 67181686-5455-4ebb-81eb-7299f3506e2c -l "Example Label"
 	`
@@ -81,7 +81,7 @@ var (
 	listBlockStorageExample = `
 	#Full example
 	vultr-cli block-storage list
-	
+
 	#Shortened with aliased commands
 	vultr-cli bs l
 	`
@@ -90,7 +90,7 @@ var (
 	getBlockStorageExample = `
 	#Full example
 	vultr-cli block-storage get 67181686-5455-4ebb-81eb-7299f3506e2c
-	
+
 	#Shortened with aliased commands
 	vultr-cli bs g 67181686-5455-4ebb-81eb-7299f3506e2c
 	`
@@ -99,7 +99,7 @@ var (
 	resizeBlockStorageExample = `
 	#Full example
 	vultr-cli block-storage resize 67181686-5455-4ebb-81eb-7299f3506e2c --size 20
-	
+
 	#Shortened with aliased commands
 	vultr-cli bs r 67181686-5455-4ebb-81eb-7299f3506e2c -s 20
 	`
@@ -124,17 +124,25 @@ func BlockStorageCmd() *cobra.Command {
 	// Attach
 	bsAttach.Flags().StringP("instance", "i", "", "instance id you want to attach to")
 	bsAttach.Flags().Bool("live", false, "attach Block Storage without restarting the Instance.")
-	bsAttach.MarkFlagRequired("instance")
-
+	if err := bsAttach.MarkFlagRequired("instance"); err != nil {
+		fmt.Printf("error marking block storage attach 'live' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	// Detach
 	bsDetach.Flags().Bool("live", false, "detach block storage from instance without a restart")
 
 	// Create
 	bsCreate.Flags().StringP("region", "r", "", "regionID you want to create the block storage in")
-	bsCreate.MarkFlagRequired("region")
+	if err := bsCreate.MarkFlagRequired("region"); err != nil {
+		fmt.Printf("error marking block storage create 'region' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	bsCreate.Flags().IntP("size", "s", 0, "size of the block storage you want to create")
-	bsCreate.MarkFlagRequired("size")
+	if err := bsCreate.MarkFlagRequired("size"); err != nil {
+		fmt.Printf("error marking block storage create 'size' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	bsCreate.Flags().StringP("label", "l", "", "label you want to give the block storage")
 
@@ -142,11 +150,17 @@ func BlockStorageCmd() *cobra.Command {
 
 	// Label
 	bsLabelSet.Flags().StringP("label", "l", "", "label you want your block storage to have")
-	bsLabelSet.MarkFlagRequired("label")
+	if err := bsLabelSet.MarkFlagRequired("label"); err != nil {
+		fmt.Printf("error marking block storage label set 'label' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	// Resize
 	bsResize.Flags().IntP("size", "s", 0, "size you want your block storage to be")
-	bsResize.MarkFlagRequired("size")
+	if err := bsResize.MarkFlagRequired("size"); err != nil {
+		fmt.Printf("error marking block storage resize 'size' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	return bsCmd
 }

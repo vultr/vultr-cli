@@ -41,7 +41,7 @@ var (
 	You must pass --region; other arguments are optional
 
 	#Shortened example with aliases
-	vultr-cli lb c -r="lax" -b="roundrobin" -l="Example Load Balancer" -p=80 -c=10 
+	vultr-cli lb c -r="lax" -b="roundrobin" -l="Example Load Balancer" -p=80 -c=10
 
 	#Full example with attached VPC
 	vultr-cli load-balancer create --region="lax"  --label="Example Load Balancer with VPC" --vpc="e951822b-10b2-4c5e-b333-bf38033e7175" --balancing-algorithm="leastconn"
@@ -74,7 +74,10 @@ func LoadBalancer() *cobra.Command {
 
 	// Create
 	lbCreate.Flags().StringP("region", "r", "", "region id you wish to have the load balancer created in")
-	lbCreate.MarkFlagRequired("region")
+	if err := lbCreate.MarkFlagRequired("region"); err != nil {
+		fmt.Printf("error marking load-balancer create 'region' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	lbCreate.Flags().StringP("balancing-algorithm", "b", "roundrobin", "(optional) balancing algorithm that determines server selection | roundrobin or leastconn")
 	lbCreate.Flags().StringP("ssl-redirect", "s", "", "(optional) if true, this will redirect HTTP traffic to HTTPS. You must have an HTTPS rule and SSL certificate installed on the load balancer to enable this option.")
@@ -162,10 +165,22 @@ func LoadBalancer() *cobra.Command {
 	ruleCreate.Flags().Int("frontend-port", 80, "the port number on the Load Balancer to forward to the backend.")
 	ruleCreate.Flags().Int("backend-port", 80, "the port number destination on the backend server.")
 
-	ruleCreate.MarkFlagRequired("frontend-protocol")
-	ruleCreate.MarkFlagRequired("backend-protocol")
-	ruleCreate.MarkFlagRequired("frontend-port")
-	ruleCreate.MarkFlagRequired("backend-port")
+	if err := ruleCreate.MarkFlagRequired("frontend-protocol"); err != nil {
+		fmt.Printf("error marking load-balancer rule create 'frontend-protocol' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := ruleCreate.MarkFlagRequired("backend-protocol"); err != nil {
+		fmt.Printf("error marking load-balancer rule create 'backend-protocol' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := ruleCreate.MarkFlagRequired("frontend-port"); err != nil {
+		fmt.Printf("error marking load-balancer rule create 'frontend-port' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := ruleCreate.MarkFlagRequired("backend-port"); err != nil {
+		fmt.Printf("error marking load-balancer rule create 'backend-port' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	rulesCmd.AddCommand(ruleCreate, ruleDelete, ruleGet, ruleList)
 	lbCmd.AddCommand(rulesCmd)

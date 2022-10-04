@@ -42,9 +42,18 @@ func User() *cobra.Command {
 	userCreate.Flags().StringP("api-enabled", "a", "yes", "Toggle User API Access")
 	userCreate.Flags().StringSliceP("acl", "l", []string{}, "User access control list in a comma separated list. Possible values manage_users,subscriptions,billing,support,provisioning,dns,abuse,upgrade,firewall,alerts]")
 
-	userCreate.MarkFlagRequired("email")
-	userCreate.MarkFlagRequired("name")
-	userCreate.MarkFlagRequired("password")
+	if err := userCreate.MarkFlagRequired("email"); err != nil {
+		fmt.Printf("error marking user create 'email' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := userCreate.MarkFlagRequired("name"); err != nil {
+		fmt.Printf("error marking user create 'name' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := userCreate.MarkFlagRequired("password"); err != nil {
+		fmt.Printf("error marking user create 'password' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	userUpdate.Flags().StringP("email", "e", "", "User email")
 	userUpdate.Flags().StringP("name", "n", "", "User name")

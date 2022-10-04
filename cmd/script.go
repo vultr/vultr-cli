@@ -40,8 +40,14 @@ func Script() *cobra.Command {
 	scriptCreate.Flags().StringP("script", "s", "", "Startup script contents.")
 	scriptCreate.Flags().StringP("type", "t", "", "(Optional) Type of startup script. Possible values: 'boot', 'pxe'. Default is 'boot'.")
 
-	scriptCreate.MarkFlagRequired("name")
-	scriptCreate.MarkFlagRequired("script")
+	if err := scriptCreate.MarkFlagRequired("name"); err != nil {
+		fmt.Printf("error marking script create 'name' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := scriptCreate.MarkFlagRequired("script"); err != nil {
+		fmt.Printf("error marking script create 'script' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	scriptUpdate.Flags().StringP("name", "n", "", "Name of the startup script.")
 	scriptUpdate.Flags().StringP("script", "s", "", "Startup script contents.")
