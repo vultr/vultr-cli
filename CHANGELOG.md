@@ -1,4 +1,19 @@
 # Change Log
+## [v2.15.0](https://github.com/vultr/vultr-cli/compare/v2.14.2...v2.15.0) (2022-10-04)
+### Enhancements
+* Add arm builds [PR 283](https://github.com/vultr/vultr-cli/pull/283)
+
+### Dependencies
+* Bump github.com/spf13/cobra from 1.4.0 to 1.5.0 [PR 274](https://github.com/vultr/vultr-cli/pull/274)
+* Bump go from 1.17 to 1.19 [PR 284]( https://github.com/vultr/vultr-cli/pull/284)
+
+### Documentation
+* Remove extraneous dash from example command-line [PR 279](https://github.com/vultr/vultr-cli/pull/279)
+
+### New Contributors
+* @uplime made their first contribution in [PR 279](https://github.com/vultr/vultr-cli/pull/279)
+* @mondragonfx made their first contribution in [PR 284](https://github.com/vultr/vultr-cli/pull/284)
+
 ## [v2.14.2](https://github.com/vultr/vultr-cli/compare/v2.14.1...v2.14.2) (2022-06-14)
 ### Enhancements
 * Reserved IP: Add support for reserved IP label updates [PR 272](https://github.com/vultr/vultr-cli/pull/272)
@@ -24,7 +39,7 @@
 * Baremetal : Add support for multiple tags via the `tags` field [PR 259](https://github.com/vultr/vultr-cli/pull/259)
 * Instances : Add support for multiple tags via the `tags` field [PR 259](https://github.com/vultr/vultr-cli/pull/259)
 
-### Deprecations 
+### Deprecations
 * Firewall Rule : The `type` option on firewall rules has been replaced by `ip-type` [PR 262](https://github.com/vultr/vultr-cli/pull/262)
 * Baremetal : the `tag` field has been replaced by `tags` which supports multiple tags [PR 259](https://github.com/vultr/vultr-cli/pull/259)
 * Instances : the `tag` field has been replaced by `tags` which supports multiple tags [PR 259](https://github.com/vultr/vultr-cli/pull/259)
@@ -38,11 +53,11 @@
 
 ## [v2.13.0](https://github.com/vultr/vultr-cli/compare/v2.12.2..v2.13.0) (2022-04-15)
 ### Enhancements
-* VPC : new commands which will be replacing `network` (private networks) [PR 251](https://github.com/vultr/vultr-cli/pull/251) 
-* BlockStorage : adding support for new `block_type` field [PR 249](https://github.com/vultr/vultr-cli/pull/249/) 
+* VPC : new commands which will be replacing `network` (private networks) [PR 251](https://github.com/vultr/vultr-cli/pull/251)
+* BlockStorage : adding support for new `block_type` field [PR 249](https://github.com/vultr/vultr-cli/pull/249/)
 * LoadBalancer : Updating `vpc` functionality added [PR 251](https://github.com/vultr/vultr-cli/pull/251)
 
-### Deprecations 
+### Deprecations
 * Network : These commands have been replaced by `vpc` [PR 251](https://github.com/vultr/vultr-cli/pull/251)
 * Instance : The following fields have been deprecated on the `create` command `private-network` and `network`. Please use `vpc-enable` or `vpc-ids` [PR 251](https://github.com/vultr/vultr-cli/pull/251)
 * LoadBalancer : The following fields have been deprecated on the `create` command `private-network`. Please use `vpc` instead [PR 251](https://github.com/vultr/vultr-cli/pull/251)
@@ -83,7 +98,7 @@
 * Script : Return b64 script when getting script by id [PR 229](https://github.com/vultr/vultr-cli/pull/229)
 
 ### Breaking Changes
-* Script : get command will display data vertically now instead of horizontal [PR 229](https://github.com/vultr/vultr-cli/pull/229) 
+* Script : get command will display data vertically now instead of horizontal [PR 229](https://github.com/vultr/vultr-cli/pull/229)
 
 ### Bug Fixes
 * Firewalls : change source from int to string [PR 228](https://github.com/vultr/vultr-cli/pull/228)
@@ -165,7 +180,7 @@
 ### Dependencies
 * GoVultr 2.7.1 -> 2.8.0 (added kubernetes support)[PR 177](https://github.com/vultr/vultr-cli/pull/177)
 
-### Enhancements 
+### Enhancements
 * Kubernetes: Add support for Kubernetes (VKE) [PR 178](https://github.com/vultr/vultr-cli/pull/178)
 * README: update commands needed for building from source [PR 173](https://github.com/vultr/vultr-cli/pull/173)
 * README: update examples  [PR 174](https://github.com/vultr/vultr-cli/pull/174)
@@ -174,7 +189,7 @@
 ### Dependencies
 * GoVultr 2.6.0 -> 2.7.1 (added image_id support for instance and bare metal updates) [PR 169](https://github.com/vultr/vultr-cli/pull/169)
 
-### Enhancements 
+### Enhancements
 * Instances: Add image_id support [PR 169](https://github.com/vultr/vultr-cli/pull/169)
 * Bare-metal: Add image_id support [PR 169](https://github.com/vultr/vultr-cli/pull/169)
 * Add documentation for autocompletions in README
@@ -184,7 +199,7 @@
 * Bump github.com/spf13/viper from 1.7.1 to 1.8.1 [PR 163](https://github.com/vultr/vultr-cli/pull/163)
 * GoVultr v2.5.1 -> 2.6.0 (added support for persistent_pxe) [PR 164](https://github.com/vultr/vultr-cli/pull/164)
 
-### Enhancements 
+### Enhancements
 * Bare-metal : Support `persistent_pxe` on create [PR 164](https://github.com/vultr/vultr-cli/pull/164)
 
 ## [v2.5.3](https://github.com/vultr/vultr-cli/compare/v2.5.2..v2.5.3) (2021-06-28)
@@ -195,7 +210,7 @@
 ### Enhancement
 * Support config files in $XDG_CONFIG_HOME [PR 153](https://github.com/vultr/vultr-cli/pull/153)
 
-### Documentation 
+### Documentation
 * Add Arch Linux install instructions [PR 154](https://github.com/vultr/vultr-cli/pull/154)
 
 ## [v2.5.1](https://github.com/vultr/vultr-cli/compare/v2.5.0..v2.5.1) (2021-05-12)
@@ -251,7 +266,7 @@
 
 ## [v2.0.0](https://github.com/vultr/vultr-cli/compare/v1.0.0..v2.0.0) (2020-11-24)
 ### Enhancement
-* Vultr-CLI v2.0.0 release 
+* Vultr-CLI v2.0.0 release
 
 ### Changes
 * Vultr-CLI v2.0.0 is running on API v2
@@ -259,11 +274,11 @@
 
 ## [v1.0.0](https://github.com/vultr/vultr-cli/compare/v0.4.0..v1.0.0) (2020-11-19)
 ### Enhancement
-* Vultr-CLI v1.0.0 release [PR 114](https://github.com/vultr/vultr-cli/pull/114) 
+* Vultr-CLI v1.0.0 release [PR 114](https://github.com/vultr/vultr-cli/pull/114)
 
 ## [v0.4.0](https://github.com/vultr/vultr-cli/compare/v0.3.2..v0.4.0) (2020-09-03)
 ### Enhancement
-* Improve error responses by adding a newline [PR 109](https://github.com/vultr/vultr-cli/pull/109) 
+* Improve error responses by adding a newline [PR 109](https://github.com/vultr/vultr-cli/pull/109)
 * Add Server User Data subcommands Get and Set [PR 105](https://github.com/vultr/vultr-cli/pull/105)
 
 ### Dependencies
@@ -325,7 +340,7 @@
 ### Enhancements
 * Bump GoVultr to v0.1.5 [PR 55](https://github.com/vultr/vultr-cli/pull/55)
 
-  
+
 ## [v0.1.6](https://github.com/vultr/vultr-cli/compare/v0.1.5..v0.1.6) (2019-09-04)
 ### Enhancements
 * Print the original API error messages in [PR 50](https://github.com/vultr/vultr-cli/pull/50) && [PR 52](https://github.com/vultr/vultr-cli/pull/52)
@@ -346,7 +361,7 @@
 ## [v0.1.3](https://github.com/vultr/vultr-cli/compare/v0.1.2..v0.1.3) (2019-08-21)
 ### Bug Fixes
 * Quote handling on DNS Record Data [PR #41](https://github.com/vultr/vultr-cli/pull/41)
-  
+
 ## [v0.1.2](https://github.com/vultr/vultr-cli/compare/v0.1.1..v0.1.2) (2019-07-15)
 ### Dependencies
 * Updated dependencies [PR #35](https://github.com/vultr/vultr-cli/pull/35)
