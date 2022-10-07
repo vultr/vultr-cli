@@ -92,6 +92,7 @@ dockers:
   - dockerfile: Dockerfile.goreleaser
     image_templates:
       - "vultr/vultr-cli:release"
+      - "vultr/vultr-cli:latest"
       - "vultr/vultr-cli:{{ .Tag }}"
     extra_files:
       - scripts/entrypoint.sh
