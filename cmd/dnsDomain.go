@@ -84,7 +84,12 @@ var domainCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.Domain(dns)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(dns)
+		} else {
+			printer.Domain(dns)
+		}
 	},
 }
 
@@ -150,7 +155,12 @@ var secInfo = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.SecInfo(info)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(info)
+		} else {
+			printer.SecInfo(info)
+		}
 	},
 }
 
@@ -166,7 +176,12 @@ var domainGet = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.Domain(domain)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(domain)
+		} else {
+			printer.Domain(domain)
+		}
 	},
 }
 
@@ -181,8 +196,16 @@ var domainList = &cobra.Command{
 			fmt.Printf("error getting domains : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.DomainList(list, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list))
+			for i := range list {
+				l[i] = list[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.DomainList(list, meta)
+		}
 	},
 }
 
@@ -203,8 +226,12 @@ var soaInfo = &cobra.Command{
 			fmt.Printf("error toggling dnssec : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.SoaInfo(info)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(info)
+		} else {
+			printer.SoaInfo(info)
+		}
 	},
 }
 

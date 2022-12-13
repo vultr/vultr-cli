@@ -45,12 +45,21 @@ var appsList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
+		format, _ := cmd.Flags().GetString("format")
 		apps, meta, err := client.Application.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting available applications : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.Application(apps, meta)
+		if format == "json" {
+			l := make([]interface{}, len(apps))
+			for i := range apps {
+				l[i] = apps[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.Application(apps, meta)
+		}
 	},
 }

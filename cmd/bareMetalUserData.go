@@ -57,7 +57,12 @@ var bareMetalGetUserData = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.UserData(u)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(format)
+		} else {
+			printer.UserData(u)
+		}
 	},
 }
 

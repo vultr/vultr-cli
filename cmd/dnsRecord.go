@@ -109,8 +109,12 @@ var recordCreate = &cobra.Command{
 			fmt.Printf("error while creating dns record : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.DnsRecord(record)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(record)
+		} else {
+			printer.DnsRecord(record)
+		}
 	},
 }
 
@@ -134,7 +138,12 @@ var recordGet = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.DnsRecord(record)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(record)
+		} else {
+			printer.DnsRecord(record)
+		}
 	},
 }
 
@@ -157,8 +166,16 @@ var recordList = &cobra.Command{
 			fmt.Printf("error while getting dns records : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.DnsRecordsList(records, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(records))
+			for i := range records {
+				l[i] = records[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.DnsRecordsList(records, meta)
+		}
 	},
 }
 

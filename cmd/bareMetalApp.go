@@ -83,7 +83,15 @@ var bareMetalAppChangeList = &cobra.Command{
 			fmt.Printf("error listing available applications : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.AppList(list.Applications)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list.Applications))
+			for i := range list.Applications {
+				l[i] = list.Applications[i]
+			}
+			printer.ManyAsJson(l, &govultr.Meta{})
+		} else {
+			printer.AppList(list.Applications)
+		}
 	},
 }

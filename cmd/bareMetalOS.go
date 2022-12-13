@@ -82,7 +82,15 @@ var bareMetalOSChangeList = &cobra.Command{
 			fmt.Printf("error listing available os : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.OsList(list.OS)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list.OS))
+			for i := range list.OS {
+				l[i] = list.OS[i]
+			}
+			printer.ManyAsJson(l, &govultr.Meta{})
+		} else {
+			printer.OsList(list.OS)
+		}
 	},
 }

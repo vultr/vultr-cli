@@ -143,8 +143,16 @@ var billingHistoryList = &cobra.Command{
 			fmt.Printf("error getting billing history : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.BillingHistory(history, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(history))
+			for i := range history {
+				l[i] = history[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.BillingHistory(history, meta)
+		}
 	},
 }
 
@@ -162,7 +170,16 @@ var invoicesList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.Invoices(history, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(history))
+			for i := range history {
+				l[i] = history[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.Invoices(history, meta)
+		}
 	},
 }
 
@@ -186,8 +203,16 @@ var invoiceItemsList = &cobra.Command{
 			fmt.Printf("error getting invoice items : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.InvoiceItems(items, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(items))
+			for i := range items {
+				l[i] = items[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.InvoiceItems(items, meta)
+		}
 	},
 }
 
@@ -210,6 +235,11 @@ var invoiceGet = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.Invoice(invoice)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(invoice)
+		} else {
+			printer.Invoice(invoice)
+		}
 	},
 }

@@ -190,7 +190,12 @@ var bareMetalCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.BareMetal(bm)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(bm)
+		} else {
+			printer.BareMetal(bm)
+		}
 	},
 }
 
@@ -225,8 +230,16 @@ var bareMetalList = &cobra.Command{
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
-
-		printer.BareMetalList(list, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list))
+			for i := range list {
+				l[i] = list[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.BareMetalList(list, meta)
+		}
 	},
 }
 
@@ -246,7 +259,12 @@ var bareMetalGet = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.BareMetal(srv)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(srv)
+		} else {
+			printer.BareMetal(srv)
+		}
 	},
 }
 
@@ -265,8 +283,12 @@ var bareMetalGetVNCUrl = &cobra.Command{
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
-
-		fmt.Println(vnc.URL)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(vnc)
+		} else {
+			fmt.Println(vnc.URL)
+		}
 	},
 }
 
@@ -286,8 +308,12 @@ var bareMetalBandwidth = &cobra.Command{
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
-
-		printer.BareMetalBandwidth(bw)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(bw)
+		} else {
+			printer.BareMetalBandwidth(bw)
+		}
 	},
 }
 
@@ -351,8 +377,16 @@ var bareMetalListIPV4 = &cobra.Command{
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
-
-		printer.BareMetalIPV4Info(info, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(info))
+			for i := range info {
+				l[i] = info[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.BareMetalIPV4Info(info, meta)
+		}
 	},
 }
 
@@ -374,7 +408,16 @@ var bareMetalListIPV6 = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.BareMetalIPV6Info(info, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(info))
+			for i := range info {
+				l[i] = info[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.BareMetalIPV6Info(info, meta)
+		}
 	},
 }
 

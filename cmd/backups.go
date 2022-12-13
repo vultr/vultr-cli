@@ -45,14 +45,22 @@ var backupsList = &cobra.Command{
 	Short:   "list backups",
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
+		format, _ := cmd.Flags().GetString("format")
 		options := getPaging(cmd)
 		backups, meta, err := client.Backup.List(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error getting backups : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.Backups(backups, meta)
+		if format == "json" {
+			l := make([]interface{}, len(backups))
+			for i := range backups {
+				l[i] = backups[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.Backups(backups, meta)
+		}
 	},
 }
 
@@ -71,7 +79,11 @@ var backupsGet = &cobra.Command{
 			fmt.Printf("error getting backup : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.Backup(backup)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(backup)
+		} else {
+			printer.Backup(backup)
+		}
 	},
 }

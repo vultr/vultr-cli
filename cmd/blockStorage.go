@@ -221,8 +221,12 @@ var bsCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.SingleBlockStorage(bs)
-
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(bs)
+		} else {
+			printer.SingleBlockStorage(bs)
+		}
 	},
 }
 
@@ -320,7 +324,16 @@ var bsList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.BlockStorage(bs, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(bs))
+			for i := range bs {
+				l[i] = bs[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.BlockStorage(bs, meta)
+		}
 	},
 }
 
@@ -345,7 +358,12 @@ var bsGet = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.SingleBlockStorage(bs)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(bs)
+		} else {
+			printer.SingleBlockStorage(bs)
+		}
 	},
 }
 
