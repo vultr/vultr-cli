@@ -74,8 +74,12 @@ var snapshotCreate = &cobra.Command{
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
-
-		printer.Snapshot(s)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(s)
+		} else {
+			printer.Snapshot(s)
+		}
 	},
 }
 
@@ -96,7 +100,12 @@ var snapshotCreateFromURL = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.Snapshot(s)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(s)
+		} else {
+			printer.Snapshot(s)
+		}
 	},
 }
 
@@ -141,7 +150,12 @@ var snapshotGet = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.Snapshot(snapshot)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(snapshot)
+		} else {
+			printer.Snapshot(snapshot)
+		}
 	},
 }
 
@@ -157,7 +171,15 @@ var snapshotList = &cobra.Command{
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
-
-		printer.Snapshots(list, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list))
+			for i := range list {
+				l[i] = list[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.Snapshots(list, meta)
+		}
 	},
 }

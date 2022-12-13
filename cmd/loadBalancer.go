@@ -306,7 +306,12 @@ var lbCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.LoadBalancer(lb)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(lb)
+		} else {
+			printer.LoadBalancer(lb)
+		}
 	},
 }
 
@@ -349,7 +354,12 @@ var lbGet = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.LoadBalancer(lb)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(lb)
+		} else {
+			printer.LoadBalancer(lb)
+		}
 	},
 }
 
@@ -364,8 +374,16 @@ var lbList = &cobra.Command{
 			fmt.Printf("error listing load balancers : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.LoadBalancerList(list, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list))
+			for i := range list {
+				l[i] = list[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.LoadBalancerList(list, meta)
+		}
 	},
 }
 
@@ -537,7 +555,16 @@ var ruleList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.LoadBalancerRuleList(rules, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(rules))
+			for i := range rules {
+				l[i] = rules[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.LoadBalancerRuleList(rules, meta)
+		}
 	},
 }
 
@@ -582,8 +609,12 @@ var ruleGet = &cobra.Command{
 			fmt.Printf("error getting load balancer rule : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.LoadBalancerRule(rule)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(rule)
+		} else {
+			printer.LoadBalancerRule(rule)
+		}
 	},
 }
 
@@ -630,7 +661,16 @@ var fwRuleList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.LoadBalancerFWRuleList(rules, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(rules))
+			for i := range rules {
+				l[i] = rules[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.LoadBalancerFWRuleList(rules, meta)
+		}
 	},
 }
 
@@ -652,8 +692,12 @@ var fwRuleGet = &cobra.Command{
 			fmt.Printf("error getting load balancer rule : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.LoadBalancerFWRule(rule)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(rule)
+		} else {
+			printer.LoadBalancerFWRule(rule)
+		}
 	},
 }
 

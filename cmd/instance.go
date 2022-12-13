@@ -526,8 +526,12 @@ var instanceBandwidth = &cobra.Command{
 			fmt.Printf("error getting bandwidth for instance : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.InstanceBandwidth(bw)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(bw)
+		} else {
+			printer.InstanceBandwidth(bw)
+		}
 	},
 }
 
@@ -550,8 +554,16 @@ var instanceIPV4List = &cobra.Command{
 			fmt.Printf("error getting ipv4 info : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.InstanceIPV4(v4, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(v4))
+			for i := range v4 {
+				l[i] = v4[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.InstanceIPV4(v4, meta)
+		}
 	},
 }
 
@@ -575,7 +587,16 @@ var instanceIPV6List = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.InstanceIPV6(v6, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(v6))
+			for i := range v6 {
+				l[i] = v6[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.InstanceIPV6(v6, meta)
+		}
 	},
 }
 
@@ -592,7 +613,16 @@ var instanceList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.InstanceList(s, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(s))
+			for i := range s {
+				l[i] = s[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.InstanceList(s, meta)
+		}
 	},
 }
 
@@ -613,8 +643,12 @@ var instanceInfo = &cobra.Command{
 			fmt.Printf("error getting instance : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.Instance(s)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(s)
+		} else {
+			printer.Instance(s)
+		}
 	},
 }
 
@@ -685,7 +719,16 @@ var osUpdateList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.OsList(list.OS)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list.OS))
+			for i := range list.OS {
+				l[i] = list.OS[i]
+			}
+			printer.ManyAsJson(l, &govultr.Meta{})
+		} else {
+			printer.OsList(list.OS)
+		}
 	},
 }
 
@@ -762,7 +805,16 @@ var appUpdateList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.AppList(list.Applications)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list.Applications))
+			for i := range list.Applications {
+				l[i] = list.Applications[i]
+			}
+			printer.ManyAsJson(l, &govultr.Meta{})
+		} else {
+			printer.AppList(list.Applications)
+		}
 	},
 }
 
@@ -783,8 +835,12 @@ var backupGet = &cobra.Command{
 			fmt.Printf("error getting application info : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.BackupsGet(info)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(info)
+		} else {
+			printer.BackupsGet(info)
+		}
 	},
 }
 
@@ -840,7 +896,12 @@ var isoStatus = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.IsoStatus(info)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(info)
+		} else {
+			printer.IsoStatus(info)
+		}
 	},
 }
 
@@ -1021,7 +1082,16 @@ var upgradePlanList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.PlansList(list.Plans)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list.Plans))
+			for i := range list.Plans {
+				l[i] = list.Plans[i]
+			}
+			printer.ManyAsJson(l, &govultr.Meta{})
+		} else {
+			printer.PlansList(list.Plans)
+		}
 	},
 }
 
@@ -1065,7 +1135,12 @@ var listIpv6 = &cobra.Command{
 			fmt.Printf("error getting the reverse ipv6 list: %v\n", err)
 			os.Exit(1)
 		}
-		printer.ReverseIpv6(rip)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(rip)
+		} else {
+			printer.ReverseIpv6(rip)
+		}
 	},
 }
 
@@ -1258,8 +1333,12 @@ var instanceCreate = &cobra.Command{
 			fmt.Printf("error creating instance : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.Instance(instance)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(instance)
+		} else {
+			printer.Instance(instance)
+		}
 	},
 }
 
@@ -1310,7 +1389,12 @@ var getUserData = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.UserData(userData)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(userData)
+		} else {
+			printer.UserData(userData)
+		}
 	},
 }
 

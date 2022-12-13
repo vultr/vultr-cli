@@ -125,8 +125,12 @@ var vpcGet = &cobra.Command{
 			fmt.Printf("error getting VPC : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.VPC(vpc)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(vpc)
+		} else {
+			printer.VPC(vpc)
+		}
 	},
 }
 
@@ -143,8 +147,16 @@ var vpcList = &cobra.Command{
 			fmt.Printf("error getting VPC list : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.VPCList(vpc, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(vpc))
+			for i := range vpc {
+				l[i] = vpc[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.VPCList(vpc, meta)
+		}
 	},
 }
 
@@ -195,8 +207,12 @@ var vpcCreate = &cobra.Command{
 			fmt.Printf("error creating VPC: %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.VPC(vpc)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(vpc)
+		} else {
+			printer.VPC(vpc)
+		}
 	},
 }
 

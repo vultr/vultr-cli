@@ -118,7 +118,16 @@ var objStorageList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.ObjectStorages(objStorage, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(objStorage))
+			for i := range objStorage {
+				l[i] = objStorage[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.ObjectStorages(objStorage, meta)
+		}
 	},
 }
 
@@ -139,8 +148,12 @@ var objStorageGet = &cobra.Command{
 			fmt.Printf("error getting object storage : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.SingleObjectStorage(objStorage)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(objStorage)
+		} else {
+			printer.SingleObjectStorage(objStorage)
+		}
 	},
 }
 
@@ -155,8 +168,16 @@ var objStorageClusterList = &cobra.Command{
 			fmt.Printf("error getting object storage clusters : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.ObjectStorageClusterList(cluster, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(cluster))
+			for i := range cluster {
+				l[i] = cluster[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.ObjectStorageClusterList(cluster, meta)
+		}
 	},
 }
 
@@ -178,7 +199,12 @@ var objStorageS3KeyRegenerate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.ObjStorageS3KeyRegenerate(s3Keys)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(s3Keys)
+		} else {
+			printer.ObjStorageS3KeyRegenerate(s3Keys)
+		}
 	},
 }
 

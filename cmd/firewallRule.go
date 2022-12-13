@@ -179,7 +179,12 @@ var firewallRuleCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.FirewallRule(fwr)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(fwr)
+		} else {
+			printer.FirewallRule(fwr)
+		}
 	},
 }
 
@@ -224,7 +229,12 @@ var firewallRuleGet = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.FirewallRule(fwRule)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(fwRule)
+		} else {
+			printer.FirewallRule(fwRule)
+		}
 	},
 }
 
@@ -248,6 +258,15 @@ var firewallRuleList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.FirewallRules(list, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list))
+			for i := range list {
+				l[i] = list[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.FirewallRules(list, meta)
+		}
 	},
 }

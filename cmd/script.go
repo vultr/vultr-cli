@@ -80,8 +80,12 @@ var scriptCreate = &cobra.Command{
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
-
-		printer.Script(startup)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(startup)
+		} else {
+			printer.Script(startup)
+		}
 	},
 }
 
@@ -120,8 +124,16 @@ var scriptList = &cobra.Command{
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
-
-		printer.ScriptList(list, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list))
+			for i := range list {
+				l[i] = list[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.ScriptList(list, meta)
+		}
 	},
 }
 
@@ -143,8 +155,12 @@ var scriptGet = &cobra.Command{
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
-
-		printer.Script(script)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(script)
+		} else {
+			printer.Script(script)
+		}
 	},
 }
 

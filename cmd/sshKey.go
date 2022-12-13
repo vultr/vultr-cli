@@ -76,7 +76,12 @@ var sshCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.SSHKey(id)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(id)
+		} else {
+			printer.SSHKey(id)
+		}
 	},
 }
 
@@ -118,8 +123,12 @@ var sshGet = &cobra.Command{
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
-
-		printer.SSHKey(ssh)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(ssh)
+		} else {
+			printer.SSHKey(ssh)
+		}
 	},
 }
 
@@ -135,8 +144,16 @@ var sshList = &cobra.Command{
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
-
-		printer.SSHKeys(list, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list))
+			for i := range list {
+				l[i] = list[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.SSHKeys(list, meta)
+		}
 	},
 }
 

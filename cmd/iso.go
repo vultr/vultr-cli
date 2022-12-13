@@ -67,8 +67,12 @@ var isoPrivateGet = &cobra.Command{
 			fmt.Printf("error getting ISO : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.IsoPrivate(iso)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(iso)
+		} else {
+			printer.IsoPrivate(iso)
+		}
 	},
 }
 
@@ -83,8 +87,16 @@ var isoPrivateList = &cobra.Command{
 			fmt.Printf("error getting private ISOs : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.IsoPrivates(isos, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(isos))
+			for i := range isos {
+				l[i] = isos[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.IsoPrivates(isos, meta)
+		}
 	},
 }
 
@@ -99,8 +111,16 @@ var isoPublic = &cobra.Command{
 			fmt.Printf("error getting public ISOs : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.IsoPublic(isos, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(isos))
+			for i := range isos {
+				l[i] = isos[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.IsoPublic(isos, meta)
+		}
 	},
 }
 
@@ -120,7 +140,12 @@ var isoCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.IsoPrivate(iso)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(iso)
+		} else {
+			printer.IsoPrivate(iso)
+		}
 	},
 }
 

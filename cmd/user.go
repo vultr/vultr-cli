@@ -96,7 +96,12 @@ var userCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.User(user)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(user)
+		} else {
+			printer.User(user)
+		}
 	},
 }
 
@@ -142,7 +147,12 @@ var userGet = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.User(user)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(user)
+		} else {
+			printer.User(user)
+		}
 	},
 }
 
@@ -158,8 +168,16 @@ var userList = &cobra.Command{
 			fmt.Printf("error while grabbing users %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.Users(list, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list))
+			for i := range list {
+				l[i] = list[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.Users(list, meta)
+		}
 	},
 }
 

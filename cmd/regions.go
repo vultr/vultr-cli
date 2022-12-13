@@ -55,7 +55,16 @@ var regionList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.Regions(list, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list))
+			for i := range list {
+				l[i] = list[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.Regions(list, meta)
+		}
 	},
 }
 
@@ -78,6 +87,11 @@ var regionAvailability = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.RegionAvailability(availability)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(availability)
+		} else {
+			printer.RegionAvailability(availability)
+		}
 	},
 }

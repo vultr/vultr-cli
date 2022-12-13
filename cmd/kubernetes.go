@@ -362,7 +362,12 @@ var k8Create = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.Cluster(kubernetes)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(kubernetes)
+		} else {
+			printer.Cluster(kubernetes)
+		}
 	},
 }
 
@@ -381,7 +386,16 @@ var k8List = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.Clusters(k8s, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(k8s))
+			for i := range k8s {
+				l[i] = k8s[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.Clusters(k8s, meta)
+		}
 	},
 }
 
@@ -405,7 +419,12 @@ var k8Get = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.Cluster(lb)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(lb)
+		} else {
+			printer.Cluster(lb)
+		}
 	},
 }
 
@@ -501,8 +520,12 @@ var k8GetConfig = &cobra.Command{
 			fmt.Printf("error retrieving kube config : %v\n", err)
 			os.Exit(1)
 		}
-
-		fmt.Println(config.KubeConfig)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(config.KubeConfig)
+		} else {
+			fmt.Println(config.KubeConfig)
+		}
 	},
 }
 
@@ -518,8 +541,12 @@ var k8GetVersions = &cobra.Command{
 			fmt.Printf("error retrieving supported versions : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.K8Versions(versions)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(versions)
+		} else {
+			printer.K8Versions(versions)
+		}
 	},
 }
 
@@ -537,7 +564,12 @@ var k8GetUpgrades = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.K8Upgrades(upgrades)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(upgrades)
+		} else {
+			printer.K8Upgrades(upgrades)
+		}
 	},
 }
 
@@ -606,7 +638,12 @@ var npCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.NodePool(np)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(np)
+		} else {
+			printer.NodePool(np)
+		}
 	},
 }
 
@@ -649,7 +686,12 @@ var npUpdate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.NodePool(np)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(np)
+		} else {
+			printer.NodePool(np)
+		}
 	},
 }
 
@@ -751,7 +793,16 @@ var npList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.NodePools(nps, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(nps))
+			for i := range nps {
+				l[i] = nps[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.NodePools(nps, meta)
+		}
 	},
 }
 
@@ -776,7 +827,12 @@ var npGet = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.NodePool(np)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(np)
+		} else {
+			printer.NodePool(np)
+		}
 	},
 }
 

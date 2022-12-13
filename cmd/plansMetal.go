@@ -79,6 +79,15 @@ var metalList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.PlanBareMetal(list, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list))
+			for i := range list {
+				l[i] = list[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.PlanBareMetal(list, meta)
+		}
 	},
 }

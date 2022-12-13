@@ -178,8 +178,12 @@ var reservedIPGet = &cobra.Command{
 			fmt.Printf("error getting reserved IP : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.ReservedIP(rip)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(rip)
+		} else {
+			printer.ReservedIP(rip)
+		}
 	},
 }
 
@@ -197,7 +201,16 @@ var reservedIPList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.ReservedIPList(rip, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(rip))
+			for i := range rip {
+				l[i] = rip[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.ReservedIPList(rip, meta)
+		}
 	},
 }
 
@@ -290,8 +303,12 @@ var reservedIPConvert = &cobra.Command{
 			fmt.Printf("error converting IP to reserved IPs : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.ReservedIP(r)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(r)
+		} else {
+			printer.ReservedIP(r)
+		}
 	},
 }
 
@@ -318,7 +335,12 @@ var reservedIPCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.ReservedIP(r)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(r)
+		} else {
+			printer.ReservedIP(r)
+		}
 	},
 }
 
@@ -347,7 +369,11 @@ var reservedIPUpdate = &cobra.Command{
 			fmt.Printf("error updating reserved IPs : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.ReservedIP(r)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(r)
+		} else {
+			printer.ReservedIP(r)
+		}
 	},
 }

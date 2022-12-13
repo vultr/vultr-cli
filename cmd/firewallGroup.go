@@ -60,7 +60,12 @@ var firewallGroupCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.FirewallGroup(fwg)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(fwg)
+		} else {
+			printer.FirewallGroup(fwg)
+		}
 	},
 }
 
@@ -126,7 +131,16 @@ var firewallGroupGet = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.FirewallGroups(list, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list))
+			for i := range list {
+				l[i] = list[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.FirewallGroups(list, meta)
+		}
 	},
 }
 
@@ -142,6 +156,15 @@ var firewallGroupList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.FirewallGroups(list, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(list))
+			for i := range list {
+				l[i] = list[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.FirewallGroups(list, meta)
+		}
 	},
 }

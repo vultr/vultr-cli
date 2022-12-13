@@ -105,8 +105,16 @@ var networkList = &cobra.Command{
 			fmt.Printf("error getting network list : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.NetworkList(network, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(network))
+			for i := range network {
+				l[i] = network[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.NetworkList(network, meta)
+		}
 	},
 }
 
@@ -157,6 +165,11 @@ var networkCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.Network(network)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			printer.AsJson(network)
+		} else {
+			printer.Network(network)
+		}
 	},
 }

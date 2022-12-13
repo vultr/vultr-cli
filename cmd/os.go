@@ -51,6 +51,15 @@ var osList = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		printer.Os(os, meta)
+		format, _ := cmd.Flags().GetString("format")
+		if format == "json" {
+			l := make([]interface{}, len(os))
+			for i := range os {
+				l[i] = os[i]
+			}
+			printer.ManyAsJson(l, meta)
+		} else {
+			printer.Os(os, meta)
+		}
 	},
 }
