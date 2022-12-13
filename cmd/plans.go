@@ -81,6 +81,7 @@ var planList = &cobra.Command{
 	Example: plansListExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		planType, _ := cmd.Flags().GetString("type")
+		format, _ := cmd.Flags().GetString("format")
 		options := getPaging(cmd)
 
 		if planType == "bare-metal" {
@@ -90,7 +91,15 @@ var planList = &cobra.Command{
 				os.Exit(1)
 			}
 
-			printer.PlanBareMetal(list, meta)
+			if format == "json" {
+				l := make([]interface{}, len(list))
+				for i := range list {
+					l[i] = list[i]
+				}
+				printer.ManyAsJson(l, meta)
+			} else {
+				printer.PlanBareMetal(list, meta)
+			}
 		} else {
 			list, meta, err := client.Plan.List(context.TODO(), planType, options)
 			if err != nil {
@@ -98,7 +107,15 @@ var planList = &cobra.Command{
 				os.Exit(1)
 			}
 
-			printer.Plan(list, meta)
+			if format == "json" {
+				l := make([]interface{}, len(list))
+				for i := range list {
+					l[i] = list[i]
+				}
+				printer.ManyAsJson(l, meta)
+			} else {
+				printer.Plan(list, meta)
+			}
 		}
 	},
 }

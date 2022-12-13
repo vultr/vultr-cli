@@ -1,6 +1,7 @@
 package printer
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"text/tabwriter"
@@ -43,4 +44,20 @@ func Meta(meta *govultr.Meta) {
 	display(col)
 
 	display(columns{meta.Total, meta.Links.Next, meta.Links.Prev})
+}
+
+type Result struct {
+	Meta    *govultr.Meta `json:"meta"`
+	Results []interface{} `json:"results"`
+}
+
+func ManyAsJson(list []interface{}, meta *govultr.Meta) {
+	result := Result{Results: list, Meta: meta}
+	jsonOutput, _ := json.MarshalIndent(result, "", "    ")
+	fmt.Println(string(jsonOutput))
+}
+
+func AsJson(instance interface{}) {
+	jsonOutput, _ := json.MarshalIndent(instance, "", "    ")
+	fmt.Println(string(jsonOutput))
 }

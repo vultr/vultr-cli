@@ -31,6 +31,7 @@ const (
 )
 
 var cfgFile string
+var outputFormat string
 var client *govultr.Client
 
 // rootCmd represents the base command when called without any subcommands
@@ -56,6 +57,7 @@ func init() {
 		fmt.Printf("error binding root pflag 'config': %v\n", err)
 	}
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().StringVar(&outputFormat, "format", "columns", "Format [default is columns, json is additional option]")
 	rootCmd.AddCommand(accountCmd)
 	rootCmd.AddCommand(Applications())
 	rootCmd.AddCommand(Backups())

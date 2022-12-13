@@ -30,11 +30,15 @@ var accountCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		account, err := client.Account.Get(context.Background())
+		format, _ := cmd.Flags().GetString("format")
 		if err != nil {
 			fmt.Printf("Error getting account information : %v\n", err)
 			os.Exit(1)
 		}
-
-		printer.Account(account)
+		if format == "json" {
+			printer.AsJson(account)
+		} else {
+			printer.Account(account)
+		}
 	},
 }
