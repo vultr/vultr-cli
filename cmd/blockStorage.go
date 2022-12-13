@@ -29,25 +29,25 @@ var (
 	attachBlockStorageLong    = `Attaches a block storage resource to an specified instance`
 	attachBlockStorageExample = `
 	#Full example
-	vultr-cli block-storage attach 67181686-5455-4ebb-81eb-7299f3506e2c --instance a7898453-dd9e-4b47-bdab-9dd7a3448f1f
+	vultr-cli block-storage attach 67181686-5455-4ebb-81eb-7299f3506e2c --instance=a7898453-dd9e-4b47-bdab-9dd7a3448f1f
 
 	#Shortened with aliased commands
-	vultr-cli bs a 67181686-5455-4ebb-81eb-7299f3506e2c -i a7898453-dd9e-4b47-bdab-9dd7a3448f1f
+	vultr-cli bs a 67181686-5455-4ebb-81eb-7299f3506e2c -i=a7898453-dd9e-4b47-bdab-9dd7a3448f1f
 	`
 
 	createBlockStorageLong    = `Create a new block storage resource in a specified region`
 	createBlockStorageExample = `
 	#Full example
-	vultr-cli block-storage create --region 'lax' --size 10
+	vultr-cli block-storage create --region='lax' --size=10
 
 	#Full example with block-type
-	vultr-cli block-storage create --region 'lax' --size 10 --block-type 'high_perf'
+	vultr-cli block-storage create --region='lax' --size=10 --block-type='high_perf'
 
 	#Shortened with aliased commands
-	vultr-cli bs c -r 'lax' -s 10
+	vultr-cli bs c -r='lax' -s=10
 
 	#Shortened with aliased commands and block-type
-	vultr-cli bs c -r 'lax' -s 10 -b 'high_perf'
+	vultr-cli bs c -r='lax' -s=10 -b='high_perf'
 	`
 
 	deleteBlockStorageLong    = `Delete a block storage resource`
@@ -71,10 +71,10 @@ var (
 	labelBlockStorageLong    = `Set a label for a block storage resource`
 	labelBlockStorageExample = `
 	#Full example
-	vultr-cli block-storage label 67181686-5455-4ebb-81eb-7299f3506e2c --label "Example Label"
+	vultr-cli block-storage label 67181686-5455-4ebb-81eb-7299f3506e2c --label="Example Label"
 
 	#Shortened with aliased commands
-	vultr-cli bs label 67181686-5455-4ebb-81eb-7299f3506e2c -l "Example Label"
+	vultr-cli bs label 67181686-5455-4ebb-81eb-7299f3506e2c -l="Example Label"
 	`
 
 	listBlockStorageLong    = `Retrieves a list of active block storage resources`
@@ -98,10 +98,10 @@ var (
 	resizeBlockStorageLong    = `Resizes a specified block storage resource`
 	resizeBlockStorageExample = `
 	#Full example
-	vultr-cli block-storage resize 67181686-5455-4ebb-81eb-7299f3506e2c --size 20
+	vultr-cli block-storage resize 67181686-5455-4ebb-81eb-7299f3506e2c --size=20
 
 	#Shortened with aliased commands
-	vultr-cli bs r 67181686-5455-4ebb-81eb-7299f3506e2c -s 20
+	vultr-cli bs r 67181686-5455-4ebb-81eb-7299f3506e2c -s=20
 	`
 )
 

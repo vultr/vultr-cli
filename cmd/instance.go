@@ -50,7 +50,7 @@ var (
 	vultr-cli instance create --region="ewr" --plan="vc2-1c-1gb" --os=244 --vpc-ids="08422775-5be0-4371-afba-64b03f9ad22d,13a45caa-9c06-4b5d-8f76-f5281ab172b7"
 
 	# Full example with assigned ssh keys
-	vultr-cli instance create --region ewr --plan vc2-1c-1gb --os 244 --ssh-keys="a14b6539-5583-41e8-a035-c07a76897f2b,be624232-56c7-4d5c-bf87-9bdaae7a1fbd"
+	vultr-cli instance create --region=ewr --plan=vc2-1c-1gb --os=244 --ssh-keys="a14b6539-5583-41e8-a035-c07a76897f2b,be624232-56c7-4d5c-bf87-9bdaae7a1fbd"
 	`
 
 	instanceTagsLong    = `Modify the tags of the specified instance`
