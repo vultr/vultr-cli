@@ -2,8 +2,12 @@
 ## [v2.15.1](https://github.com/vultr/vultr-cli/compare/v2.15.0...v2.15.1) (2023-03-09)
 ### Enhancements
 * Update goreleaser to add latest docker image tag [PR 287](https://github.com/vultr/vultr-cli/pull/287)
-* Make cli param examples consistently use = [PR 291](https://github.com/vultr/vultr-cli/pull/291)
-* Add vcg options to docstrings on regions and plans [PR 299](https://github.com/vultr/vultr-cli/pull/299)
+
+### Documentation
+* Block Storage: Make cli param examples consistently use = [PR 291](https://github.com/vultr/vultr-cli/pull/291)
+* Instances: Make cli param examples consistently use = [PR 291](https://github.com/vultr/vultr-cli/pull/291)
+* Regions: Add vcg plan options to docstrings [PR 299](https://github.com/vultr/vultr-cli/pull/299)
+* Plans: Add vcg plan options to docstrings [PR 299](https://github.com/vultr/vultr-cli/pull/299)
 
 ### Dependencies
 * Bump github.com/spf13/cobra from 1.5.0 to 1.6.0 by [PR 288](https://github.com/vultr/vultr-cli/pull/288)
