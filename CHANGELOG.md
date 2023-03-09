@@ -1,4 +1,22 @@
 # Change Log
+## [v2.15.1](https://github.com/vultr/vultr-cli/compare/v2.15.0...v2.15.1) (2023-03-09)
+### Enhancements
+* Update goreleaser to add latest docker image tag [PR 287](https://github.com/vultr/vultr-cli/pull/287)
+* Make cli param examples consistently use = [PR 291](https://github.com/vultr/vultr-cli/pull/291)
+* Add vcg options to docstrings on regions and plans [PR 299](https://github.com/vultr/vultr-cli/pull/299)
+
+### Dependencies
+* Bump github.com/spf13/cobra from 1.5.0 to 1.6.0 by [PR 288](https://github.com/vultr/vultr-cli/pull/288)
+* Bump github.com/spf13/cobra from 1.6.0 to 1.6.1 by [PR 289](https://github.com/vultr/vultr-cli/pull/289)
+* Bump github.com/spf13/viper from 1.13.0 to 1.14.0 [PR 290](https://github.com/vultr/vultr-cli/pull/290)
+* Bump golang.org/x/oauth2 from 0.0.0-20221014153046-6fdb5e3db783 to 0.5.0 [PR 296](https://github.com/vultr/vultr-cli/pull/296)
+* Bump golang.org/x/oauth2 from 0.5.0 to 0.6.0 [PR 298](https://github.com/vultr/vultr-cli/pull/298)
+* Bump github.com/spf13/viper from 1.14.0 to 1.15.0 [PR 293](https://github.com/vultr/vultr-cli/pull/293)
+* Bump golang.org/x/net from 0.6.0 to 0.7.0 [PR 297](https://github.com/vultr/vultr-cli/pull/297)
+
+### New Contributors
+* @happytreees made their first contribution in [PR 287](https://github.com/vultr/vultr-cli/pull/287)
+
 ## [v2.15.0](https://github.com/vultr/vultr-cli/compare/v2.14.2...v2.15.0) (2022-10-04)
 ### Enhancements
 * Add arm builds [PR 283](https://github.com/vultr/vultr-cli/pull/283)
