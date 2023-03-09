@@ -35,7 +35,7 @@ func Regions() *cobra.Command {
 	regionCmd.AddCommand(regionList)
 	regionCmd.AddCommand(regionAvailability)
 
-	regionAvailability.Flags().StringP("type", "t", "", "type of plans for which to include availability. Possible values: vbm, vdc, vhp, vhf, vc2, voc, voc-g, voc-s, voc-c, voc-m, bare-metal")
+	regionAvailability.Flags().StringP("type", "t", "", "type of plans for which to include availability. Possible values: vbm, vdc, vhp, vhf, vc2, vcg, voc, voc-g, voc-s, voc-c, voc-m, bare-metal")
 
 	regionList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	regionList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
