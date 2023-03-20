@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func UserData(u *govultr.UserData) {

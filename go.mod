@@ -1,11 +1,10 @@
 module github.com/vultr/vultr-cli/v2
 
-go 1.19
+go 1.20
 
 require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
-	github.com/vultr/govultr/v2 v2.17.2
 	github.com/vultr/govultr/v3 v3.0.1
 	golang.org/x/oauth2 v0.6.0
 )

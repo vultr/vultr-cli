@@ -47,7 +47,7 @@ var (
 	vultr-cli billing history list
 
 	# Shortened with alias commands
-	vultr-cli billing h l	
+	vultr-cli billing h l
 	`
 
 	invoicesLong    = `Get all available commands for billing invoices`
@@ -65,7 +65,7 @@ var (
 	vultr-cli billing invoice list
 
 	# Shortened with alias commands
-	vultr-cli billing i l	
+	vultr-cli billing i l
 	`
 
 	invoiceGetLong    = `Get a specific invoice on your account`
@@ -74,7 +74,7 @@ var (
 	vultr-cli billing invoice get 123456
 
 	# Shortened with alias commands
-	vultr-cli billing i g 123456	
+	vultr-cli billing i g 123456
 	`
 
 	invoiceItemsListLong    = `Retrieve a list of invoice items from a specific invoice on your account`
@@ -83,7 +83,7 @@ var (
 	vultr-cli billing invoice items 123456
 
 	# Shortened with alias commands
-	vultr-cli billing i i 123456	
+	vultr-cli billing i i 123456
 	`
 )
 
@@ -138,7 +138,7 @@ var billingHistoryList = &cobra.Command{
 	Example: historyListExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		history, meta, err := client.Billing.ListHistory(context.Background(), options)
+		history, meta, _, err := client.Billing.ListHistory(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting billing history : %v\n", err)
 			os.Exit(1)
@@ -156,7 +156,7 @@ var invoicesList = &cobra.Command{
 	Example: invoiceListExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		history, meta, err := client.Billing.ListInvoices(context.Background(), options)
+		history, meta, _, err := client.Billing.ListInvoices(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting invoices : %v\n", err)
 			os.Exit(1)
@@ -181,7 +181,7 @@ var invoiceItemsList = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := strconv.Atoi(args[0])
 		options := getPaging(cmd)
-		items, meta, err := client.Billing.ListInvoiceItems(context.Background(), id, options)
+		items, meta, _, err := client.Billing.ListInvoiceItems(context.Background(), id, options)
 		if err != nil {
 			fmt.Printf("error getting invoice items : %v\n", err)
 			os.Exit(1)
@@ -204,7 +204,7 @@ var invoiceGet = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		invoice, err := client.Billing.GetInvoice(context.Background(), args[0])
+		invoice, _, err := client.Billing.GetInvoice(context.Background(), args[0])
 		if err != nil {
 			fmt.Printf("error getting invoice : %v\n", err)
 			os.Exit(1)

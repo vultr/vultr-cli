@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -70,7 +70,7 @@ var sshCreate = &cobra.Command{
 			SSHKey: key,
 		}
 
-		id, err := client.SSHKey.Create(context.Background(), options)
+		id, _, err := client.SSHKey.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -113,7 +113,7 @@ var sshGet = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		ssh, err := client.SSHKey.Get(context.Background(), args[0])
+		ssh, _, err := client.SSHKey.Get(context.Background(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -130,7 +130,7 @@ var sshList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.SSHKey.List(context.Background(), options)
+		list, meta, _, err := client.SSHKey.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)

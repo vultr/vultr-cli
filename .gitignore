@@ -21,3 +21,4 @@
 .idea
 builds/
 dist/
+vendor/

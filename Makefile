@@ -1,7 +1,7 @@
 .PHONY: remove format
 
 export CGO=0
-export GOFLAGS=-mod=vendor -trimpath
+export GOFLAGS=-trimpath
 
 DIR?=builds
 

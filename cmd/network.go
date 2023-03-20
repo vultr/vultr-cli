@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -83,7 +83,7 @@ var networkGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		network, err := client.Network.Get(context.Background(), id) //nolint:all
+		network, _, err := client.Network.Get(context.Background(), id) //nolint:all
 		if err != nil {
 			fmt.Printf("error getting network : %v\n", err)
 			os.Exit(1)
@@ -100,7 +100,7 @@ var networkList = &cobra.Command{
 	Deprecated: "Use vpc list instead.",
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		network, meta, err := client.Network.List(context.Background(), options) //nolint:all
+		network, meta, _, err := client.Network.List(context.Background(), options) //nolint:all
 		if err != nil {
 			fmt.Printf("error getting network list : %v\n", err)
 			os.Exit(1)
@@ -151,7 +151,7 @@ var networkCreate = &cobra.Command{
 			V4SubnetMask: size,
 		}
 
-		network, err := client.Network.Create(context.Background(), options) //nolint:all
+		network, _, err := client.Network.Create(context.Background(), options) //nolint:all
 		if err != nil {
 			fmt.Printf("error creating network : %v\n", err)
 			os.Exit(1)

@@ -22,7 +22,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -51,7 +51,7 @@ var bareMetalGetUserData = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		u, err := client.BareMetalServer.GetUserData(context.Background(), args[0])
+		u, _, err := client.BareMetalServer.GetUserData(context.Background(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -83,7 +83,7 @@ var bareMetalSetUserData = &cobra.Command{
 			UserData: base64.StdEncoding.EncodeToString(rawData),
 		}
 
-		_, err = client.BareMetalServer.Update(context.TODO(), args[0], options)
+		_, _, err = client.BareMetalServer.Update(context.TODO(), args[0], options)
 		if err != nil {
 			fmt.Printf("error setting user-data : %v\n", err)
 			os.Exit(1)

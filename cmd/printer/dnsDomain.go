@@ -1,6 +1,6 @@
 package printer
 
-import "github.com/vultr/govultr/v2"
+import "github.com/vultr/govultr/v3"
 
 func SecInfo(info []string) {
 	col := columns{"DNSSEC INFO"}

@@ -29,7 +29,7 @@ var accountCmd = &cobra.Command{
 	Short: "Retrieve information about your account",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		account, err := client.Account.Get(context.Background())
+		account, _, err := client.Account.Get(context.Background())
 		if err != nil {
 			fmt.Printf("Error getting account information : %v\n", err)
 			os.Exit(1)

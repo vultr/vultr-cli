@@ -1,6 +1,6 @@
 package printer
 
-import "github.com/vultr/govultr/v2"
+import "github.com/vultr/govultr/v3"
 
 func DnsRecordsList(records []govultr.DomainRecord, meta *govultr.Meta) {
 	col := columns{"ID", "TYPE", "NAME", "DATA", "PRIORITY", "TTL"}

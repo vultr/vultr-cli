@@ -22,7 +22,7 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -173,7 +173,7 @@ var firewallRuleCreate = &cobra.Command{
 			options.IPType = ipTypeOld
 		}
 
-		fwr, err := client.FirewallRule.Create(context.Background(), id, options)
+		fwr, _, err := client.FirewallRule.Create(context.Background(), id, options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -218,7 +218,7 @@ var firewallRuleGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		ruleNumber, _ := strconv.Atoi(args[1])
-		fwRule, err := client.FirewallRule.Get(context.Background(), args[0], ruleNumber)
+		fwRule, _, err := client.FirewallRule.Get(context.Background(), args[0], ruleNumber)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -242,7 +242,7 @@ var firewallRuleList = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.FirewallRule.List(context.Background(), args[0], options)
+		list, meta, _, err := client.FirewallRule.List(context.Background(), args[0], options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)

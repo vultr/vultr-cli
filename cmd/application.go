@@ -45,7 +45,7 @@ var appsList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		apps, meta, err := client.Application.List(context.Background(), options)
+		apps, meta, _, err := client.Application.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting available applications : %v\n", err)
 			os.Exit(1)

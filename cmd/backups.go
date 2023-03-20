@@ -46,7 +46,7 @@ var backupsList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		backups, meta, err := client.Backup.List(context.TODO(), options)
+		backups, meta, _, err := client.Backup.List(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error getting backups : %v\n", err)
 			os.Exit(1)
@@ -66,7 +66,7 @@ var backupsGet = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		backup, err := client.Backup.Get(context.TODO(), args[0])
+		backup, _, err := client.Backup.Get(context.TODO(), args[0])
 		if err != nil {
 			fmt.Printf("error getting backup : %v\n", err)
 			os.Exit(1)

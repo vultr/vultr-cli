@@ -22,7 +22,7 @@ import (
 	"regexp"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -104,7 +104,7 @@ var recordCreate = &cobra.Command{
 			Priority: &priority,
 		}
 
-		record, err := client.DomainRecord.Create(context.Background(), domain, options)
+		record, _, err := client.DomainRecord.Create(context.Background(), domain, options)
 		if err != nil {
 			fmt.Printf("error while creating dns record : %v\n", err)
 			os.Exit(1)
@@ -128,7 +128,7 @@ var recordGet = &cobra.Command{
 		domain := args[0]
 		id := args[1]
 
-		record, err := client.DomainRecord.Get(context.Background(), domain, id)
+		record, _, err := client.DomainRecord.Get(context.Background(), domain, id)
 		if err != nil {
 			fmt.Printf("error while getting dns records : %v\n", err)
 			os.Exit(1)
@@ -152,7 +152,7 @@ var recordList = &cobra.Command{
 		domain := args[0]
 		options := getPaging(cmd)
 
-		records, meta, err := client.DomainRecord.List(context.Background(), domain, options)
+		records, meta, _, err := client.DomainRecord.List(context.Background(), domain, options)
 		if err != nil {
 			fmt.Printf("error while getting dns records : %v\n", err)
 			os.Exit(1)

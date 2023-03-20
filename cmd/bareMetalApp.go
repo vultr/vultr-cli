@@ -22,7 +22,7 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -55,8 +55,7 @@ var bareMetalAppChange = &cobra.Command{
 			AppID: appID,
 		}
 
-		_, err := client.BareMetalServer.Update(context.TODO(), args[0], options)
-		if err != nil {
+		if _, _, err := client.BareMetalServer.Update(context.TODO(), args[0], options); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -77,7 +76,7 @@ var bareMetalAppChangeList = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		list, err := client.BareMetalServer.GetUpgrades(context.TODO(), id)
+		list, _, err := client.BareMetalServer.GetUpgrades(context.TODO(), id)
 
 		if err != nil {
 			fmt.Printf("error listing available applications : %v\n", err)

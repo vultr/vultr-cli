@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 // BareMetalImage represents the baremetal image commands
@@ -53,8 +53,7 @@ var bareMetalImageChange = &cobra.Command{
 			ImageID: imageID,
 		}
 
-		_, err := client.BareMetalServer.Update(context.TODO(), args[0], options)
-		if err != nil {
+		if _, _, err := client.BareMetalServer.Update(context.TODO(), args[0], options); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

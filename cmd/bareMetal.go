@@ -22,7 +22,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -184,7 +184,7 @@ var bareMetalCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		bm, err := client.BareMetalServer.Create(context.TODO(), options)
+		bm, _, err := client.BareMetalServer.Create(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -220,7 +220,7 @@ var bareMetalList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.BareMetalServer.List(context.TODO(), options)
+		list, meta, _, err := client.BareMetalServer.List(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -240,7 +240,7 @@ var bareMetalGet = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		srv, err := client.BareMetalServer.Get(context.TODO(), args[0])
+		srv, _, err := client.BareMetalServer.Get(context.TODO(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -260,7 +260,7 @@ var bareMetalGetVNCUrl = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		vnc, err := client.BareMetalServer.GetVNCUrl(context.TODO(), args[0])
+		vnc, _, err := client.BareMetalServer.GetVNCUrl(context.TODO(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -281,7 +281,7 @@ var bareMetalBandwidth = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		bw, err := client.BareMetalServer.GetBandwidth(context.TODO(), args[0])
+		bw, _, err := client.BareMetalServer.GetBandwidth(context.TODO(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -346,7 +346,7 @@ var bareMetalListIPV4 = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		info, meta, err := client.BareMetalServer.ListIPv4s(context.TODO(), args[0], options)
+		info, meta, _, err := client.BareMetalServer.ListIPv4s(context.TODO(), args[0], options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -368,7 +368,7 @@ var bareMetalListIPV6 = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		info, meta, err := client.BareMetalServer.ListIPv6s(context.TODO(), args[0], options)
+		info, meta, _, err := client.BareMetalServer.ListIPv6s(context.TODO(), args[0], options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -410,7 +410,7 @@ var bareMetalReinstall = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		if _, err := client.BareMetalServer.Reinstall(context.TODO(), args[0]); err != nil {
+		if _, _, err := client.BareMetalServer.Reinstall(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -437,7 +437,7 @@ var bareMetalTags = &cobra.Command{
 			Tags: tags,
 		}
 
-		if _, err := client.BareMetalServer.Update(context.Background(), id, options); err != nil {
+		if _, _, err := client.BareMetalServer.Update(context.Background(), id, options); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

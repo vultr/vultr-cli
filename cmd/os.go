@@ -46,7 +46,7 @@ var osList = &cobra.Command{
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		os, meta, err := client.OS.List(context.TODO(), options)
+		os, meta, _, err := client.OS.List(context.TODO(), options)
 		if err != nil {
 			log.Fatal(err)
 		}

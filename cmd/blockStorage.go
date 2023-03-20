@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -215,7 +215,7 @@ var bsCreate = &cobra.Command{
 			BlockType: blockType,
 		}
 
-		bs, err := client.BlockStorage.Create(context.Background(), bsCreate)
+		bs, _, err := client.BlockStorage.Create(context.Background(), bsCreate)
 		if err != nil {
 			fmt.Printf("error creating block storage : %v\n", err)
 			os.Exit(1)
@@ -314,7 +314,7 @@ var bsList = &cobra.Command{
 	Example: listBlockStorageExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		bs, meta, err := client.BlockStorage.List(context.Background(), options)
+		bs, meta, _, err := client.BlockStorage.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting block storage : %v\n", err)
 			os.Exit(1)
@@ -339,7 +339,7 @@ var bsGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		bs, err := client.BlockStorage.Get(context.Background(), id)
+		bs, _, err := client.BlockStorage.Get(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error getting block storage : %v\n", err)
 			os.Exit(1)
