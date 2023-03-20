@@ -22,7 +22,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"golang.org/x/oauth2"
 )
 
@@ -62,6 +62,7 @@ func init() {
 	rootCmd.AddCommand(BareMetal())
 	rootCmd.AddCommand(Billing())
 	rootCmd.AddCommand(BlockStorageCmd())
+	rootCmd.AddCommand(Database())
 	rootCmd.AddCommand(DNS())
 	rootCmd.AddCommand(Firewall())
 	rootCmd.AddCommand(ISO())

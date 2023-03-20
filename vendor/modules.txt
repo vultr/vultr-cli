@@ -10,7 +10,7 @@ github.com/google/go-querystring/query
 # github.com/hashicorp/go-cleanhttp v0.5.2
 ## explicit; go 1.13
 github.com/hashicorp/go-cleanhttp
-# github.com/hashicorp/go-retryablehttp v0.7.1
+# github.com/hashicorp/go-retryablehttp v0.7.2
 ## explicit; go 1.13
 github.com/hashicorp/go-retryablehttp
 # github.com/hashicorp/hcl v1.0.0
@@ -75,6 +75,9 @@ github.com/subosito/gotenv
 # github.com/vultr/govultr/v2 v2.17.2
 ## explicit; go 1.17
 github.com/vultr/govultr/v2
+# github.com/vultr/govultr/v3 v3.0.1
+## explicit; go 1.20
+github.com/vultr/govultr/v3
 # golang.org/x/net v0.8.0
 ## explicit; go 1.17
 golang.org/x/net/context
