@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -69,7 +69,7 @@ var snapshotCreate = &cobra.Command{
 			Description: desc,
 		}
 
-		s, err := client.Snapshot.Create(context.Background(), options)
+		s, _, err := client.Snapshot.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -90,7 +90,7 @@ var snapshotCreateFromURL = &cobra.Command{
 			URL: url,
 		}
 
-		s, err := client.Snapshot.CreateFromURL(context.Background(), options)
+		s, _, err := client.Snapshot.CreateFromURL(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -135,7 +135,7 @@ var snapshotGet = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		snapshot, err := client.Snapshot.Get(context.Background(), args[0])
+		snapshot, _, err := client.Snapshot.Get(context.Background(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -152,7 +152,7 @@ var snapshotList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.Snapshot.List(context.Background(), options)
+		list, meta, _, err := client.Snapshot.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)

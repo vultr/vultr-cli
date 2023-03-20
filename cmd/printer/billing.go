@@ -1,7 +1,7 @@
 package printer
 
 import (
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func BillingHistory(bh []govultr.History, meta *govultr.Meta) {

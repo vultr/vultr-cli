@@ -72,7 +72,7 @@ var metalList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.Plan.ListBareMetal(context.TODO(), options)
+		list, meta, _, err := client.Plan.ListBareMetal(context.TODO(), options)
 
 		if err != nil {
 			fmt.Printf("error getting bare metal plan list : %v\n", err)

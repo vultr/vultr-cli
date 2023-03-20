@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 
 	"github.com/spf13/cobra"
@@ -62,7 +62,7 @@ var isoPrivateGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		iso, err := client.ISO.Get(context.Background(), id)
+		iso, _, err := client.ISO.Get(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error getting ISO : %v\n", err)
 			os.Exit(1)
@@ -78,7 +78,7 @@ var isoPrivateList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		isos, meta, err := client.ISO.List(context.Background(), options)
+		isos, meta, _, err := client.ISO.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting private ISOs : %v\n", err)
 			os.Exit(1)
@@ -94,7 +94,7 @@ var isoPublic = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		isos, meta, err := client.ISO.ListPublic(context.Background(), options)
+		isos, meta, _, err := client.ISO.ListPublic(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting public ISOs : %v\n", err)
 			os.Exit(1)
@@ -114,7 +114,7 @@ var isoCreate = &cobra.Command{
 			URL: url,
 		}
 
-		iso, err := client.ISO.Create(context.Background(), options)
+		iso, _, err := client.ISO.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error creating ISOs : %v\n", err)
 			os.Exit(1)

@@ -23,7 +23,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -356,7 +356,7 @@ var k8Create = &cobra.Command{
 			Version:   version,
 		}
 
-		kubernetes, err := client.Kubernetes.CreateCluster(context.Background(), options)
+		kubernetes, _, err := client.Kubernetes.CreateCluster(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error creating kubernetes cluster : %v\n", err)
 			os.Exit(1)
@@ -375,7 +375,7 @@ var k8List = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
 
-		k8s, meta, err := client.Kubernetes.ListClusters(context.Background(), options)
+		k8s, meta, _, err := client.Kubernetes.ListClusters(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error listing kubernetes clusters : %v\n", err)
 			os.Exit(1)
@@ -399,7 +399,7 @@ var k8Get = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		lb, err := client.Kubernetes.GetCluster(context.Background(), id)
+		lb, _, err := client.Kubernetes.GetCluster(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error getting cluster : %v\n", err)
 			os.Exit(1)
@@ -496,7 +496,7 @@ var k8GetConfig = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		config, err := client.Kubernetes.GetKubeConfig(context.Background(), id)
+		config, _, err := client.Kubernetes.GetKubeConfig(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error retrieving kube config : %v\n", err)
 			os.Exit(1)
@@ -513,7 +513,7 @@ var k8GetVersions = &cobra.Command{
 	Example: getVersionsExample,
 	Aliases: []string{"v"},
 	Run: func(cmd *cobra.Command, args []string) {
-		versions, err := client.Kubernetes.GetVersions(context.Background())
+		versions, _, err := client.Kubernetes.GetVersions(context.Background())
 		if err != nil {
 			fmt.Printf("error retrieving supported versions : %v\n", err)
 			os.Exit(1)
@@ -531,7 +531,7 @@ var k8GetUpgrades = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		upgrades, err := client.Kubernetes.GetUpgrades(context.Background(), id)
+		upgrades, _, err := client.Kubernetes.GetUpgrades(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error retrieving available upgrades : %v\n", err)
 			os.Exit(1)
@@ -600,7 +600,7 @@ var npCreate = &cobra.Command{
 			options.AutoScaler = govultr.BoolToBoolPtr(true)
 		}
 
-		np, err := client.Kubernetes.CreateNodePool(context.Background(), id, options)
+		np, _, err := client.Kubernetes.CreateNodePool(context.Background(), id, options)
 		if err != nil {
 			fmt.Printf("error creating cluster node pool : %v\n", err)
 			os.Exit(1)
@@ -643,7 +643,7 @@ var npUpdate = &cobra.Command{
 			options.AutoScaler = govultr.BoolToBoolPtr(true)
 		}
 
-		np, err := client.Kubernetes.UpdateNodePool(context.Background(), id, nodeID, options)
+		np, _, err := client.Kubernetes.UpdateNodePool(context.Background(), id, nodeID, options)
 		if err != nil {
 			fmt.Printf("error updating cluster node pool : %v\n", err)
 			os.Exit(1)
@@ -745,7 +745,7 @@ var npList = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		options := getPaging(cmd)
-		nps, meta, err := client.Kubernetes.ListNodePools(context.Background(), id, options)
+		nps, meta, _, err := client.Kubernetes.ListNodePools(context.Background(), id, options)
 		if err != nil {
 			fmt.Printf("error listing cluster node pools : %v\n", err)
 			os.Exit(1)
@@ -770,7 +770,7 @@ var npGet = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		nodeID := args[1]
-		np, err := client.Kubernetes.GetNodePool(context.Background(), id, nodeID)
+		np, _, err := client.Kubernetes.GetNodePool(context.Background(), id, nodeID)
 		if err != nil {
 			fmt.Printf("error getting cluster node pool : %v\n", err)
 			os.Exit(1)

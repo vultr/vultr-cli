@@ -72,7 +72,7 @@ var objStorageCreate = &cobra.Command{
 		objectStoreClusterID, _ := cmd.Flags().GetInt("obj-store-clusterid")
 		label, _ := cmd.Flags().GetString("label")
 
-		objStorage, err := client.ObjectStorage.Create(context.TODO(), objectStoreClusterID, label)
+		objStorage, _, err := client.ObjectStorage.Create(context.TODO(), objectStoreClusterID, label)
 		if err != nil {
 			fmt.Printf("error creating object storage : %v\n", err)
 			os.Exit(1)
@@ -112,7 +112,7 @@ var objStorageList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		objStorage, meta, err := client.ObjectStorage.List(context.TODO(), options)
+		objStorage, meta, _, err := client.ObjectStorage.List(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error getting object storage : %v\n", err)
 			os.Exit(1)
@@ -134,7 +134,7 @@ var objStorageGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		objStorage, err := client.ObjectStorage.Get(context.TODO(), id)
+		objStorage, _, err := client.ObjectStorage.Get(context.TODO(), id)
 		if err != nil {
 			fmt.Printf("error getting object storage : %v\n", err)
 			os.Exit(1)
@@ -150,7 +150,7 @@ var objStorageClusterList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		cluster, meta, err := client.ObjectStorage.ListCluster(context.TODO(), options)
+		cluster, meta, _, err := client.ObjectStorage.ListCluster(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error getting object storage clusters : %v\n", err)
 			os.Exit(1)
@@ -172,7 +172,7 @@ var objStorageS3KeyRegenerate = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		s3Keys, err := client.ObjectStorage.RegenerateKeys(context.TODO(), id)
+		s3Keys, _, err := client.ObjectStorage.RegenerateKeys(context.TODO(), id)
 		if err != nil {
 			fmt.Printf("error regenerating object storage keys : %v\n", err)
 			os.Exit(1)
