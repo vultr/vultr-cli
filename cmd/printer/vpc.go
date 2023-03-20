@@ -1,6 +1,6 @@
 package printer
 
-import "github.com/vultr/govultr/v2"
+import "github.com/vultr/govultr/v3"
 
 func VPCList(vpc []govultr.VPC, meta *govultr.Meta) {
 	col := columns{"ID", "REGION", "DESCRIPTION", "V4 SUBNET", "V4 SUBNET MASK", "DATE CREATED"}

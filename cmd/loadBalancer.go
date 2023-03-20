@@ -23,7 +23,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -300,7 +300,7 @@ var lbCreate = &cobra.Command{
 			options.VPC = govultr.StringToStringPtr(vpc)
 		}
 
-		lb, err := client.LoadBalancer.Create(context.Background(), options)
+		lb, _, err := client.LoadBalancer.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error creating load balancer : %v\n", err)
 			os.Exit(1)
@@ -343,7 +343,7 @@ var lbGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		lb, err := client.LoadBalancer.Get(context.Background(), id)
+		lb, _, err := client.LoadBalancer.Get(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error getting load balancer : %v\n", err)
 			os.Exit(1)
@@ -359,7 +359,7 @@ var lbList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.LoadBalancer.List(context.Background(), options)
+		list, meta, _, err := client.LoadBalancer.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error listing load balancers : %v\n", err)
 			os.Exit(1)
@@ -531,7 +531,7 @@ var ruleList = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		options := getPaging(cmd)
-		rules, meta, err := client.LoadBalancer.ListForwardingRules(context.Background(), id, options)
+		rules, meta, _, err := client.LoadBalancer.ListForwardingRules(context.Background(), id, options)
 		if err != nil {
 			fmt.Printf("error listing load balancer rules : %v\n", err)
 			os.Exit(1)
@@ -554,7 +554,7 @@ var ruleCreate = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		options := &govultr.ForwardingRule{}
-		rule, err := client.LoadBalancer.CreateForwardingRule(context.Background(), id, options)
+		rule, _, err := client.LoadBalancer.CreateForwardingRule(context.Background(), id, options)
 		if err != nil {
 			fmt.Printf("error listing load balancer rules : %v\n", err)
 			os.Exit(1)
@@ -577,7 +577,7 @@ var ruleGet = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		ruleID := args[1]
-		rule, err := client.LoadBalancer.GetForwardingRule(context.Background(), id, ruleID)
+		rule, _, err := client.LoadBalancer.GetForwardingRule(context.Background(), id, ruleID)
 		if err != nil {
 			fmt.Printf("error getting load balancer rule : %v\n", err)
 			os.Exit(1)
@@ -624,7 +624,7 @@ var fwRuleList = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		options := getPaging(cmd)
-		rules, meta, err := client.LoadBalancer.ListFirewallRules(context.Background(), id, options)
+		rules, meta, _, err := client.LoadBalancer.ListFirewallRules(context.Background(), id, options)
 		if err != nil {
 			fmt.Printf("error listing load balancer firewall rules : %v\n", err)
 			os.Exit(1)
@@ -647,7 +647,7 @@ var fwRuleGet = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		ruleID := args[1]
-		rule, err := client.LoadBalancer.GetFirewallRule(context.Background(), id, ruleID)
+		rule, _, err := client.LoadBalancer.GetFirewallRule(context.Background(), id, ruleID)
 		if err != nil {
 			fmt.Printf("error getting load balancer rule : %v\n", err)
 			os.Exit(1)

@@ -1,6 +1,6 @@
 package printer
 
-import "github.com/vultr/govultr/v2"
+import "github.com/vultr/govultr/v3"
 
 func InstanceBandwidth(bandwidth *govultr.Bandwidth) {
 	col := columns{"DATE", "INCOMING BYTES", "OUTGOING BYTES"}

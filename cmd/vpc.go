@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -120,7 +120,7 @@ var vpcGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		vpc, err := client.VPC.Get(context.Background(), id)
+		vpc, _, err := client.VPC.Get(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error getting VPC : %v\n", err)
 			os.Exit(1)
@@ -138,7 +138,7 @@ var vpcList = &cobra.Command{
 	Example: vpcListExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		vpc, meta, err := client.VPC.List(context.Background(), options)
+		vpc, meta, _, err := client.VPC.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting VPC list : %v\n", err)
 			os.Exit(1)
@@ -190,7 +190,7 @@ var vpcCreate = &cobra.Command{
 			V4SubnetMask: size,
 		}
 
-		vpc, err := client.VPC.Create(context.Background(), options)
+		vpc, _, err := client.VPC.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error creating VPC: %v\n", err)
 			os.Exit(1)

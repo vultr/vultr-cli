@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -173,7 +173,7 @@ var reservedIPGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		rip, err := client.ReservedIP.Get(context.Background(), id)
+		rip, _, err := client.ReservedIP.Get(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error getting reserved IP : %v\n", err)
 			os.Exit(1)
@@ -191,7 +191,7 @@ var reservedIPList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		rip, meta, err := client.ReservedIP.List(context.Background(), options)
+		rip, meta, _, err := client.ReservedIP.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error getting reserved IPs : %v\n", err)
 			os.Exit(1)
@@ -285,7 +285,7 @@ var reservedIPConvert = &cobra.Command{
 			Label:     label,
 		}
 
-		r, err := client.ReservedIP.Convert(context.Background(), options)
+		r, _, err := client.ReservedIP.Convert(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error converting IP to reserved IPs : %v\n", err)
 			os.Exit(1)
@@ -312,7 +312,7 @@ var reservedIPCreate = &cobra.Command{
 			Label:  label,
 		}
 
-		r, err := client.ReservedIP.Create(context.Background(), options)
+		r, _, err := client.ReservedIP.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error creating reserved IPs : %v\n", err)
 			os.Exit(1)
@@ -342,7 +342,7 @@ var reservedIPUpdate = &cobra.Command{
 			Label: govultr.StringToStringPtr(label),
 		}
 
-		r, err := client.ReservedIP.Update(context.Background(), ip, options)
+		r, _, err := client.ReservedIP.Update(context.Background(), ip, options)
 		if err != nil {
 			fmt.Printf("error updating reserved IPs : %v\n", err)
 			os.Exit(1)

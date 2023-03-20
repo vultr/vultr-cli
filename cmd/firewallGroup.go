@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
@@ -54,7 +54,7 @@ var firewallGroupCreate = &cobra.Command{
 			Description: description,
 		}
 
-		fwg, err := client.FirewallGroup.Create(context.Background(), options)
+		fwg, _, err := client.FirewallGroup.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -120,7 +120,7 @@ var firewallGroupGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.FirewallGroup.List(context.Background(), options)
+		list, meta, _, err := client.FirewallGroup.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -136,7 +136,7 @@ var firewallGroupList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.FirewallGroup.List(context.Background(), options)
+		list, meta, _, err := client.FirewallGroup.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
