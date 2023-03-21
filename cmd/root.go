@@ -118,6 +118,7 @@ func initConfig() {
 	config := &oauth2.Config{}
 	ts := config.TokenSource(context.Background(), &oauth2.Token{AccessToken: token})
 	client = govultr.NewClient(oauth2.NewClient(context.Background(), ts))
+	client.SetBaseURL("http://local.api.vultr.com")
 
 	client.SetRateLimit(1 * time.Second)
 	client.SetUserAgent(userAgent)

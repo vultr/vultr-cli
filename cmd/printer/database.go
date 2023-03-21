@@ -2,140 +2,271 @@ package printer
 
 import "github.com/vultr/govultr/v3"
 
+// DatabasePlanList will generate a printer display of available Managed Database plans
 func DatabasePlanList(databasePlans []govultr.DatabasePlan, meta *govultr.Meta) {
-	for _, p := range databasePlans {
-		display(columns{"ID", p.ID})
-		display(columns{"NUMBER OF NODES", p.NumberOfNodes})
-		display(columns{"TYPE", p.Type})
-		display(columns{"VCPU COUNT", p.VCPUCount})
-		display(columns{"RAM", p.RAM})
-		display(columns{"DISK", p.Disk})
-		display(columns{"MONTHLY COST", p.MonthlyCost})
+	for p := range databasePlans {
+		display(columns{"ID", databasePlans[p].ID})
+		display(columns{"NUMBER OF NODES", databasePlans[p].NumberOfNodes})
+		display(columns{"TYPE", databasePlans[p].Type})
+		display(columns{"VCPU COUNT", databasePlans[p].VCPUCount})
+		display(columns{"RAM", databasePlans[p].RAM})
+		display(columns{"DISK", databasePlans[p].Disk})
+		display(columns{"MONTHLY COST", databasePlans[p].MonthlyCost})
 
 		display(columns{" "})
 
 		display(columns{"SUPPORTED ENGINES"})
-		display(columns{"MYSQL", p.SupportedEngines.MySQL})
-		display(columns{"PG", p.SupportedEngines.PG})
-		display(columns{"REDIS", p.SupportedEngines.Redis})
+		display(columns{"MYSQL", *databasePlans[p].SupportedEngines.MySQL})
+		display(columns{"PG", *databasePlans[p].SupportedEngines.PG})
+		display(columns{"REDIS", *databasePlans[p].SupportedEngines.Redis})
 
-		display(columns{" "})
+		if !*databasePlans[p].SupportedEngines.Redis {
+			display(columns{" "})
+			display(columns{"MAX CONNECTIONS"})
+			display(columns{"MYSQL", databasePlans[p].MaxConnections.MySQL})
+			display(columns{"PG", databasePlans[p].MaxConnections.PG})
+			display(columns{" "})
+		}
 
-		display(columns{"MAX CONNECTIONS"})
-		display(columns{"MYSQL", p.MaxConnections.MySQL})
-		display(columns{"PG", p.MaxConnections.PG})
-
-		display(columns{" "})
-
-		display(columns{"LOCATIONS", p.Locations})
+		display(columns{"LOCATIONS", databasePlans[p].Locations})
 		display(columns{"---------------------------"})
 	}
 
-	Meta(meta)
+	MetaDBaaS(meta)
 	flush()
 }
 
+// DatabaseList will generate a printer display of all Managed Databases on the account
 func DatabaseList(databases []govultr.Database, meta *govultr.Meta) {
-	for _, d := range databases {
-		display(columns{"ID", d.ID})
-		display(columns{"DATE CREATED", d.DateCreated})
-		display(columns{"PLAN", d.Plan})
-		display(columns{"PLAN DISK", d.PlanDisk})
-		display(columns{"PLAN RAM", d.PlanRAM})
-		display(columns{"PLAN VCPUS", d.PlanVCPUs})
-		display(columns{"PLAN REPLICAS", d.PlanReplicas})
-		display(columns{"REGION", d.Region})
-		display(columns{"STATUS", d.Status})
-		display(columns{"LABEL", d.Label})
-		display(columns{"TAG", d.Tag})
-		display(columns{"DATABASE ENGINE", d.DatabaseEngine})
-		display(columns{"DATABASE ENGINE VERSION", d.DatabaseEngineVersion})
-		display(columns{"DB NAME", d.DBName})
-		display(columns{"HOST", d.Host})
-		display(columns{"USER", d.User})
-		display(columns{"PASSWORD", d.Password})
-		display(columns{"PORT", d.Port})
-		display(columns{"MAINTENANCE DOW", d.MaintenanceDOW})
-		display(columns{"MAINTENANCE TIME", d.MaintenanceTime})
-		display(columns{"LATEST BACKUP", d.LatestBackup})
-		display(columns{"TRUSTED IPS", d.TrustedIPs})
+	for d := range databases {
+		display(columns{"ID", databases[d].ID})
+		display(columns{"DATE CREATED", databases[d].DateCreated})
+		display(columns{"PLAN", databases[d].Plan})
+		display(columns{"PLAN DISK", databases[d].PlanDisk})
+		display(columns{"PLAN RAM", databases[d].PlanRAM})
+		display(columns{"PLAN VCPUS", databases[d].PlanVCPUs})
+		display(columns{"PLAN REPLICAS", databases[d].PlanReplicas})
+		display(columns{"REGION", databases[d].Region})
+		display(columns{"STATUS", databases[d].Status})
+		display(columns{"LABEL", databases[d].Label})
+		display(columns{"TAG", databases[d].Tag})
+		display(columns{"DATABASE ENGINE", databases[d].DatabaseEngine})
+		display(columns{"DATABASE ENGINE VERSION", databases[d].DatabaseEngineVersion})
+		display(columns{"DB NAME", databases[d].DBName})
+		display(columns{"HOST", databases[d].Host})
+		display(columns{"USER", databases[d].User})
+		display(columns{"PASSWORD", databases[d].Password})
+		display(columns{"PORT", databases[d].Port})
+		display(columns{"MAINTENANCE DOW", databases[d].MaintenanceDOW})
+		display(columns{"MAINTENANCE TIME", databases[d].MaintenanceTime})
+		display(columns{"LATEST BACKUP", databases[d].LatestBackup})
+		display(columns{"TRUSTED IPS", databases[d].TrustedIPs})
 
-		if d.DatabaseEngine == "mysql" {
-			display(columns{"MYSQL SQL MODES", d.MySQLSQLModes})
-			display(columns{"MYSQL REQUIRE PRIMARY KEY", d.MySQLRequirePrimaryKey})
-			display(columns{"MYSQL SLOW QUERY LOG", d.MySQLSlowQueryLog})
-			display(columns{"MYSQL LONG QUERY TIME", d.MySQLLongQueryTime})
+		if databases[d].DatabaseEngine == "mysql" {
+			display(columns{"MYSQL SQL MODES", databases[d].MySQLSQLModes})
+			display(columns{"MYSQL REQUIRE PRIMARY KEY", *databases[d].MySQLRequirePrimaryKey})
+			display(columns{"MYSQL SLOW QUERY LOG", *databases[d].MySQLSlowQueryLog})
+			if *databases[d].MySQLSlowQueryLog {
+				display(columns{"MYSQL LONG QUERY TIME", databases[d].MySQLLongQueryTime})
+			}
 		}
 
-		if d.DatabaseEngine == "pg" {
+		if databases[d].DatabaseEngine == "pg" && len(databases[d].PGAvailableExtensions) > 0 {
 			display(columns{" "})
 			display(columns{"PG AVAILABLE EXTENSIONS"})
-			for _, ext := range d.PGAvailableExtensions {
-				display(columns{"NAME", "VERSIONS"})
-				display(columns{ext.Name, ext.Versions})
+			display(columns{"NAME", "VERSIONS"})
+			for _, ext := range databases[d].PGAvailableExtensions {
+				if len(ext.Versions) > 0 {
+					display(columns{ext.Name, ext.Versions})
+				} else {
+					display(columns{ext.Name, ""})
+				}
 			}
 			display(columns{" "})
 		}
 
-		if d.DatabaseEngine == "redis" {
-			display(columns{"REDIS EVICTION POLICY", d.RedisEvictionPolicy})
+		if databases[d].DatabaseEngine == "redis" {
+			display(columns{"REDIS EVICTION POLICY", databases[d].RedisEvictionPolicy})
 		}
 
-		display(columns{"CLUSTER TIME ZONE", d.ClusterTimeZone})
+		display(columns{"CLUSTER TIME ZONE", databases[d].ClusterTimeZone})
 
-		if len(d.ReadReplicas) > 0 {
+		if len(databases[d].ReadReplicas) > 0 {
 			display(columns{" "})
 			display(columns{"READ REPLICAS"})
-			for _, r := range d.ReadReplicas {
-				display(columns{"ID", r.ID})
-				display(columns{"DATE CREATED", r.DateCreated})
-				display(columns{"PLAN", r.Plan})
-				display(columns{"PLAN DISK", r.PlanDisk})
-				display(columns{"PLAN RAM", r.PlanRAM})
-				display(columns{"PLAN VCPUS", r.PlanVCPUs})
-				display(columns{"PLAN REPLICAS", r.PlanReplicas})
-				display(columns{"REGION", r.Region})
-				display(columns{"STATUS", r.Status})
-				display(columns{"LABEL", r.Label})
-				display(columns{"TAG", r.Tag})
-				display(columns{"DATABASE ENGINE", r.DatabaseEngine})
-				display(columns{"DATABASE ENGINE VERSION", r.DatabaseEngineVersion})
-				display(columns{"DB NAME", r.DBName})
-				display(columns{"HOST", r.Host})
-				display(columns{"USER", r.User})
-				display(columns{"PASSWORD", r.Password})
-				display(columns{"PORT", r.Port})
-				display(columns{"MAINTENANCE DOW", r.MaintenanceDOW})
-				display(columns{"MAINTENANCE TIME", r.MaintenanceTime})
-				display(columns{"LATEST BACKUP", r.LatestBackup})
-				display(columns{"TRUSTED IPS", r.TrustedIPs})
+			for r := range databases[d].ReadReplicas {
+				display(columns{"ID", databases[d].ReadReplicas[r].ID})
+				display(columns{"DATE CREATED", databases[d].ReadReplicas[r].DateCreated})
+				display(columns{"PLAN", databases[d].ReadReplicas[r].Plan})
+				display(columns{"PLAN DISK", databases[d].ReadReplicas[r].PlanDisk})
+				display(columns{"PLAN RAM", databases[d].ReadReplicas[r].PlanRAM})
+				display(columns{"PLAN VCPUS", databases[d].ReadReplicas[r].PlanVCPUs})
+				display(columns{"PLAN REPLICAS", databases[d].ReadReplicas[r].PlanReplicas})
+				display(columns{"REGION", databases[d].ReadReplicas[r].Region})
+				display(columns{"STATUS", databases[d].ReadReplicas[r].Status})
+				display(columns{"LABEL", databases[d].ReadReplicas[r].Label})
+				display(columns{"TAG", databases[d].ReadReplicas[r].Tag})
+				display(columns{"DATABASE ENGINE", databases[d].ReadReplicas[r].DatabaseEngine})
+				display(columns{"DATABASE ENGINE VERSION", databases[d].ReadReplicas[r].DatabaseEngineVersion})
+				display(columns{"DB NAME", databases[d].ReadReplicas[r].DBName})
+				display(columns{"HOST", databases[d].ReadReplicas[r].Host})
+				display(columns{"USER", databases[d].ReadReplicas[r].User})
+				display(columns{"PASSWORD", databases[d].ReadReplicas[r].Password})
+				display(columns{"PORT", databases[d].ReadReplicas[r].Port})
+				display(columns{"MAINTENANCE DOW", databases[d].ReadReplicas[r].MaintenanceDOW})
+				display(columns{"MAINTENANCE TIME", databases[d].ReadReplicas[r].MaintenanceTime})
+				display(columns{"LATEST BACKUP", databases[d].ReadReplicas[r].LatestBackup})
+				display(columns{"TRUSTED IPS", databases[d].ReadReplicas[r].TrustedIPs})
 
-				if r.DatabaseEngine == "mysql" {
-					display(columns{"MYSQL SQL MODES", r.MySQLSQLModes})
-					display(columns{"MYSQL REQUIRE PRIMARY KEY", r.MySQLRequirePrimaryKey})
-					display(columns{"MYSQL SLOW QUERY LOG", r.MySQLSlowQueryLog})
-					display(columns{"MYSQL LONG QUERY TIME", r.MySQLLongQueryTime})
-				}
-
-				if r.DatabaseEngine == "pg" {
-					display(columns{"PG AVAILABLE EXTENSIONS"})
-					for _, rext := range r.PGAvailableExtensions {
-						display(columns{"NAME", "VERSIONS"})
-						display(columns{rext.Name, rext.Versions})
+				if databases[d].ReadReplicas[r].DatabaseEngine == "mysql" {
+					display(columns{"MYSQL SQL MODES", databases[d].ReadReplicas[r].MySQLSQLModes})
+					display(columns{"MYSQL REQUIRE PRIMARY KEY", *databases[d].ReadReplicas[r].MySQLRequirePrimaryKey})
+					display(columns{"MYSQL SLOW QUERY LOG", *databases[d].ReadReplicas[r].MySQLSlowQueryLog})
+					if *databases[d].ReadReplicas[r].MySQLSlowQueryLog {
+						display(columns{"MYSQL LONG QUERY TIME", databases[d].ReadReplicas[r].MySQLLongQueryTime})
 					}
 				}
 
-				if r.DatabaseEngine == "redis" {
-					display(columns{"REDIS EVICTION POLICY", r.RedisEvictionPolicy})
+				if databases[d].ReadReplicas[r].DatabaseEngine == "pg" && len(databases[d].ReadReplicas[r].PGAvailableExtensions) > 0 {
+					display(columns{" "})
+					display(columns{"PG AVAILABLE EXTENSIONS"})
+					display(columns{"NAME", "VERSIONS"})
+					for _, ext := range databases[d].ReadReplicas[r].PGAvailableExtensions {
+						if len(ext.Versions) > 0 {
+							display(columns{ext.Name, ext.Versions})
+						} else {
+							display(columns{ext.Name, ""})
+						}
+					}
+					display(columns{" "})
 				}
 
-				display(columns{"CLUSTER TIME ZONE", r.ClusterTimeZone})
+				if databases[d].ReadReplicas[r].DatabaseEngine == "redis" {
+					display(columns{"REDIS EVICTION POLICY", databases[d].ReadReplicas[r].RedisEvictionPolicy})
+				}
+
+				display(columns{"CLUSTER TIME ZONE", databases[d].ReadReplicas[r].ClusterTimeZone})
 			}
 		}
 
 		display(columns{"---------------------------"})
 	}
 
-	Meta(meta)
+	MetaDBaaS(meta)
+	flush()
+}
+
+// Database will generate a printer display of a given Managed Database
+func Database(database *govultr.Database) {
+	display(columns{"ID", database.ID})
+	display(columns{"DATE CREATED", database.DateCreated})
+	display(columns{"PLAN", database.Plan})
+	display(columns{"PLAN DISK", database.PlanDisk})
+	display(columns{"PLAN RAM", database.PlanRAM})
+	display(columns{"PLAN VCPUS", database.PlanVCPUs})
+	display(columns{"PLAN REPLICAS", database.PlanReplicas})
+	display(columns{"REGION", database.Region})
+	display(columns{"STATUS", database.Status})
+	display(columns{"LABEL", database.Label})
+	display(columns{"TAG", database.Tag})
+	display(columns{"DATABASE ENGINE", database.DatabaseEngine})
+	display(columns{"DATABASE ENGINE VERSION", database.DatabaseEngineVersion})
+	display(columns{"DB NAME", database.DBName})
+	display(columns{"HOST", database.Host})
+	display(columns{"USER", database.User})
+	display(columns{"PASSWORD", database.Password})
+	display(columns{"PORT", database.Port})
+	display(columns{"MAINTENANCE DOW", database.MaintenanceDOW})
+	display(columns{"MAINTENANCE TIME", database.MaintenanceTime})
+	display(columns{"LATEST BACKUP", database.LatestBackup})
+	display(columns{"TRUSTED IPS", database.TrustedIPs})
+
+	if database.DatabaseEngine == "mysql" {
+		display(columns{"MYSQL SQL MODES", database.MySQLSQLModes})
+		display(columns{"MYSQL REQUIRE PRIMARY KEY", *database.MySQLRequirePrimaryKey})
+		display(columns{"MYSQL SLOW QUERY LOG", *database.MySQLSlowQueryLog})
+		if *database.MySQLSlowQueryLog {
+			display(columns{"MYSQL LONG QUERY TIME", database.MySQLLongQueryTime})
+		}
+	}
+
+	if database.DatabaseEngine == "pg" && len(database.PGAvailableExtensions) > 0 {
+		display(columns{" "})
+		display(columns{"PG AVAILABLE EXTENSIONS"})
+		display(columns{"NAME", "VERSIONS"})
+		for _, ext := range database.PGAvailableExtensions {
+			if len(ext.Versions) > 0 {
+				display(columns{ext.Name, ext.Versions})
+			} else {
+				display(columns{ext.Name, ""})
+			}
+		}
+		display(columns{" "})
+	}
+
+	if database.DatabaseEngine == "redis" {
+		display(columns{"REDIS EVICTION POLICY", database.RedisEvictionPolicy})
+	}
+
+	display(columns{"CLUSTER TIME ZONE", database.ClusterTimeZone})
+
+	if len(database.ReadReplicas) > 0 {
+		display(columns{" "})
+		display(columns{"READ REPLICAS"})
+		for r := range database.ReadReplicas {
+			display(columns{"ID", database.ReadReplicas[r].ID})
+			display(columns{"DATE CREATED", database.ReadReplicas[r].DateCreated})
+			display(columns{"PLAN", database.ReadReplicas[r].Plan})
+			display(columns{"PLAN DISK", database.ReadReplicas[r].PlanDisk})
+			display(columns{"PLAN RAM", database.ReadReplicas[r].PlanRAM})
+			display(columns{"PLAN VCPUS", database.ReadReplicas[r].PlanVCPUs})
+			display(columns{"PLAN REPLICAS", database.ReadReplicas[r].PlanReplicas})
+			display(columns{"REGION", database.ReadReplicas[r].Region})
+			display(columns{"STATUS", database.ReadReplicas[r].Status})
+			display(columns{"LABEL", database.ReadReplicas[r].Label})
+			display(columns{"TAG", database.ReadReplicas[r].Tag})
+			display(columns{"DATABASE ENGINE", database.ReadReplicas[r].DatabaseEngine})
+			display(columns{"DATABASE ENGINE VERSION", database.ReadReplicas[r].DatabaseEngineVersion})
+			display(columns{"DB NAME", database.ReadReplicas[r].DBName})
+			display(columns{"HOST", database.ReadReplicas[r].Host})
+			display(columns{"USER", database.ReadReplicas[r].User})
+			display(columns{"PASSWORD", database.ReadReplicas[r].Password})
+			display(columns{"PORT", database.ReadReplicas[r].Port})
+			display(columns{"MAINTENANCE DOW", database.ReadReplicas[r].MaintenanceDOW})
+			display(columns{"MAINTENANCE TIME", database.ReadReplicas[r].MaintenanceTime})
+			display(columns{"LATEST BACKUP", database.ReadReplicas[r].LatestBackup})
+			display(columns{"TRUSTED IPS", database.ReadReplicas[r].TrustedIPs})
+
+			if database.ReadReplicas[r].DatabaseEngine == "mysql" {
+				display(columns{"MYSQL SQL MODES", database.ReadReplicas[r].MySQLSQLModes})
+				display(columns{"MYSQL REQUIRE PRIMARY KEY", *database.ReadReplicas[r].MySQLRequirePrimaryKey})
+				display(columns{"MYSQL SLOW QUERY LOG", *database.ReadReplicas[r].MySQLSlowQueryLog})
+				if *database.ReadReplicas[r].MySQLSlowQueryLog {
+					display(columns{"MYSQL LONG QUERY TIME", database.ReadReplicas[r].MySQLLongQueryTime})
+				}
+			}
+
+			if database.ReadReplicas[r].DatabaseEngine == "pg" && len(database.ReadReplicas[r].PGAvailableExtensions) > 0 {
+				display(columns{" "})
+				display(columns{"PG AVAILABLE EXTENSIONS"})
+				display(columns{"NAME", "VERSIONS"})
+				for _, ext := range database.ReadReplicas[r].PGAvailableExtensions {
+					if len(ext.Versions) > 0 {
+						display(columns{ext.Name, ext.Versions})
+					} else {
+						display(columns{ext.Name, ""})
+					}
+				}
+				display(columns{" "})
+			}
+
+			if database.ReadReplicas[r].DatabaseEngine == "redis" {
+				display(columns{"REDIS EVICTION POLICY", database.ReadReplicas[r].RedisEvictionPolicy})
+			}
+
+			display(columns{"CLUSTER TIME ZONE", database.ReadReplicas[r].ClusterTimeZone})
+		}
+	}
+
 	flush()
 }
