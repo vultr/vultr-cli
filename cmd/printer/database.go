@@ -270,3 +270,46 @@ func Database(database *govultr.Database) {
 
 	flush()
 }
+
+// DatabaseUserList will generate a printer display of users within a Managed Database
+func DatabaseUserList(databaseUsers []govultr.DatabaseUser, meta *govultr.Meta) {
+	for u := range databaseUsers {
+		display(columns{"USERNAME", databaseUsers[u].Username})
+		display(columns{"PASSWORD", databaseUsers[u].Password})
+		if databaseUsers[u].Encryption != "" {
+			display(columns{"ENCRYPTION", databaseUsers[u].Encryption})
+		}
+		display(columns{"---------------------------"})
+	}
+
+	MetaDBaaS(meta)
+	flush()
+}
+
+// DatabaseUser will generate a printer display of a given user within a Managed Database
+func DatabaseUser(databaseUser govultr.DatabaseUser) {
+	display(columns{"USERNAME", databaseUser.Username})
+	display(columns{"PASSWORD", databaseUser.Password})
+	if databaseUser.Encryption != "" {
+		display(columns{"ENCRYPTION", databaseUser.Encryption})
+	}
+
+	flush()
+}
+
+// DatabaseDBList will generate a printer display of logical databases within a Managed Database cluster
+func DatabaseDBList(databaseDBs []govultr.DatabaseDB, meta *govultr.Meta) {
+	for u := range databaseDBs {
+		display(columns{"NAME", databaseDBs[u].Name})
+		display(columns{"---------------------------"})
+	}
+
+	MetaDBaaS(meta)
+	flush()
+}
+
+// DatabaseDB will generate a printer display of a given logical database within a Managed Database cluster
+func DatabaseDB(databaseDB govultr.DatabaseDB) {
+	display(columns{"NAME", databaseDB.Name})
+	flush()
+}

@@ -16,6 +16,7 @@ Available Commands:
   billing        Display billing information
   block-storage  block storage commands
   completion     Generate the autocompletion script for the specified shell
+  database		 commands to interact with managed databases on vultr
   dns            dns is used to access dns commands
   firewall       firewall is used to access firewall commands
   help           Help about any command

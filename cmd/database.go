@@ -58,16 +58,22 @@ func Database() *cobra.Command {
 		Example: databaseExample,
 	}
 
-	databaseCmd.AddCommand(databaseList, databasePlanList, databaseCreate, databaseInfo, databaseUpdate, databaseDelete)
+	databaseCmd.AddCommand(
+		databasePlanList,
+		databaseList, databaseCreate, databaseInfo, databaseUpdate, databaseDelete,
+		databaseUserList, databaseUserCreate, databaseUserInfo, databaseUserUpdate, databaseUserDelete)
 
+	// Plan list flags
 	databasePlanList.Flags().StringP("engine", "e", "", "(optional) Filter by database engine type.")
 	databasePlanList.Flags().IntP("nodes", "n", 0, "(optional) Filter by number of nodes.")
 	databasePlanList.Flags().StringP("region", "r", "", "(optional) Filter by region.")
 
+	// Database list flags
 	databaseList.Flags().StringP("label", "l", "", "(optional) Filter by label.")
 	databaseList.Flags().StringP("tag", "t", "", "(optional) Filter by tag.")
 	databaseList.Flags().StringP("region", "r", "", "(optional) Filter by region.")
 
+	// Database create flags
 	databaseCreate.Flags().StringP("database-engine", "e", "", "database engine for the new manaaged database")
 	databaseCreate.Flags().StringP("database-engine-version", "v", "", "database engine version for the new manaaged database")
 	databaseCreate.Flags().StringP("region", "r", "", "region id for the new managed database")
@@ -83,6 +89,7 @@ func Database() *cobra.Command {
 	databaseCreate.Flags().StringP("mysql-long-query-time", "", "", "long query time for the new mysql managed database when slow query logging is enabled")
 	databaseCreate.Flags().StringP("redis-eviction-policy", "", "", "eviction policy for the new redis managed database")
 
+	// Database update flags
 	databaseUpdate.Flags().StringP("database-engine", "e", "", "database engine for the manaaged database")
 	databaseUpdate.Flags().StringP("database-engine-version", "v", "", "database engine version for the manaaged database")
 	databaseUpdate.Flags().StringP("region", "r", "", "region id for the managed database")
@@ -98,6 +105,14 @@ func Database() *cobra.Command {
 	databaseUpdate.Flags().BoolP("mysql-slow-query-log", "", false, "enable slow query logging for the mysql managed database")
 	databaseUpdate.Flags().StringP("mysql-long-query-time", "", "", "long query time for the mysql managed database when slow query logging is enabled")
 	databaseUpdate.Flags().StringP("redis-eviction-policy", "", "", "eviction policy for the redis managed database")
+
+	// Database user create flags
+	databaseUserCreate.Flags().StringP("username", "u", "", "username for the new manaaged database user")
+	databaseUserCreate.Flags().StringP("password", "p", "", "password for the new manaaged database user (omit or leave empty to generate a random secure password)")
+	databaseUserCreate.Flags().StringP("encryption", "e", "", "encryption type for the new managed database user (MySQL only)")
+
+	// Database user update flags
+	databaseUserUpdate.Flags().StringP("password", "p", "", "password for the new manaaged database user (leave empty to generate a random secure password)")
 
 	return databaseCmd
 }
@@ -199,7 +214,7 @@ var databaseCreate = &cobra.Command{
 			opt.MySQLSlowQueryLog = govultr.BoolToBoolPtr(true)
 		}
 
-		// make the request
+		// Make the request
 		database, _, err := client.Database.Create(context.TODO(), opt)
 		if err != nil {
 			fmt.Printf("error creating managed database : %v\n", err)
@@ -221,8 +236,7 @@ var databaseInfo = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		id := args[0]
-		s, _, err := client.Database.Get(context.TODO(), id)
+		s, _, err := client.Database.Get(context.TODO(), args[0])
 		if err != nil {
 			fmt.Printf("error getting managed database : %v\n", err)
 			os.Exit(1)
@@ -233,7 +247,7 @@ var databaseInfo = &cobra.Command{
 }
 
 var databaseUpdate = &cobra.Command{
-	Use:     "update",
+	Use:     "update <databaseID>",
 	Short:   "Update a managed database",
 	Aliases: []string{"u"},
 	Long:    databaseUpdateLong,
@@ -245,7 +259,6 @@ var databaseUpdate = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		id := args[0]
 		databaseEngine, _ := cmd.Flags().GetString("database-engine")
 		databaseEngineVersion, _ := cmd.Flags().GetString("database-engine-version")
 		region, _ := cmd.Flags().GetString("region")
@@ -292,8 +305,8 @@ var databaseUpdate = &cobra.Command{
 			opt.MySQLSlowQueryLog = govultr.BoolToBoolPtr(false)
 		}
 
-		// make the request
-		database, _, err := client.Database.Update(context.TODO(), id, opt)
+		// Make the request
+		database, _, err := client.Database.Update(context.TODO(), args[0], opt)
 		if err != nil {
 			fmt.Printf("error updating managed database : %v\n", err)
 			os.Exit(1)
@@ -315,12 +328,135 @@ var databaseDelete = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		id := args[0]
-		if err := client.Database.Delete(context.Background(), id); err != nil {
+		if err := client.Database.Delete(context.Background(), args[0]); err != nil {
 			fmt.Printf("error deleting managed database : %v\n", err)
 			os.Exit(1)
 		}
 
 		fmt.Println("Deleted managed database")
+	},
+}
+
+var databaseUserList = &cobra.Command{
+	Use:   "list-users <databaseID>",
+	Short: "list all users within the managed databases",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		s, meta, _, err := client.Database.ListUsers(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("error getting list of databases : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseUserList(s, meta)
+	},
+}
+
+var databaseUserCreate = &cobra.Command{
+	Use:   "create-user <databaseID>",
+	Short: "Create a user within a managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		username, _ := cmd.Flags().GetString("username")
+
+		// Optional
+		password, _ := cmd.Flags().GetString("password")
+		encryption, _ := cmd.Flags().GetString("encryption")
+
+		opt := &govultr.DatabaseUserCreateReq{
+			Username:   username,
+			Password:   password,
+			Encryption: encryption,
+		}
+
+		// Make the request
+		databaseUser, _, err := client.Database.CreateUser(context.TODO(), args[0], opt)
+		if err != nil {
+			fmt.Printf("error creating managed database users : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseUser(*databaseUser)
+	},
+}
+
+var databaseUserInfo = &cobra.Command{
+	Use:   "get-user <databaseID> <username>",
+	Short: "get info about a specific user within a managed databases",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a databaseID and username")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		s, _, err := client.Database.GetUser(context.TODO(), args[0], args[1])
+		if err != nil {
+			fmt.Printf("error getting list of databases : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseUser(*s)
+	},
+}
+
+var databaseUserUpdate = &cobra.Command{
+	Use:   "update-user <databaseID> <username>",
+	Short: "Update a user within a managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a databaseID and username")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		password, _ := cmd.Flags().GetString("password")
+
+		opt := &govultr.DatabaseUserUpdateReq{
+			Password: password,
+		}
+
+		// Make the request
+		databaseUser, _, err := client.Database.UpdateUser(context.TODO(), args[0], args[1], opt)
+		if err != nil {
+			fmt.Printf("error updating managed database user : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseUser(*databaseUser)
+	},
+}
+
+var databaseUserDelete = &cobra.Command{
+	Use:   "delete-user <databaseID> <username>",
+	Short: "Delete a user within a managed database",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a databaseID and username")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := client.Database.DeleteUser(context.Background(), args[0], args[1]); err != nil {
+			fmt.Printf("error deleting managed database user : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Deleted managed database user")
 	},
 }
