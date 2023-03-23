@@ -61,7 +61,8 @@ func Database() *cobra.Command {
 	databaseCmd.AddCommand(
 		databasePlanList,
 		databaseList, databaseCreate, databaseInfo, databaseUpdate, databaseDelete,
-		databaseUserList, databaseUserCreate, databaseUserInfo, databaseUserUpdate, databaseUserDelete)
+		databaseUserList, databaseUserCreate, databaseUserInfo, databaseUserUpdate, databaseUserDelete,
+		databaseDBList, databaseDBCreate, databaseDBInfo, databaseDBDelete)
 
 	// Plan list flags
 	databasePlanList.Flags().StringP("engine", "e", "", "(optional) Filter by database engine type.")
@@ -113,6 +114,9 @@ func Database() *cobra.Command {
 
 	// Database user update flags
 	databaseUserUpdate.Flags().StringP("password", "p", "", "password for the new manaaged database user (leave empty to generate a random secure password)")
+
+	// Database DB update flags
+	databaseDBCreate.Flags().StringP("name", "n", "", "name of the new logical database within the manaaged database")
 
 	return databaseCmd
 }
@@ -339,7 +343,7 @@ var databaseDelete = &cobra.Command{
 
 var databaseUserList = &cobra.Command{
 	Use:   "list-users <databaseID>",
-	Short: "list all users within the managed databases",
+	Short: "list all users within a managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -350,7 +354,7 @@ var databaseUserList = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		s, meta, _, err := client.Database.ListUsers(context.TODO(), args[0])
 		if err != nil {
-			fmt.Printf("error getting list of databases : %v\n", err)
+			fmt.Printf("error getting list of database users : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -384,7 +388,7 @@ var databaseUserCreate = &cobra.Command{
 		// Make the request
 		databaseUser, _, err := client.Database.CreateUser(context.TODO(), args[0], opt)
 		if err != nil {
-			fmt.Printf("error creating managed database users : %v\n", err)
+			fmt.Printf("error creating managed database user : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -394,7 +398,7 @@ var databaseUserCreate = &cobra.Command{
 
 var databaseUserInfo = &cobra.Command{
 	Use:   "get-user <databaseID> <username>",
-	Short: "get info about a specific user within a managed databases",
+	Short: "get info about a specific user within a managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 2 {
@@ -405,7 +409,7 @@ var databaseUserInfo = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		s, _, err := client.Database.GetUser(context.TODO(), args[0], args[1])
 		if err != nil {
-			fmt.Printf("error getting list of databases : %v\n", err)
+			fmt.Printf("error getting managed database user : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -458,5 +462,95 @@ var databaseUserDelete = &cobra.Command{
 		}
 
 		fmt.Println("Deleted managed database user")
+	},
+}
+
+var databaseDBList = &cobra.Command{
+	Use:   "list-dbs <databaseID>",
+	Short: "list all logical databases within a managed database",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		s, meta, _, err := client.Database.ListDBs(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("error getting list of logical databases : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseDBList(s, meta)
+	},
+}
+
+var databaseDBCreate = &cobra.Command{
+	Use:   "create-db <databaseID>",
+	Short: "Create a logical database within a managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		name, _ := cmd.Flags().GetString("name")
+
+		opt := &govultr.DatabaseDBCreateReq{
+			Name: name,
+		}
+
+		// Make the request
+		databaseDB, _, err := client.Database.CreateDB(context.TODO(), args[0], opt)
+		if err != nil {
+			fmt.Printf("error creating logical database : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseDB(*databaseDB)
+	},
+}
+
+var databaseDBInfo = &cobra.Command{
+	Use:   "get-db <databaseID> <dbname>",
+	Short: "get info about a specific logicla database within a managed database",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a databaseID and dbname")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		s, _, err := client.Database.GetDB(context.TODO(), args[0], args[1])
+		if err != nil {
+			fmt.Printf("error getting logical database : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseDB(*s)
+	},
+}
+
+var databaseDBDelete = &cobra.Command{
+	Use:   "delete-db <databaseID> <dbname>",
+	Short: "Delete a logical database within a managed database",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a databaseID and dbname")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := client.Database.DeleteDB(context.Background(), args[0], args[1]); err != nil {
+			fmt.Printf("error deleting logical database : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Deleted logical database")
 	},
 }
