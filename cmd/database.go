@@ -62,7 +62,9 @@ func Database() *cobra.Command {
 		databasePlanList,
 		databaseList, databaseCreate, databaseInfo, databaseUpdate, databaseDelete,
 		databaseUserList, databaseUserCreate, databaseUserInfo, databaseUserUpdate, databaseUserDelete,
-		databaseDBList, databaseDBCreate, databaseDBInfo, databaseDBDelete)
+		databaseDBList, databaseDBCreate, databaseDBInfo, databaseDBDelete,
+		databaseMaintenanceUpdatesList, databaseStartMaintenance,
+		databaseAlertsList)
 
 	// Plan list flags
 	databasePlanList.Flags().StringP("engine", "e", "", "(optional) Filter by database engine type.")
@@ -117,6 +119,9 @@ func Database() *cobra.Command {
 
 	// Database DB update flags
 	databaseDBCreate.Flags().StringP("name", "n", "", "name of the new logical database within the manaaged database")
+
+	// Database list service alerts flags
+	databaseAlertsList.Flags().StringP("period", "p", "", "period (day, week, month, year) for viewing service alerts for a manaaged database")
 
 	return databaseCmd
 }
@@ -552,5 +557,75 @@ var databaseDBDelete = &cobra.Command{
 		}
 
 		fmt.Println("Deleted logical database")
+	},
+}
+
+var databaseMaintenanceUpdatesList = &cobra.Command{
+	Use:   "list-updates <databaseID>",
+	Short: "list all available maintenance updates for a managed database",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		s, _, err := client.Database.ListMaintenanceUpdates(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("error getting list of available maintenance updates : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseUpdates(s)
+	},
+}
+
+var databaseStartMaintenance = &cobra.Command{
+	Use:   "start-updates <databaseID>",
+	Short: "Initialize maintenance updates for a managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		message, _, err := client.Database.StartMaintenance(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("error starting maintenance updates : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseMessage(message)
+	},
+}
+
+var databaseAlertsList = &cobra.Command{
+	Use:   "list-alerts <databaseID>",
+	Short: "List service alerts for a managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		period, _ := cmd.Flags().GetString("period")
+
+		opt := &govultr.DatabaseListAlertsReq{
+			Period: period,
+		}
+
+		// Make the request
+		databaseAlerts, _, err := client.Database.ListServiceAlerts(context.TODO(), args[0], opt)
+		if err != nil {
+			fmt.Printf("error creating logical database : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseAlertsList(databaseAlerts)
 	},
 }

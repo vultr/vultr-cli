@@ -313,3 +313,44 @@ func DatabaseDB(databaseDB govultr.DatabaseDB) {
 	display(columns{"NAME", databaseDB.Name})
 	flush()
 }
+
+// DatabaseUpdates will generate a printer display of available updates for a Managed Database cluster
+func DatabaseUpdates(databaseUpdates []string) {
+	display(columns{"AVAILABLE UPDATES", databaseUpdates})
+	flush()
+}
+
+// DatabaseMessage will generate a printer display of a generic information message for a Managed Database cluster
+func DatabaseMessage(message string) {
+	display(columns{"MESSAGE", message})
+	flush()
+}
+
+// DatabaseAlertsList will generate a printer display of service alerts for a Managed Database
+func DatabaseAlertsList(databaseAlerts []govultr.DatabaseAlert) {
+	for a := range databaseAlerts {
+		display(columns{"TIMESTAMP", databaseAlerts[a].Timestamp})
+		display(columns{"MESSAGE TYPE", databaseAlerts[a].MessageType})
+		display(columns{"DESCRIPTION", databaseAlerts[a].Description})
+
+		if databaseAlerts[a].Recommendation != "" {
+			display(columns{"RECOMMENDATION", databaseAlerts[a].Recommendation})
+		}
+
+		if databaseAlerts[a].MaintenanceScheduled != "" {
+			display(columns{"MAINTENANCE SCHEDULED", databaseAlerts[a].MaintenanceScheduled})
+		}
+
+		if databaseAlerts[a].ResourceType != "" {
+			display(columns{"RESOURCE TYPE", databaseAlerts[a].ResourceType})
+		}
+
+		if databaseAlerts[a].TableCount != 0 {
+			display(columns{"TABLE COUNT", databaseAlerts[a].TableCount})
+		}
+
+		display(columns{"---------------------------"})
+	}
+
+	flush()
+}
