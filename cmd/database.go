@@ -67,7 +67,8 @@ func Database() *cobra.Command {
 		databaseAlertsList,
 		databaseMigrationStatus, databaseStartMigration, databaseDetachMigration,
 		databaseAddReadReplica,
-		databaseGetBackupInfo, databaseRestoreFromBackup, databaseFork)
+		databaseGetBackupInfo, databaseRestoreFromBackup, databaseFork,
+		databaseConnectionPoolList, databaseConnectionPoolCreate, databaseConnectionPoolInfo, databaseConnectionPoolUpdate, databaseConnectionPoolDelete)
 
 	// Plan list flags
 	databasePlanList.Flags().StringP("engine", "e", "", "(optional) Filter by database engine type.")
@@ -118,9 +119,9 @@ func Database() *cobra.Command {
 	databaseUserCreate.Flags().StringP("encryption", "e", "", "encryption type for the new managed database user (MySQL only)")
 
 	// Database user update flags
-	databaseUserUpdate.Flags().StringP("password", "p", "", "password for the new manaaged database user (leave empty to generate a random secure password)")
+	databaseUserUpdate.Flags().StringP("password", "p", "", "new password for the manaaged database user (leave empty to generate a random secure password)")
 
-	// Database DB update flags
+	// Database DB create flags
 	databaseDBCreate.Flags().StringP("name", "n", "", "name of the new logical database within the manaaged database")
 
 	// Database list service alerts flags
@@ -152,6 +153,19 @@ func Database() *cobra.Command {
 	databaseFork.Flags().StringP("type", "", "", "restoration type: `pitr` for point-in-time recovery or `basebackup` for latest backup (default)")
 	databaseFork.Flags().StringP("date", "", "", "backup date to use for point-in-time recovery")
 	databaseFork.Flags().StringP("time", "", "", "backup time to use for point-in-time recovery")
+
+	// Database create connection pool flags
+	databaseConnectionPoolCreate.Flags().StringP("name", "n", "", "name for the new managed database connection pool")
+	databaseConnectionPoolCreate.Flags().StringP("database", "d", "", "database for the new managed database connection pool")
+	databaseConnectionPoolCreate.Flags().StringP("username", "u", "", "username for the new managed database connection pool")
+	databaseConnectionPoolCreate.Flags().StringP("mode", "m", "", "mode for the new managed database connection pool")
+	databaseConnectionPoolCreate.Flags().IntP("size", "s", 0, "size for the new managed database connection pool")
+
+	// Database update connection pool flags
+	databaseConnectionPoolUpdate.Flags().StringP("database", "d", "", "database for the managed database connection pool")
+	databaseConnectionPoolUpdate.Flags().StringP("username", "u", "", "username for the managed database connection pool")
+	databaseConnectionPoolUpdate.Flags().StringP("mode", "m", "", "mode for the managed database connection pool")
+	databaseConnectionPoolUpdate.Flags().IntP("size", "s", 0, "size for the managed database connection pool")
 
 	return databaseCmd
 }
@@ -871,5 +885,137 @@ var databaseFork = &cobra.Command{
 		}
 
 		printer.Database(database)
+	},
+}
+
+var databaseConnectionPoolList = &cobra.Command{
+	Use:   "list-connection-pools <databaseID>",
+	Short: "list all connection pools within a PostgreSQL managed database",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		c, s, meta, _, err := client.Database.ListConnectionPools(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("error getting list of connection pools : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseConnectionPoolList(c, s, meta)
+	},
+}
+
+var databaseConnectionPoolCreate = &cobra.Command{
+	Use:   "create-connection-pool <databaseID>",
+	Short: "Create a connection pool within a PostgreSQL managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		name, _ := cmd.Flags().GetString("name")
+		database, _ := cmd.Flags().GetString("database")
+		username, _ := cmd.Flags().GetString("username")
+		mode, _ := cmd.Flags().GetString("mode")
+		size, _ := cmd.Flags().GetInt("size")
+
+		opt := &govultr.DatabaseConnectionPoolCreateReq{
+			Name:     name,
+			Database: database,
+			Username: username,
+			Mode:     mode,
+			Size:     size,
+		}
+
+		// Make the request
+		databaseConnectionPool, _, err := client.Database.CreateConnectionPool(context.TODO(), args[0], opt)
+		if err != nil {
+			fmt.Printf("error creating managed database connection pool : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseConnectionPool(*databaseConnectionPool)
+	},
+}
+
+var databaseConnectionPoolInfo = &cobra.Command{
+	Use:   "get-connection-pool <databaseID> <poolName>",
+	Short: "get info about a specific connection pool within a PostgreSQL managed database",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a databaseID and poolName")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		s, _, err := client.Database.GetConnectionPool(context.TODO(), args[0], args[1])
+		if err != nil {
+			fmt.Printf("error getting managed database connection pool : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseConnectionPool(*s)
+	},
+}
+
+var databaseConnectionPoolUpdate = &cobra.Command{
+	Use:   "update-connection-pool <databaseID> <poolName>",
+	Short: "Update a connection pool within a PostgreSQL managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a databaseID and poolName")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		database, _ := cmd.Flags().GetString("database")
+		username, _ := cmd.Flags().GetString("username")
+		mode, _ := cmd.Flags().GetString("mode")
+		size, _ := cmd.Flags().GetInt("size")
+
+		opt := &govultr.DatabaseConnectionPoolUpdateReq{
+			Database: database,
+			Username: username,
+			Mode:     mode,
+			Size:     size,
+		}
+
+		// Make the request
+		databaseConnectionPool, _, err := client.Database.UpdateConnectionPool(context.TODO(), args[0], args[1], opt)
+		if err != nil {
+			fmt.Printf("error updating managed database connection pool : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseConnectionPool(*databaseConnectionPool)
+	},
+}
+
+var databaseConnectionPoolDelete = &cobra.Command{
+	Use:   "delete-connection-pool <databaseID> <poolName>",
+	Short: "Delete a connection pool within a PostgreSQL managed database",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a databaseID and poolName")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := client.Database.DeleteConnectionPool(context.Background(), args[0], args[1]); err != nil {
+			fmt.Printf("error deleting managed database connection pool : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Deleted managed database connection pool")
 	},
 }

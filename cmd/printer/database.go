@@ -402,3 +402,37 @@ func DatabaseBackupInfo(databaseBackups *govultr.DatabaseBackups) {
 
 	flush()
 }
+
+// DatabaseConnectionPoolList will generate a printer display of connection pools within a PostgreSQL Managed Database
+func DatabaseConnectionPoolList(databaseConnections *govultr.DatabaseConnections, databaseConnectionPools []govultr.DatabaseConnectionPool, meta *govultr.Meta) {
+	display(columns{"CONNECTIONS"})
+	display(columns{"USED", databaseConnections.Used})
+	display(columns{"AVAILABLE", databaseConnections.Available})
+	display(columns{"MAX", databaseConnections.Max})
+
+	display(columns{" "})
+	display(columns{"CONNECTION POOLS"})
+
+	for u := range databaseConnectionPools {
+		display(columns{"NAME", databaseConnectionPools[u].Name})
+		display(columns{"DATABASE", databaseConnectionPools[u].Database})
+		display(columns{"USERNAME", databaseConnectionPools[u].Username})
+		display(columns{"MODE", databaseConnectionPools[u].Mode})
+		display(columns{"SIZE", databaseConnectionPools[u].Size})
+		display(columns{"---------------------------"})
+	}
+
+	MetaDBaaS(meta)
+	flush()
+}
+
+// DatabaseConnectionPool will generate a printer display of a given connection pool within a PostgreSQL Managed Database
+func DatabaseConnectionPool(databaseConnectionPool govultr.DatabaseConnectionPool) {
+	display(columns{"NAME", databaseConnectionPool.Name})
+	display(columns{"DATABASE", databaseConnectionPool.Database})
+	display(columns{"USERNAME", databaseConnectionPool.Username})
+	display(columns{"MODE", databaseConnectionPool.Mode})
+	display(columns{"SIZE", databaseConnectionPool.Size})
+
+	flush()
+}
