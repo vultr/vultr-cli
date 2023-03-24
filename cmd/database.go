@@ -64,7 +64,10 @@ func Database() *cobra.Command {
 		databaseUserList, databaseUserCreate, databaseUserInfo, databaseUserUpdate, databaseUserDelete,
 		databaseDBList, databaseDBCreate, databaseDBInfo, databaseDBDelete,
 		databaseMaintenanceUpdatesList, databaseStartMaintenance,
-		databaseAlertsList)
+		databaseAlertsList,
+		databaseMigrationStatus, databaseStartMigration, databaseDetachMigration,
+		databaseAddReadReplica,
+		databaseGetBackupInfo, databaseRestoreFromBackup, databaseFork)
 
 	// Plan list flags
 	databasePlanList.Flags().StringP("engine", "e", "", "(optional) Filter by database engine type.")
@@ -122,6 +125,33 @@ func Database() *cobra.Command {
 
 	// Database list service alerts flags
 	databaseAlertsList.Flags().StringP("period", "p", "", "period (day, week, month, year) for viewing service alerts for a manaaged database")
+
+	// Database start migration flags
+	databaseStartMigration.Flags().StringP("host", "", "", "source host for the manaaged database migration")
+	databaseStartMigration.Flags().IntP("port", "", 0, "source port for the manaaged database migration")
+	databaseStartMigration.Flags().StringP("username", "", "", "source username for the manaaged database migration (uses `default` for Redis if omitted)")
+	databaseStartMigration.Flags().StringP("password", "", "", "source password for the manaaged database migration")
+	databaseStartMigration.Flags().StringP("database", "", "", "source database for the manaaged database migration (MySQL/PostgreSQL only)")
+	databaseStartMigration.Flags().StringP("ignored-dbs", "", "", "comma-separated list of ignored databases for the manaaged database migration (MySQL/PostgreSQL only)")
+	databaseStartMigration.Flags().BoolP("ssl", "", true, "source ssl requirement for the manaaged database migration")
+
+	// Database add read replica flags
+	databaseAddReadReplica.Flags().StringP("region", "r", "", "region id for the new managed database read replica")
+	databaseAddReadReplica.Flags().StringP("label", "l", "", "label for the new managed database read replica")
+
+	// Database restore from backup flags
+	databaseRestoreFromBackup.Flags().StringP("label", "", "", "label for the new managed database restored from backup")
+	databaseRestoreFromBackup.Flags().StringP("type", "", "", "restoration type: `pitr` for point-in-time recovery or `basebackup` for latest backup (default)")
+	databaseRestoreFromBackup.Flags().StringP("date", "", "", "backup date to use for point-in-time recovery")
+	databaseRestoreFromBackup.Flags().StringP("time", "", "", "backup time to use for point-in-time recovery")
+
+	// Database fork flags
+	databaseFork.Flags().StringP("label", "", "", "label for the new managed database forked from the backup")
+	databaseFork.Flags().StringP("region", "", "", "region id for the new managed database forked from the backup")
+	databaseFork.Flags().StringP("plan", "", "", "plan id for the new managed database forked from the backup")
+	databaseFork.Flags().StringP("type", "", "", "restoration type: `pitr` for point-in-time recovery or `basebackup` for latest backup (default)")
+	databaseFork.Flags().StringP("date", "", "", "backup date to use for point-in-time recovery")
+	databaseFork.Flags().StringP("time", "", "", "backup time to use for point-in-time recovery")
 
 	return databaseCmd
 }
@@ -627,5 +657,219 @@ var databaseAlertsList = &cobra.Command{
 		}
 
 		printer.DatabaseAlertsList(databaseAlerts)
+	},
+}
+
+var databaseMigrationStatus = &cobra.Command{
+	Use:   "get-migration <databaseID>",
+	Short: "Get the current migration status of a managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		databaseMigration, _, err := client.Database.GetMigrationStatus(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("error creating logical database : %v\n", err)
+			os.Exit(1)
+		}
+
+		if databaseMigration == nil {
+			printer.DatabaseMessage("There is currently no active migration configured for this Managed Database.")
+		} else {
+			printer.DatabaseMigrationStatus(databaseMigration)
+		}
+	},
+}
+
+var databaseStartMigration = &cobra.Command{
+	Use:   "start-migration <databaseID>",
+	Short: "Start a migration for a managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		host, _ := cmd.Flags().GetString("host")
+		port, _ := cmd.Flags().GetInt("port")
+		username, _ := cmd.Flags().GetString("username")
+		password, _ := cmd.Flags().GetString("password")
+		database, _ := cmd.Flags().GetString("database")
+		IgnoredDatabases, _ := cmd.Flags().GetString("ignored-dbs")
+		ssl, _ := cmd.Flags().GetBool("ssl")
+
+		opt := &govultr.DatabaseMigrationStartReq{
+			Host:             host,
+			Port:             port,
+			Username:         username,
+			Password:         password,
+			Database:         database,
+			IgnoredDatabases: IgnoredDatabases,
+			SSL:              nil,
+		}
+
+		if ssl {
+			opt.SSL = govultr.BoolToBoolPtr(true)
+		} else if !ssl {
+			opt.SSL = govultr.BoolToBoolPtr(false)
+		}
+
+		// Make the request
+		databaseMigration, _, err := client.Database.StartMigration(context.TODO(), args[0], opt)
+		if err != nil {
+			fmt.Printf("error starting migration : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseMigrationStatus(databaseMigration)
+	},
+}
+
+var databaseDetachMigration = &cobra.Command{
+	Use:   "detach-migration <databaseID>",
+	Short: "Detach a migration from a managed database",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := client.Database.DetachMigration(context.Background(), args[0]); err != nil {
+			fmt.Printf("error deleting managed database user : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Detached migration")
+	},
+}
+
+var databaseAddReadReplica = &cobra.Command{
+	Use:   "create-read-replica  <databaseID>",
+	Short: "Add a read-only replica to a managed database",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		region, _ := cmd.Flags().GetString("region")
+		label, _ := cmd.Flags().GetString("label")
+
+		opt := &govultr.DatabaseAddReplicaReq{
+			Region: region,
+			Label:  label,
+		}
+
+		// Make the request
+		database, _, err := client.Database.AddReadOnlyReplica(context.TODO(), args[0], opt)
+		if err != nil {
+			fmt.Printf("error creating read-only replica : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.Database(database)
+	},
+}
+
+var databaseGetBackupInfo = &cobra.Command{
+	Use:   "get-backups <databaseID>",
+	Short: "Get the latest and oldest available backups for a managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		databaseBackups, _, err := client.Database.GetBackupInformation(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("error retrieving backup information : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseBackupInfo(databaseBackups)
+	},
+}
+
+var databaseRestoreFromBackup = &cobra.Command{
+	Use:   "restore-from-backup  <databaseID>",
+	Short: "Create a new managed database from a backup",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		label, _ := cmd.Flags().GetString("label")
+		rtype, _ := cmd.Flags().GetString("type")
+		date, _ := cmd.Flags().GetString("date")
+		time, _ := cmd.Flags().GetString("time")
+
+		opt := &govultr.DatabaseBackupRestoreReq{
+			Label: label,
+			Type:  rtype,
+			Date:  date,
+			Time:  time,
+		}
+
+		// Make the request
+		database, _, err := client.Database.RestoreFromBackup(context.TODO(), args[0], opt)
+		if err != nil {
+			fmt.Printf("error creating managed database from backup : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.Database(database)
+	},
+}
+
+var databaseFork = &cobra.Command{
+	Use:   "fork  <databaseID>",
+	Short: "Fork a Managed Database to a new subscription from a backup.",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		label, _ := cmd.Flags().GetString("label")
+		region, _ := cmd.Flags().GetString("region")
+		plan, _ := cmd.Flags().GetString("plan")
+		rtype, _ := cmd.Flags().GetString("type")
+		date, _ := cmd.Flags().GetString("date")
+		time, _ := cmd.Flags().GetString("time")
+
+		opt := &govultr.DatabaseForkReq{
+			Label:  label,
+			Region: region,
+			Plan:   plan,
+			Type:   rtype,
+			Date:   date,
+			Time:   time,
+		}
+
+		// Make the request
+		database, _, err := client.Database.Fork(context.TODO(), args[0], opt)
+		if err != nil {
+			fmt.Printf("error forking managed database : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.Database(database)
 	},
 }

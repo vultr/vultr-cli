@@ -354,3 +354,51 @@ func DatabaseAlertsList(databaseAlerts []govultr.DatabaseAlert) {
 
 	flush()
 }
+
+// DatabaseMigrationStatus will generate a printer display of the current migration status of a Managed Database cluster
+func DatabaseMigrationStatus(databaseMigration *govultr.DatabaseMigration) {
+	display(columns{"STATUS", databaseMigration.Status})
+
+	if databaseMigration.Method != "" {
+		display(columns{"METHOD", databaseMigration.Method})
+	}
+
+	if databaseMigration.Error != "" {
+		display(columns{"ERROR", databaseMigration.Error})
+	}
+
+	display(columns{" "})
+
+	display(columns{"CREDENTIALS"})
+	display(columns{"HOST", databaseMigration.Credentials.Host})
+	display(columns{"PORT", databaseMigration.Credentials.Port})
+	display(columns{"USERNAME", databaseMigration.Credentials.Username})
+	display(columns{"PASSWORD", databaseMigration.Credentials.Password})
+
+	if databaseMigration.Credentials.Database != "" {
+		display(columns{"DATABASE", databaseMigration.Credentials.Database})
+	}
+
+	if databaseMigration.Credentials.IgnoredDatabases != "" {
+		display(columns{"IGNORED DATABASES", databaseMigration.Credentials.IgnoredDatabases})
+	}
+
+	display(columns{"SSL", *databaseMigration.Credentials.SSL})
+
+	flush()
+}
+
+// DatabaseBackupInfo will generate a printer display of the latest and oldest backups for a Managed Database cluster
+func DatabaseBackupInfo(databaseBackups *govultr.DatabaseBackups) {
+	display(columns{"LATEST BACKUP"})
+	display(columns{"DATE", databaseBackups.LatestBackup.Date})
+	display(columns{"TIME", databaseBackups.LatestBackup.Time})
+
+	display(columns{" "})
+
+	display(columns{"OLDEST BACKUP"})
+	display(columns{"DATE", databaseBackups.OldestBackup.Date})
+	display(columns{"TIME", databaseBackups.OldestBackup.Time})
+
+	flush()
+}
