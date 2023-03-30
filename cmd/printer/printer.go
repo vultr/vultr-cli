@@ -22,7 +22,6 @@ func init() {
 type columns []interface{}
 
 func display(values columns) {
-
 	for i, value := range values {
 		format := "\t%s"
 		if i == 0 {
@@ -43,4 +42,12 @@ func Meta(meta *govultr.Meta) {
 	display(col)
 
 	display(columns{meta.Total, meta.Links.Next, meta.Links.Prev})
+}
+
+func MetaDBaaS(meta *govultr.Meta) {
+	display(columns{"======================================"})
+	col := columns{"TOTAL"}
+	display(col)
+
+	display(columns{meta.Total})
 }
