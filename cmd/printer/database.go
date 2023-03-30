@@ -1,6 +1,10 @@
 package printer
 
-import "github.com/vultr/govultr/v3"
+import (
+	"reflect"
+
+	"github.com/vultr/govultr/v3"
+)
 
 // DatabasePlanList will generate a printer display of available Managed Database plans
 func DatabasePlanList(databasePlans []govultr.DatabasePlan, meta *govultr.Meta) {
@@ -434,5 +438,59 @@ func DatabaseConnectionPool(databaseConnectionPool govultr.DatabaseConnectionPoo
 	display(columns{"MODE", databaseConnectionPool.Mode})
 	display(columns{"SIZE", databaseConnectionPool.Size})
 
+	flush()
+}
+
+// DatabaseAdvancedOptions will generate a printer display of advanced configuration options for a PostgreSQL Managed Database
+func DatabaseAdvancedOptions(databaseConfiguredOptions *govultr.DatabaseAdvancedOptions, databaseAvailableOptions []govultr.AvailableOption) {
+	if *databaseConfiguredOptions == (govultr.DatabaseAdvancedOptions{}) {
+		display(columns{"CONFIGURED OPTIONS", "None"})
+	} else {
+		display(columns{"CONFIGURED OPTIONS"})
+		v := reflect.ValueOf(*databaseConfiguredOptions)
+		for i := 0; i < v.NumField(); i++ {
+			if !v.Field(i).IsZero() {
+				if v.Field(i).Kind() == reflect.Pointer {
+					display(columns{v.Type().Field(i).Name, v.Field(i).Elem().Interface()})
+				} else {
+					display(columns{v.Type().Field(i).Name, v.Field(i).Interface()})
+				}
+			}
+		}
+	}
+
+	display(columns{" "})
+	display(columns{"AVAILABLE OPTIONS"})
+
+	for a := range databaseAvailableOptions {
+		display(columns{"NAME", databaseAvailableOptions[a].Name})
+		display(columns{"TYPE", databaseAvailableOptions[a].Type})
+
+		if databaseAvailableOptions[a].Type == "enum" {
+			display(columns{"ENUMERALS", databaseAvailableOptions[a].Enumerals})
+		}
+
+		if databaseAvailableOptions[a].Type == "int" || databaseAvailableOptions[a].Type == "float" {
+			display(columns{"MIN VALUE", *databaseAvailableOptions[a].MinValue})
+			display(columns{"MAX VALUE", *databaseAvailableOptions[a].MaxValue})
+		}
+
+		if len(databaseAvailableOptions[a].AltValues) > 0 {
+			display(columns{"ALT VALUES", databaseAvailableOptions[a].AltValues})
+		}
+
+		if databaseAvailableOptions[a].Units != "" {
+			display(columns{"UNITS", databaseAvailableOptions[a].Units})
+		}
+
+		display(columns{"---------------------------"})
+	}
+
+	flush()
+}
+
+// DatabaseAvailableVersions will generate a printer display of a list of available version upgrades for a Managed Database
+func DatabaseAvailableVersions(databaseAvailableVersions []string) {
+	display(columns{"AVAILABLE VERSIONS", databaseAvailableVersions})
 	flush()
 }

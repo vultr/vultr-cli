@@ -68,7 +68,9 @@ func Database() *cobra.Command {
 		databaseMigrationStatus, databaseStartMigration, databaseDetachMigration,
 		databaseAddReadReplica,
 		databaseGetBackupInfo, databaseRestoreFromBackup, databaseFork,
-		databaseConnectionPoolList, databaseConnectionPoolCreate, databaseConnectionPoolInfo, databaseConnectionPoolUpdate, databaseConnectionPoolDelete)
+		databaseConnectionPoolList, databaseConnectionPoolCreate, databaseConnectionPoolInfo, databaseConnectionPoolUpdate, databaseConnectionPoolDelete,
+		databaseAdvancedOptionsList, databaseAdvancedOptionsUpdate,
+		databaseAvailableVersionsList, databaseStartVersionUpgrade)
 
 	// Plan list flags
 	databasePlanList.Flags().StringP("engine", "e", "", "(optional) Filter by database engine type.")
@@ -166,6 +168,55 @@ func Database() *cobra.Command {
 	databaseConnectionPoolUpdate.Flags().StringP("username", "u", "", "username for the managed database connection pool")
 	databaseConnectionPoolUpdate.Flags().StringP("mode", "m", "", "mode for the managed database connection pool")
 	databaseConnectionPoolUpdate.Flags().IntP("size", "s", 0, "size for the managed database connection pool")
+
+	// Database update PostgreSQL advanced options flags
+	databaseAdvancedOptionsUpdate.Flags().Float32P("autovacuum-analyze-scale-factor", "", 0, "set the managed postgresql configuration value for autovacuum_analyze_scale_factor")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-analyze-threshold", "", 0, "set the managed postgresql configuration value for autovacuum_analyze_threshold")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-freeze-max-age", "", 0, "set the managed postgresql configuration value for autovacuum_freeze_max_age")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-max-workers", "", 0, "set the managed postgresql configuration value for autovacuum_max_workers")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-naptime", "", 0, "set the managed postgresql configuration value for autovacuum_naptime")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-cost-delay", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_cost_delay")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-cost-limit", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_cost_limit	")
+	databaseAdvancedOptionsUpdate.Flags().Float32P("autovacuum-vacuum-scale-factor", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_scale_factor")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-threshold", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_threshold")
+	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-delay", "", 0, "set the managed postgresql configuration value for bgwriter_delay")
+	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-flush-after", "", 0, "set the managed postgresql configuration value for bgwriter_flush_after")
+	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-lru-maxpages", "", 0, "set the managed postgresql configuration value for bgwriter_lru_maxpages")
+	databaseAdvancedOptionsUpdate.Flags().Float32P("bgwriter-lru-multiplier", "", 0, "set the managed postgresql configuration value for bgwriter_lru_multiplier")
+	databaseAdvancedOptionsUpdate.Flags().IntP("deadlock-timeout", "", 0, "set the managed postgresql configuration value for deadlock_timeout")
+	databaseAdvancedOptionsUpdate.Flags().StringP("default-toast-compression", "", "", "set the managed postgresql configuration value for default_toast_compression")
+	databaseAdvancedOptionsUpdate.Flags().IntP("idle-in-transaction-session-timeout", "", 0, "set the managed postgresql configuration value for idle_in_transaction_session_timeout")
+	databaseAdvancedOptionsUpdate.Flags().BoolP("jit", "", false, "set the managed postgresql configuration value for jit")
+	databaseAdvancedOptionsUpdate.Flags().IntP("log-autovacuum-min-duration", "", 0, "set the managed postgresql configuration value for log_autovacuum_min_duration")
+	databaseAdvancedOptionsUpdate.Flags().StringP("log-error-verbosity", "", "", "set the managed postgresql configuration value for log_error_verbosity")
+	databaseAdvancedOptionsUpdate.Flags().StringP("log-line-prefix", "", "", "set the managed postgresql configuration value for log_line_prefix")
+	databaseAdvancedOptionsUpdate.Flags().IntP("log-min-duration-statement", "", 0, "set the managed postgresql configuration value for log_min_duration_statement")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-files-per-process", "", 0, "set the managed postgresql configuration value for max_files_per_process")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-locks-per-transaction", "", 0, "set the managed postgresql configuration value for max_locks_per_transaction")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-logical-replication-workers", "", 0, "set the managed postgresql configuration value for max_logical_replication_workers")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-parallel-workers", "", 0, "set the managed postgresql configuration value for max_parallel_workers")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-parallel-workers-per-gather", "", 0, "set the managed postgresql configuration value for max_parallel_workers_per_gather")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-pred-locks-per-transaction", "", 0, "set the managed postgresql configuration value for max_pred_locks_per_transaction")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-prepared-transactions", "", 0, "set the managed postgresql configuration value for max_prepared_transactions")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-replication-slots", "", 0, "set the managed postgresql configuration value for max_replication_slots")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-stack-depth", "", 0, "set the managed postgresql configuration value for max_stack_depth")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-standby-archive-delay", "", 0, "set the managed postgresql configuration value for max_standby_archive_delay")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-standby-streaming-delay", "", 0, "set the managed postgresql configuration value for max_standby_streaming_delay")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-wal-senders", "", 0, "set the managed postgresql configuration value for max_wal_senders")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-worker-processes", "", 0, "set the managed postgresql configuration value for max_worker_processes")
+	databaseAdvancedOptionsUpdate.Flags().IntP("pg-partman-bgw-interval", "", 0, "set the managed postgresql configuration value for pg_partman_bgw.interval")
+	databaseAdvancedOptionsUpdate.Flags().StringP("pg-partman-bgw-role", "", "", "set the managed postgresql configuration value for pg_partman_bgw.role")
+	databaseAdvancedOptionsUpdate.Flags().StringP("pg-stat-statements-track", "", "", "set the managed postgresql configuration value for pg_stat_statements.track")
+	databaseAdvancedOptionsUpdate.Flags().IntP("temp-file-limit", "", 0, "set the managed postgresql configuration value for temp_file_limit")
+	databaseAdvancedOptionsUpdate.Flags().IntP("track-activity-query-size", "", 0, "set the managed postgresql configuration value for track_activity_query_size")
+	databaseAdvancedOptionsUpdate.Flags().StringP("track-commit-timestamp", "", "", "set the managed postgresql configuration value for track_commit_timestamp")
+	databaseAdvancedOptionsUpdate.Flags().StringP("track-functions", "", "", "set the managed postgresql configuration value for track_functions")
+	databaseAdvancedOptionsUpdate.Flags().StringP("track-io-timing", "", "", "set the managed postgresql configuration value for track_io_timing")
+	databaseAdvancedOptionsUpdate.Flags().IntP("wal-sender-timeout", "", 0, "set the managed postgresql configuration value for wal_sender_timeout")
+	databaseAdvancedOptionsUpdate.Flags().IntP("wal-writer-delay", "", 0, "set the managed postgresql configuration value for wal_writer_delay")
+
+	// Database start version upgrade flags
+	databaseStartVersionUpgrade.Flags().StringP("version", "v", "", "version of the manaaged database to upgrade to")
 
 	return databaseCmd
 }
@@ -1017,5 +1068,194 @@ var databaseConnectionPoolDelete = &cobra.Command{
 		}
 
 		fmt.Println("Deleted managed database connection pool")
+	},
+}
+
+var databaseAdvancedOptionsList = &cobra.Command{
+	Use:   "list-advanced-options <databaseID>",
+	Short: "list all available and configured advanced options for a PostgreSQL managed database",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		c, a, _, err := client.Database.ListAdvancedOptions(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("error getting list of advanced options : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseAdvancedOptions(c, a)
+	},
+}
+
+var databaseAdvancedOptionsUpdate = &cobra.Command{
+	Use:   "update-advanced-options <databaseID>",
+	Short: "Configure advanced options for a PostgreSQL managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		autovacuumAnalyzeScaleFactor, _ := cmd.Flags().GetFloat32("autovacuum-analyze-scale-factor")
+		autovacuumAnalyzeThreshold, _ := cmd.Flags().GetInt("autovacuum-analyze-threshold")
+		autovacuumFreezeMaxAge, _ := cmd.Flags().GetInt("autovacuum-freeze-max-age")
+		autovacuumMaxWorkers, _ := cmd.Flags().GetInt("autovacuum-max-workers")
+		autovacuumNaptime, _ := cmd.Flags().GetInt("autovacuum-naptime")
+		autovacuumVacuumCostDelay, _ := cmd.Flags().GetInt("autovacuum-vacuum-cost-delay")
+		autovacuumVacuumCostLimit, _ := cmd.Flags().GetInt("autovacuum-vacuum-cost-limit")
+		autovacuumVacuumScaleFactor, _ := cmd.Flags().GetFloat32("autovacuum-vacuum-scale-factor")
+		autovacuumVacuumThreshold, _ := cmd.Flags().GetInt("autovacuum-vacuum-threshold")
+		bgwriterDelay, _ := cmd.Flags().GetInt("bgwriter-delay")
+		bgwriterFlushAfter, _ := cmd.Flags().GetInt("bgwriter-flush-after")
+		bgwriterLruMaxpages, _ := cmd.Flags().GetInt("bgwriter-lru-maxpages")
+		bgwriterLruMultiplier, _ := cmd.Flags().GetFloat32("bgwriter-lru-multiplier")
+		deadlockTimeout, _ := cmd.Flags().GetInt("deadlock-timeout")
+		defaultToastCompression, _ := cmd.Flags().GetString("default-toast-compression")
+		idleInTransactionSessionTimeout, _ := cmd.Flags().GetInt("idle-in-transaction-session-timeout")
+		jit, _ := cmd.Flags().GetBool("jit")
+		logAutovacuumMinDuration, _ := cmd.Flags().GetInt("log-autovacuum-min-duration")
+		logErrorVerbosity, _ := cmd.Flags().GetString("log-error-verbosity")
+		logLinePrefix, _ := cmd.Flags().GetString("log-line-prefix")
+		logMinDurationStatement, _ := cmd.Flags().GetInt("log-min-duration-statement")
+		maxFilesPerProcess, _ := cmd.Flags().GetInt("max-files-per-process")
+		maxLocksPerTransaction, _ := cmd.Flags().GetInt("max-locks-per-transaction")
+		maxLogicalReplicationWorkers, _ := cmd.Flags().GetInt("max-logical-replication-workers")
+		maxParallelWorkers, _ := cmd.Flags().GetInt("max-parallel-workers")
+		maxParallelWorkersPerGather, _ := cmd.Flags().GetInt("max-parallel-workers-per-gather")
+		maxPredLocksPerTransaction, _ := cmd.Flags().GetInt("max-pred-locks-per-transaction")
+		maxPreparedTransactions, _ := cmd.Flags().GetInt("max-prepared-transactions")
+		maxReplicationSlots, _ := cmd.Flags().GetInt("max-replication-slots")
+		maxStackDepth, _ := cmd.Flags().GetInt("max-stack-depth")
+		maxStandbyArchiveDelay, _ := cmd.Flags().GetInt("max-standby-archive-delay")
+		maxStandbyStreamingDelay, _ := cmd.Flags().GetInt("max-standby-streaming-delay")
+		maxWalSenders, _ := cmd.Flags().GetInt("max-wal-senders")
+		maxWorkerProcesses, _ := cmd.Flags().GetInt("max-worker-processes")
+		pgPartmanBGWInterval, _ := cmd.Flags().GetInt("pg-partman-bgw-interval")
+		pgPartmanBGWRole, _ := cmd.Flags().GetString("pg-partman-bgw-role")
+		pgStatStatementsTrack, _ := cmd.Flags().GetString("pg-stat-statements-track")
+		tempFileLimit, _ := cmd.Flags().GetInt("temp-file-limit")
+		trackActivityQuerySize, _ := cmd.Flags().GetInt("track-activity-query-size")
+		trackCommitTimestamp, _ := cmd.Flags().GetString("track-commit-timestamp")
+		trackFunctions, _ := cmd.Flags().GetString("track-functions")
+		trackIOTiming, _ := cmd.Flags().GetString("track-io-timing")
+		walSenderTimeout, _ := cmd.Flags().GetInt("wal-sender-timeout")
+		walWriterDelay, _ := cmd.Flags().GetInt("wal-writer-delay")
+
+		opt := &govultr.DatabaseAdvancedOptions{
+			AutovacuumAnalyzeScaleFactor:    autovacuumAnalyzeScaleFactor,
+			AutovacuumAnalyzeThreshold:      autovacuumAnalyzeThreshold,
+			AutovacuumFreezeMaxAge:          autovacuumFreezeMaxAge,
+			AutovacuumMaxWorkers:            autovacuumMaxWorkers,
+			AutovacuumNaptime:               autovacuumNaptime,
+			AutovacuumVacuumCostDelay:       autovacuumVacuumCostDelay,
+			AutovacuumVacuumCostLimit:       autovacuumVacuumCostLimit,
+			AutovacuumVacuumScaleFactor:     autovacuumVacuumScaleFactor,
+			AutovacuumVacuumThreshold:       autovacuumVacuumThreshold,
+			BGWRITERDelay:                   bgwriterDelay,
+			BGWRITERFlushAFter:              bgwriterFlushAfter,
+			BGWRITERLRUMaxPages:             bgwriterLruMaxpages,
+			BGWRITERLRUMultiplier:           bgwriterLruMultiplier,
+			DeadlockTimeout:                 deadlockTimeout,
+			DefaultToastCompression:         defaultToastCompression,
+			IdleInTransactionSessionTimeout: idleInTransactionSessionTimeout,
+			Jit:                             nil,
+			LogAutovacuumMinDuration:        logAutovacuumMinDuration,
+			LogErrorVerbosity:               logErrorVerbosity,
+			LogLinePrefix:                   logLinePrefix,
+			LogMinDurationStatement:         logMinDurationStatement,
+			MaxFilesPerProcess:              maxFilesPerProcess,
+			MaxLocksPerTransaction:          maxLocksPerTransaction,
+			MaxLogicalReplicationWorkers:    maxLogicalReplicationWorkers,
+			MaxParallelWorkers:              maxParallelWorkers,
+			MaxParallelWorkersPerGather:     maxParallelWorkersPerGather,
+			MaxPredLocksPerTransaction:      maxPredLocksPerTransaction,
+			MaxPreparedTransactions:         maxPreparedTransactions,
+			MaxReplicationSlots:             maxReplicationSlots,
+			MaxStackDepth:                   maxStackDepth,
+			MaxStandbyArchiveDelay:          maxStandbyArchiveDelay,
+			MaxStandbyStreamingDelay:        maxStandbyStreamingDelay,
+			MaxWalSenders:                   maxWalSenders,
+			MaxWorkerProcesses:              maxWorkerProcesses,
+			PGPartmanBGWInterval:            pgPartmanBGWInterval,
+			PGPartmanBGWRole:                pgPartmanBGWRole,
+			PGStateStatementsTrack:          pgStatStatementsTrack,
+			TempFileLimit:                   tempFileLimit,
+			TrackActivityQuerySize:          trackActivityQuerySize,
+			TrackCommitTimestamp:            trackCommitTimestamp,
+			TrackFunctions:                  trackFunctions,
+			TrackIOTiming:                   trackIOTiming,
+			WALSenderTImeout:                walSenderTimeout,
+			WALWriterDelay:                  walWriterDelay,
+		}
+
+		if jit {
+			opt.Jit = govultr.BoolToBoolPtr(true)
+		} else if !jit {
+			opt.Jit = govultr.BoolToBoolPtr(false)
+		}
+
+		// Make the request
+		c, a, _, err := client.Database.UpdateAdvancedOptions(context.TODO(), args[0], opt)
+		if err != nil {
+			fmt.Printf("error starting migration : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseAdvancedOptions(c, a)
+	},
+}
+
+var databaseAvailableVersionsList = &cobra.Command{
+	Use:   "list-available-versions <databaseID>",
+	Short: "list all available version upgrades for a managed database",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		s, _, err := client.Database.ListAvailableVersions(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("error getting list of available version upgrades : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseAvailableVersions(s)
+	},
+}
+
+var databaseStartVersionUpgrade = &cobra.Command{
+	Use:   "start-version-upgrade <databaseID>",
+	Short: "Initialize a version upgrade for a managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		version, _ := cmd.Flags().GetString("version")
+
+		opt := &govultr.DatabaseVersionUpgradeReq{
+			Version: version,
+		}
+
+		message, _, err := client.Database.StartVersionUpgrade(context.TODO(), args[0], opt)
+		if err != nil {
+			fmt.Printf("error starting version upgrade : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseMessage(message)
 	},
 }
