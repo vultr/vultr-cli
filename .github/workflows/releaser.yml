@@ -67,7 +67,7 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: release --rm-dist
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.VULTRBOT_TOKEN }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
