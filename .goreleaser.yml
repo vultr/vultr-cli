@@ -1,14 +1,10 @@
-before:
-  hooks:
-    - go mod download
-    - go generate ./...
 builds:
   -
     env:
       - CGO_ENABLED=0
 
     binary: vultr-cli
-    
+
     flags:
       - -trimpath #removes all file system paths from the compiled executable
 
@@ -80,6 +76,7 @@ brews:
 
     dependencies:
       - go
+
     test: |
       output = shell_output("#{bin}/vultr-cli version 2>&1", 1)
       assert_match "Please export your VULTR API key as an environment variable or add `api-key` to your config file, eg:\nexport VULTR_API_KEY='<api_key_from_vultr_account>'\n", output
