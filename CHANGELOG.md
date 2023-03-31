@@ -1,5 +1,5 @@
 # Change Log
-## [v2.16.0](https://github.com/vultr/vultr-cli/compare/v2.15.1...v2.16.0) (2023-03-31)
+## [v2.16.1](https://github.com/vultr/vultr-cli/compare/v2.15.1...v2.16.1) (2023-03-31)
 ### Enhancements
 * Database: Add DBaaS Support [PR 302](https://github.com/vultr/vultr-cli/pull/302)
 
@@ -7,6 +7,7 @@
 * Update go to 1.20 [PR 303](https://github.com/vultr/vultr-cli/pull/303)
 * Update govultr to v3.0.1 [PR 301](https://github.com/vultr/vultr-cli/pull/301)
 * Update govultr to v3.0.2 [PR 304](https://github.com/vultr/vultr-cli/pull/304)
+* Fix goreleaser configurations [PR 306](https://github.com/vultr/vultr-cli/pull/306)
 
 ### New Contributors
 * @christhemorse made their first contribution in [PR 302](https://github.com/vultr/vultr-cli/pull/302)
