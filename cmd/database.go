@@ -99,8 +99,6 @@ func Database() *cobra.Command {
 	databaseCreate.Flags().StringP("redis-eviction-policy", "", "", "eviction policy for the new redis managed database")
 
 	// Database update flags
-	databaseUpdate.Flags().StringP("database-engine", "e", "", "database engine for the manaaged database")
-	databaseUpdate.Flags().StringP("database-engine-version", "v", "", "database engine version for the manaaged database")
 	databaseUpdate.Flags().StringP("region", "r", "", "region id for the managed database")
 	databaseUpdate.Flags().StringP("plan", "p", "", "plan id for the managed database")
 	databaseUpdate.Flags().StringP("label", "l", "", "label for the managed database")
@@ -363,8 +361,6 @@ var databaseUpdate = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		databaseEngine, _ := cmd.Flags().GetString("database-engine")
-		databaseEngineVersion, _ := cmd.Flags().GetString("database-engine-version")
 		region, _ := cmd.Flags().GetString("region")
 		plan, _ := cmd.Flags().GetString("plan")
 		label, _ := cmd.Flags().GetString("label")
@@ -375,44 +371,42 @@ var databaseUpdate = &cobra.Command{
 		trustedIPs, _ := cmd.Flags().GetStringSlice("trusted-ips")
 		mysqlSQLModes, _ := cmd.Flags().GetStringSlice("mysql-sql-modes")
 		mysqlRequirePrimaryKey, _ := cmd.Flags().GetBool("mysql-require-primary-key")
+		mysqlRequirePrimaryKeySet := cmd.Flags().Lookup("mysql-require-primary-key").Changed
 		mySQLSlowQueryLog, _ := cmd.Flags().GetBool("mysql-slow-query-log")
+		mySQLSlowQueryLogSet := cmd.Flags().Lookup("mysql-slow-query-log").Changed
 		mySQLLongQueryTime, _ := cmd.Flags().GetInt("mysql-long-query-time")
 		redisEvictionPolicy, _ := cmd.Flags().GetString("redis-eviction-policy")
 
 		opt := &govultr.DatabaseUpdateReq{
-			DatabaseEngine:         databaseEngine,
-			DatabaseEngineVersion:  databaseEngineVersion,
-			Plan:                   plan,
-			Region:                 region,
-			Label:                  label,
-			Tag:                    tag,
-			MaintenanceDOW:         maintenanceDOW,
-			MaintenanceTime:        maintenanceTime,
-			ClusterTimeZone:        clusterTimeZone,
-			TrustedIPs:             trustedIPs,
-			MySQLSQLModes:          mysqlSQLModes,
-			MySQLRequirePrimaryKey: nil,
-			MySQLSlowQueryLog:      nil,
-			MySQLLongQueryTime:     mySQLLongQueryTime,
-			RedisEvictionPolicy:    redisEvictionPolicy,
+			Plan:                plan,
+			Region:              region,
+			Label:               label,
+			Tag:                 tag,
+			MaintenanceDOW:      maintenanceDOW,
+			MaintenanceTime:     maintenanceTime,
+			ClusterTimeZone:     clusterTimeZone,
+			TrustedIPs:          trustedIPs,
+			MySQLSQLModes:       mysqlSQLModes,
+			MySQLLongQueryTime:  mySQLLongQueryTime,
+			RedisEvictionPolicy: redisEvictionPolicy,
 		}
 
-		if mysqlRequirePrimaryKey {
+		if mysqlRequirePrimaryKeySet && mysqlRequirePrimaryKey {
 			opt.MySQLRequirePrimaryKey = govultr.BoolToBoolPtr(true)
-		} else if !mysqlRequirePrimaryKey {
+		} else if mysqlRequirePrimaryKeySet && !mysqlRequirePrimaryKey {
 			opt.MySQLRequirePrimaryKey = govultr.BoolToBoolPtr(false)
 		}
 
-		if mySQLSlowQueryLog {
+		if mySQLSlowQueryLogSet && mySQLSlowQueryLog {
 			opt.MySQLSlowQueryLog = govultr.BoolToBoolPtr(true)
-		} else if !mySQLSlowQueryLog {
+		} else if mySQLSlowQueryLogSet && !mySQLSlowQueryLog {
 			opt.MySQLSlowQueryLog = govultr.BoolToBoolPtr(false)
 		}
 
 		// Make the request
 		database, _, err := client.Database.Update(context.TODO(), args[0], opt)
 		if err != nil {
-			fmt.Printf("error updating managed database : %v\n", err)
+			fmt.Printf("error updating managed database : %v %v\n", err, mysqlRequirePrimaryKey)
 			os.Exit(1)
 		}
 
