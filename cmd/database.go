@@ -406,7 +406,7 @@ var databaseUpdate = &cobra.Command{
 		// Make the request
 		database, _, err := client.Database.Update(context.TODO(), args[0], opt)
 		if err != nil {
-			fmt.Printf("error updating managed database : %v \n", err)
+			fmt.Printf("error updating managed database : %v\n", err)
 			os.Exit(1)
 		}
 
