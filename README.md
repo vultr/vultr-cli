@@ -94,15 +94,8 @@ pacman -S vultr-cli
 
 ### Installing via Brew
 
-You will need to tap for formula
-``` sh
-brew tap vultr/vultr-cli
-```
-
-Then install the formula
-
 ```sh 
-brew install vultr-cli
+brew install vultr/vultr-cli/vultr-cli
 ```
 
 ### Installing on Fedora
