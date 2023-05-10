@@ -314,6 +314,14 @@ func Instance() *cobra.Command {
 	setUserData.Flags().StringP("userdata", "d", "/dev/stdin", "file to read userdata from")
 	instanceCmd.AddCommand(userdataCmd)
 
+	vpcCmd := &cobra.Command{
+		Use:   "vpc",
+		Short: "commands to handle vpc on an instance",
+		Long:  ``,
+	}
+	vpcCmd.AddCommand(attachVPC, detachVPC)
+	instanceCmd.AddCommand(vpcCmd)
+
 	return instanceCmd
 }
 
@@ -1310,6 +1318,40 @@ var getUserData = &cobra.Command{
 		}
 
 		printer.UserData(userData)
+	},
+}
+
+var attachVPC = &cobra.Command{
+	Use:   "attach <instanceID>",
+	Short: "Attach a VPC to an instance",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instance ID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := client.Instance.AttachVPC(context.TODO(), args[0], "TODO"); err != nil {
+			fmt.Printf("error attaching VPC : %v\n", err)
+			os.Exit(1)
+		}
+	},
+}
+
+var detachVPC = &cobra.Command{
+	Use:   "detach <instanceID>",
+	Short: "Detach a VPC from an instance",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instance ID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := client.Instance.DetachVPC(context.TODO(), args[0], "TODO"); err != nil {
+			fmt.Printf("error detaching VPC : %v\n", err)
+			os.Exit(1)
+		}
 	},
 }
 
