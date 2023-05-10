@@ -319,7 +319,9 @@ func Instance() *cobra.Command {
 		Short: "commands to handle vpc on an instance",
 		Long:  ``,
 	}
-	vpcCmd.AddCommand(attachVPC, detachVPC)
+	vpcCmd.AddCommand(vpcAttach, vpcDetach)
+	vpcAttach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC you wish to attach")
+	vpcDetach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC you wish to detach")
 	instanceCmd.AddCommand(vpcCmd)
 
 	return instanceCmd
@@ -1321,7 +1323,7 @@ var getUserData = &cobra.Command{
 	},
 }
 
-var attachVPC = &cobra.Command{
+var vpcAttach = &cobra.Command{
 	Use:   "attach <instanceID>",
 	Short: "Attach a VPC to an instance",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -1331,14 +1333,18 @@ var attachVPC = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := client.Instance.AttachVPC(context.TODO(), args[0], "TODO"); err != nil {
+		id := args[0]
+		vpcID, _ := cmd.Flags().GetString("vpc-id")
+		if err := client.Instance.AttachVPC(context.TODO(), id, vpcID); err != nil {
 			fmt.Printf("error attaching VPC : %v\n", err)
 			os.Exit(1)
 		}
+
+		fmt.Println("VPC has been attached")
 	},
 }
 
-var detachVPC = &cobra.Command{
+var vpcDetach = &cobra.Command{
 	Use:   "detach <instanceID>",
 	Short: "Detach a VPC from an instance",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -1348,10 +1354,13 @@ var detachVPC = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := client.Instance.DetachVPC(context.TODO(), args[0], "TODO"); err != nil {
+		id := args[0]
+		vpcID, _ := cmd.Flags().GetString("vpc-id")
+		if err := client.Instance.DetachVPC(context.TODO(), id, vpcID); err != nil {
 			fmt.Printf("error detaching VPC : %v\n", err)
 			os.Exit(1)
 		}
+		fmt.Println("VPC has been detached")
 	},
 }
 
