@@ -46,7 +46,7 @@ Use "vultr-cli [command] --help" for more information about a command.
 
 ## Installation
 
-There are three ways to install `vultr-cli`:
+These are the options available to install `vultr-cli`:
 1. Download a release from GitHub
 2. From source
 3. Package Manager
@@ -55,8 +55,8 @@ There are three ways to install `vultr-cli`:
   - OpenBSD (-current)
   - Snap (Coming soon)
   - Chocolatey (Coming soon)
-4. [Docker Hub](https://hub.docker.com/repository/docker/vultr/vultr-cli)
-  
+4. Docker
+
 ### GitHub Release
 If you are to visit the `vultr-cli` [releases](https://github.com/vultr/vultr-cli/releases) page. You can download a compiled version of `vultr-cli` for you Linux/MacOS/Windows in 64bit.
 
@@ -110,13 +110,35 @@ dnf install vultr-cli
 pkg_add vultr-cli
 ```
 
+### Docker
+You can find the image on [Docker Hub](https://hub.docker.com/repository/docker/vultr/vultr-cli). To install the latest version via `docker`:
+
+```sh
+docker pull vultr/vultr-cli:latest
+```
+
+To pull an older image, you can pass the version string in the tag. For example:
+```sh
+docker pull vultr/vultr-cli:v2.15.1
+```
+
+The availble versions are listed [here](https://github.com/vultr/vultr-cli/releases).
+
+As described in the next section, you must authenticate in order to use the CLI. To pass the environment variable into docker, you can do so via:
+
+```sh
+docker run -e VULTR_API_KEY vultr/vultr-cli:latest instance list
+```
+
+This assumes you've already set the environment variable in your shell enviroment, otherwise, you can pass it in via `-e VULTR_API_KEY=<your api key>`
+
 ## Using Vultr-cli
 
 ### Authentication
 
-In order to use `vultr-cli` you will need to export your [Vultr API KEY](https://my.vultr.com/settings/#settingsapi) 
+In order to use `vultr-cli` you will need to export your [Vultr API KEY](https://my.vultr.com/settings/#settingsapi)
 
-`export VULTR_API_KEY=your_api_key`
+`export VULTR_API_KEY=<your api key>`
 
 ### Examples
 
