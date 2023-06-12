@@ -28,7 +28,7 @@ Available Commands:
   os             os is used to access os commands
   plans          get information about Vultr plans
   regions        get regions
-  reserved-ip    reserved-ip lets you interact with reserved-ip 
+  reserved-ip    reserved-ip lets you interact with reserved-ip
   script         startup script commands
   snapshot       snapshot commands
   ssh-key        ssh-key commands
@@ -60,13 +60,13 @@ These are the options available to install `vultr-cli`:
 ### GitHub Release
 If you are to visit the `vultr-cli` [releases](https://github.com/vultr/vultr-cli/releases) page. You can download a compiled version of `vultr-cli` for you Linux/MacOS/Windows in 64bit.
 
-### Building from source 
+### Building from source
 
 You will need Go installed on your machine in order to work with the source (and make if you decide to pull the repo down).
 
 `go get -u github.com/vultr/vultr-cli/v2`
 
-Another way to build from source is to 
+Another way to build from source is to
 
 ```
 git clone git@github.com:vultr/vultr-cli.git or git clone https://github.com/vultr/vultr-cli.git
@@ -94,7 +94,7 @@ pacman -S vultr-cli
 
 ### Installing via Brew
 
-```sh 
+```sh
 brew install vultr/vultr-cli/vultr-cli
 ```
 
@@ -169,8 +169,8 @@ Currently the only available field that you can use with a config file is `api-k
 
 `api-key: MYKEY`
 
-### CLI Autocompletion 
-`vultr-cli completion` will return autocompletions, but this feature requires setup. 
+### CLI Autocompletion
+`vultr-cli completion` will return autocompletions, but this feature requires setup.
 
 Some guides:
 
@@ -181,7 +181,7 @@ Some guides:
   <b>To load completions for each session, execute once:</b>
   <b>Linux:</b>
   $ yourprogram completion bash > /etc/bash_completion.d/yourprogram
-  
+
   <b>macOS:</b>
   $ yourprogram completion bash > /usr/local/etc/bash_completion.d/yourprogram
 
