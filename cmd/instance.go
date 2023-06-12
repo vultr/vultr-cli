@@ -61,6 +61,17 @@ var (
 	# Shortened example with aliases
 	vultr-cli instance tags <instanceID> -t="example-tag-1,example-tag-2"
 	`
+	instanceVPCAttachLong    = `Attaches an existing VPC to the specified instance`
+	instanceVPCAttachExample = `
+	# Full example
+	vultr-cli instance vpc attach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
+	`
+
+	instanceVPCDetachLong    = `Detaches an existing VPC from the specified instance`
+	instanceVPCDetachExample = `
+	# Full example
+	vultr-cli instance vpc detach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
+	`
 )
 
 // Instance represents the instance command
@@ -313,6 +324,16 @@ func Instance() *cobra.Command {
 	userdataCmd.AddCommand(setUserData, getUserData)
 	setUserData.Flags().StringP("userdata", "d", "/dev/stdin", "file to read userdata from")
 	instanceCmd.AddCommand(userdataCmd)
+
+	vpcCmd := &cobra.Command{
+		Use:   "vpc",
+		Short: "commands to handle vpc on an instance",
+		Long:  ``,
+	}
+	vpcCmd.AddCommand(vpcAttach, vpcDetach)
+	vpcAttach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC you wish to attach")
+	vpcDetach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC you wish to detach")
+	instanceCmd.AddCommand(vpcCmd)
 
 	return instanceCmd
 }
@@ -1310,6 +1331,51 @@ var getUserData = &cobra.Command{
 		}
 
 		printer.UserData(userData)
+	},
+}
+
+var vpcAttach = &cobra.Command{
+	Use:     "attach <instanceID>",
+	Short:   "Attach a VPC to an instance",
+	Long:    instanceVPCAttachLong,
+	Example: instanceVPCAttachExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instance ID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		vpcID, _ := cmd.Flags().GetString("vpc-id")
+		if err := client.Instance.AttachVPC(context.TODO(), id, vpcID); err != nil {
+			fmt.Printf("error attaching VPC : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("VPC has been attached")
+	},
+}
+
+var vpcDetach = &cobra.Command{
+	Use:     "detach <instanceID>",
+	Short:   "Detach a VPC from an instance",
+	Long:    instanceVPCDetachLong,
+	Example: instanceVPCDetachExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instance ID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		vpcID, _ := cmd.Flags().GetString("vpc-id")
+		if err := client.Instance.DetachVPC(context.TODO(), id, vpcID); err != nil {
+			fmt.Printf("error detaching VPC : %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("VPC has been detached")
 	},
 }
 
