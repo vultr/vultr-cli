@@ -122,7 +122,7 @@ To pull an older image, you can pass the version string in the tag. For example:
 docker pull vultr/vultr-cli:v2.15.1
 ```
 
-The availble versions are listed [here](https://github.com/vultr/vultr-cli/releases).
+The available versions are listed [here](https://github.com/vultr/vultr-cli/releases).
 
 As described in the next section, you must authenticate in order to use the CLI. To pass the environment variable into docker, you can do so via:
 
@@ -130,7 +130,7 @@ As described in the next section, you must authenticate in order to use the CLI.
 docker run -e VULTR_API_KEY vultr/vultr-cli:latest instance list
 ```
 
-This assumes you've already set the environment variable in your shell enviroment, otherwise, you can pass it in via `-e VULTR_API_KEY=<your api key>`
+This assumes you've already set the environment variable in your shell environment, otherwise, you can pass it in via `-e VULTR_API_KEY=<your api key>`
 
 ## Using Vultr-cli
 
