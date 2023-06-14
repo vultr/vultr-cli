@@ -1,4 +1,29 @@
 # Change Log
+## [v2.17.0](https://github.com/vultr/vultr-cli/compare/v2.16.2...v2.17.0) (2023-06-14)
+### Enhancements
+* Instances: Add support for attaching and detaching VPC networks [PR 318](https://github.com/vultr/vultr-cli/pull/318)
+
+### Bug Fixes
+* Database: Fix database update errors and remove db engine/version [PR 314](https://github.com/vultr/vultr-cli/pull/314)
+
+### Documentation
+* README: Use a more succinct Homebrew command to tap-and-install [PR 315](https://github.com/vultr/vultr-cli/pull/315)
+* README: Fix spelling [PR 324](https://github.com/vultr/vultr-cli/pull/324)
+* README: Add docker install/usage instructions [PR 322](https://github.com/vultr/vultr-cli/pull/322)
+* README: Mention default config yaml location [PR 325](https://github.com/vultr/vultr-cli/pull/325)
+
+### Dependencies
+* Bump github.com/vultr/govultr/v3 from 3.0.2 to 3.0.3 [PR 320](https://github.com/vultr/vultr-cli/pull/320)
+* Bump github.com/spf13/cobra from 1.6.1 to 1.7.0 [PR 310](https://github.com/vultr/vultr-cli/pull/310)
+* Bump github.com/spf13/viper from 1.15.0 to 1.16.0 [PR 319](https://github.com/vultr/vultr-cli/pull/319)
+* Bump golang.org/x/oauth2 from 0.6.0 to 0.7.0 [PR 312](https://github.com/vultr/vultr-cli/pull/312)
+* Bump golang.org/x/oauth2 from 0.7.0 to 0.8.0 [PR 316](https://github.com/vultr/vultr-cli/pull/316)
+* Bump golang.org/x/oauth2 from 0.8.0 to 0.9.0 [PR 323](https://github.com/vultr/vultr-cli/pull/323)
+* Update Github workflows to go v1.20 [PR 311](https://github.com/vultr/vultr-cli/pull/311)
+
+### New Contributors
+* @ELLIOTTCABLE made their first contribution in [PR 315](https://github.com/vultr/vultr-cli/pull/315)
+
 ## [v2.16.2](https://github.com/vultr/vultr-cli/compare/v2.15.1...v2.16.2) (2023-03-31)
 ### Enhancements
 * Database: Add DBaaS Support [PR 302](https://github.com/vultr/vultr-cli/pull/302)
