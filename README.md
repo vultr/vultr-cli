@@ -68,7 +68,7 @@ You will need Go installed on your machine in order to work with the source (and
 
 Another way to build from source is to
 
-```
+```sh
 git clone git@github.com:vultr/vultr-cli.git or git clone https://github.com/vultr/vultr-cli.git
 cd vultr-cli
 make builds/vultr-cli_(pass name of os + arch, as shown below)
@@ -159,7 +159,7 @@ You should use = when using a boolean flag.
 `vultr-cli instance create --region <region-id> --plan <plan-id> --os <os-id> --host <hostname> --notify=true`
 
 ##### Utilizing the config flag
-The config flag can be used to specify the vultr-cli.yaml file path when it's outside the default location. If the file has the `api-key` defined, the CLI will use the vultr-cli.yaml config, otherwise it will default to reading the environment variable for the api key.
+The config flag can be used to specify the vultr-cli.yaml file path when it's outside the default location (default is $HOME/.vultr-cli.yaml). If the file has the `api-key` defined, the CLI will use the vultr-cli.yaml config, otherwise it will default to reading the environment variable for the api key.
 
 `vultr-cli instance list --config /Users/myuser/vultr-cli.yaml`
 
