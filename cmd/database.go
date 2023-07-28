@@ -89,6 +89,7 @@ func Database() *cobra.Command {
 	databaseCreate.Flags().StringP("plan", "p", "", "plan id for the new managed database")
 	databaseCreate.Flags().StringP("label", "l", "", "label for the new managed database")
 	databaseCreate.Flags().StringP("tag", "t", "", "tag for the new managed database")
+	databaseCreate.Flags().StringP("vpc-id", "", "", "vpc id for the new managed database")
 	databaseCreate.Flags().StringP("maintenance-dow", "", "", "maintenance day of week for the new managed database")
 	databaseCreate.Flags().StringP("maintenance-time", "", "", "maintenance time for the new managed database")
 	databaseCreate.Flags().StringSliceP("trusted-ips", "", []string{}, "comma-separated list of trusted ip addresses for the new managed database")
@@ -103,6 +104,7 @@ func Database() *cobra.Command {
 	databaseUpdate.Flags().StringP("plan", "p", "", "plan id for the managed database")
 	databaseUpdate.Flags().StringP("label", "l", "", "label for the managed database")
 	databaseUpdate.Flags().StringP("tag", "t", "", "tag for the managed database")
+	databaseUpdate.Flags().StringP("vpc-id", "", "", "vpc id for the managed database")
 	databaseUpdate.Flags().StringP("maintenance-dow", "", "", "maintenance day of week for the managed database")
 	databaseUpdate.Flags().StringP("maintenance-time", "", "", "maintenance time for the managed database")
 	databaseUpdate.Flags().StringP("cluster-time-zone", "", "", "configured time zone for the managed database")
@@ -282,6 +284,7 @@ var databaseCreate = &cobra.Command{
 
 		// Optional
 		tag, _ := cmd.Flags().GetString("tag")
+		vpc, _ := cmd.Flags().GetString("vpc-id")
 		maintenanceDOW, _ := cmd.Flags().GetString("maintenance-dow")
 		maintenanceTime, _ := cmd.Flags().GetString("maintenance-time")
 		trustedIPs, _ := cmd.Flags().GetStringSlice("trusted-ips")
@@ -294,10 +297,11 @@ var databaseCreate = &cobra.Command{
 		opt := &govultr.DatabaseCreateReq{
 			DatabaseEngine:         databaseEngine,
 			DatabaseEngineVersion:  databaseEngineVersion,
-			Plan:                   plan,
 			Region:                 region,
+			Plan:                   plan,
 			Label:                  label,
 			Tag:                    tag,
+			VPCID:                  vpc,
 			MaintenanceDOW:         maintenanceDOW,
 			MaintenanceTime:        maintenanceTime,
 			TrustedIPs:             trustedIPs,
@@ -365,6 +369,7 @@ var databaseUpdate = &cobra.Command{
 		plan, _ := cmd.Flags().GetString("plan")
 		label, _ := cmd.Flags().GetString("label")
 		tag, _ := cmd.Flags().GetString("tag")
+		vpc, _ := cmd.Flags().GetString("vpc-id")
 		maintenanceDOW, _ := cmd.Flags().GetString("maintenance-dow")
 		maintenanceTime, _ := cmd.Flags().GetString("maintenance-time")
 		clusterTimeZone, _ := cmd.Flags().GetString("cluster-time-zone")
@@ -378,10 +383,11 @@ var databaseUpdate = &cobra.Command{
 		redisEvictionPolicy, _ := cmd.Flags().GetString("redis-eviction-policy")
 
 		opt := &govultr.DatabaseUpdateReq{
-			Plan:                plan,
 			Region:              region,
+			Plan:                plan,
 			Label:               label,
 			Tag:                 tag,
+			VPCID:               vpc,
 			MaintenanceDOW:      maintenanceDOW,
 			MaintenanceTime:     maintenanceTime,
 			ClusterTimeZone:     clusterTimeZone,
