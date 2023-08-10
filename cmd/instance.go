@@ -61,16 +61,27 @@ var (
 	# Shortened example with aliases
 	vultr-cli instance tags <instanceID> -t="example-tag-1,example-tag-2"
 	`
+
 	instanceVPCAttachLong    = `Attaches an existing VPC to the specified instance`
 	instanceVPCAttachExample = `
 	# Full example
 	vultr-cli instance vpc attach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
 	`
-
 	instanceVPCDetachLong    = `Detaches an existing VPC from the specified instance`
 	instanceVPCDetachExample = `
 	# Full example
 	vultr-cli instance vpc detach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
+	`
+
+	instanceVPC2AttachLong    = `Attaches an existing VPC 2.0 network to the specified instance`
+	instanceVPC2AttachExample = `
+	# Full example
+	vultr-cli instance vpc2 attach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
+	`
+	instanceVPC2DetachLong    = `Detaches an existing VPC 2.0 network from the specified instance`
+	instanceVPC2DetachExample = `
+	# Full example
+	vultr-cli instance vpc2 detach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
 	`
 )
 
@@ -334,6 +345,17 @@ func Instance() *cobra.Command {
 	vpcAttach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC you wish to attach")
 	vpcDetach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC you wish to detach")
 	instanceCmd.AddCommand(vpcCmd)
+
+	vpc2Cmd := &cobra.Command{
+		Use:   "vpc2",
+		Short: "commands to handle vpc 2.0 on an instance",
+		Long:  ``,
+	}
+	vpc2Cmd.AddCommand(instanceVPC2List, vpc2Attach, vpc2Detach)
+	vpc2Attach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC 2.0 network you wish to attach")
+	vpc2Attach.Flags().StringP("ip-address", "i", "", "the IP address to use for this instance on the attached VPC 2.0 network")
+	vpc2Detach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC 2.0 network you wish to detach")
+	instanceCmd.AddCommand(vpc2Cmd)
 
 	return instanceCmd
 }
@@ -1272,7 +1294,6 @@ var instanceCreate = &cobra.Command{
 			opt.UserData = base64.StdEncoding.EncodeToString([]byte(userData))
 		}
 
-		//region, plan, osOpt, opt
 		instance, _, err := client.Instance.Create(context.TODO(), opt)
 		if err != nil {
 			fmt.Printf("error creating instance : %v\n", err)
@@ -1376,6 +1397,82 @@ var vpcDetach = &cobra.Command{
 			os.Exit(1)
 		}
 		fmt.Println("VPC has been detached")
+	},
+}
+
+var instanceVPC2List = &cobra.Command{
+	Use:     "list <instanceID>",
+	Aliases: []string{"l"},
+	Short:   "list all VPC 2.0 networks attached to an instance",
+	Long:    ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instance ID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		options := getPaging(cmd)
+		s, meta, _, err := client.Instance.ListVPC2Info(context.TODO(), id, options)
+		if err != nil {
+			fmt.Printf("error getting list of attached VPC 2.0 networks : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.InstanceVPC2List(s, meta)
+	},
+}
+
+var vpc2Attach = &cobra.Command{
+	Use:     "attach <instanceID>",
+	Short:   "Attach a VPC 2.0 network to an instance",
+	Long:    instanceVPC2AttachLong,
+	Example: instanceVPC2AttachExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instance ID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		vpcID, _ := cmd.Flags().GetString("vpc-id")
+		IPAddress, _ := cmd.Flags().GetString("ip-address")
+
+		opt := &govultr.AttachVPC2Req{
+			VPCID:     vpcID,
+			IPAddress: &IPAddress,
+		}
+
+		if err := client.Instance.AttachVPC2(context.TODO(), id, opt); err != nil {
+			fmt.Printf("error attaching VPC 2.0 network : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("VPC 2.0 network has been attached")
+	},
+}
+
+var vpc2Detach = &cobra.Command{
+	Use:     "detach <instanceID>",
+	Short:   "Detach a VPC 2.0 network from an instance",
+	Long:    instanceVPC2DetachLong,
+	Example: instanceVPC2DetachExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an instance ID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		vpcID, _ := cmd.Flags().GetString("vpc-id")
+		if err := client.Instance.DetachVPC2(context.TODO(), id, vpcID); err != nil {
+			fmt.Printf("error detaching VPC : %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("VPC 2.0 network has been detached")
 	},
 }
 
