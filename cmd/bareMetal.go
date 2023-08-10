@@ -41,6 +41,17 @@ var (
 	# Shortened example with aliases
 	vultr-cli bm tags <bareMetalID> -t="tag-1,tag-2"
 	`
+
+	bareMetalVPC2AttachLong    = `Attaches an existing VPC 2.0 network to the specified bare metal server`
+	bareMetalVPC2AttachExample = `
+	# Full example
+	vultr-cli bare-metal vpc2 attach <bareMetalID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
+	`
+	bareMetalVPC2DetachLong    = `Detaches an existing VPC 2.0 network from the specified bare metal server`
+	bareMetalVPC2DetachExample = `
+	# Full example
+	vultr-cli bare-metal vpc2 detach <bareMetalID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
+	`
 )
 
 // BareMetal represents the baremetal commands
@@ -114,6 +125,17 @@ func BareMetal() *cobra.Command {
 		fmt.Printf("error marking bare metal create 'tags' flag required: %v\n", err)
 		os.Exit(1)
 	}
+
+	vpc2Cmd := &cobra.Command{
+		Use:   "vpc2",
+		Short: "commands to handle vpc 2.0 on a server",
+		Long:  ``,
+	}
+	vpc2Cmd.AddCommand(bareMetalVPC2List, bareMetalVPC2Attach, bareMetalVPC2Detach)
+	bareMetalVPC2Attach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC 2.0 network you wish to attach")
+	bareMetalVPC2Attach.Flags().StringP("ip-address", "i", "", "the IP address to use for this server on the attached VPC 2.0 network")
+	bareMetalVPC2Detach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC 2.0 network you wish to detach")
+	bareMetalCmd.AddCommand(vpc2Cmd)
 
 	return bareMetalCmd
 }
@@ -472,4 +494,79 @@ func optionCheckBM(options map[string]interface{}) (string, error) {
 	}
 
 	return result[0], nil
+}
+
+var bareMetalVPC2List = &cobra.Command{
+	Use:     "list <bareMetalID>",
+	Aliases: []string{"l"},
+	Short:   "list all VPC 2.0 networks attached to a server",
+	Long:    ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		s, _, err := client.BareMetalServer.ListVPC2Info(context.TODO(), id)
+		if err != nil {
+			fmt.Printf("error getting list of attached VPC 2.0 networks : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.BareMetalVPC2List(s)
+	},
+}
+
+var bareMetalVPC2Attach = &cobra.Command{
+	Use:     "attach <bareMetalID>",
+	Short:   "Attach a VPC 2.0 network to a server",
+	Long:    bareMetalVPC2AttachLong,
+	Example: bareMetalVPC2AttachExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		vpcID, _ := cmd.Flags().GetString("vpc-id")
+		IPAddress, _ := cmd.Flags().GetString("ip-address")
+
+		opt := &govultr.AttachVPC2Req{
+			VPCID:     vpcID,
+			IPAddress: &IPAddress,
+		}
+
+		if err := client.BareMetalServer.AttachVPC2(context.TODO(), id, opt); err != nil {
+			fmt.Printf("error attaching VPC 2.0 network : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("VPC 2.0 network has been attached")
+	},
+}
+
+var bareMetalVPC2Detach = &cobra.Command{
+	Use:     "detach <bareMetalID>",
+	Short:   "Detach a VPC 2.0 network from a server",
+	Long:    bareMetalVPC2DetachLong,
+	Example: bareMetalVPC2DetachExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		vpcID, _ := cmd.Flags().GetString("vpc-id")
+		if err := client.BareMetalServer.DetachVPC2(context.TODO(), id, vpcID); err != nil {
+			fmt.Printf("error detaching VPC 2.0 network : %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("VPC 2.0 network has been detached")
+	},
 }

@@ -15,7 +15,7 @@ func VPC2List(vpc2s []govultr.VPC2, meta *govultr.Meta) {
 	flush()
 }
 
-// VPC2 Generate a printer display of a given VPC 2.0 network
+// VPC2 Generates a printer display of a given VPC 2.0 network
 func VPC2(vpc2 *govultr.VPC2) {
 	display(columns{"ID", "DATE CREATED", "REGION", "DESCRIPTION", "IP BLOCK", "PREFIX LENGTH"})
 	display(columns{vpc2.ID, vpc2.DateCreated, vpc2.Region, vpc2.Description, vpc2.IPBlock, vpc2.PrefixLength})

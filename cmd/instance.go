@@ -1469,7 +1469,7 @@ var vpc2Detach = &cobra.Command{
 		id := args[0]
 		vpcID, _ := cmd.Flags().GetString("vpc-id")
 		if err := client.Instance.DetachVPC2(context.TODO(), id, vpcID); err != nil {
-			fmt.Printf("error detaching VPC : %v\n", err)
+			fmt.Printf("error detaching VPC 2.0 network : %v\n", err)
 			os.Exit(1)
 		}
 		fmt.Println("VPC 2.0 network has been detached")
