@@ -31,7 +31,7 @@ var (
 	# Full example
 	vultr-cli vpc2
 	`
-	vpc2CreateLong    = `Create a new VPC 2.0 network with specified ATTRS_GOES_HERE`
+	vpc2CreateLong    = `Create a new VPC 2.0 network with specified region, description, and network settings`
 	vpc2CreateExample = `
 	# Full example
 	vultr-cli vpc2 create --region="ewr" --description="example-vpc" --ip-block="10.99.0.0" --prefix-length="24"
