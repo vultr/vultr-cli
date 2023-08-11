@@ -35,6 +35,7 @@ Available Commands:
   user           user commands
   version        Display current version of Vultr-cli
   vpc            Interact with VPCs
+  vpc2           Interact with VPC 2.0 networks
 
 Flags:
   --config string   config file (default is $HOME/.vultr-cli.yaml) (default "#HOME/.vultr-cli.yaml")
