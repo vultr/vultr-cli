@@ -27,7 +27,7 @@ import (
 func Applications() *cobra.Command {
 	appsCmd := &cobra.Command{
 		Use:     "apps",
-		Aliases: []string{"a"},
+		Aliases: []string{"a", "application", "applications"},
 		Short:   "Display all available applications",
 	}
 
