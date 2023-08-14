@@ -58,3 +58,12 @@ func BareMetalVNCUrl(vnc *govultr.VNCUrl) {
 	display(columns{vnc.URL})
 	flush()
 }
+
+// BareMetalVPC2List Generate a printer display of all VPC 2.0 networks attached to a given server
+func BareMetalVPC2List(vpc2s []govultr.VPC2Info) {
+	display(columns{"ID", "MAC ADDRESS", "IP ADDRESS"})
+	for _, r := range vpc2s {
+		display(columns{r.ID, r.MacAddress, r.IPAddress})
+	}
+	flush()
+}

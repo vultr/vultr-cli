@@ -127,3 +127,14 @@ func ReverseIpv6(rip []govultr.ReverseIP) {
 	}
 	flush()
 }
+
+// InstanceVPC2List Generate a printer display of all VPC 2.0 networks attached to a given instance
+func InstanceVPC2List(vpc2s []govultr.VPC2Info, meta *govultr.Meta) {
+	display(columns{"ID", "MAC ADDRESS", "IP ADDRESS"})
+	for _, r := range vpc2s {
+		display(columns{r.ID, r.MacAddress, r.IPAddress})
+	}
+
+	Meta(meta)
+	flush()
+}

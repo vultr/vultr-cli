@@ -39,7 +39,7 @@ var (
 	# Full example with custom MySQL settings
 	vultr-cli database create --database-engine="mysql" --database-engine-version="8" --region="ewr" --plan="vultr-dbaas-startup-cc-1-55-2" --label="example-db" --mysql-slow-query-log="true" --mysql-long-query-time="2"
 	`
-	databaseUpdateLong    = `Create a new Managed Database with specified plan, region, and database engine/version`
+	databaseUpdateLong    = `Updates a Managed Database with the supplied information`
 	databaseUpdateExample = `
 	# Full example
 	vultr-cli database update --region="sea" --plan="vultr-dbaas-startup-cc-2-80-4"
@@ -49,7 +49,7 @@ var (
 	`
 )
 
-// Instance represents the instance command
+// Database represents the database command
 func Database() *cobra.Command {
 	databaseCmd := &cobra.Command{
 		Use:     "database",
