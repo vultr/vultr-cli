@@ -160,7 +160,7 @@ func Instance() *cobra.Command {
 	instanceCreate.Flags().StringP("userdata", "u", "", "plain text userdata you want to give this instance which the CLI will base64 encode")
 	instanceCreate.Flags().BoolP("notify", "n", false, "notify when instance has been created | true or false")
 	instanceCreate.Flags().BoolP("ddos", "d", false, "enable ddos protection | true or false")
-	instanceCreate.Flags().StringP("reserved-ipv4", "", "", "ip address of the floating IP to use as the main IP for this instance")
+	instanceCreate.Flags().StringP("reserved-ipv4", "", "", "ID of the floating IP to use as the main IP for this instance")
 	instanceCreate.Flags().StringP("host", "", "", "The hostname to assign to this instance")
 	instanceCreate.Flags().StringP("tag", "t", "", "Deprecated: use tags instead. The tag to assign to this instance")
 	instanceCreate.Flags().StringSliceP("tags", "", []string{}, "A comma-separated list of tags to assign to this instance")
