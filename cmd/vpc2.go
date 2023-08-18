@@ -39,17 +39,17 @@ var (
 	vpc2UpdateLong    = `Updates a VPC 2.0 network with the supplied information`
 	vpc2UpdateExample = `
 	# Full example
-	vultr-cli vpc2 update --description="example-vpc"
+	vultr-cli vpc2 update 84fee086-6691-417a-b2db-e2a71061fa17 --description="example-vpc"
 	`
 	vpc2NodesAttachLong    = `Attaches multiple nodes to a VPC 2.0 network`
 	vpc2NodesAttachExample = `
 	# Full example
-	vultr-cli vpc2 nodes attach --nodes="35dbcffe-58bf-46fe-bd68-964d95488dd8,1f5d784a-1011-430c-a2e2-39ba045abe3c"
+	vultr-cli vpc2 nodes attach 84fee086-6691-417a-b2db-e2a71061fa17 --nodes="35dbcffe-58bf-46fe-bd68-964d95488dd8,1f5d784a-1011-430c-a2e2-39ba045abe3c"
 	`
 	vpc2NodesDetachLong    = `Detaches multiple nodes from a VPC 2.0 network`
 	vpc2NodesDetachExample = `
 	# Full example
-	vultr-cli vpc2 nodes detach --nodes="35dbcffe-58bf-46fe-bd68-964d95488dd8,1f5d784a-1011-430c-a2e2-39ba045abe3c"
+	vultr-cli vpc2 nodes detach 84fee086-6691-417a-b2db-e2a71061fa17 --nodes="35dbcffe-58bf-46fe-bd68-964d95488dd8,1f5d784a-1011-430c-a2e2-39ba045abe3c"
 	`
 )
 
