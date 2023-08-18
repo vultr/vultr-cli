@@ -26,7 +26,7 @@ func VPC2(vpc2 *govultr.VPC2) {
 func VPC2ListNodes(vpc2Nodes []govultr.VPC2Node, meta *govultr.Meta) {
 	display(columns{"ID", "IP ADDRESS", "MAC ADDRESS", "DESCRIPTION", "TYPE", "NODE STATUS"})
 	for d := range vpc2Nodes {
-		display(columns{vpc2Nodes[d].ID, vpc2Nodes[d].IPAddress, vpc2Nodes[d].MACAddress, vpc2Nodes[d].Description, vpc2Nodes[d].Type, vpc2Nodes[d].NodeStatus})
+		display(columns{vpc2Nodes[d].ID, vpc2Nodes[d].IPAddress, vpc2Nodes[d].MACAddress, vpc2Nodes[d].Description, vpc2Nodes[d].Type, vpc2Nodes[d].NodeStatus}) //nolint:lll
 	}
 
 	Meta(meta)

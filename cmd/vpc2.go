@@ -145,7 +145,7 @@ var vpc2Create = &cobra.Command{
 	},
 }
 
-var vpc2Info = &cobra.Command{
+var vpc2Info = &cobra.Command{ //nolint:dupl
 	Use:   "get <vpc2ID>",
 	Short: "get info about a specific VPC 2.0 network",
 	Long:  ``,
@@ -192,7 +192,7 @@ var vpc2Update = &cobra.Command{
 	},
 }
 
-var vpc2Delete = &cobra.Command{
+var vpc2Delete = &cobra.Command{ //nolint:dupl
 	Use:     "delete <vpc2ID>",
 	Short:   "delete/destroy a VPC 2.0 network",
 	Aliases: []string{"destroy"},
@@ -236,7 +236,7 @@ var vpc2NodesList = &cobra.Command{
 	},
 }
 
-var vpc2NodesAttach = &cobra.Command{
+var vpc2NodesAttach = &cobra.Command{ //nolint:dupl
 	Use:     "attach <vpc2ID>",
 	Short:   "Attach nodes to a VPC 2.0 network",
 	Aliases: []string{"a"},
@@ -266,7 +266,7 @@ var vpc2NodesAttach = &cobra.Command{
 	},
 }
 
-var vpc2NodesDetach = &cobra.Command{
+var vpc2NodesDetach = &cobra.Command{ //nolint:dupl
 	Use:     "detach <vpc2ID>",
 	Short:   "Detach nodes from a VPC 2.0 network",
 	Aliases: []string{"d"},
