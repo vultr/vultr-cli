@@ -39,7 +39,17 @@ var (
 	vpc2UpdateLong    = `Updates a VPC 2.0 network with the supplied information`
 	vpc2UpdateExample = `
 	# Full example
-	vultr-cli vpc2 update --description="example-vpc"
+	vultr-cli vpc2 update 84fee086-6691-417a-b2db-e2a71061fa17 --description="example-vpc"
+	`
+	vpc2NodesAttachLong    = `Attaches multiple nodes to a VPC 2.0 network`
+	vpc2NodesAttachExample = `
+	# Full example
+	vultr-cli vpc2 nodes attach 84fee086-6691-417a-b2db-e2a71061fa17 --nodes="35dbcffe-58bf-46fe-bd68-964d95488dd8,1f5d784a-1011-430c-a2e2-39ba045abe3c"
+	`
+	vpc2NodesDetachLong    = `Detaches multiple nodes from a VPC 2.0 network`
+	vpc2NodesDetachExample = `
+	# Full example
+	vultr-cli vpc2 nodes detach 84fee086-6691-417a-b2db-e2a71061fa17 --nodes="35dbcffe-58bf-46fe-bd68-964d95488dd8,1f5d784a-1011-430c-a2e2-39ba045abe3c"
 	`
 )
 
@@ -67,6 +77,19 @@ func VPC2() *cobra.Command {
 
 	// VPC2 update flags
 	vpc2Update.Flags().StringP("description", "d", "", "description for the vpc network")
+
+	// VPC2 node commands
+	vpc2NodeCmd := &cobra.Command{
+		Use:   "nodes",
+		Short: "commands to handle nodes attached to a vpc 2.0 network",
+		Long:  ``,
+	}
+	vpc2NodeCmd.AddCommand(vpc2NodesList, vpc2NodesAttach, vpc2NodesDetach)
+	vpc2NodesList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	vpc2NodesList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	vpc2NodesAttach.Flags().StringSliceP("nodes", "n", []string{}, "instance ids you wish to attach to the vpc network")
+	vpc2NodesDetach.Flags().StringSliceP("nodes", "n", []string{}, "instance ids you wish to detach from the vpc network")
+	vpc2Cmd.AddCommand(vpc2NodeCmd)
 
 	return vpc2Cmd
 }
@@ -122,7 +145,7 @@ var vpc2Create = &cobra.Command{
 	},
 }
 
-var vpc2Info = &cobra.Command{
+var vpc2Info = &cobra.Command{ //nolint:dupl
 	Use:   "get <vpc2ID>",
 	Short: "get info about a specific VPC 2.0 network",
 	Long:  ``,
@@ -169,7 +192,7 @@ var vpc2Update = &cobra.Command{
 	},
 }
 
-var vpc2Delete = &cobra.Command{
+var vpc2Delete = &cobra.Command{ //nolint:dupl
 	Use:     "delete <vpc2ID>",
 	Short:   "delete/destroy a VPC 2.0 network",
 	Aliases: []string{"destroy"},
@@ -187,5 +210,88 @@ var vpc2Delete = &cobra.Command{
 		}
 
 		fmt.Println("Deleted VPC 2.0 network")
+	},
+}
+
+var vpc2NodesList = &cobra.Command{
+	Use:     "list <vpc2ID>",
+	Aliases: []string{"l"},
+	Short:   "list all nodes attached to a VPC 2.0 network",
+	Long:    ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a vpc2ID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		options := getPaging(cmd)
+		s, meta, _, err := client.VPC2.ListNodes(context.TODO(), args[0], options)
+		if err != nil {
+			fmt.Printf("error getting list of vpc 2.0 network nodes : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.VPC2ListNodes(s, meta)
+	},
+}
+
+var vpc2NodesAttach = &cobra.Command{ //nolint:dupl
+	Use:     "attach <vpc2ID>",
+	Short:   "Attach nodes to a VPC 2.0 network",
+	Aliases: []string{"a"},
+	Long:    vpc2NodesAttachLong,
+	Example: vpc2NodesAttachExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a vpc2ID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		nodes, _ := cmd.Flags().GetStringSlice("nodes")
+
+		opt := &govultr.VPC2AttachDetachReq{
+			Nodes: nodes,
+		}
+
+		// Make the request
+		err := client.VPC2.Attach(context.TODO(), args[0], opt)
+		if err != nil {
+			fmt.Printf("error attaching nodes to VPC 2.0 network : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Nodes attached to VPC 2.0 network")
+	},
+}
+
+var vpc2NodesDetach = &cobra.Command{ //nolint:dupl
+	Use:     "detach <vpc2ID>",
+	Short:   "Detach nodes from a VPC 2.0 network",
+	Aliases: []string{"d"},
+	Long:    vpc2NodesDetachLong,
+	Example: vpc2NodesDetachExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a vpc2ID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		nodes, _ := cmd.Flags().GetStringSlice("nodes")
+
+		opt := &govultr.VPC2AttachDetachReq{
+			Nodes: nodes,
+		}
+
+		// Make the request
+		err := client.VPC2.Detach(context.TODO(), args[0], opt)
+		if err != nil {
+			fmt.Printf("error detaching nodes from VPC 2.0 network : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Nodes detached from VPC 2.0 network")
 	},
 }
