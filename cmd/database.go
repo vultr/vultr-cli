@@ -34,10 +34,12 @@ var (
 	databaseCreateLong    = `Create a new Managed Database with specified plan, region, and database engine/version`
 	databaseCreateExample = `
 	# Full example
-	vultr-cli database create --database-engine="mysql" --database-engine-version="8" --region="ewr" --plan="vultr-dbaas-startup-cc-1-55-2" --label="example-db"
+	vultr-cli database create --database-engine="mysql" --database-engine-version="8" --region="ewr" \
+	    --plan="vultr-dbaas-startup-cc-1-55-2" --label="example-db"
 
 	# Full example with custom MySQL settings
-	vultr-cli database create --database-engine="mysql" --database-engine-version="8" --region="ewr" --plan="vultr-dbaas-startup-cc-1-55-2" --label="example-db" --mysql-slow-query-log="true" --mysql-long-query-time="2"
+	vultr-cli database create --database-engine="mysql" --database-engine-version="8" --region="ewr" \
+	    --plan="vultr-dbaas-startup-cc-1-55-2" --label="example-db" --mysql-slow-query-log="true" --mysql-long-query-time="2"
 	`
 	databaseUpdateLong    = `Updates a Managed Database with the supplied information`
 	databaseUpdateExample = `
@@ -58,24 +60,19 @@ func Database() *cobra.Command {
 		Example: databaseExample,
 	}
 
-	databaseCmd.AddCommand(
-		databasePlanList,
-		databaseList, databaseCreate, databaseInfo, databaseUpdate, databaseDelete,
-		databaseUserList, databaseUserCreate, databaseUserInfo, databaseUserUpdate, databaseUserDelete,
-		databaseDBList, databaseDBCreate, databaseDBInfo, databaseDBDelete,
-		databaseMaintenanceUpdatesList, databaseStartMaintenance,
-		databaseAlertsList,
-		databaseMigrationStatus, databaseStartMigration, databaseDetachMigration,
-		databaseAddReadReplica,
-		databaseGetBackupInfo, databaseRestoreFromBackup, databaseFork,
-		databaseConnectionPoolList, databaseConnectionPoolCreate, databaseConnectionPoolInfo, databaseConnectionPoolUpdate, databaseConnectionPoolDelete,
-		databaseAdvancedOptionsList, databaseAdvancedOptionsUpdate,
-		databaseAvailableVersionsList, databaseStartVersionUpgrade)
+	databaseCmd.AddCommand(databaseList, databaseCreate, databaseInfo, databaseUpdate, databaseDelete)
 
 	// Plan list flags
+	planCmd := &cobra.Command{
+		Use:   "plan",
+		Short: "commands to handle managed database plans",
+		Long:  ``,
+	}
+	planCmd.AddCommand(databasePlanList)
 	databasePlanList.Flags().StringP("engine", "e", "", "(optional) Filter by database engine type.")
 	databasePlanList.Flags().IntP("nodes", "n", 0, "(optional) Filter by number of nodes.")
 	databasePlanList.Flags().StringP("region", "r", "", "(optional) Filter by region.")
+	databaseCmd.AddCommand(planCmd)
 
 	// Database list flags
 	databaseList.Flags().StringP("label", "l", "", "(optional) Filter by label.")
@@ -85,18 +82,18 @@ func Database() *cobra.Command {
 	// Database create flags
 	databaseCreate.Flags().StringP("database-engine", "e", "", "database engine for the new manaaged database")
 	databaseCreate.Flags().StringP("database-engine-version", "v", "", "database engine version for the new manaaged database")
-	databaseCreate.Flags().StringP("region", "r", "", "region id for the new managed database")
+	databaseCreate.Flags().StringP("region", "r", "", "region id for the new managed database") //nolint:lll
 	databaseCreate.Flags().StringP("plan", "p", "", "plan id for the new managed database")
 	databaseCreate.Flags().StringP("label", "l", "", "label for the new managed database")
 	databaseCreate.Flags().StringP("tag", "t", "", "tag for the new managed database")
 	databaseCreate.Flags().StringP("vpc-id", "", "", "vpc id for the new managed database")
 	databaseCreate.Flags().StringP("maintenance-dow", "", "", "maintenance day of week for the new managed database")
 	databaseCreate.Flags().StringP("maintenance-time", "", "", "maintenance time for the new managed database")
-	databaseCreate.Flags().StringSliceP("trusted-ips", "", []string{}, "comma-separated list of trusted ip addresses for the new managed database")
+	databaseCreate.Flags().StringSliceP("trusted-ips", "", []string{}, "comma-separated list of trusted ip addresses for the new managed database") //nolint:lll
 	databaseCreate.Flags().StringSliceP("mysql-sql-modes", "", []string{}, "comma-separated list of sql modes for the new managed database")
 	databaseCreate.Flags().BoolP("mysql-require-primary-key", "", true, "enable requiring primary keys for the new mysql managed database")
 	databaseCreate.Flags().BoolP("mysql-slow-query-log", "", false, "enable slow query logging for the new mysql managed database")
-	databaseCreate.Flags().StringP("mysql-long-query-time", "", "", "long query time for the new mysql managed database when slow query logging is enabled")
+	databaseCreate.Flags().StringP("mysql-long-query-time", "", "", "long query time for the new mysql managed database when slow query logging is enabled") //nolint:lll
 	databaseCreate.Flags().StringP("redis-eviction-policy", "", "", "eviction policy for the new redis managed database")
 
 	// Database update flags
@@ -112,118 +109,186 @@ func Database() *cobra.Command {
 	databaseUpdate.Flags().StringSliceP("mysql-sql-modes", "", []string{}, "comma-separated list of sql modes for the managed database")
 	databaseUpdate.Flags().BoolP("mysql-require-primary-key", "", true, "enable requiring primary keys for the mysql managed database")
 	databaseUpdate.Flags().BoolP("mysql-slow-query-log", "", false, "enable slow query logging for the mysql managed database")
-	databaseUpdate.Flags().StringP("mysql-long-query-time", "", "", "long query time for the mysql managed database when slow query logging is enabled")
+	databaseUpdate.Flags().StringP("mysql-long-query-time", "", "", "long query time for the mysql managed database when slow query logging is enabled") //nolint:lll
 	databaseUpdate.Flags().StringP("redis-eviction-policy", "", "", "eviction policy for the redis managed database")
 
-	// Database user create flags
+	// Database user flags
+	userCmd := &cobra.Command{
+		Use:   "user",
+		Short: "commands to handle managed database users",
+		Long:  ``,
+	}
+	userCmd.AddCommand(databaseUserList, databaseUserCreate, databaseUserInfo, databaseUserUpdate, databaseUserDelete)
 	databaseUserCreate.Flags().StringP("username", "u", "", "username for the new manaaged database user")
-	databaseUserCreate.Flags().StringP("password", "p", "", "password for the new manaaged database user (omit or leave empty to generate a random secure password)")
+	databaseUserCreate.Flags().StringP("password", "p", "", "password for the new manaaged database user (omit or leave empty to generate a random secure password)") //nolint:lll
 	databaseUserCreate.Flags().StringP("encryption", "e", "", "encryption type for the new managed database user (MySQL only)")
+	databaseUserUpdate.Flags().StringP("password", "p", "", "new password for the manaaged database user (leave empty to generate a random secure password)") //nolint:lll
+	databaseCmd.AddCommand(userCmd)
 
-	// Database user update flags
-	databaseUserUpdate.Flags().StringP("password", "p", "", "new password for the manaaged database user (leave empty to generate a random secure password)")
-
-	// Database DB create flags
+	// Database logical db flags
+	dbCmd := &cobra.Command{
+		Use:   "db",
+		Short: "commands to handle managed database logical dbs",
+		Long:  ``,
+	}
+	dbCmd.AddCommand(databaseDBList, databaseDBCreate, databaseDBInfo, databaseDBDelete)
 	databaseDBCreate.Flags().StringP("name", "n", "", "name of the new logical database within the manaaged database")
+	databaseCmd.AddCommand(dbCmd)
 
-	// Database list service alerts flags
+	// Database maintenance update commands
+	maintenanceCmd := &cobra.Command{
+		Use:   "maintenance",
+		Short: "commands to handle managed database maintenance updates",
+		Long:  ``,
+	}
+	maintenanceCmd.AddCommand(databaseMaintenanceUpdatesList, databaseStartMaintenance)
+	databaseCmd.AddCommand(maintenanceCmd)
+
+	// Database alerts flags
+	alertCmd := &cobra.Command{
+		Use:   "alert",
+		Short: "commands to handle managed database alerts",
+		Long:  ``,
+	}
+	alertCmd.AddCommand(databaseAlertsList)
 	databaseAlertsList.Flags().StringP("period", "p", "", "period (day, week, month, year) for viewing service alerts for a manaaged database")
+	databaseCmd.AddCommand(alertCmd)
 
-	// Database start migration flags
+	// Database migration flags
+	migrationsCmd := &cobra.Command{
+		Use:   "migration",
+		Short: "commands to handle managed database migrations",
+		Long:  ``,
+	}
+	migrationsCmd.AddCommand(databaseMigrationStatus, databaseStartMigration, databaseDetachMigration)
 	databaseStartMigration.Flags().StringP("host", "", "", "source host for the manaaged database migration")
 	databaseStartMigration.Flags().IntP("port", "", 0, "source port for the manaaged database migration")
-	databaseStartMigration.Flags().StringP("username", "", "", "source username for the manaaged database migration (uses `default` for Redis if omitted)")
+	databaseStartMigration.Flags().StringP("username", "", "", "source username for the manaaged database migration (uses `default` for Redis if omitted)") //nolint:lll
 	databaseStartMigration.Flags().StringP("password", "", "", "source password for the manaaged database migration")
 	databaseStartMigration.Flags().StringP("database", "", "", "source database for the manaaged database migration (MySQL/PostgreSQL only)")
-	databaseStartMigration.Flags().StringP("ignored-dbs", "", "", "comma-separated list of ignored databases for the manaaged database migration (MySQL/PostgreSQL only)")
+	databaseStartMigration.Flags().StringP("ignored-dbs", "", "", "comma-separated list of ignored databases for the manaaged database migration (MySQL/PostgreSQL only)") //nolint:lll
 	databaseStartMigration.Flags().BoolP("ssl", "", true, "source ssl requirement for the manaaged database migration")
+	databaseCmd.AddCommand(migrationsCmd)
 
-	// Database add read replica flags
+	// Database read replica flags
+	readReplicaCmd := &cobra.Command{
+		Use:   "read-replica",
+		Short: "commands to handle managed database read replicas",
+		Long:  ``,
+	}
+	readReplicaCmd.AddCommand(databaseAddReadReplica)
 	databaseAddReadReplica.Flags().StringP("region", "r", "", "region id for the new managed database read replica")
 	databaseAddReadReplica.Flags().StringP("label", "l", "", "label for the new managed database read replica")
+	databaseCmd.AddCommand(readReplicaCmd)
 
-	// Database restore from backup flags
+	// Database backup and restore flags
+	backupsCmd := &cobra.Command{
+		Use:   "backup",
+		Short: "commands to handle managed database backups, restorations, and forks",
+		Long:  ``,
+	}
+	backupsCmd.AddCommand(databaseGetBackupInfo, databaseRestoreFromBackup, databaseFork)
 	databaseRestoreFromBackup.Flags().StringP("label", "", "", "label for the new managed database restored from backup")
-	databaseRestoreFromBackup.Flags().StringP("type", "", "", "restoration type: `pitr` for point-in-time recovery or `basebackup` for latest backup (default)")
+	databaseRestoreFromBackup.Flags().StringP("type", "", "", "restoration type: `pitr` for point-in-time recovery or `basebackup` for latest backup (default)") //nolint:lll
 	databaseRestoreFromBackup.Flags().StringP("date", "", "", "backup date to use for point-in-time recovery")
 	databaseRestoreFromBackup.Flags().StringP("time", "", "", "backup time to use for point-in-time recovery")
-
-	// Database fork flags
 	databaseFork.Flags().StringP("label", "", "", "label for the new managed database forked from the backup")
 	databaseFork.Flags().StringP("region", "", "", "region id for the new managed database forked from the backup")
 	databaseFork.Flags().StringP("plan", "", "", "plan id for the new managed database forked from the backup")
-	databaseFork.Flags().StringP("type", "", "", "restoration type: `pitr` for point-in-time recovery or `basebackup` for latest backup (default)")
+	databaseFork.Flags().StringP("type", "", "", "restoration type: `pitr` for point-in-time recovery or `basebackup` for latest backup (default)") //nolint:lll
 	databaseFork.Flags().StringP("date", "", "", "backup date to use for point-in-time recovery")
 	databaseFork.Flags().StringP("time", "", "", "backup time to use for point-in-time recovery")
+	databaseCmd.AddCommand(backupsCmd)
 
-	// Database create connection pool flags
+	// Database connection pools flags
+	connectionPoolsCmd := &cobra.Command{
+		Use:   "connection-pool",
+		Short: "commands to handle PostgreSQL managed database connection pools",
+		Long:  ``,
+	}
+	connectionPoolsCmd.AddCommand(
+		databaseConnectionPoolList, databaseConnectionPoolCreate, databaseConnectionPoolInfo,
+		databaseConnectionPoolUpdate, databaseConnectionPoolDelete)
 	databaseConnectionPoolCreate.Flags().StringP("name", "n", "", "name for the new managed database connection pool")
 	databaseConnectionPoolCreate.Flags().StringP("database", "d", "", "database for the new managed database connection pool")
 	databaseConnectionPoolCreate.Flags().StringP("username", "u", "", "username for the new managed database connection pool")
 	databaseConnectionPoolCreate.Flags().StringP("mode", "m", "", "mode for the new managed database connection pool")
 	databaseConnectionPoolCreate.Flags().IntP("size", "s", 0, "size for the new managed database connection pool")
-
-	// Database update connection pool flags
 	databaseConnectionPoolUpdate.Flags().StringP("database", "d", "", "database for the managed database connection pool")
 	databaseConnectionPoolUpdate.Flags().StringP("username", "u", "", "username for the managed database connection pool")
 	databaseConnectionPoolUpdate.Flags().StringP("mode", "m", "", "mode for the managed database connection pool")
 	databaseConnectionPoolUpdate.Flags().IntP("size", "s", 0, "size for the managed database connection pool")
+	databaseCmd.AddCommand(connectionPoolsCmd)
 
-	// Database update PostgreSQL advanced options flags
-	databaseAdvancedOptionsUpdate.Flags().Float32P("autovacuum-analyze-scale-factor", "", 0, "set the managed postgresql configuration value for autovacuum_analyze_scale_factor")
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-analyze-threshold", "", 0, "set the managed postgresql configuration value for autovacuum_analyze_threshold")
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-freeze-max-age", "", 0, "set the managed postgresql configuration value for autovacuum_freeze_max_age")
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-max-workers", "", 0, "set the managed postgresql configuration value for autovacuum_max_workers")
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-naptime", "", 0, "set the managed postgresql configuration value for autovacuum_naptime")
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-cost-delay", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_cost_delay")
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-cost-limit", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_cost_limit	")
-	databaseAdvancedOptionsUpdate.Flags().Float32P("autovacuum-vacuum-scale-factor", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_scale_factor")
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-threshold", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_threshold")
-	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-delay", "", 0, "set the managed postgresql configuration value for bgwriter_delay")
-	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-flush-after", "", 0, "set the managed postgresql configuration value for bgwriter_flush_after")
-	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-lru-maxpages", "", 0, "set the managed postgresql configuration value for bgwriter_lru_maxpages")
-	databaseAdvancedOptionsUpdate.Flags().Float32P("bgwriter-lru-multiplier", "", 0, "set the managed postgresql configuration value for bgwriter_lru_multiplier")
-	databaseAdvancedOptionsUpdate.Flags().IntP("deadlock-timeout", "", 0, "set the managed postgresql configuration value for deadlock_timeout")
-	databaseAdvancedOptionsUpdate.Flags().StringP("default-toast-compression", "", "", "set the managed postgresql configuration value for default_toast_compression")
-	databaseAdvancedOptionsUpdate.Flags().IntP("idle-in-transaction-session-timeout", "", 0, "set the managed postgresql configuration value for idle_in_transaction_session_timeout")
+	// Database PostgreSQL advanced option flags
+	advancedOptionsCmd := &cobra.Command{
+		Use:   "advanced-option",
+		Short: "commands to handle managed database read replicas",
+		Long:  ``,
+	}
+	advancedOptionsCmd.AddCommand(databaseAdvancedOptionsList, databaseAdvancedOptionsUpdate)
+	databaseAdvancedOptionsUpdate.Flags().Float32P("autovacuum-analyze-scale-factor", "", 0, "set the managed postgresql configuration value for autovacuum_analyze_scale_factor")     //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-analyze-threshold", "", 0, "set the managed postgresql configuration value for autovacuum_analyze_threshold")               //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-freeze-max-age", "", 0, "set the managed postgresql configuration value for autovacuum_freeze_max_age")                     //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-max-workers", "", 0, "set the managed postgresql configuration value for autovacuum_max_workers")                           //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-naptime", "", 0, "set the managed postgresql configuration value for autovacuum_naptime")                                   //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-cost-delay", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_cost_delay")               //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-cost-limit", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_cost_limit	")              //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().Float32P("autovacuum-vacuum-scale-factor", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_scale_factor")       //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-threshold", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_threshold")                 //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-delay", "", 0, "set the managed postgresql configuration value for bgwriter_delay")                                           //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-flush-after", "", 0, "set the managed postgresql configuration value for bgwriter_flush_after")                               //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-lru-maxpages", "", 0, "set the managed postgresql configuration value for bgwriter_lru_maxpages")                             //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().Float32P("bgwriter-lru-multiplier", "", 0, "set the managed postgresql configuration value for bgwriter_lru_multiplier")                     //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("deadlock-timeout", "", 0, "set the managed postgresql configuration value for deadlock_timeout")                                       //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().StringP("default-toast-compression", "", "", "set the managed postgresql configuration value for default_toast_compression")                 //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("idle-in-transaction-session-timeout", "", 0, "set the managed postgresql configuration value for idle_in_transaction_session_timeout") //nolint:lll
 	databaseAdvancedOptionsUpdate.Flags().BoolP("jit", "", false, "set the managed postgresql configuration value for jit")
-	databaseAdvancedOptionsUpdate.Flags().IntP("log-autovacuum-min-duration", "", 0, "set the managed postgresql configuration value for log_autovacuum_min_duration")
-	databaseAdvancedOptionsUpdate.Flags().StringP("log-error-verbosity", "", "", "set the managed postgresql configuration value for log_error_verbosity")
-	databaseAdvancedOptionsUpdate.Flags().StringP("log-line-prefix", "", "", "set the managed postgresql configuration value for log_line_prefix")
-	databaseAdvancedOptionsUpdate.Flags().IntP("log-min-duration-statement", "", 0, "set the managed postgresql configuration value for log_min_duration_statement")
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-files-per-process", "", 0, "set the managed postgresql configuration value for max_files_per_process")
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-locks-per-transaction", "", 0, "set the managed postgresql configuration value for max_locks_per_transaction")
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-logical-replication-workers", "", 0, "set the managed postgresql configuration value for max_logical_replication_workers")
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-parallel-workers", "", 0, "set the managed postgresql configuration value for max_parallel_workers")
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-parallel-workers-per-gather", "", 0, "set the managed postgresql configuration value for max_parallel_workers_per_gather")
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-pred-locks-per-transaction", "", 0, "set the managed postgresql configuration value for max_pred_locks_per_transaction")
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-prepared-transactions", "", 0, "set the managed postgresql configuration value for max_prepared_transactions")
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-replication-slots", "", 0, "set the managed postgresql configuration value for max_replication_slots")
+	databaseAdvancedOptionsUpdate.Flags().IntP("log-autovacuum-min-duration", "", 0, "set the managed postgresql configuration value for log_autovacuum_min_duration")         //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().StringP("log-error-verbosity", "", "", "set the managed postgresql configuration value for log_error_verbosity")                     //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().StringP("log-line-prefix", "", "", "set the managed postgresql configuration value for log_line_prefix")                             //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("log-min-duration-statement", "", 0, "set the managed postgresql configuration value for log_min_duration_statement")           //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-files-per-process", "", 0, "set the managed postgresql configuration value for max_files_per_process")                     //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-locks-per-transaction", "", 0, "set the managed postgresql configuration value for max_locks_per_transaction")             //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-logical-replication-workers", "", 0, "set the managed postgresql configuration value for max_logical_replication_workers") //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-parallel-workers", "", 0, "set the managed postgresql configuration value for max_parallel_workers")                       //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-parallel-workers-per-gather", "", 0, "set the managed postgresql configuration value for max_parallel_workers_per_gather") //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-pred-locks-per-transaction", "", 0, "set the managed postgresql configuration value for max_pred_locks_per_transaction")   //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-prepared-transactions", "", 0, "set the managed postgresql configuration value for max_prepared_transactions")             //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-replication-slots", "", 0, "set the managed postgresql configuration value for max_replication_slots")                     //nolint:lll
 	databaseAdvancedOptionsUpdate.Flags().IntP("max-stack-depth", "", 0, "set the managed postgresql configuration value for max_stack_depth")
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-standby-archive-delay", "", 0, "set the managed postgresql configuration value for max_standby_archive_delay")
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-standby-streaming-delay", "", 0, "set the managed postgresql configuration value for max_standby_streaming_delay")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-standby-archive-delay", "", 0, "set the managed postgresql configuration value for max_standby_archive_delay")     //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-standby-streaming-delay", "", 0, "set the managed postgresql configuration value for max_standby_streaming_delay") //nolint:lll
 	databaseAdvancedOptionsUpdate.Flags().IntP("max-wal-senders", "", 0, "set the managed postgresql configuration value for max_wal_senders")
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-worker-processes", "", 0, "set the managed postgresql configuration value for max_worker_processes")
-	databaseAdvancedOptionsUpdate.Flags().IntP("pg-partman-bgw-interval", "", 0, "set the managed postgresql configuration value for pg_partman_bgw.interval")
-	databaseAdvancedOptionsUpdate.Flags().StringP("pg-partman-bgw-role", "", "", "set the managed postgresql configuration value for pg_partman_bgw.role")
-	databaseAdvancedOptionsUpdate.Flags().StringP("pg-stat-statements-track", "", "", "set the managed postgresql configuration value for pg_stat_statements.track")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-worker-processes", "", 0, "set the managed postgresql configuration value for max_worker_processes")             //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("pg-partman-bgw-interval", "", 0, "set the managed postgresql configuration value for pg_partman_bgw.interval")       //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().StringP("pg-partman-bgw-role", "", "", "set the managed postgresql configuration value for pg_partman_bgw.role")           //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().StringP("pg-stat-statements-track", "", "", "set the managed postgresql configuration value for pg_stat_statements.track") //nolint:lll
 	databaseAdvancedOptionsUpdate.Flags().IntP("temp-file-limit", "", 0, "set the managed postgresql configuration value for temp_file_limit")
-	databaseAdvancedOptionsUpdate.Flags().IntP("track-activity-query-size", "", 0, "set the managed postgresql configuration value for track_activity_query_size")
-	databaseAdvancedOptionsUpdate.Flags().StringP("track-commit-timestamp", "", "", "set the managed postgresql configuration value for track_commit_timestamp")
-	databaseAdvancedOptionsUpdate.Flags().StringP("track-functions", "", "", "set the managed postgresql configuration value for track_functions")
-	databaseAdvancedOptionsUpdate.Flags().StringP("track-io-timing", "", "", "set the managed postgresql configuration value for track_io_timing")
-	databaseAdvancedOptionsUpdate.Flags().IntP("wal-sender-timeout", "", 0, "set the managed postgresql configuration value for wal_sender_timeout")
-	databaseAdvancedOptionsUpdate.Flags().IntP("wal-writer-delay", "", 0, "set the managed postgresql configuration value for wal_writer_delay")
+	databaseAdvancedOptionsUpdate.Flags().IntP("track-activity-query-size", "", 0, "set the managed postgresql configuration value for track_activity_query_size") //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().StringP("track-commit-timestamp", "", "", "set the managed postgresql configuration value for track_commit_timestamp")   //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().StringP("track-functions", "", "", "set the managed postgresql configuration value for track_functions")                 //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().StringP("track-io-timing", "", "", "set the managed postgresql configuration value for track_io_timing")                 //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("wal-sender-timeout", "", 0, "set the managed postgresql configuration value for wal_sender_timeout")               //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().IntP("wal-writer-delay", "", 0, "set the managed postgresql configuration value for wal_writer_delay")                   //nolint:lll
+	databaseCmd.AddCommand(advancedOptionsCmd)
 
-	// Database start version upgrade flags
+	// Database version upgrade flags
+	versionUpgradeCmd := &cobra.Command{
+		Use:   "version",
+		Short: "commands to handle managed database version upgrades",
+		Long:  ``,
+	}
+	versionUpgradeCmd.AddCommand(databaseAvailableVersionsList, databaseStartVersionUpgrade)
 	databaseStartVersionUpgrade.Flags().StringP("version", "v", "", "version of the manaaged database to upgrade to")
+	databaseCmd.AddCommand(versionUpgradeCmd)
 
 	return databaseCmd
 }
 
 var databasePlanList = &cobra.Command{
-	Use:     "list-plans",
-	Aliases: []string{"lp"},
+	Use:     "list",
+	Aliases: []string{"l"},
 	Short:   "list all available managed database plans",
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -331,7 +396,7 @@ var databaseCreate = &cobra.Command{
 	},
 }
 
-var databaseInfo = &cobra.Command{
+var databaseInfo = &cobra.Command{ //nolint:dupl
 	Use:   "get <databaseID>",
 	Short: "get info about a specific managed database",
 	Long:  ``,
@@ -420,7 +485,7 @@ var databaseUpdate = &cobra.Command{
 	},
 }
 
-var databaseDelete = &cobra.Command{
+var databaseDelete = &cobra.Command{ //nolint:dupl
 	Use:     "delete <databaseID>",
 	Short:   "delete/destroy a managed database",
 	Aliases: []string{"destroy"},
@@ -441,8 +506,8 @@ var databaseDelete = &cobra.Command{
 	},
 }
 
-var databaseUserList = &cobra.Command{
-	Use:   "list-users <databaseID>",
+var databaseUserList = &cobra.Command{ //nolint:dupl
+	Use:   "list <databaseID>",
 	Short: "list all users within a managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -463,7 +528,7 @@ var databaseUserList = &cobra.Command{
 }
 
 var databaseUserCreate = &cobra.Command{
-	Use:   "create-user <databaseID>",
+	Use:   "create <databaseID>",
 	Short: "Create a user within a managed database",
 	Long:  "",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -497,7 +562,7 @@ var databaseUserCreate = &cobra.Command{
 }
 
 var databaseUserInfo = &cobra.Command{
-	Use:   "get-user <databaseID> <username>",
+	Use:   "get <databaseID> <username>",
 	Short: "get info about a specific user within a managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -518,7 +583,7 @@ var databaseUserInfo = &cobra.Command{
 }
 
 var databaseUserUpdate = &cobra.Command{
-	Use:   "update-user <databaseID> <username>",
+	Use:   "update <databaseID> <username>",
 	Short: "Update a user within a managed database",
 	Long:  "",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -545,8 +610,8 @@ var databaseUserUpdate = &cobra.Command{
 	},
 }
 
-var databaseUserDelete = &cobra.Command{
-	Use:   "delete-user <databaseID> <username>",
+var databaseUserDelete = &cobra.Command{ //nolint:dupl
+	Use:   "delete <databaseID> <username>",
 	Short: "Delete a user within a managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -565,8 +630,8 @@ var databaseUserDelete = &cobra.Command{
 	},
 }
 
-var databaseDBList = &cobra.Command{
-	Use:   "list-dbs <databaseID>",
+var databaseDBList = &cobra.Command{ //nolint:dupl
+	Use:   "list <databaseID>",
 	Short: "list all logical databases within a managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -587,7 +652,7 @@ var databaseDBList = &cobra.Command{
 }
 
 var databaseDBCreate = &cobra.Command{
-	Use:   "create-db <databaseID>",
+	Use:   "create <databaseID>",
 	Short: "Create a logical database within a managed database",
 	Long:  "",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -615,7 +680,7 @@ var databaseDBCreate = &cobra.Command{
 }
 
 var databaseDBInfo = &cobra.Command{
-	Use:   "get-db <databaseID> <dbname>",
+	Use:   "get <databaseID> <dbname>",
 	Short: "get info about a specific logicla database within a managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -635,8 +700,8 @@ var databaseDBInfo = &cobra.Command{
 	},
 }
 
-var databaseDBDelete = &cobra.Command{
-	Use:   "delete-db <databaseID> <dbname>",
+var databaseDBDelete = &cobra.Command{ //nolint:dupl
+	Use:   "delete <databaseID> <dbname>",
 	Short: "Delete a logical database within a managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -655,8 +720,8 @@ var databaseDBDelete = &cobra.Command{
 	},
 }
 
-var databaseMaintenanceUpdatesList = &cobra.Command{
-	Use:   "list-updates <databaseID>",
+var databaseMaintenanceUpdatesList = &cobra.Command{ //nolint:dupl
+	Use:   "list <databaseID>",
 	Short: "list all available maintenance updates for a managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -676,8 +741,8 @@ var databaseMaintenanceUpdatesList = &cobra.Command{
 	},
 }
 
-var databaseStartMaintenance = &cobra.Command{
-	Use:   "start-updates <databaseID>",
+var databaseStartMaintenance = &cobra.Command{ //nolint:dupl
+	Use:   "start <databaseID>",
 	Short: "Initialize maintenance updates for a managed database",
 	Long:  "",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -698,7 +763,7 @@ var databaseStartMaintenance = &cobra.Command{
 }
 
 var databaseAlertsList = &cobra.Command{
-	Use:   "list-alerts <databaseID>",
+	Use:   "list <databaseID>",
 	Short: "List service alerts for a managed database",
 	Long:  "",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -717,7 +782,7 @@ var databaseAlertsList = &cobra.Command{
 		// Make the request
 		databaseAlerts, _, err := client.Database.ListServiceAlerts(context.TODO(), args[0], opt)
 		if err != nil {
-			fmt.Printf("error creating logical database : %v\n", err)
+			fmt.Printf("error listing managed database alerts : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -726,7 +791,7 @@ var databaseAlertsList = &cobra.Command{
 }
 
 var databaseMigrationStatus = &cobra.Command{
-	Use:   "get-migration <databaseID>",
+	Use:   "get <databaseID>",
 	Short: "Get the current migration status of a managed database",
 	Long:  "",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -738,7 +803,7 @@ var databaseMigrationStatus = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		databaseMigration, _, err := client.Database.GetMigrationStatus(context.TODO(), args[0])
 		if err != nil {
-			fmt.Printf("error creating logical database : %v\n", err)
+			fmt.Printf("error retrieving managed database migration status : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -751,7 +816,7 @@ var databaseMigrationStatus = &cobra.Command{
 }
 
 var databaseStartMigration = &cobra.Command{
-	Use:   "start-migration <databaseID>",
+	Use:   "start <databaseID>",
 	Short: "Start a migration for a managed database",
 	Long:  "",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -797,7 +862,7 @@ var databaseStartMigration = &cobra.Command{
 }
 
 var databaseDetachMigration = &cobra.Command{
-	Use:   "detach-migration <databaseID>",
+	Use:   "detach <databaseID>",
 	Short: "Detach a migration from a managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -817,7 +882,7 @@ var databaseDetachMigration = &cobra.Command{
 }
 
 var databaseAddReadReplica = &cobra.Command{
-	Use:   "create-read-replica  <databaseID>",
+	Use:   "create <databaseID>",
 	Short: "Add a read-only replica to a managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -846,8 +911,8 @@ var databaseAddReadReplica = &cobra.Command{
 	},
 }
 
-var databaseGetBackupInfo = &cobra.Command{
-	Use:   "get-backups <databaseID>",
+var databaseGetBackupInfo = &cobra.Command{ //nolint:dupl
+	Use:   "get <databaseID>",
 	Short: "Get the latest and oldest available backups for a managed database",
 	Long:  "",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -868,7 +933,7 @@ var databaseGetBackupInfo = &cobra.Command{
 }
 
 var databaseRestoreFromBackup = &cobra.Command{
-	Use:   "restore-from-backup  <databaseID>",
+	Use:   "restore <databaseID>",
 	Short: "Create a new managed database from a backup",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -902,7 +967,7 @@ var databaseRestoreFromBackup = &cobra.Command{
 }
 
 var databaseFork = &cobra.Command{
-	Use:   "fork  <databaseID>",
+	Use:   "fork <databaseID>",
 	Short: "Fork a Managed Database to a new subscription from a backup.",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -940,7 +1005,7 @@ var databaseFork = &cobra.Command{
 }
 
 var databaseConnectionPoolList = &cobra.Command{
-	Use:   "list-connection-pools <databaseID>",
+	Use:   "list <databaseID>",
 	Short: "list all connection pools within a PostgreSQL managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -961,7 +1026,7 @@ var databaseConnectionPoolList = &cobra.Command{
 }
 
 var databaseConnectionPoolCreate = &cobra.Command{
-	Use:   "create-connection-pool <databaseID>",
+	Use:   "create <databaseID>",
 	Short: "Create a connection pool within a PostgreSQL managed database",
 	Long:  "",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -997,7 +1062,7 @@ var databaseConnectionPoolCreate = &cobra.Command{
 }
 
 var databaseConnectionPoolInfo = &cobra.Command{
-	Use:   "get-connection-pool <databaseID> <poolName>",
+	Use:   "get <databaseID> <poolName>",
 	Short: "get info about a specific connection pool within a PostgreSQL managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -1018,7 +1083,7 @@ var databaseConnectionPoolInfo = &cobra.Command{
 }
 
 var databaseConnectionPoolUpdate = &cobra.Command{
-	Use:   "update-connection-pool <databaseID> <poolName>",
+	Use:   "update <databaseID> <poolName>",
 	Short: "Update a connection pool within a PostgreSQL managed database",
 	Long:  "",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -1051,8 +1116,8 @@ var databaseConnectionPoolUpdate = &cobra.Command{
 	},
 }
 
-var databaseConnectionPoolDelete = &cobra.Command{
-	Use:   "delete-connection-pool <databaseID> <poolName>",
+var databaseConnectionPoolDelete = &cobra.Command{ //nolint:dupl
+	Use:   "delete <databaseID> <poolName>",
 	Short: "Delete a connection pool within a PostgreSQL managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -1071,8 +1136,8 @@ var databaseConnectionPoolDelete = &cobra.Command{
 	},
 }
 
-var databaseAdvancedOptionsList = &cobra.Command{
-	Use:   "list-advanced-options <databaseID>",
+var databaseAdvancedOptionsList = &cobra.Command{ //nolint:dupl
+	Use:   "list <databaseID>",
 	Short: "list all available and configured advanced options for a PostgreSQL managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -1093,7 +1158,7 @@ var databaseAdvancedOptionsList = &cobra.Command{
 }
 
 var databaseAdvancedOptionsUpdate = &cobra.Command{
-	Use:   "update-advanced-options <databaseID>",
+	Use:   "update <databaseID>",
 	Short: "Configure advanced options for a PostgreSQL managed database",
 	Long:  "",
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -1212,8 +1277,8 @@ var databaseAdvancedOptionsUpdate = &cobra.Command{
 	},
 }
 
-var databaseAvailableVersionsList = &cobra.Command{
-	Use:   "list-available-versions <databaseID>",
+var databaseAvailableVersionsList = &cobra.Command{ //nolint:dupl
+	Use:   "list <databaseID>",
 	Short: "list all available version upgrades for a managed database",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -1234,7 +1299,7 @@ var databaseAvailableVersionsList = &cobra.Command{
 }
 
 var databaseStartVersionUpgrade = &cobra.Command{
-	Use:   "start-version-upgrade <databaseID>",
+	Use:   "upgrade <databaseID>",
 	Short: "Initialize a version upgrade for a managed database",
 	Long:  "",
 	Args: func(cmd *cobra.Command, args []string) error {
