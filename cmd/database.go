@@ -232,7 +232,7 @@ func Database() *cobra.Command {
 	// Database PostgreSQL advanced option flags
 	advancedOptionsCmd := &cobra.Command{
 		Use:   "advanced-option",
-		Short: "commands to handle managed database read replicas",
+		Short: "commands to handle PostgreSQL managed database advanced options",
 		Long:  ``,
 	}
 	advancedOptionsCmd.AddCommand(databaseAdvancedOptionsList, databaseAdvancedOptionsUpdate)
