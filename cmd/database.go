@@ -82,18 +82,20 @@ func Database() *cobra.Command {
 	// Database create flags
 	databaseCreate.Flags().StringP("database-engine", "e", "", "database engine for the new manaaged database")
 	databaseCreate.Flags().StringP("database-engine-version", "v", "", "database engine version for the new manaaged database")
-	databaseCreate.Flags().StringP("region", "r", "", "region id for the new managed database") //nolint:lll
+	databaseCreate.Flags().StringP("region", "r", "", "region id for the new managed database")
 	databaseCreate.Flags().StringP("plan", "p", "", "plan id for the new managed database")
 	databaseCreate.Flags().StringP("label", "l", "", "label for the new managed database")
 	databaseCreate.Flags().StringP("tag", "t", "", "tag for the new managed database")
 	databaseCreate.Flags().StringP("vpc-id", "", "", "vpc id for the new managed database")
 	databaseCreate.Flags().StringP("maintenance-dow", "", "", "maintenance day of week for the new managed database")
 	databaseCreate.Flags().StringP("maintenance-time", "", "", "maintenance time for the new managed database")
-	databaseCreate.Flags().StringSliceP("trusted-ips", "", []string{}, "comma-separated list of trusted ip addresses for the new managed database") //nolint:lll
+	databaseCreate.Flags().StringSliceP("trusted-ips", "", []string{},
+		"comma-separated list of trusted ip addresses for the new managed database")
 	databaseCreate.Flags().StringSliceP("mysql-sql-modes", "", []string{}, "comma-separated list of sql modes for the new managed database")
 	databaseCreate.Flags().BoolP("mysql-require-primary-key", "", true, "enable requiring primary keys for the new mysql managed database")
 	databaseCreate.Flags().BoolP("mysql-slow-query-log", "", false, "enable slow query logging for the new mysql managed database")
-	databaseCreate.Flags().StringP("mysql-long-query-time", "", "", "long query time for the new mysql managed database when slow query logging is enabled") //nolint:lll
+	databaseCreate.Flags().StringP("mysql-long-query-time", "", "",
+		"long query time for the new mysql managed database when slow query logging is enabled")
 	databaseCreate.Flags().StringP("redis-eviction-policy", "", "", "eviction policy for the new redis managed database")
 
 	// Database update flags
@@ -109,7 +111,8 @@ func Database() *cobra.Command {
 	databaseUpdate.Flags().StringSliceP("mysql-sql-modes", "", []string{}, "comma-separated list of sql modes for the managed database")
 	databaseUpdate.Flags().BoolP("mysql-require-primary-key", "", true, "enable requiring primary keys for the mysql managed database")
 	databaseUpdate.Flags().BoolP("mysql-slow-query-log", "", false, "enable slow query logging for the mysql managed database")
-	databaseUpdate.Flags().StringP("mysql-long-query-time", "", "", "long query time for the mysql managed database when slow query logging is enabled") //nolint:lll
+	databaseUpdate.Flags().StringP("mysql-long-query-time", "", "",
+		"long query time for the mysql managed database when slow query logging is enabled")
 	databaseUpdate.Flags().StringP("redis-eviction-policy", "", "", "eviction policy for the redis managed database")
 
 	// Database user flags
@@ -120,9 +123,11 @@ func Database() *cobra.Command {
 	}
 	userCmd.AddCommand(databaseUserList, databaseUserCreate, databaseUserInfo, databaseUserUpdate, databaseUserDelete)
 	databaseUserCreate.Flags().StringP("username", "u", "", "username for the new manaaged database user")
-	databaseUserCreate.Flags().StringP("password", "p", "", "password for the new manaaged database user (omit or leave empty to generate a random secure password)") //nolint:lll
+	databaseUserCreate.Flags().StringP("password", "p", "",
+		"password for the new manaaged database user (omit or leave empty to generate a random secure password)")
 	databaseUserCreate.Flags().StringP("encryption", "e", "", "encryption type for the new managed database user (MySQL only)")
-	databaseUserUpdate.Flags().StringP("password", "p", "", "new password for the manaaged database user (leave empty to generate a random secure password)") //nolint:lll
+	databaseUserUpdate.Flags().StringP("password", "p", "",
+		"new password for the manaaged database user (leave empty to generate a random secure password)")
 	databaseCmd.AddCommand(userCmd)
 
 	// Database logical db flags
@@ -163,10 +168,12 @@ func Database() *cobra.Command {
 	migrationsCmd.AddCommand(databaseMigrationStatus, databaseStartMigration, databaseDetachMigration)
 	databaseStartMigration.Flags().StringP("host", "", "", "source host for the manaaged database migration")
 	databaseStartMigration.Flags().IntP("port", "", 0, "source port for the manaaged database migration")
-	databaseStartMigration.Flags().StringP("username", "", "", "source username for the manaaged database migration (uses `default` for Redis if omitted)") //nolint:lll
+	databaseStartMigration.Flags().StringP("username", "", "",
+		"source username for the manaaged database migration (uses `default` for Redis if omitted)")
 	databaseStartMigration.Flags().StringP("password", "", "", "source password for the manaaged database migration")
 	databaseStartMigration.Flags().StringP("database", "", "", "source database for the manaaged database migration (MySQL/PostgreSQL only)")
-	databaseStartMigration.Flags().StringP("ignored-dbs", "", "", "comma-separated list of ignored databases for the manaaged database migration (MySQL/PostgreSQL only)") //nolint:lll
+	databaseStartMigration.Flags().StringP("ignored-dbs", "", "",
+		"comma-separated list of ignored databases for the manaaged database migration (MySQL/PostgreSQL only)")
 	databaseStartMigration.Flags().BoolP("ssl", "", true, "source ssl requirement for the manaaged database migration")
 	databaseCmd.AddCommand(migrationsCmd)
 
@@ -189,13 +196,15 @@ func Database() *cobra.Command {
 	}
 	backupsCmd.AddCommand(databaseGetBackupInfo, databaseRestoreFromBackup, databaseFork)
 	databaseRestoreFromBackup.Flags().StringP("label", "", "", "label for the new managed database restored from backup")
-	databaseRestoreFromBackup.Flags().StringP("type", "", "", "restoration type: `pitr` for point-in-time recovery or `basebackup` for latest backup (default)") //nolint:lll
+	databaseRestoreFromBackup.Flags().StringP("type", "", "",
+		"restoration type: `pitr` for point-in-time recovery or `basebackup` for latest backup (default)")
 	databaseRestoreFromBackup.Flags().StringP("date", "", "", "backup date to use for point-in-time recovery")
 	databaseRestoreFromBackup.Flags().StringP("time", "", "", "backup time to use for point-in-time recovery")
 	databaseFork.Flags().StringP("label", "", "", "label for the new managed database forked from the backup")
 	databaseFork.Flags().StringP("region", "", "", "region id for the new managed database forked from the backup")
 	databaseFork.Flags().StringP("plan", "", "", "plan id for the new managed database forked from the backup")
-	databaseFork.Flags().StringP("type", "", "", "restoration type: `pitr` for point-in-time recovery or `basebackup` for latest backup (default)") //nolint:lll
+	databaseFork.Flags().StringP("type", "", "",
+		"restoration type: `pitr` for point-in-time recovery or `basebackup` for latest backup (default)")
 	databaseFork.Flags().StringP("date", "", "", "backup date to use for point-in-time recovery")
 	databaseFork.Flags().StringP("time", "", "", "backup time to use for point-in-time recovery")
 	databaseCmd.AddCommand(backupsCmd)
@@ -227,50 +236,94 @@ func Database() *cobra.Command {
 		Long:  ``,
 	}
 	advancedOptionsCmd.AddCommand(databaseAdvancedOptionsList, databaseAdvancedOptionsUpdate)
-	databaseAdvancedOptionsUpdate.Flags().Float32P("autovacuum-analyze-scale-factor", "", 0, "set the managed postgresql configuration value for autovacuum_analyze_scale_factor")     //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-analyze-threshold", "", 0, "set the managed postgresql configuration value for autovacuum_analyze_threshold")               //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-freeze-max-age", "", 0, "set the managed postgresql configuration value for autovacuum_freeze_max_age")                     //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-max-workers", "", 0, "set the managed postgresql configuration value for autovacuum_max_workers")                           //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-naptime", "", 0, "set the managed postgresql configuration value for autovacuum_naptime")                                   //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-cost-delay", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_cost_delay")               //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-cost-limit", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_cost_limit	")              //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().Float32P("autovacuum-vacuum-scale-factor", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_scale_factor")       //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-threshold", "", 0, "set the managed postgresql configuration value for autovacuum_vacuum_threshold")                 //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-delay", "", 0, "set the managed postgresql configuration value for bgwriter_delay")                                           //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-flush-after", "", 0, "set the managed postgresql configuration value for bgwriter_flush_after")                               //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-lru-maxpages", "", 0, "set the managed postgresql configuration value for bgwriter_lru_maxpages")                             //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().Float32P("bgwriter-lru-multiplier", "", 0, "set the managed postgresql configuration value for bgwriter_lru_multiplier")                     //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("deadlock-timeout", "", 0, "set the managed postgresql configuration value for deadlock_timeout")                                       //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().StringP("default-toast-compression", "", "", "set the managed postgresql configuration value for default_toast_compression")                 //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("idle-in-transaction-session-timeout", "", 0, "set the managed postgresql configuration value for idle_in_transaction_session_timeout") //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().BoolP("jit", "", false, "set the managed postgresql configuration value for jit")
-	databaseAdvancedOptionsUpdate.Flags().IntP("log-autovacuum-min-duration", "", 0, "set the managed postgresql configuration value for log_autovacuum_min_duration")         //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().StringP("log-error-verbosity", "", "", "set the managed postgresql configuration value for log_error_verbosity")                     //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().StringP("log-line-prefix", "", "", "set the managed postgresql configuration value for log_line_prefix")                             //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("log-min-duration-statement", "", 0, "set the managed postgresql configuration value for log_min_duration_statement")           //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-files-per-process", "", 0, "set the managed postgresql configuration value for max_files_per_process")                     //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-locks-per-transaction", "", 0, "set the managed postgresql configuration value for max_locks_per_transaction")             //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-logical-replication-workers", "", 0, "set the managed postgresql configuration value for max_logical_replication_workers") //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-parallel-workers", "", 0, "set the managed postgresql configuration value for max_parallel_workers")                       //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-parallel-workers-per-gather", "", 0, "set the managed postgresql configuration value for max_parallel_workers_per_gather") //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-pred-locks-per-transaction", "", 0, "set the managed postgresql configuration value for max_pred_locks_per_transaction")   //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-prepared-transactions", "", 0, "set the managed postgresql configuration value for max_prepared_transactions")             //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-replication-slots", "", 0, "set the managed postgresql configuration value for max_replication_slots")                     //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-stack-depth", "", 0, "set the managed postgresql configuration value for max_stack_depth")
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-standby-archive-delay", "", 0, "set the managed postgresql configuration value for max_standby_archive_delay")     //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-standby-streaming-delay", "", 0, "set the managed postgresql configuration value for max_standby_streaming_delay") //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-wal-senders", "", 0, "set the managed postgresql configuration value for max_wal_senders")
-	databaseAdvancedOptionsUpdate.Flags().IntP("max-worker-processes", "", 0, "set the managed postgresql configuration value for max_worker_processes")             //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("pg-partman-bgw-interval", "", 0, "set the managed postgresql configuration value for pg_partman_bgw.interval")       //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().StringP("pg-partman-bgw-role", "", "", "set the managed postgresql configuration value for pg_partman_bgw.role")           //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().StringP("pg-stat-statements-track", "", "", "set the managed postgresql configuration value for pg_stat_statements.track") //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("temp-file-limit", "", 0, "set the managed postgresql configuration value for temp_file_limit")
-	databaseAdvancedOptionsUpdate.Flags().IntP("track-activity-query-size", "", 0, "set the managed postgresql configuration value for track_activity_query_size") //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().StringP("track-commit-timestamp", "", "", "set the managed postgresql configuration value for track_commit_timestamp")   //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().StringP("track-functions", "", "", "set the managed postgresql configuration value for track_functions")                 //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().StringP("track-io-timing", "", "", "set the managed postgresql configuration value for track_io_timing")                 //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("wal-sender-timeout", "", 0, "set the managed postgresql configuration value for wal_sender_timeout")               //nolint:lll
-	databaseAdvancedOptionsUpdate.Flags().IntP("wal-writer-delay", "", 0, "set the managed postgresql configuration value for wal_writer_delay")                   //nolint:lll
+	databaseAdvancedOptionsUpdate.Flags().Float32P("autovacuum-analyze-scale-factor", "", 0,
+		"set the managed postgresql configuration value for autovacuum_analyze_scale_factor")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-analyze-threshold", "", 0,
+		"set the managed postgresql configuration value for autovacuum_analyze_threshold")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-freeze-max-age", "", 0,
+		"set the managed postgresql configuration value for autovacuum_freeze_max_age")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-max-workers", "", 0,
+		"set the managed postgresql configuration value for autovacuum_max_workers")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-naptime", "", 0,
+		"set the managed postgresql configuration value for autovacuum_naptime")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-cost-delay", "", 0,
+		"set the managed postgresql configuration value for autovacuum_vacuum_cost_delay")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-cost-limit", "", 0,
+		"set the managed postgresql configuration value for autovacuum_vacuum_cost_limit")
+	databaseAdvancedOptionsUpdate.Flags().Float32P("autovacuum-vacuum-scale-factor", "", 0,
+		"set the managed postgresql configuration value for autovacuum_vacuum_scale_factor")
+	databaseAdvancedOptionsUpdate.Flags().IntP("autovacuum-vacuum-threshold", "", 0,
+		"set the managed postgresql configuration value for autovacuum_vacuum_threshold")
+	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-delay", "", 0,
+		"set the managed postgresql configuration value for bgwriter_delay")
+	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-flush-after", "", 0,
+		"set the managed postgresql configuration value for bgwriter_flush_after")
+	databaseAdvancedOptionsUpdate.Flags().IntP("bgwriter-lru-maxpages", "", 0,
+		"set the managed postgresql configuration value for bgwriter_lru_maxpages")
+	databaseAdvancedOptionsUpdate.Flags().Float32P("bgwriter-lru-multiplier", "", 0,
+		"set the managed postgresql configuration value for bgwriter_lru_multiplier")
+	databaseAdvancedOptionsUpdate.Flags().IntP("deadlock-timeout", "", 0,
+		"set the managed postgresql configuration value for deadlock_timeout")
+	databaseAdvancedOptionsUpdate.Flags().StringP("default-toast-compression", "", "",
+		"set the managed postgresql configuration value for default_toast_compression")
+	databaseAdvancedOptionsUpdate.Flags().IntP("idle-in-transaction-session-timeout", "", 0,
+		"set the managed postgresql configuration value for idle_in_transaction_session_timeout")
+	databaseAdvancedOptionsUpdate.Flags().BoolP("jit", "", false,
+		"set the managed postgresql configuration value for jit")
+	databaseAdvancedOptionsUpdate.Flags().IntP("log-autovacuum-min-duration", "", 0,
+		"set the managed postgresql configuration value for log_autovacuum_min_duration")
+	databaseAdvancedOptionsUpdate.Flags().StringP("log-error-verbosity", "", "",
+		"set the managed postgresql configuration value for log_error_verbosity")
+	databaseAdvancedOptionsUpdate.Flags().StringP("log-line-prefix", "", "",
+		"set the managed postgresql configuration value for log_line_prefix")
+	databaseAdvancedOptionsUpdate.Flags().IntP("log-min-duration-statement", "", 0,
+		"set the managed postgresql configuration value for log_min_duration_statement")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-files-per-process", "", 0,
+		"set the managed postgresql configuration value for max_files_per_process")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-locks-per-transaction", "", 0,
+		"set the managed postgresql configuration value for max_locks_per_transaction")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-logical-replication-workers", "", 0,
+		"set the managed postgresql configuration value for max_logical_replication_workers")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-parallel-workers", "", 0,
+		"set the managed postgresql configuration value for max_parallel_workers")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-parallel-workers-per-gather", "", 0,
+		"set the managed postgresql configuration value for max_parallel_workers_per_gather")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-pred-locks-per-transaction", "", 0,
+		"set the managed postgresql configuration value for max_pred_locks_per_transaction")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-prepared-transactions", "", 0,
+		"set the managed postgresql configuration value for max_prepared_transactions")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-replication-slots", "", 0,
+		"set the managed postgresql configuration value for max_replication_slots")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-stack-depth", "", 0,
+		"set the managed postgresql configuration value for max_stack_depth")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-standby-archive-delay", "", 0,
+		"set the managed postgresql configuration value for max_standby_archive_delay")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-standby-streaming-delay", "", 0,
+		"set the managed postgresql configuration value for max_standby_streaming_delay")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-wal-senders", "", 0,
+		"set the managed postgresql configuration value for max_wal_senders")
+	databaseAdvancedOptionsUpdate.Flags().IntP("max-worker-processes", "", 0,
+		"set the managed postgresql configuration value for max_worker_processes")
+	databaseAdvancedOptionsUpdate.Flags().IntP("pg-partman-bgw-interval", "", 0,
+		"set the managed postgresql configuration value for pg_partman_bgw.interval")
+	databaseAdvancedOptionsUpdate.Flags().StringP("pg-partman-bgw-role", "", "",
+		"set the managed postgresql configuration value for pg_partman_bgw.role")
+	databaseAdvancedOptionsUpdate.Flags().StringP("pg-stat-statements-track", "", "",
+		"set the managed postgresql configuration value for pg_stat_statements.track")
+	databaseAdvancedOptionsUpdate.Flags().IntP("temp-file-limit", "", 0,
+		"set the managed postgresql configuration value for temp_file_limit")
+	databaseAdvancedOptionsUpdate.Flags().IntP("track-activity-query-size", "", 0,
+		"set the managed postgresql configuration value for track_activity_query_size")
+	databaseAdvancedOptionsUpdate.Flags().StringP("track-commit-timestamp", "", "",
+		"set the managed postgresql configuration value for track_commit_timestamp")
+	databaseAdvancedOptionsUpdate.Flags().StringP("track-functions", "", "",
+		"set the managed postgresql configuration value for track_functions")
+	databaseAdvancedOptionsUpdate.Flags().StringP("track-io-timing", "", "",
+		"set the managed postgresql configuration value for track_io_timing")
+	databaseAdvancedOptionsUpdate.Flags().IntP("wal-sender-timeout", "", 0,
+		"set the managed postgresql configuration value for wal_sender_timeout")
+	databaseAdvancedOptionsUpdate.Flags().IntP("wal-writer-delay", "", 0,
+		"set the managed postgresql configuration value for wal_writer_delay")
 	databaseCmd.AddCommand(advancedOptionsCmd)
 
 	// Database version upgrade flags
