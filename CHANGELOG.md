@@ -1,4 +1,27 @@
 # Change Log
+## [v2.18.0](https://github.com/vultr/vultr-cli/compare/v2.17.0...v2.18.0) (2023-08-23)
+### Enhancements
+* Database: Add VPC support for DBaaS instances [PR 331](https://github.com/vultr/vultr-cli/pull/331)
+* Bare Metal: Add support for VPC 2.0 [PR 335](https://github.com/vultr/vultr-cli/pull/335)
+* Instance: Add support for VPC 2.0 [PR 335](https://github.com/vultr/vultr-cli/pull/335)
+* Application: Add more aliases for the apps command [PR 336](https://github.com/vultr/vultr-cli/pull/336)
+* VPC2: Add Nodes Endpoints [PR 339](https://github.com/vultr/vultr-cli/pull/339)
+* Database: Managed Database Nesting Refactor [PR 340](https://github.com/vultr/vultr-cli/pull/340)
+
+### Bug Fixes
+* Instance: Fix reserved IPv4 flag docs [PR 337](https://github.com/vultr/vultr-cli/pull/337)
+
+### Dependencies
+* Update govultr to v3.3.0 [PR 334](https://github.com/vultr/vultr-cli/pull/334)
+* Update govultr to v3.3.1 [PR 338](https://github.com/vultr/vultr-cli/pull/338)
+* Update govultr to v3.1.0 [PR 329](https://github.com/vultr/vultr-cli/pull/329)
+* Bump github.com/vultr/govultr/v3 from 3.1.0 to 3.2.0 [PR 330](https://github.com/vultr/vultr-cli/pull/330)
+* Bump golang.org/x/oauth2 from 0.9.0 to 0.10.0 [PR 328](https://github.com/vultr/vultr-cli/pull/328)
+* Bump golang.org/x/oauth2 from 0.10.0 to 0.11.0 [PR 333](https://github.com/vultr/vultr-cli/pull/333)
+
+### New Contributors
+* @nhooyr made their first contribution in [PR 337](https://github.com/vultr/vultr-cli/pull/337)
+
 ## [v2.17.0](https://github.com/vultr/vultr-cli/compare/v2.16.2...v2.17.0) (2023-06-14)
 ### Enhancements
 * Instances: Add support for attaching and detaching VPC networks [PR 318](https://github.com/vultr/vultr-cli/pull/318)
