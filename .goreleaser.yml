@@ -24,13 +24,7 @@ builds:
 
 archives:
   -
-    replacements:
-      darwin: macOs
-      linux: linux
-      windows: windows
-      amd64: 64-bit
-      arm64: arm64-bit
-
+    name_template: '{{ .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
     format: tar.gz
 
     files:
@@ -39,7 +33,6 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
-
 
 checksum:
   name_template: "{{ .ProjectName }}_v{{ .Version }}_checksums.txt"
