@@ -25,13 +25,11 @@ builds:
 archives:
   -
     name_template: >-
-      {{- .ProjectName }}_v
       {{- .Version }}_
-      {{- if .Os eq "darwin" }}macOs
+      {{- if eq .Os "darwin" }}macOs
       {{- else }}{{ .Os }}{{ end }}_
-      {{- if .Arch eq "amd64" }}x64
-      {{- else if .Arch eq "arm64" }}arm64
-      {{- else if .Arch eq "arm" }}arm32-v{{ .Arm }}{{ end }}
+      {{- if eq .Arch "arm" }}arm32-v{{ .Arm }}
+      {{- else }}{{ .Arch }}{{ end }}
 
     format: tar.gz
 
