@@ -108,7 +108,7 @@ func LoadBalancer() *cobra.Command {
 	// List
 	lbList.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
 	lbList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
-	lbList.Flags().BoolP("summarize", "", false, "(optional) Summarize the list output. One line per cluster.")
+	lbList.Flags().BoolP("summarize", "", false, "(optional) Summarize the list output. One line per load balancer.")
 
 	// Update
 	lbUpdate.Flags().StringP("balancing-algorithm", "b", "roundrobin", "(optional) balancing algorithm that determines server selection | roundrobin or leastconn")
