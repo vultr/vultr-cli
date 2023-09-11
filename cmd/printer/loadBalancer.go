@@ -127,12 +127,21 @@ func LoadBalancerFWRule(rule *govultr.LBFirewallRule) {
 }
 
 func LoadBalancerListSummary(loadbalancer []govultr.LoadBalancer, meta *govultr.Meta) {
-	display(columns{"ID", "LABEL", "STATUS", "REGION", "FORWARD#", "FIREWALL#"})
+	display(columns{"ID", "LABEL", "STATUS", "REGION", "INSTANCE#", "FORWARD#", "FIREWALL#"})
 	for _, lb := range loadbalancer {
 		forwardRuleCount := len(lb.ForwardingRules)
 		firewallRuleCount := len(lb.FirewallRules)
+		instanceCount := len(lb.Instances)
 
-		display(columns{lb.ID, lb.Label, lb.Status, lb.Region, forwardRuleCount, firewallRuleCount})
+		display(columns{
+			lb.ID,
+			lb.Label,
+			lb.Status,
+			lb.Region,
+			instanceCount,
+			forwardRuleCount,
+			firewallRuleCount,
+		})
 	}
 
 	Meta(meta)
