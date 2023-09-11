@@ -108,6 +108,7 @@ func LoadBalancer() *cobra.Command {
 	// List
 	lbList.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
 	lbList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	lbList.Flags().BoolP("summarize", "", false, "(optional) Summarize the list output. One line per cluster.")
 
 	// Update
 	lbUpdate.Flags().StringP("balancing-algorithm", "b", "roundrobin", "(optional) balancing algorithm that determines server selection | roundrobin or leastconn")
@@ -359,13 +360,20 @@ var lbList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
+		summarize, _ := cmd.Flags().GetBool("summarize")
+
 		list, meta, _, err := client.LoadBalancer.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error listing load balancers : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.LoadBalancerList(list, meta)
+		if summarize {
+			printer.LoadBalancerListSummary(list, meta)
+		} else {
+			printer.LoadBalancerList(list, meta)
+		}
+
 	},
 }
 
