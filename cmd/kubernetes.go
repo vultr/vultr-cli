@@ -62,6 +62,9 @@ var (
 
 	# Shortened with alias commands
 	vultr-cli k l
+
+	# Summarized view
+	vultr-cli kubernetes list --summarize
 	`
 
 	updateLong    = `Update a specific kubernetes cluster on your Vultr Account`

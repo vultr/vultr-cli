@@ -33,6 +33,22 @@ var (
 	# Full example
 	vultr-cli load-balancer
 	`
+
+	lbListLong    = `Get all load balancers on your Vultr account`
+	lbListExample = `
+	# Full example
+	vultr-cli load-balancer list
+
+	# Full example with paging
+	vultr-cli load-balancer list --per-page=1 --cursor="bmV4dF9fQU1T"
+
+	# Shortened with alias commands
+	vultr-cli lb l
+
+	# Summarized view
+	vultr-cli load-balancer list --summarize
+	`
+
 	lbCreateLong    = `Create a new Load Balancer with the desired settings`
 	lbCreateExample = `
 	# Full example
@@ -355,9 +371,10 @@ var lbGet = &cobra.Command{
 }
 
 var lbList = &cobra.Command{
-	Use:   "list",
-	Short: "retrieves a list of active load balancers",
-	Long:  ``,
+	Use:     "list",
+	Short:   "retrieves a list of active load balancers",
+	Long:    lbListLong,
+	Example: lbListExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
 		summarize, _ := cmd.Flags().GetBool("summarize")
