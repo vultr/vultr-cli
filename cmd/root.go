@@ -55,7 +55,6 @@ func init() {
 	if err := viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config")); err != nil {
 		fmt.Printf("error binding root pflag 'config': %v\n", err)
 	}
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.AddCommand(accountCmd)
 	rootCmd.AddCommand(Applications())
 	rootCmd.AddCommand(Backups())
