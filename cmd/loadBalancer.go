@@ -33,6 +33,22 @@ var (
 	# Full example
 	vultr-cli load-balancer
 	`
+
+	lbListLong    = `Get all load balancers on your Vultr account`
+	lbListExample = `
+	# Full example
+	vultr-cli load-balancer list
+
+	# Full example with paging
+	vultr-cli load-balancer list --per-page=1 --cursor="bmV4dF9fQU1T"
+
+	# Shortened with alias commands
+	vultr-cli lb l
+
+	# Summarized view
+	vultr-cli load-balancer list --summarize
+	`
+
 	lbCreateLong    = `Create a new Load Balancer with the desired settings`
 	lbCreateExample = `
 	# Full example
@@ -108,6 +124,7 @@ func LoadBalancer() *cobra.Command {
 	// List
 	lbList.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
 	lbList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	lbList.Flags().BoolP("summarize", "", false, "(optional) Summarize the list output. One line per load balancer.")
 
 	// Update
 	lbUpdate.Flags().StringP("balancing-algorithm", "b", "roundrobin", "(optional) balancing algorithm that determines server selection | roundrobin or leastconn")
@@ -354,18 +371,25 @@ var lbGet = &cobra.Command{
 }
 
 var lbList = &cobra.Command{
-	Use:   "list",
-	Short: "retrieves a list of active load balancers",
-	Long:  ``,
+	Use:     "list",
+	Short:   "retrieves a list of active load balancers",
+	Long:    lbListLong,
+	Example: lbListExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
+		summarize, _ := cmd.Flags().GetBool("summarize")
+
 		list, meta, _, err := client.LoadBalancer.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error listing load balancers : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.LoadBalancerList(list, meta)
+		if summarize {
+			printer.LoadBalancerListSummary(list, meta)
+		} else {
+			printer.LoadBalancerList(list, meta)
+		}
 	},
 }
 

@@ -62,6 +62,9 @@ var (
 
 	# Shortened with alias commands
 	vultr-cli k l
+
+	# Summarized view
+	vultr-cli kubernetes list --summarize
 	`
 
 	updateLong    = `Update a specific kubernetes cluster on your Vultr Account`
@@ -252,6 +255,7 @@ func Kubernetes() *cobra.Command {
 
 	k8List.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
 	k8List.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	k8List.Flags().BoolP("summarize", "", false, "(optional) Summarize the list output. One line per cluster.")
 
 	k8Update.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
 	if err := k8Update.MarkFlagRequired("label"); err != nil {
@@ -374,6 +378,7 @@ var k8List = &cobra.Command{
 	Example: listExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
+		summarize, _ := cmd.Flags().GetBool("summarize")
 
 		k8s, meta, _, err := client.Kubernetes.ListClusters(context.Background(), options)
 		if err != nil {
@@ -381,7 +386,11 @@ var k8List = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.Clusters(k8s, meta)
+		if summarize {
+			printer.ClustersSummary(k8s, meta)
+		} else {
+			printer.Clusters(k8s, meta)
+		}
 	},
 }
 

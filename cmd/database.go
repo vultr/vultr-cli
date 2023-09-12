@@ -31,6 +31,14 @@ var (
 	# Full example
 	vultr-cli database
 	`
+	databaseListLong    = `Get all databases on your Vultr account`
+	databaseListExample = `
+	# Full example
+	vultr-cli database list
+
+	# Summarized view
+	vultr-cli database list --summarize
+	`
 	databaseCreateLong    = `Create a new Managed Database with specified plan, region, and database engine/version`
 	databaseCreateExample = `
 	# Full example
@@ -78,6 +86,7 @@ func Database() *cobra.Command {
 	databaseList.Flags().StringP("label", "l", "", "(optional) Filter by label.")
 	databaseList.Flags().StringP("tag", "t", "", "(optional) Filter by tag.")
 	databaseList.Flags().StringP("region", "r", "", "(optional) Filter by region.")
+	databaseList.Flags().BoolP("summarize", "", false, "(optional) Summarize the list output. One line per database.")
 
 	// Database create flags
 	databaseCreate.Flags().StringP("database-engine", "e", "", "database engine for the new manaaged database")
@@ -367,7 +376,8 @@ var databaseList = &cobra.Command{
 	Use:     "list",
 	Aliases: []string{"l"},
 	Short:   "list all available managed databases",
-	Long:    ``,
+	Long:    databaseListLong,
+	Example: databaseListExample,
 	Run: func(cmd *cobra.Command, args []string) {
 		label, _ := cmd.Flags().GetString("label")
 		tag, _ := cmd.Flags().GetString("tag")
@@ -377,13 +387,19 @@ var databaseList = &cobra.Command{
 			Tag:    tag,
 			Region: region,
 		}
+		summarize, _ := cmd.Flags().GetBool("summarize")
+
 		s, meta, _, err := client.Database.List(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("error getting list of databases : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.DatabaseList(s, meta)
+		if summarize {
+			printer.DatabaseListSummary(s, meta)
+		} else {
+			printer.DatabaseList(s, meta)
+		}
 	},
 }
 

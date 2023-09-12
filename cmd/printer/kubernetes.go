@@ -142,6 +142,24 @@ func NodePool(np *govultr.NodePool) {
 	flush()
 }
 
+func ClustersSummary(clusters []govultr.Cluster, meta *govultr.Meta) {
+	display(columns{"ID", "LABEL", "STATUS", "REGION", "VERSION", "NODEPOOL#", "NODE#"})
+
+	for _, k := range clusters {
+		nodePoolCount := len(k.NodePools)
+		var nodeCount int = 0
+
+		for _, np := range k.NodePools {
+			nodeCount += len(np.Nodes)
+		}
+
+		display(columns{k.ID, k.Label, k.Status, k.Region, k.Version, nodePoolCount, nodeCount})
+	}
+
+	Meta(meta)
+	flush()
+}
+
 func K8Versions(versions *govultr.Versions) {
 	display(columns{"VERSIONS"})
 	for _, v := range versions.Versions {

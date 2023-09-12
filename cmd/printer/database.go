@@ -162,6 +162,17 @@ func DatabaseList(databases []govultr.Database, meta *govultr.Meta) {
 	flush()
 }
 
+// DatabaseListSummary will generate a summarized printer display of all Managed Databases on the account
+func DatabaseListSummary(databases []govultr.Database, meta *govultr.Meta) {
+	display(columns{"ID", "REGION", "LABEL", "STATUS", "ENGINE", "VERSION", "HOST", "PORT", "USER", "PASSWORD"})
+	for _, d := range databases {
+		display(columns{d.ID, d.Region, d.Label, d.Status, d.DatabaseEngine, d.DatabaseEngineVersion, d.Host, d.Port, d.User, d.Password})
+	}
+
+	MetaDBaaS(meta)
+	flush()
+}
+
 // Database will generate a printer display of a given Managed Database
 func Database(database *govultr.Database) {
 	display(columns{"ID", database.ID})
