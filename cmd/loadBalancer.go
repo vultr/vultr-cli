@@ -390,7 +390,6 @@ var lbList = &cobra.Command{
 		} else {
 			printer.LoadBalancerList(list, meta)
 		}
-
 	},
 }
 
