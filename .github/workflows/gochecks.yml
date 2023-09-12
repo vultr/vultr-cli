@@ -1,0 +1,47 @@
+name: Checks
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  Golangci-Lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.20"
+
+      - name: Install dependencies
+        run: |
+          go version
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2
+
+      - name: Run golangci-lint
+        run: |
+          golangci-lint run cmd/...
+
+
+  Go-Fmt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.20"
+
+      - name: Run fmt
+        run: |
+          gofmt_files=$(gofmt -l cmd)
+          if [[ -n ${gofmt_files} ]]; then
+              echo 'gofmt needs running on the following files:'
+              echo "${gofmt_files}"
+              exit 1
+          fi
+          exit 0

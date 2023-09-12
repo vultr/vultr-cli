@@ -1,14 +1,16 @@
 package printer
 
 import (
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v3"
 )
 
-func Application(apps []govultr.Application) {
-	col := columns{"APPID", "NAME", "SHORT NAME", "DEPLOY NAME"}
+func Application(apps []govultr.Application, meta *govultr.Meta) {
+	col := columns{"ID", "NAME", "SHORT NAME", "DEPLOY NAME", "TYPE", "VENDOR", "IMAGE ID"}
 	display(col)
 	for _, a := range apps {
-		display(columns{a.AppID, a.Name, a.ShortName, a.DeployName})
+		display(columns{a.ID, a.Name, a.ShortName, a.DeployName, a.Type, a.Vendor, a.ImageID})
 	}
+
+	Meta(meta)
 	flush()
 }

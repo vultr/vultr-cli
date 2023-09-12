@@ -21,49 +21,60 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
-// networkCmd represents the network command
+var (
+	netLong       = ``
+	netGetLong    = ``
+	netCreateLong = ``
+	netDeleteLong = ``
+	netListLong   = ``
+)
+
+// Network represents the network command
 func Network() *cobra.Command {
 	networkCmd := &cobra.Command{
-		Use:   "network",
-		Short: "network interacts with network actions",
-		Long:  ``,
+		Use:        "network",
+		Short:      "network interacts with network actions",
+		Long:       netLong,
+		Deprecated: "Use vpc instead.",
 	}
 
-	networkCmd.AddCommand(networkList, networkDelete, networkCreate)
+	networkCmd.AddCommand(networkGet, networkList, networkDelete, networkCreate)
 	networkCreate.Flags().StringP("region-id", "r", "", "id of the region you wish to create the network")
 	networkCreate.Flags().StringP("description", "d", "", "description of the network")
-	networkCreate.Flags().StringP("cidr", "c", "", "the ipv4 subnet and mask you want to create")
-	networkCreate.MarkFlagRequired("region-id")
-	networkCreate.MarkFlagRequired("description")
-	networkCreate.MarkFlagRequired("cdir")
+	networkCreate.Flags().StringP("subnet", "s", "", "The IPv4 network in CIDR notation.")
+	networkCreate.Flags().IntP("size", "z", 0, "The number of bits for the netmask in CIDR notation.")
+	if err := networkCreate.MarkFlagRequired("region-id"); err != nil {
+		fmt.Printf("error marking network create 'region-id' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := networkCreate.MarkFlagRequired("description"); err != nil {
+		fmt.Printf("error marking network create 'description' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := networkCreate.MarkFlagRequired("subnet"); err != nil {
+		fmt.Printf("error marking network create 'subnet' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := networkCreate.MarkFlagRequired("size"); err != nil {
+		fmt.Printf("error marking network create 'size' flag required: %v\n", err)
+		os.Exit(1)
+	}
+
+	networkList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	networkList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return networkCmd
 }
 
-var networkList = &cobra.Command{
-	Use:   "list",
-	Short: "list all private networks",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		network, err := client.Network.List(context.TODO())
-
-		if err != nil {
-			fmt.Printf("error getting network information : %v", err)
-			os.Exit(1)
-		}
-
-		printer.NetworkList(network)
-	},
-}
-
-var networkDelete = &cobra.Command{
-	Use:     "delete <networkID>",
-	Short:   "delete a private network",
-	Aliases: []string{"destroy"},
-	Long:    ``,
+var networkGet = &cobra.Command{
+	Use:        "get <networkID>",
+	Short:      "get a private network",
+	Long:       netGetLong,
+	Deprecated: "Use vpc get instead.",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return errors.New("please provide a networkID")
@@ -72,10 +83,49 @@ var networkDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		err := client.Network.Delete(context.TODO(), id)
-
+		network, _, err := client.Network.Get(context.Background(), id) //nolint:all
 		if err != nil {
-			fmt.Printf("error deleting  network : %v", err)
+			fmt.Printf("error getting network : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.Network(network)
+	},
+}
+
+var networkList = &cobra.Command{
+	Use:        "list",
+	Short:      "list all private networks",
+	Long:       netListLong,
+	Deprecated: "Use vpc list instead.",
+	Run: func(cmd *cobra.Command, args []string) {
+		options := getPaging(cmd)
+		network, meta, _, err := client.Network.List(context.Background(), options) //nolint:all
+		if err != nil {
+			fmt.Printf("error getting network list : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.NetworkList(network, meta)
+	},
+}
+
+var networkDelete = &cobra.Command{
+	Use:        "delete <networkID>",
+	Short:      "delete a private network",
+	Aliases:    []string{"destroy"},
+	Long:       netDeleteLong,
+	Deprecated: "Use vpc delete instead.",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a networkID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		if err := client.Network.Delete(context.Background(), id); err != nil { //nolint:all
+			fmt.Printf("error deleting network : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -84,21 +134,29 @@ var networkDelete = &cobra.Command{
 }
 
 var networkCreate = &cobra.Command{
-	Use:   "create",
-	Short: "create a private network",
-	Long:  ``,
+	Use:        "create",
+	Short:      "create a private network",
+	Long:       netCreateLong,
+	Deprecated: "Use vpc create instead.",
 	Run: func(cmd *cobra.Command, args []string) {
 		region, _ := cmd.Flags().GetString("region-id")
 		description, _ := cmd.Flags().GetString("description")
-		cdir, _ := cmd.Flags().GetString("cidr")
+		subnet, _ := cmd.Flags().GetString("subnet")
+		size, _ := cmd.Flags().GetInt("size")
 
-		network, err := client.Network.Create(context.TODO(), region, description, cdir)
+		options := &govultr.NetworkReq{
+			Region:       region,
+			Description:  description,
+			V4Subnet:     subnet,
+			V4SubnetMask: size,
+		}
 
+		network, _, err := client.Network.Create(context.Background(), options) //nolint:all
 		if err != nil {
-			fmt.Printf("error creating network : %v", err)
+			fmt.Printf("error creating network : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Network created ID : %s", network.NetworkID)
+		printer.Network(network)
 	},
 }

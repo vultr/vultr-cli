@@ -1,14 +1,16 @@
 package printer
 
 import (
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v3"
 )
 
-func Os(vultrOS []govultr.OS) {
-	col := columns{"OSID", "NAME", "ARCH", "FAMILY", "WINDOWS"}
+func Os(vultrOS []govultr.OS, meta *govultr.Meta) {
+	col := columns{"ID", "NAME", "ARCH", "FAMILY"}
 	display(col)
 	for _, os := range vultrOS {
-		display(columns{os.OsID, os.Name, os.Arch, os.Family, os.Windows})
+		display(columns{os.ID, os.Name, os.Arch, os.Family})
 	}
+
+	Meta(meta)
 	flush()
 }

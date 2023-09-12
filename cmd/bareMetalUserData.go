@@ -16,12 +16,14 @@ package cmd
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
 // BareMetalUserData represents the baremetal userdata commands
@@ -32,7 +34,8 @@ func BareMetalUserData() *cobra.Command {
 		Aliases: []string{"u"},
 	}
 
-	bareMetalUserDataCmd.AddCommand(bareMetalSetUserData, bareMetalGetUserData)
+	bareMetalSetUserData.Flags().StringP("userdata", "d", "/dev/stdin", "file to read userdata from")
+	bareMetalUserDataCmd.AddCommand(bareMetalGetUserData, bareMetalSetUserData)
 
 	return bareMetalUserDataCmd
 }
@@ -48,8 +51,7 @@ var bareMetalGetUserData = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		u, err := client.BareMetalServer.GetUserData(context.TODO(), args[0])
-
+		u, _, err := client.BareMetalServer.GetUserData(context.Background(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -60,23 +62,33 @@ var bareMetalGetUserData = &cobra.Command{
 }
 
 var bareMetalSetUserData = &cobra.Command{
-	Use:     "set <bareMetalID> <userData>",
-	Short:   "Set the user-data of a bare metal server.",
-	Aliases: []string{"s"},
+	Use:   "set <bareMetalID>",
+	Short: "Set the plain text user-data of a bare metal server.",
 	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 2 {
-			return errors.New("please provide a bareMetalID and userData")
+		if len(args) < 1 {
+			return errors.New("please provide a bareMetalID")
 		}
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.SetUserData(context.TODO(), args[0], args[1])
+		userData, _ := cmd.Flags().GetString("userdata")
 
+		rawData, err := os.ReadFile(userData)
 		if err != nil {
-			fmt.Printf("%v\n", err)
+			fmt.Printf("error reading user-data : %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("bare metal server userdata set.")
+		options := &govultr.BareMetalUpdate{
+			UserData: base64.StdEncoding.EncodeToString(rawData),
+		}
+
+		_, _, err = client.BareMetalServer.Update(context.TODO(), args[0], options)
+		if err != nil {
+			fmt.Printf("error setting user-data : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Set user-data for bare metal")
 	},
 }

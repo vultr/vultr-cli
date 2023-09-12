@@ -20,7 +20,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
 // accountCmd represents the account command
@@ -29,10 +29,9 @@ var accountCmd = &cobra.Command{
 	Short: "Retrieve information about your account",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		account, err := client.Account.GetInfo(context.TODO())
-
+		account, _, err := client.Account.Get(context.Background())
 		if err != nil {
-			fmt.Printf("Error getting account information : %v", err)
+			fmt.Printf("Error getting account information : %v\n", err)
 			os.Exit(1)
 		}
 

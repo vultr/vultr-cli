@@ -1,21 +1,32 @@
 package printer
 
-import "github.com/vultr/govultr"
+import "github.com/vultr/govultr/v3"
 
-func IsoPrivate(iso []govultr.ISO) {
-	col := columns{"ID", "File Name", "SIZE", "STATUS", "MD5SUM", "SHA512SUM", "DATE CREATED"}
+func IsoPrivates(iso []govultr.ISO, meta *govultr.Meta) {
+	col := columns{"ID", "FILE NAME", "SIZE", "STATUS", "MD5SUM", "SHA512SUM", "DATE CREATED"}
 	display(col)
 	for _, i := range iso {
-		display(columns{i.ISOID, i.FileName, i.Size, i.Status, i.MD5Sum, i.SHA512Sum, i.DateCreated})
+		display(columns{i.ID, i.FileName, i.Size, i.Status, i.MD5Sum, i.SHA512Sum, i.DateCreated})
 	}
+
+	Meta(meta)
 	flush()
 }
 
-func IsoPublic(iso []govultr.PublicISO) {
-	col := columns{"ID", "Name", "DESCRIPTION"}
+func IsoPrivate(iso *govultr.ISO) {
+	col := columns{"ID", "FILE NAME", "SIZE", "STATUS", "MD5SUM", "SHA512SUM", "DATE CREATED"}
+	display(col)
+	display(columns{iso.ID, iso.FileName, iso.Size, iso.Status, iso.MD5Sum, iso.SHA512Sum, iso.DateCreated})
+	flush()
+}
+
+func IsoPublic(iso []govultr.PublicISO, meta *govultr.Meta) {
+	col := columns{"ID", "NAME", "DESCRIPTION"}
 	display(col)
 	for _, i := range iso {
-		display(columns{i.ISOID, i.Name, i.Description})
+		display(columns{i.ID, i.Name, i.Description})
 	}
+
+	Meta(meta)
 	flush()
 }

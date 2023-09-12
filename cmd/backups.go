@@ -16,27 +16,62 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
-// backupCmd represents the backup command
-var backupCmd = &cobra.Command{
-	Use:     "backups",
-	Aliases: []string{"b"},
-	Short:   "display all available backups",
-	Long:    ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		backups, err := client.Backup.List(context.TODO())
+// Backups  represents the application command
+func Backups() *cobra.Command {
+	backupsCmd := &cobra.Command{
+		Use:     "backups",
+		Aliases: []string{"b"},
+		Short:   "Display backups",
+	}
 
+	backupsCmd.AddCommand(backupsList, backupsGet)
+
+	backupsList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	backupsList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+
+	return backupsCmd
+}
+
+var backupsList = &cobra.Command{
+	Use:     "list",
+	Short:   "list backups",
+	Aliases: []string{"l"},
+	Run: func(cmd *cobra.Command, args []string) {
+		options := getPaging(cmd)
+		backups, meta, _, err := client.Backup.List(context.TODO(), options)
 		if err != nil {
-			fmt.Printf("error getting backups : %v", err)
+			fmt.Printf("error getting backups : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.Backup(backups)
+		printer.Backups(backups, meta)
+	},
+}
+
+var backupsGet = &cobra.Command{
+	Use:   "get",
+	Short: "get backup",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a backupID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		backup, _, err := client.Backup.Get(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("error getting backup : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.Backup(backup)
 	},
 }

@@ -21,8 +21,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
 // Script represents the script command
@@ -34,21 +34,27 @@ func Script() *cobra.Command {
 		Long:    `script is used to access startup script commands`,
 	}
 
-	cmd.AddCommand(scriptCreate)
-	cmd.AddCommand(scriptDelete)
-	cmd.AddCommand(scriptList)
-	cmd.AddCommand(scriptUpdate)
-	cmd.AddCommand(scriptContents)
+	cmd.AddCommand(scriptCreate, scriptGet, scriptDelete, scriptList, scriptUpdate)
 
 	scriptCreate.Flags().StringP("name", "n", "", "Name of the newly created startup script.")
 	scriptCreate.Flags().StringP("script", "s", "", "Startup script contents.")
 	scriptCreate.Flags().StringP("type", "t", "", "(Optional) Type of startup script. Possible values: 'boot', 'pxe'. Default is 'boot'.")
 
-	scriptCreate.MarkFlagRequired("name")
-	scriptCreate.MarkFlagRequired("script")
+	if err := scriptCreate.MarkFlagRequired("name"); err != nil {
+		fmt.Printf("error marking script create 'name' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := scriptCreate.MarkFlagRequired("script"); err != nil {
+		fmt.Printf("error marking script create 'script' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	scriptUpdate.Flags().StringP("name", "n", "", "Name of the startup script.")
 	scriptUpdate.Flags().StringP("script", "s", "", "Startup script contents.")
+	scriptUpdate.Flags().StringP("type", "t", "", "Type of startup script. Possible values: 'boot', 'pxe'. Default is 'boot'.")
+
+	scriptList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	scriptList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return cmd
 }
@@ -63,14 +69,19 @@ var scriptCreate = &cobra.Command{
 		script, _ := cmd.Flags().GetString("script")
 		scriptType, _ := cmd.Flags().GetString("type")
 
-		id, err := client.StartupScript.Create(context.TODO(), name, script, scriptType)
+		options := &govultr.StartupScriptReq{
+			Name:   name,
+			Script: script,
+			Type:   scriptType,
+		}
 
+		startup, _, err := client.StartupScript.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Startup script has been created : %s\n", id.ScriptID)
+		printer.Script(startup)
 	},
 }
 
@@ -88,10 +99,7 @@ var scriptDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-
-		err := client.StartupScript.Delete(context.TODO(), id)
-
-		if err != nil {
+		if err := client.StartupScript.Delete(context.Background(), id); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -106,20 +114,20 @@ var scriptList = &cobra.Command{
 	Short: "List all startup scripts",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		list, err := client.StartupScript.List(context.TODO())
-
+		options := getPaging(cmd)
+		list, meta, _, err := client.StartupScript.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
-		printer.Script(list)
+		printer.ScriptList(list, meta)
 	},
 }
 
 // Displays the contents of a specified script
-var scriptContents = &cobra.Command{
-	Use:   "contents <scriptID>",
+var scriptGet = &cobra.Command{
+	Use:   "get <scriptID>",
 	Short: "Displays the contents of specified script",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -129,29 +137,14 @@ var scriptContents = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		list, err := client.StartupScript.List(context.TODO())
-
+		id := args[0]
+		script, _, err := client.StartupScript.Get(context.Background(), id)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
-		matchingID := false
-		scriptContent := ""
-		for _, key := range list {
-			if args[0] == key.ScriptID {
-				matchingID = true
-				scriptContent = key.Script
-				break
-			}
-		}
-
-		if !matchingID {
-			fmt.Println("Invalid scriptID")
-			os.Exit(1)
-		}
-
-		fmt.Println(scriptContent)
+		printer.Script(script)
 	},
 }
 
@@ -167,11 +160,12 @@ var scriptUpdate = &cobra.Command{
 	},
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
 		name, _ := cmd.Flags().GetString("name")
 		script, _ := cmd.Flags().GetString("script")
+		scriptType, _ := cmd.Flags().GetString("type")
 
-		s := new(govultr.StartupScript)
-		s.ScriptID = args[0]
+		s := &govultr.StartupScriptReq{}
 
 		if name != "" {
 			s.Name = name
@@ -181,9 +175,11 @@ var scriptUpdate = &cobra.Command{
 			s.Script = script
 		}
 
-		err := client.StartupScript.Update(context.TODO(), s)
+		if scriptType != "" {
+			s.Type = scriptType
+		}
 
-		if err != nil {
+		if err := client.StartupScript.Update(context.Background(), id, s); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}

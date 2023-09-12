@@ -1,68 +1,69 @@
 package printer
 
 import (
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v3"
 )
 
 func BareMetal(b *govultr.BareMetalServer) {
-	display(columns{"SERVER INFO", ""})
-	display(columns{"ID", b.BareMetalServerID})
-	display(columns{"OS", b.Os})
-	display(columns{"RAM", b.RAM})
-	display(columns{"Disk", b.Disk})
-	display(columns{"Main IP", b.MainIP})
-	display(columns{"CPU Count", b.CPUs})
-	display(columns{"Location", b.Location})
-	display(columns{"Region ID", b.RegionID})
-	display(columns{"Date Created", b.DateCreated})
-	display(columns{"Status", b.Status})
-	display(columns{"Netmask V4", b.NetmaskV4})
-	display(columns{"Gateway V4", b.GatewayV4})
-	display(columns{"Plan", b.BareMetalPlanID})
-	display(columns{"V6 Networks", b.V6Networks})
-	display(columns{"Label", b.Label})
-	display(columns{"Tag", b.Tag})
-	display(columns{"OSID", b.OsID})
-	display(columns{"AppID", b.AppID})
+	col := columns{"ID", "IP", "TAG", "MAC ADDRESS", "LABEL", "OS", "STATUS", "REGION", "CPU", "RAM", "DISK", "FEATURES", "TAGS"}
+	display(col)
+
+	display(columns{b.ID, b.MainIP, b.Tag, b.MacAddress, b.Label, b.Os, b.Status, b.Region, b.CPUCount, b.RAM, b.Disk, b.Features, b.Tags}) //nolint:all
 
 	flush()
 }
 
-func BareMetalList(bms []govultr.BareMetalServer) {
-	col := columns{"ID", "IP", "TAG", "LABEL", "OS", "STATUS", "REGION", "CPU", "RAM", "DISK"}
+func BareMetalList(bms []govultr.BareMetalServer, meta *govultr.Meta) {
+	col := columns{"ID", "IP", "TAG", "MAC ADDRESS", "LABEL", "OS", "STATUS", "REGION", "CPU", "RAM", "DISK", "FEATURES", "TAGS"}
 	display(col)
 	for _, b := range bms {
-		display(columns{b.BareMetalServerID, b.MainIP, b.Tag, b.Label, b.Os, b.Status, b.RegionID, b.CPUs, b.RAM, b.Disk})
+		display(columns{b.ID, b.MainIP, b.Tag, b.MacAddress, b.Label, b.Os, b.Status, b.Region, b.CPUCount, b.RAM, b.Disk, b.Features, b.Tags}) //nolint:all
 	}
+
+	Meta(meta)
+
 	flush()
 }
 
-func BareMetalAppInfo(app *govultr.AppInfo) {
-	display(columns{"APP INFO"})
-	display(columns{app.AppInfo})
-	flush()
-}
-
-func BareMetalBandwidth(bw []map[string]string) {
+func BareMetalBandwidth(bw *govultr.Bandwidth) {
 	display(columns{"DATE", "INCOMING BYTES", "OUTGOING BYTES"})
-	for _, b := range bw {
-		display(columns{b["date"], b["incoming"], b["outgoing"]})
+	for k, b := range bw.Bandwidth {
+		display(columns{k, b.IncomingBytes, b.OutgoingBytes})
 	}
 	flush()
 }
 
-func BareMetalIPV4Info(info []govultr.BareMetalServerIPV4) {
+func BareMetalIPV4Info(info []govultr.IPv4, meta *govultr.Meta) {
 	display(columns{"IP", "NETMASK", "GATEWAY", "TYPE"})
 	for _, i := range info {
 		display(columns{i.IP, i.Netmask, i.Gateway, i.Type})
 	}
+
+	Meta(meta)
 	flush()
 }
 
-func BareMetalIPV6Info(info []govultr.BareMetalServerIPV6) {
+func BareMetalIPV6Info(info []govultr.IPv6, meta *govultr.Meta) {
 	display(columns{"IP", "NETWORK", "NETWORK SIZE", "TYPE"})
 	for _, i := range info {
 		display(columns{i.IP, i.Network, i.NetworkSize, i.Type})
+	}
+
+	Meta(meta)
+	flush()
+}
+
+func BareMetalVNCUrl(vnc *govultr.VNCUrl) {
+	display(columns{"VNC URL"})
+	display(columns{vnc.URL})
+	flush()
+}
+
+// BareMetalVPC2List Generate a printer display of all VPC 2.0 networks attached to a given server
+func BareMetalVPC2List(vpc2s []govultr.VPC2Info) {
+	display(columns{"ID", "MAC ADDRESS", "IP ADDRESS"})
+	for _, r := range vpc2s {
+		display(columns{r.ID, r.MacAddress, r.IPAddress})
 	}
 	flush()
 }

@@ -21,7 +21,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
 // FirewallGroup represents the firewall group commands
@@ -33,9 +34,12 @@ func FirewallGroup() *cobra.Command {
 		Aliases: []string{"g"},
 	}
 
-	firewallGroupCmd.AddCommand(firewallGroupCreate, firewallGroupDelete, firewallGroupUpdate, firewallGroupList)
+	firewallGroupCmd.AddCommand(firewallGroupCreate, firewallGroupDelete, firewallGroupGet, firewallGroupUpdate, firewallGroupList)
 
 	firewallGroupCreate.Flags().StringP("description", "d", "", "(optional) Description of firewall group.")
+
+	firewallGroupList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	firewallGroupList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return firewallGroupCmd
 }
@@ -46,15 +50,17 @@ var firewallGroupCreate = &cobra.Command{
 	Aliases: []string{"c"},
 	Run: func(cmd *cobra.Command, args []string) {
 		description, _ := cmd.Flags().GetString("description")
+		options := &govultr.FirewallGroupReq{
+			Description: description,
+		}
 
-		fwg, err := client.FirewallGroup.Create(context.TODO(), description)
-
+		fwg, _, err := client.FirewallGroup.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("created firewall group: %s\n", fwg.FirewallGroupID)
+		printer.FirewallGroup(fwg)
 	},
 }
 
@@ -69,11 +75,11 @@ var firewallGroupDelete = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.FirewallGroup.Delete(context.TODO(), args[0])
-		if err != nil {
+		if err := client.FirewallGroup.Delete(context.Background(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
+
 		fmt.Println("Firewall group has been deleted")
 	},
 }
@@ -89,9 +95,12 @@ var firewallGroupUpdate = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.FirewallGroup.ChangeDescription(context.TODO(), args[0], args[1])
+		description := args[1]
+		options := &govultr.FirewallGroupReq{
+			Description: description,
+		}
 
-		if err != nil {
+		if err := client.FirewallGroup.Update(context.Background(), args[0], options); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
@@ -100,18 +109,39 @@ var firewallGroupUpdate = &cobra.Command{
 	},
 }
 
-var firewallGroupList = &cobra.Command{
-	Use:     "list",
-	Short:   "List all firewall groups",
-	Aliases: []string{"l"},
+var firewallGroupGet = &cobra.Command{
+	Use:   "get <firewallGroupID>",
+	Short: "Get firewall group",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a firewallGroupID")
+		}
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
-		list, err := client.FirewallGroup.List(context.TODO())
-
+		options := getPaging(cmd)
+		list, meta, _, err := client.FirewallGroup.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
-		printer.FirewallGroup(list)
+		printer.FirewallGroups(list, meta)
+	},
+}
+
+var firewallGroupList = &cobra.Command{
+	Use:     "list",
+	Short:   "List all firewall groups",
+	Aliases: []string{"l"},
+	Run: func(cmd *cobra.Command, args []string) {
+		options := getPaging(cmd)
+		list, meta, _, err := client.FirewallGroup.List(context.Background(), options)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+			os.Exit(1)
+		}
+
+		printer.FirewallGroups(list, meta)
 	},
 }

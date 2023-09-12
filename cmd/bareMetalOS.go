@@ -19,9 +19,11 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
 // BareMetalOS represents the baremetal operating system commands
@@ -37,28 +39,6 @@ func BareMetalOS() *cobra.Command {
 	return bareMetalOSCmd
 }
 
-var bareMetalOSChangeList = &cobra.Command{
-	Use:     "list <bareMetalID>",
-	Short:   "Lists operating systems to which a bare metal server can be changed.",
-	Aliases: []string{"l"},
-	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("please provide a bareMetalID")
-		}
-		return nil
-	},
-	Run: func(cmd *cobra.Command, args []string) {
-		OS, err := client.BareMetalServer.ListOS(context.TODO(), args[0])
-
-		if err != nil {
-			fmt.Printf("%v\n", err)
-			os.Exit(1)
-		}
-
-		printer.Os(OS)
-	},
-}
-
 var bareMetalOSChange = &cobra.Command{
 	Use:     "change <bareMetalID> <osID>",
 	Short:   "Change a bare metal server's operating system",
@@ -70,13 +50,39 @@ var bareMetalOSChange = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.BareMetalServer.ChangeOS(context.TODO(), args[0], args[1])
+		osid, _ := strconv.Atoi(args[1])
+		options := &govultr.BareMetalUpdate{
+			OsID: osid,
+		}
 
-		if err != nil {
+		if _, _, err := client.BareMetalServer.Update(context.TODO(), args[0], options); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
 		fmt.Println("bare metal server's operating system changed")
+	},
+}
+
+var bareMetalOSChangeList = &cobra.Command{
+	Use:   "list <bareMetalID>",
+	Short: "available operating systems a bare metal server can change to.",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide an bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		list, _, err := client.BareMetalServer.GetUpgrades(context.TODO(), id)
+
+		if err != nil {
+			fmt.Printf("error listing available os : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.OsList(list.OS)
 	},
 }

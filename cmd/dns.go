@@ -18,15 +18,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Dns represents the dns command
-func Dns() *cobra.Command {
+// DNS represents the dns command
+func DNS() *cobra.Command {
 	dnsCmd := &cobra.Command{
 		Use:   "dns",
 		Short: "dns is used to access dns commands",
 		Long:  ``,
 	}
 
-	dnsCmd.AddCommand(DnsDomain())
-	dnsCmd.AddCommand(DnsRecord())
+	dnsCmd.AddCommand(DNSDomain())
+	dnsCmd.AddCommand(DNSRecord())
 	return dnsCmd
 }

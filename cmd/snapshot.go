@@ -21,7 +21,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
 // Snapshot represents the snapshot command
@@ -33,17 +34,23 @@ func Snapshot() *cobra.Command {
 		Long:    `snapshot is used to access snapshot commands`,
 	}
 
-	cmd.AddCommand(snapshotCreate)
-	cmd.AddCommand(snapshotCreateFromURL)
-	cmd.AddCommand(snapshotDelete)
-	cmd.AddCommand(snapshotList)
+	cmd.AddCommand(snapshotCreate, snapshotCreateFromURL, snapshotGet, snapshotDelete, snapshotList)
 
 	snapshotCreate.Flags().StringP("id", "i", "", "ID of the virtual machine to create a snapshot from.")
 	snapshotCreate.Flags().StringP("description", "d", "", "(optional) Description of snapshot contents")
-	snapshotCreate.MarkFlagRequired("id")
+	if err := snapshotCreate.MarkFlagRequired("id"); err != nil {
+		fmt.Printf("error marking snapshot create 'id' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	snapshotCreateFromURL.Flags().StringP("url", "u", "", "Remote URL from where the snapshot will be downloaded.")
-	snapshotCreateFromURL.MarkFlagRequired("url")
+	if err := snapshotCreateFromURL.MarkFlagRequired("url"); err != nil {
+		fmt.Printf("error marking snapshot create 'url' flag required: %v\n", err)
+		os.Exit(1)
+	}
+
+	snapshotList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	snapshotList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return cmd
 }
@@ -57,14 +64,18 @@ var snapshotCreate = &cobra.Command{
 		id, _ := cmd.Flags().GetString("id")
 		desc, _ := cmd.Flags().GetString("description")
 
-		s, err := client.Snapshot.Create(context.TODO(), id, desc)
+		options := &govultr.SnapshotReq{
+			InstanceID:  id,
+			Description: desc,
+		}
 
+		s, _, err := client.Snapshot.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Snapshot has been created : %s\n", s.SnapshotID)
+		printer.Snapshot(s)
 	},
 }
 
@@ -75,15 +86,17 @@ var snapshotCreateFromURL = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		url, _ := cmd.Flags().GetString("url")
+		options := &govultr.SnapshotURLReq{
+			URL: url,
+		}
 
-		s, err := client.Snapshot.CreateFromURL(context.TODO(), url)
-
+		s, _, err := client.Snapshot.CreateFromURL(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Snapshot has been created : %s\n", s.SnapshotID)
+		printer.Snapshot(s)
 	},
 }
 
@@ -100,12 +113,35 @@ var snapshotDelete = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		err := client.Snapshot.Delete(context.TODO(), args[0])
+		id := args[0]
+		if err := client.Snapshot.Delete(context.Background(), id); err != nil {
+			fmt.Printf("%v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Snapshot has been deleted")
+	},
+}
+
+// snapshotGet snapshot command
+var snapshotGet = &cobra.Command{
+	Use:   "get <snapshotID>",
+	Short: "Get a snapshot",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a snapshotID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		snapshot, _, err := client.Snapshot.Get(context.Background(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
-		fmt.Println("Snapshot has been deleted")
+
+		printer.Snapshot(snapshot)
 	},
 }
 
@@ -115,13 +151,13 @@ var snapshotList = &cobra.Command{
 	Short: "List all snapshots",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		list, err := client.Snapshot.List(context.TODO())
-
+		options := getPaging(cmd)
+		list, meta, _, err := client.Snapshot.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
-		printer.Snapshot(list)
+		printer.Snapshots(list, meta)
 	},
 }

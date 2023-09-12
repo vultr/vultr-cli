@@ -20,32 +20,43 @@ import (
 	"fmt"
 	"os"
 	"regexp"
-	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
-// dnsRecordCmd represents the dnsRecord command
-func DnsRecord() *cobra.Command {
+// DNSRecord represents the dnsRecord command
+func DNSRecord() *cobra.Command {
 	dnsRecordCmd := &cobra.Command{
 		Use:   "record",
 		Short: "dns record",
 		Long:  ``,
 	}
 
-	dnsRecordCmd.AddCommand(recordCreate, recordlist, recordDelete, recordUpdate)
+	dnsRecordCmd.AddCommand(recordCreate, recordGet, recordList, recordDelete, recordUpdate)
 
 	// Create
 	recordCreate.Flags().StringP("domain", "m", "", "name of domain you want to create this record for")
 	recordCreate.Flags().StringP("type", "t", "", "record type you want to create : Possible values A, AAAA, CNAME, NS, MX, SRV, TXT CAA, SSHFP")
 	recordCreate.Flags().StringP("name", "n", "", "name of record")
 	recordCreate.Flags().StringP("data", "d", "", "data for the record")
-	recordCreate.MarkFlagRequired("domain")
-	recordCreate.MarkFlagRequired("type")
-	recordCreate.MarkFlagRequired("name")
-	recordCreate.MarkFlagRequired("data")
+	if err := recordCreate.MarkFlagRequired("domain"); err != nil {
+		fmt.Printf("error marking dns record create 'domain' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := recordCreate.MarkFlagRequired("type"); err != nil {
+		fmt.Printf("error marking dns record create 'type' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := recordCreate.MarkFlagRequired("name"); err != nil {
+		fmt.Printf("error marking dns record create 'name' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := recordCreate.MarkFlagRequired("data"); err != nil {
+		fmt.Printf("error marking dns record create 'data' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	// Create Optional
 	recordCreate.Flags().IntP("ttl", "", 0, "time to live for the record")
 	recordCreate.Flags().IntP("priority", "p", 0, "only required for MX and SRV")
@@ -54,13 +65,18 @@ func DnsRecord() *cobra.Command {
 	recordUpdate.Flags().StringP("name", "n", "", "name of record")
 	recordUpdate.Flags().StringP("data", "d", "", "data for the record")
 	recordUpdate.Flags().IntP("ttl", "", 0, "time to live for the record")
-	recordUpdate.Flags().IntP("priority", "p", 0, "only required for MX and SRV")
+	recordUpdate.Flags().IntP("priority", "p", -1, "only required for MX and SRV")
+
+	// List
+	recordList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	recordList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return dnsRecordCmd
 }
 
 // Temporary solution to determine if the record type is TXT, in order to
 // add quotes around the value. The API does not accept TXT records without
+//
 //	quotes.
 var regRecordTxt = regexp.MustCompile("([A-Z]|=|_)")
 
@@ -80,17 +96,49 @@ var recordCreate = &cobra.Command{
 		ttl, _ := cmd.Flags().GetInt("ttl")
 		priority, _ := cmd.Flags().GetInt("priority")
 
-		err := client.DNSRecord.Create(context.TODO(), domain, rType, name, data, ttl, priority)
+		options := &govultr.DomainRecordReq{
+			Name:     name,
+			Type:     rType,
+			Data:     data,
+			TTL:      ttl,
+			Priority: &priority,
+		}
 
+		record, _, err := client.DomainRecord.Create(context.Background(), domain, options)
 		if err != nil {
-			fmt.Printf("error while creating dns record : %v", err)
+			fmt.Printf("error while creating dns record : %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Println("created dns record")
+
+		printer.DnsRecord(record)
 	},
 }
 
-var recordlist = &cobra.Command{
+var recordGet = &cobra.Command{
+	Use:   "get <domainName> <recordID>",
+	Short: "get dns record",
+	Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a domain name and recordID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		domain := args[0]
+		id := args[1]
+
+		record, _, err := client.DomainRecord.Get(context.Background(), domain, id)
+		if err != nil {
+			fmt.Printf("error while getting dns records : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DnsRecord(record)
+	},
+}
+
+var recordList = &cobra.Command{
 	Use:   "list <domainName>",
 	Short: "list all dns records",
 	Long:  ``,
@@ -102,14 +150,15 @@ var recordlist = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		domain := args[0]
+		options := getPaging(cmd)
 
-		records, err := client.DNSRecord.List(context.TODO(), domain)
+		records, meta, _, err := client.DomainRecord.List(context.Background(), domain, options)
 		if err != nil {
-			fmt.Printf("error while getting dns records : %v", err)
+			fmt.Printf("error while getting dns records : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.DnsRecordsList(records)
+		printer.DnsRecordsList(records, meta)
 	},
 }
 
@@ -127,10 +176,9 @@ var recordDelete = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		domain := args[0]
 		id := args[1]
-		err := client.DNSRecord.Delete(context.TODO(), domain, id)
 
-		if err != nil {
-			fmt.Printf("error while deleting dns record : %v", err)
+		if err := client.DomainRecord.Delete(context.Background(), domain, id); err != nil {
+			fmt.Printf("error while deleting dns record : %v\n", err)
 			os.Exit(1)
 		}
 
@@ -156,9 +204,7 @@ var recordUpdate = &cobra.Command{
 		ttl, _ := cmd.Flags().GetInt("ttl")
 		priority, _ := cmd.Flags().GetInt("priority")
 
-		updates := &govultr.DNSRecord{}
-		i, _ := strconv.Atoi(id)
-		updates.RecordID = i
+		updates := &govultr.DomainRecordReq{}
 
 		if name != "" {
 			updates.Name = name
@@ -176,14 +222,12 @@ var recordUpdate = &cobra.Command{
 			updates.TTL = ttl
 		}
 
-		if priority != 0 {
-			updates.Priority = priority
+		if priority != -1 {
+			updates.Priority = &priority
 		}
 
-		err := client.DNSRecord.Update(context.TODO(), domain, updates)
-
-		if err != nil {
-			fmt.Printf("error updating dns record : %v", err)
+		if err := client.DomainRecord.Update(context.Background(), domain, id, updates); err != nil {
+			fmt.Printf("error updating dns record : %v\n", err)
 			os.Exit(1)
 		}
 

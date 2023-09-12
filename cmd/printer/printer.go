@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"text/tabwriter"
+
+	"github.com/vultr/govultr/v3"
 )
 
 type Printer interface {
@@ -20,7 +22,6 @@ func init() {
 type columns []interface{}
 
 func display(values columns) {
-
 	for i, value := range values {
 		format := "\t%s"
 		if i == 0 {
@@ -33,4 +34,20 @@ func display(values columns) {
 
 func flush() {
 	tw.Flush()
+}
+
+func Meta(meta *govultr.Meta) {
+	display(columns{"======================================"})
+	col := columns{"TOTAL", "NEXT PAGE", "PREV PAGE"}
+	display(col)
+
+	display(columns{meta.Total, meta.Links.Next, meta.Links.Prev})
+}
+
+func MetaDBaaS(meta *govultr.Meta) {
+	display(columns{"======================================"})
+	col := columns{"TOTAL"}
+	display(col)
+
+	display(columns{meta.Total})
 }
