@@ -36,9 +36,6 @@ var (
 	# Full example
 	vultr-cli database list
 
-	# Full example with paging
-	vultr-cli database list --per-page=10 --cursor="bmV4dF9fQU1T"
-
 	# Summarized view
 	vultr-cli database list --summarize
 	`
