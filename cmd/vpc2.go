@@ -71,7 +71,7 @@ func VPC2() *cobra.Command {
 	// VPC2 create flags
 	vpc2Create.Flags().StringP("region", "r", "", "region id for the new vpc network")
 	vpc2Create.Flags().StringP("description", "d", "", "description for the new vpc network")
-	vpc2Create.Flags().StringP("ip-type", "", "", "IP tyoe for the new vpc network")
+	vpc2Create.Flags().StringP("ip-type", "", "", "IP type for the new vpc network")
 	vpc2Create.Flags().StringP("ip-block", "", "", "subnet IP address for the new vpc network")
 	vpc2Create.Flags().IntP("prefix-length", "", 0, "number of bits for the netmask in CIDR notation for the new vpc network")
 
