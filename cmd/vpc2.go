@@ -34,7 +34,7 @@ var (
 	vpc2CreateLong    = `Create a new VPC 2.0 network with specified region, description, and network settings`
 	vpc2CreateExample = `
 	# Full example
-	vultr-cli vpc2 create --region="ewr" --description="example-vpc" --ip-block="10.99.0.0" --prefix-length="24"
+	vultr-cli vpc2 create --region="ewr" --description="example-vpc" --ip-type="v4" --ip-block="10.99.0.0" --prefix-length="24"
 	`
 	vpc2UpdateLong    = `Updates a VPC 2.0 network with the supplied information`
 	vpc2UpdateExample = `
