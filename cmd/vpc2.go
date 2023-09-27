@@ -34,7 +34,7 @@ var (
 	vpc2CreateLong    = `Create a new VPC 2.0 network with specified region, description, and network settings`
 	vpc2CreateExample = `
 	# Full example
-	vultr-cli vpc2 create --region="ewr" --description="example-vpc" --ip-block="10.99.0.0" --prefix-length="24"
+	vultr-cli vpc2 create --region="ewr" --description="example-vpc" --ip-type="v4" --ip-block="10.99.0.0" --prefix-length="24"
 	`
 	vpc2UpdateLong    = `Updates a VPC 2.0 network with the supplied information`
 	vpc2UpdateExample = `
@@ -71,7 +71,7 @@ func VPC2() *cobra.Command {
 	// VPC2 create flags
 	vpc2Create.Flags().StringP("region", "r", "", "region id for the new vpc network")
 	vpc2Create.Flags().StringP("description", "d", "", "description for the new vpc network")
-	vpc2Create.Flags().StringP("ip-type", "", "", "IP tyoe for the new vpc network")
+	vpc2Create.Flags().StringP("ip-type", "", "", "IP type for the new vpc network")
 	vpc2Create.Flags().StringP("ip-block", "", "", "subnet IP address for the new vpc network")
 	vpc2Create.Flags().IntP("prefix-length", "", 0, "number of bits for the netmask in CIDR notation for the new vpc network")
 
