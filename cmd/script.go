@@ -54,7 +54,7 @@ func Script() *cobra.Command {
 	scriptUpdate.Flags().StringP("type", "t", "", "Type of startup script. Possible values: 'boot', 'pxe'. Default is 'boot'.")
 
 	scriptList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	scriptList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	scriptList.Flags().IntP("per-page", "p", perPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return cmd
 }

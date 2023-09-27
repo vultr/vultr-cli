@@ -115,11 +115,25 @@ func ReservedIP() *cobra.Command {
 		Example: reservedIPExample,
 	}
 
-	reservedIPCmd.AddCommand(reservedIPGet, reservedIPList, reservedIPDelete, reservedIPAttach, reservedIPDetach, reservedIPConvert, reservedIPCreate, reservedIPUpdate)
+	reservedIPCmd.AddCommand(
+		reservedIPGet,
+		reservedIPList,
+		reservedIPDelete,
+		reservedIPAttach,
+		reservedIPDetach,
+		reservedIPConvert,
+		reservedIPCreate,
+		reservedIPUpdate,
+	)
 
 	// List
 	reservedIPList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	reservedIPList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	reservedIPList.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	// Attach
 	reservedIPAttach.Flags().StringP("instance-id", "i", "", "id of instance you want to attach")

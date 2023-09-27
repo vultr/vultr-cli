@@ -50,7 +50,7 @@ func Snapshot() *cobra.Command {
 	}
 
 	snapshotList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	snapshotList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	snapshotList.Flags().IntP("per-page", "p", perPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return cmd
 }

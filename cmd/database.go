@@ -60,7 +60,7 @@ var (
 )
 
 // Database represents the database command
-func Database() *cobra.Command {
+func Database() *cobra.Command { //nolint:funlen
 	databaseCmd := &cobra.Command{
 		Use:     "database",
 		Short:   "commands to interact with managed databases on vultr",
@@ -465,7 +465,7 @@ var databaseCreate = &cobra.Command{
 	},
 }
 
-var databaseInfo = &cobra.Command{ //nolint:dupl
+var databaseInfo = &cobra.Command{
 	Use:   "get <databaseID>",
 	Short: "get info about a specific managed database",
 	Long:  ``,
@@ -554,7 +554,7 @@ var databaseUpdate = &cobra.Command{
 	},
 }
 
-var databaseDelete = &cobra.Command{ //nolint:dupl
+var databaseDelete = &cobra.Command{
 	Use:     "delete <databaseID>",
 	Short:   "delete/destroy a managed database",
 	Aliases: []string{"destroy"},
@@ -575,7 +575,7 @@ var databaseDelete = &cobra.Command{ //nolint:dupl
 	},
 }
 
-var databaseUserList = &cobra.Command{ //nolint:dupl
+var databaseUserList = &cobra.Command{
 	Use:   "list <databaseID>",
 	Short: "list all users within a managed database",
 	Long:  ``,
@@ -679,7 +679,7 @@ var databaseUserUpdate = &cobra.Command{
 	},
 }
 
-var databaseUserDelete = &cobra.Command{ //nolint:dupl
+var databaseUserDelete = &cobra.Command{
 	Use:   "delete <databaseID> <username>",
 	Short: "Delete a user within a managed database",
 	Long:  ``,
@@ -699,7 +699,7 @@ var databaseUserDelete = &cobra.Command{ //nolint:dupl
 	},
 }
 
-var databaseDBList = &cobra.Command{ //nolint:dupl
+var databaseDBList = &cobra.Command{
 	Use:   "list <databaseID>",
 	Short: "list all logical databases within a managed database",
 	Long:  ``,
@@ -769,7 +769,7 @@ var databaseDBInfo = &cobra.Command{
 	},
 }
 
-var databaseDBDelete = &cobra.Command{ //nolint:dupl
+var databaseDBDelete = &cobra.Command{
 	Use:   "delete <databaseID> <dbname>",
 	Short: "Delete a logical database within a managed database",
 	Long:  ``,
@@ -789,7 +789,7 @@ var databaseDBDelete = &cobra.Command{ //nolint:dupl
 	},
 }
 
-var databaseMaintenanceUpdatesList = &cobra.Command{ //nolint:dupl
+var databaseMaintenanceUpdatesList = &cobra.Command{
 	Use:   "list <databaseID>",
 	Short: "list all available maintenance updates for a managed database",
 	Long:  ``,
@@ -810,7 +810,7 @@ var databaseMaintenanceUpdatesList = &cobra.Command{ //nolint:dupl
 	},
 }
 
-var databaseStartMaintenance = &cobra.Command{ //nolint:dupl
+var databaseStartMaintenance = &cobra.Command{
 	Use:   "start <databaseID>",
 	Short: "Initialize maintenance updates for a managed database",
 	Long:  "",
@@ -980,7 +980,7 @@ var databaseAddReadReplica = &cobra.Command{
 	},
 }
 
-var databaseGetBackupInfo = &cobra.Command{ //nolint:dupl
+var databaseGetBackupInfo = &cobra.Command{
 	Use:   "get <databaseID>",
 	Short: "Get the latest and oldest available backups for a managed database",
 	Long:  "",
@@ -1185,7 +1185,7 @@ var databaseConnectionPoolUpdate = &cobra.Command{
 	},
 }
 
-var databaseConnectionPoolDelete = &cobra.Command{ //nolint:dupl
+var databaseConnectionPoolDelete = &cobra.Command{
 	Use:   "delete <databaseID> <poolName>",
 	Short: "Delete a connection pool within a PostgreSQL managed database",
 	Long:  ``,
@@ -1205,7 +1205,7 @@ var databaseConnectionPoolDelete = &cobra.Command{ //nolint:dupl
 	},
 }
 
-var databaseAdvancedOptionsList = &cobra.Command{ //nolint:dupl
+var databaseAdvancedOptionsList = &cobra.Command{
 	Use:   "list <databaseID>",
 	Short: "list all available and configured advanced options for a PostgreSQL managed database",
 	Long:  ``,
@@ -1346,7 +1346,7 @@ var databaseAdvancedOptionsUpdate = &cobra.Command{
 	},
 }
 
-var databaseAvailableVersionsList = &cobra.Command{ //nolint:dupl
+var databaseAvailableVersionsList = &cobra.Command{
 	Use:   "list <databaseID>",
 	Short: "list all available version upgrades for a managed database",
 	Long:  ``,

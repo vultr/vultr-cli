@@ -95,7 +95,7 @@ func VPC() *cobra.Command {
 	}
 
 	vpcList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	vpcList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	vpcList.Flags().IntP("per-page", "p", perPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	vpcUpdate.Flags().StringP("description", "d", "", "The description of the VPC")
 	if err := vpcUpdate.MarkFlagRequired("description"); err != nil {

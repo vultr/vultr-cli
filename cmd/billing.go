@@ -115,15 +115,25 @@ func Billing() *cobra.Command {
 	}
 
 	invoicesList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	invoicesList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	invoicesList.Flags().IntP("per-page", "p", perPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	invoiceItemsList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	invoiceItemsList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	invoiceItemsList.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	invoiceCmd.AddCommand(invoicesList, invoiceGet, invoiceItemsList)
 
 	billingHistoryList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	billingHistoryList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	billingHistoryList.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	billingCmd.AddCommand(historyCmd, invoiceCmd)
 

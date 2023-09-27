@@ -42,10 +42,20 @@ func ISO() *cobra.Command {
 	}
 
 	isoPrivateList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	isoPrivateList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	isoPrivateList.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	isoPublic.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	isoPublic.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	isoPublic.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	return isoCmd
 }

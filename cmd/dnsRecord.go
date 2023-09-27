@@ -38,7 +38,12 @@ func DNSRecord() *cobra.Command {
 
 	// Create
 	recordCreate.Flags().StringP("domain", "m", "", "name of domain you want to create this record for")
-	recordCreate.Flags().StringP("type", "t", "", "record type you want to create : Possible values A, AAAA, CNAME, NS, MX, SRV, TXT CAA, SSHFP")
+	recordCreate.Flags().StringP(
+		"type",
+		"t",
+		"",
+		"record type you want to create : Possible values A, AAAA, CNAME, NS, MX, SRV, TXT CAA, SSHFP",
+	)
 	recordCreate.Flags().StringP("name", "n", "", "name of record")
 	recordCreate.Flags().StringP("data", "d", "", "data for the record")
 	if err := recordCreate.MarkFlagRequired("domain"); err != nil {
@@ -69,7 +74,7 @@ func DNSRecord() *cobra.Command {
 
 	// List
 	recordList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	recordList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	recordList.Flags().IntP("per-page", "p", perPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return dnsRecordCmd
 }
@@ -90,8 +95,8 @@ var recordCreate = &cobra.Command{
 		name, _ := cmd.Flags().GetString("name")
 		data, _ := cmd.Flags().GetString("data")
 		// Record data for TXT must be enclosed in quotes
-		if data[0] != '"' && data[len(data)-1] != '"' && regRecordTxt.Match([]byte(data)) {
-			data = fmt.Sprintf("\"%s\"", data)
+		if data[0] != '"' && data[len(data)-1] != '"' && regRecordTxt.MatchString(data) {
+			data = fmt.Sprintf("\"%q\"", data)
 		}
 		ttl, _ := cmd.Flags().GetInt("ttl")
 		priority, _ := cmd.Flags().GetInt("priority")
@@ -212,8 +217,8 @@ var recordUpdate = &cobra.Command{
 
 		if data != "" {
 			// Record data for TXT must be enclosed in quotes
-			if data[0] != '"' && data[len(data)-1] != '"' && regRecordTxt.Match([]byte(data)) {
-				data = fmt.Sprintf("\"%s\"", data)
+			if data[0] != '"' && data[len(data)-1] != '"' && regRecordTxt.MatchString(data) {
+				data = fmt.Sprintf("\"%q\"", data)
 			}
 			updates.Data = data
 		}

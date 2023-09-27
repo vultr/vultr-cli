@@ -44,12 +44,14 @@ var (
 	vpc2NodesAttachLong    = `Attaches multiple nodes to a VPC 2.0 network`
 	vpc2NodesAttachExample = `
 	# Full example
-	vultr-cli vpc2 nodes attach 84fee086-6691-417a-b2db-e2a71061fa17 --nodes="35dbcffe-58bf-46fe-bd68-964d95488dd8,1f5d784a-1011-430c-a2e2-39ba045abe3c"
+	vultr-cli vpc2 nodes attach 84fee086-6691-417a-b2db-e2a71061fa17 \
+		--nodes="35dbcffe-58bf-46fe-bd68-964d95488dd8,1f5d784a-1011-430c-a2e2-39ba045abe3c"
 	`
 	vpc2NodesDetachLong    = `Detaches multiple nodes from a VPC 2.0 network`
 	vpc2NodesDetachExample = `
 	# Full example
-	vultr-cli vpc2 nodes detach 84fee086-6691-417a-b2db-e2a71061fa17 --nodes="35dbcffe-58bf-46fe-bd68-964d95488dd8,1f5d784a-1011-430c-a2e2-39ba045abe3c"
+	vultr-cli vpc2 nodes detach 84fee086-6691-417a-b2db-e2a71061fa17 \
+		--nodes="35dbcffe-58bf-46fe-bd68-964d95488dd8,1f5d784a-1011-430c-a2e2-39ba045abe3c"
 	`
 )
 
@@ -66,7 +68,12 @@ func VPC2() *cobra.Command {
 
 	// VPC2 list flags
 	vpc2List.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	vpc2List.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	vpc2List.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	// VPC2 create flags
 	vpc2Create.Flags().StringP("region", "r", "", "region id for the new vpc network")
@@ -86,7 +93,12 @@ func VPC2() *cobra.Command {
 	}
 	vpc2NodeCmd.AddCommand(vpc2NodesList, vpc2NodesAttach, vpc2NodesDetach)
 	vpc2NodesList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	vpc2NodesList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	vpc2NodesList.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 	vpc2NodesAttach.Flags().StringSliceP("nodes", "n", []string{}, "instance ids you wish to attach to the vpc network")
 	vpc2NodesDetach.Flags().StringSliceP("nodes", "n", []string{}, "instance ids you wish to detach from the vpc network")
 	vpc2Cmd.AddCommand(vpc2NodeCmd)
@@ -145,7 +157,7 @@ var vpc2Create = &cobra.Command{
 	},
 }
 
-var vpc2Info = &cobra.Command{ //nolint:dupl
+var vpc2Info = &cobra.Command{
 	Use:   "get <vpc2ID>",
 	Short: "get info about a specific VPC 2.0 network",
 	Long:  ``,
@@ -192,7 +204,7 @@ var vpc2Update = &cobra.Command{
 	},
 }
 
-var vpc2Delete = &cobra.Command{ //nolint:dupl
+var vpc2Delete = &cobra.Command{
 	Use:     "delete <vpc2ID>",
 	Short:   "delete/destroy a VPC 2.0 network",
 	Aliases: []string{"destroy"},
@@ -236,7 +248,7 @@ var vpc2NodesList = &cobra.Command{
 	},
 }
 
-var vpc2NodesAttach = &cobra.Command{ //nolint:dupl
+var vpc2NodesAttach = &cobra.Command{
 	Use:     "attach <vpc2ID>",
 	Short:   "Attach nodes to a VPC 2.0 network",
 	Aliases: []string{"a"},
@@ -266,7 +278,7 @@ var vpc2NodesAttach = &cobra.Command{ //nolint:dupl
 	},
 }
 
-var vpc2NodesDetach = &cobra.Command{ //nolint:dupl
+var vpc2NodesDetach = &cobra.Command{
 	Use:     "detach <vpc2ID>",
 	Short:   "Detach nodes from a VPC 2.0 network",
 	Aliases: []string{"d"},

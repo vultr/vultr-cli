@@ -65,7 +65,7 @@ func Network() *cobra.Command {
 	}
 
 	networkList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	networkList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	networkList.Flags().IntP("per-page", "p", perPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return networkCmd
 }
@@ -83,7 +83,7 @@ var networkGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		network, _, err := client.Network.Get(context.Background(), id) //nolint:all
+		network, _, err := client.Network.Get(context.Background(), id) //nolint: staticcheck
 		if err != nil {
 			fmt.Printf("error getting network : %v\n", err)
 			os.Exit(1)
@@ -100,7 +100,7 @@ var networkList = &cobra.Command{
 	Deprecated: "Use vpc list instead.",
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		network, meta, _, err := client.Network.List(context.Background(), options) //nolint:all
+		network, meta, _, err := client.Network.List(context.Background(), options) //nolint: staticcheck
 		if err != nil {
 			fmt.Printf("error getting network list : %v\n", err)
 			os.Exit(1)
@@ -124,7 +124,7 @@ var networkDelete = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		if err := client.Network.Delete(context.Background(), id); err != nil { //nolint:all
+		if err := client.Network.Delete(context.Background(), id); err != nil { //nolint: staticcheck
 			fmt.Printf("error deleting network : %v\n", err)
 			os.Exit(1)
 		}
@@ -151,7 +151,7 @@ var networkCreate = &cobra.Command{
 			V4SubnetMask: size,
 		}
 
-		network, _, err := client.Network.Create(context.Background(), options) //nolint:all
+		network, _, err := client.Network.Create(context.Background(), options) //nolint: staticcheck
 		if err != nil {
 			fmt.Printf("error creating network : %v\n", err)
 			os.Exit(1)

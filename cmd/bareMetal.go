@@ -96,15 +96,50 @@ func BareMetal() *cobra.Command {
 		os.Exit(1)
 	}
 	bareMetalCreate.Flags().IntP("os", "o", 0, "ID of the operating system that will be installed on the server.")
-	bareMetalCreate.Flags().StringP("script", "s", "", "(optional) ID of the startup script that will run after the server is created.")
-	bareMetalCreate.Flags().StringP("snapshot", "", "", "(optional) ID of the snapshot that the server will be restored from.")
-	bareMetalCreate.Flags().StringP("ipv6", "i", "", "(optional) Whether IPv6 is enabled on the server. Possible values: 'yes', 'no'. Defaults to 'no'.")
+	bareMetalCreate.Flags().StringP(
+		"script",
+		"s",
+		"",
+		"(optional) ID of the startup script that will run after the server is created.",
+	)
+	bareMetalCreate.Flags().StringP(
+		"snapshot",
+		"",
+		"",
+		"(optional) ID of the snapshot that the server will be restored from.",
+	)
+	bareMetalCreate.Flags().StringP(
+		"ipv6",
+		"i",
+		"",
+		"(optional) Whether IPv6 is enabled on the server. Possible values: 'yes', 'no'. Defaults to 'no'.",
+	)
 	bareMetalCreate.Flags().StringP("label", "l", "", "(optional) The label to assign to the server.")
-	bareMetalCreate.Flags().StringSliceP("ssh", "k", []string{}, "(optional) Comma separated list of SSH key IDs that will be added to the server.")
-	bareMetalCreate.Flags().IntP("app", "a", 0, "(optional) ID of the application that will be installed on the server.")
+	bareMetalCreate.Flags().StringSliceP(
+		"ssh",
+		"k",
+		[]string{},
+		"(optional) Comma separated list of SSH key IDs that will be added to the server.",
+	)
+	bareMetalCreate.Flags().IntP(
+		"app",
+		"a",
+		0,
+		"(optional) ID of the application that will be installed on the server.",
+	)
 	bareMetalCreate.Flags().StringP("image", "", "", "(optional) Image ID of the application that will be installed on the server.")
-	bareMetalCreate.Flags().StringP("userdata", "u", "", "(optional) A generic data store, which some provisioning tools and cloud operating systems use as a configuration file.")
-	bareMetalCreate.Flags().StringP("notify", "n", "", "(optional) Whether an activation email will be sent when the server is ready. Possible values: 'yes', 'no'. Defaults to 'yes'.")
+	bareMetalCreate.Flags().StringP(
+		"userdata",
+		"u",
+		"",
+		"(optional) A generic data store, which some provisioning tools and cloud operating systems use as a configuration file.",
+	)
+	bareMetalCreate.Flags().StringP(
+		"notify",
+		"n",
+		"",
+		"(optional) Whether an activation email will be sent when the server is ready. Possible values: 'yes', 'no'. Defaults to 'yes'.",
+	)
 	bareMetalCreate.Flags().StringP("hostname", "m", "", "(optional) The hostname to assign to the server.")
 	bareMetalCreate.Flags().StringP("tag", "t", "", "Deprecated: use `tags` instead. (optional) The tag to assign to the server.")
 	bareMetalCreate.Flags().StringSliceP("tags", "", []string{}, "(optional) A comma separated list of tags to assign to the server.")
@@ -112,13 +147,28 @@ func BareMetal() *cobra.Command {
 	bareMetalCreate.Flags().BoolP("persistent_pxe", "x", false, "enable persistent_pxe | true or false")
 
 	bareMetalList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	bareMetalList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	bareMetalList.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	bareMetalListIPV4.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	bareMetalListIPV4.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	bareMetalListIPV4.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	bareMetalListIPV6.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	bareMetalListIPV6.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	bareMetalListIPV6.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	bareMetalTags.Flags().StringSliceP("tags", "t", []string{}, "A comma separated list of tags to apply to the server")
 	if err := bareMetalTags.MarkFlagRequired("tags"); err != nil {

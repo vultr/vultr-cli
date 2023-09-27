@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package cmd implements the command line commands relevant to the vultr-cli
 package cmd
 
 import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -27,7 +29,8 @@ import (
 )
 
 const (
-	userAgent = "vultr-cli/" + version
+	userAgent          = "vultr-cli/" + version
+	perPageDefault int = 100
 )
 
 var cfgFile string
@@ -142,8 +145,8 @@ func getPaging(cmd *cobra.Command) *govultr.ListOptions {
 
 func configHome() string {
 	// check for a config file at ~/.config/vultr-cli.yaml
-	configFolder, err := os.UserConfigDir()
-	if err != nil {
+	configFolder, errConfig := os.UserConfigDir()
+	if errConfig != nil {
 		os.Exit(1)
 	}
 
@@ -154,20 +157,24 @@ func configHome() string {
 	}
 
 	// check for a config file at ~/.vultr-cli.yaml
-	configFolder, err = os.UserHomeDir()
-	if err != nil {
+	configFolder, errHome := os.UserHomeDir()
+	if errHome != nil {
 		os.Exit(1)
 	}
 
 	configFile = fmt.Sprintf("%s/.vultr-cli.yaml", configFolder)
 	if _, err := os.Stat(configFile); err != nil {
 		// if it doesn't exist, create one
-		f, err := os.Create(configFile)
+		f, err := os.Create(filepath.Clean(configFile))
 		if err != nil {
 			os.Exit(1)
 		}
-		defer f.Close()
 
+		defer func() {
+			if errCls := f.Close(); errCls != nil {
+				fmt.Printf("failed to close config file.. error: %v", errCls)
+			}
+		}()
 	}
 
 	return configFile

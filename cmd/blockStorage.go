@@ -107,7 +107,6 @@ var (
 
 // BlockStorageCmd represents the blockStorage command
 func BlockStorageCmd() *cobra.Command {
-
 	bsCmd := &cobra.Command{
 		Use:     "block-storage",
 		Aliases: []string{"bs"},
@@ -119,7 +118,7 @@ func BlockStorageCmd() *cobra.Command {
 
 	// List
 	bsList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	bsList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	bsList.Flags().IntP("per-page", "p", perPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	// Attach
 	bsAttach.Flags().StringP("instance", "i", "", "instance id you want to attach to")
@@ -146,7 +145,13 @@ func BlockStorageCmd() *cobra.Command {
 
 	bsCreate.Flags().StringP("label", "l", "", "label you want to give the block storage")
 
-	bsCreate.Flags().StringP("block-type", "b", "", "(optional) Block type you want to give the block storage. Possible values: 'high_perf', 'storage_opt'. Currently defaults to 'high_perf'.")
+	bsCreate.Flags().StringP(
+		"block-type",
+		"b",
+		"",
+		`(optional) Block type you want to give the block storage.
+		Possible values: 'high_perf', 'storage_opt'. Currently defaults to 'high_perf'.`,
+	)
 
 	// Label
 	bsLabelSet.Flags().StringP("label", "l", "", "label you want your block storage to have")
