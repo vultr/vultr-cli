@@ -224,9 +224,15 @@ func Database() *cobra.Command { //nolint:funlen
 		Short: "commands to handle PostgreSQL managed database connection pools",
 		Long:  ``,
 	}
+
 	connectionPoolsCmd.AddCommand(
-		databaseConnectionPoolList, databaseConnectionPoolCreate, databaseConnectionPoolInfo,
-		databaseConnectionPoolUpdate, databaseConnectionPoolDelete)
+		databaseConnectionPoolList,
+		databaseConnectionPoolCreate,
+		databaseConnectionPoolInfo,
+		databaseConnectionPoolUpdate,
+		databaseConnectionPoolDelete,
+	)
+
 	databaseConnectionPoolCreate.Flags().StringP("name", "n", "", "name for the new managed database connection pool")
 	databaseConnectionPoolCreate.Flags().StringP("database", "d", "", "database for the new managed database connection pool")
 	databaseConnectionPoolCreate.Flags().StringP("username", "u", "", "username for the new managed database connection pool")
