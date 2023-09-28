@@ -614,7 +614,7 @@ var lbUpdate = &cobra.Command{
 }
 
 var ruleList = &cobra.Command{
-	Use:   "list rule <loadBalancerID>",
+	Use:   "list <loadBalancerID>",
 	Short: "lists a load balancers forwarding rules",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -637,7 +637,7 @@ var ruleList = &cobra.Command{
 }
 
 var ruleCreate = &cobra.Command{
-	Use:   "create rule <loadBalancerID>",
+	Use:   "create <loadBalancerID>",
 	Short: "creates a load balancer forwarding rule",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -660,7 +660,7 @@ var ruleCreate = &cobra.Command{
 }
 
 var ruleGet = &cobra.Command{
-	Use:   "get rule <loadBalancerID> <ruleID>",
+	Use:   "get <loadBalancerID> <ruleID>",
 	Short: "Gets a load balancer forwarding rule",
 	Long:  ``,
 	Args: func(cmd *cobra.Command, args []string) error {
