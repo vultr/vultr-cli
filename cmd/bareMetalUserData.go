@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
@@ -71,9 +72,10 @@ var bareMetalSetUserData = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		userData, _ := cmd.Flags().GetString("userdata")
+		userDataPath, _ := cmd.Flags().GetString("userdata")
+		userDataPath = filepath.Clean(userDataPath)
 
-		rawData, err := os.ReadFile(userData)
+		rawData, err := os.ReadFile(userDataPath)
 		if err != nil {
 			fmt.Printf("error reading user-data : %v\n", err)
 			os.Exit(1)

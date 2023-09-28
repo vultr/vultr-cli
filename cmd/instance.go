@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
@@ -47,10 +48,12 @@ var (
 	vultr-cli instance c -r="ewr" -p="vc2-1c-1gb" -o=244
 
 	# Full example with attached VPCs
-	vultr-cli instance create --region="ewr" --plan="vc2-1c-1gb" --os=244 --vpc-ids="08422775-5be0-4371-afba-64b03f9ad22d,13a45caa-9c06-4b5d-8f76-f5281ab172b7"
+	vultr-cli instance create --region="ewr" --plan="vc2-1c-1gb" --os=244 \
+		--vpc-ids="08422775-5be0-4371-afba-64b03f9ad22d,13a45caa-9c06-4b5d-8f76-f5281ab172b7"
 
 	# Full example with assigned ssh keys
-	vultr-cli instance create --region=ewr --plan=vc2-1c-1gb --os=244 --ssh-keys="a14b6539-5583-41e8-a035-c07a76897f2b,be624232-56c7-4d5c-bf87-9bdaae7a1fbd"
+	vultr-cli instance create --region=ewr --plan=vc2-1c-1gb --os=244 /
+		--ssh-keys="a14b6539-5583-41e8-a035-c07a76897f2b,be624232-56c7-4d5c-bf87-9bdaae7a1fbd"
 	`
 
 	instanceTagsLong    = `Modify the tags of the specified instance`
@@ -86,7 +89,7 @@ var (
 )
 
 // Instance represents the instance command
-func Instance() *cobra.Command {
+func Instance() *cobra.Command { //nolint: funlen,gocyclo
 	instanceCmd := &cobra.Command{
 		Use:     "instance",
 		Short:   "commands to interact with instances on vultr",
@@ -94,7 +97,22 @@ func Instance() *cobra.Command {
 		Example: instanceExample,
 	}
 
-	instanceCmd.AddCommand(instanceStart, instanceStop, instanceRestart, instanceReinstall, instanceTag, instanceTags, instanceDelete, instanceLabel, instanceBandwidth, instanceList, instanceInfo, updateFwgGroup, instanceRestore, instanceCreate)
+	instanceCmd.AddCommand(
+		instanceStart,
+		instanceStop,
+		instanceRestart,
+		instanceReinstall,
+		instanceTag,
+		instanceTags,
+		instanceDelete,
+		instanceLabel,
+		instanceBandwidth,
+		instanceList,
+		instanceInfo,
+		updateFwgGroup,
+		instanceRestore,
+		instanceCreate,
+	)
 
 	instanceReinstall.Flags().StringP("host", "", "", "The hostname to assign to this instance")
 
@@ -117,7 +135,12 @@ func Instance() *cobra.Command {
 	}
 
 	updateFwgGroup.Flags().StringP("instance-id", "i", "", "instance id of the instance you want to use")
-	updateFwgGroup.Flags().StringP("firewall-group-id", "f", "", "firewall group id that you want to assign. 0 Value will unset the firewall-group")
+	updateFwgGroup.Flags().StringP(
+		"firewall-group-id",
+		"f",
+		"",
+		"firewall group id that you want to assign. 0 Value will unset the firewall-group",
+	)
 	if err := updateFwgGroup.MarkFlagRequired("instance-id"); err != nil {
 		fmt.Printf("error marking instance firewall group 'instance-id' flag required: %v\n", err)
 		os.Exit(1)
@@ -143,13 +166,23 @@ func Instance() *cobra.Command {
 	}
 
 	// Optional Params
-	instanceCreate.Flags().StringP("ipxe", "", "", "if you've selected the 'custom' operating system, this can be set to chainload the specified URL on bootup")
+	instanceCreate.Flags().StringP(
+		"ipxe",
+		"",
+		"",
+		"if you've selected the 'custom' operating system, this can be set to chainload the specified URL on bootup",
+	)
 	instanceCreate.Flags().StringP("iso", "", "", "iso ID you want to create the instance with")
 	instanceCreate.Flags().StringP("snapshot", "", "", "snapshot ID you want to create the instance with")
 	instanceCreate.Flags().StringP("script-id", "", "", "script id of the startup script")
 	instanceCreate.Flags().BoolP("ipv6", "", false, "enable ipv6 | true or false")
 	instanceCreate.Flags().BoolP("private-network", "", false, "Deprecated: use vpc-enable instead. enable private network | true or false")
-	instanceCreate.Flags().StringSliceP("network", "", []string{}, "Deprecated: use vpc-ids instead. network IDs you want to assign to the instance")
+	instanceCreate.Flags().StringSliceP(
+		"network",
+		"",
+		[]string{},
+		"Deprecated: use vpc-ids instead. network IDs you want to assign to the instance",
+	)
 	instanceCreate.Flags().BoolP("vpc-enable", "", false, "enable VPC | true or false")
 	instanceCreate.Flags().StringSliceP("vpc-ids", "", []string{}, "VPC IDs you want to assign to the instance")
 	instanceCreate.Flags().StringP("label", "l", "", "label you want to give this instance")
@@ -167,13 +200,28 @@ func Instance() *cobra.Command {
 	instanceCreate.Flags().StringP("firewall-group", "", "", "The firewall group to assign to this instance")
 
 	instanceList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	instanceList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	instanceList.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	instanceIPV4List.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	instanceIPV4List.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	instanceIPV4List.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	instanceIPV6List.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	instanceIPV6List.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	instanceIPV6List.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	// Sub commands for OS
 	osCmd := &cobra.Command{
@@ -225,12 +273,22 @@ func Instance() *cobra.Command {
 		Long:  ``,
 	}
 	backupCMD.AddCommand(backupGet, backupCreate)
-	backupCreate.Flags().StringP("type", "t", "", "type string Backup cron type. Can be one of 'daily', 'weekly', 'monthly', 'daily_alt_even', or 'daily_alt_odd'.")
+	backupCreate.Flags().StringP(
+		"type",
+		"t",
+		"",
+		"type string Backup cron type. Can be one of 'daily', 'weekly', 'monthly', 'daily_alt_even', or 'daily_alt_odd'.",
+	)
 	if err := backupCreate.MarkFlagRequired("type"); err != nil {
 		fmt.Printf("error marking instance backup create 'type' flag required: %v\n", err)
 		os.Exit(1)
 	}
-	backupCreate.Flags().IntP("hour", "o", 0, "Hour value (0-23). Applicable to crons: 'daily', 'weekly', 'monthly', 'daily_alt_even', 'daily_alt_odd'")
+	backupCreate.Flags().IntP(
+		"hour",
+		"o",
+		0,
+		"Hour value (0-23). Applicable to crons: 'daily', 'weekly', 'monthly', 'daily_alt_even', 'daily_alt_odd'",
+	)
 	backupCreate.Flags().IntP("dow", "w", 0, "Day-of-week value (0-6). Applicable to crons: 'weekly'")
 	backupCreate.Flags().IntP("dom", "m", 0, "Day-of-month value (1-28). Applicable to crons: 'monthly'")
 	instanceCmd.AddCommand(backupCMD)
@@ -1314,9 +1372,10 @@ var setUserData = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		userData, _ := cmd.Flags().GetString("userdata")
+		userDataPath, _ := cmd.Flags().GetString("userdata")
+		userDataPath = filepath.Clean(userDataPath)
 
-		rawData, err := os.ReadFile(userData)
+		rawData, err := os.ReadFile(userDataPath)
 		if err != nil {
 			fmt.Printf("error reading user-data : %v\n", err)
 			os.Exit(1)

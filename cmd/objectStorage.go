@@ -33,7 +33,15 @@ func ObjectStorageCmd() *cobra.Command {
 		Long:    `object-storage is used to interact with the object-storage api`,
 	}
 
-	objStorageCmd.AddCommand(objStorageCreate, objStorageLabelSet, objStorageList, objStorageGet, objStorageClusterList, objStorageS3KeyRegenerate, objStorageDestroy)
+	objStorageCmd.AddCommand(
+		objStorageCreate,
+		objStorageLabelSet,
+		objStorageList,
+		objStorageGet,
+		objStorageClusterList,
+		objStorageS3KeyRegenerate,
+		objStorageDestroy,
+	)
 
 	// Create
 	objStorageCreate.Flags().StringP("label", "l", "", "label you want your object storage to have")
@@ -52,14 +60,24 @@ func ObjectStorageCmd() *cobra.Command {
 
 	// List
 	objStorageList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	objStorageList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	objStorageList.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	// Regenerate
 	objStorageS3KeyRegenerate.Flags().StringP("s3-access-key", "s", "", "access key for a given object storage subscription")
 
 	// Cluster List
 	objStorageClusterList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	objStorageClusterList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	objStorageClusterList.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	return objStorageCmd
 }

@@ -40,7 +40,13 @@ func User() *cobra.Command {
 	userCreate.Flags().StringP("name", "n", "", "User name")
 	userCreate.Flags().StringP("password", "p", "", "User password")
 	userCreate.Flags().StringP("api-enabled", "a", "yes", "Toggle User API Access")
-	userCreate.Flags().StringSliceP("acl", "l", []string{}, "User access control list in a comma separated list. Possible values manage_users,subscriptions,billing,support,provisioning,dns,abuse,upgrade,firewall,alerts]")
+	userCreate.Flags().StringSliceP(
+		"acl",
+		"l",
+		[]string{},
+		`User access control list in a comma separated list.
+		Possible values manage_users,subscriptions,billing,support,provisioning,dns,abuse,upgrade,firewall,alerts`,
+	)
 
 	if err := userCreate.MarkFlagRequired("email"); err != nil {
 		fmt.Printf("error marking user create 'email' flag required: %v\n", err)
@@ -59,10 +65,16 @@ func User() *cobra.Command {
 	userUpdate.Flags().StringP("name", "n", "", "User name")
 	userUpdate.Flags().StringP("password", "p", "", "User password")
 	userUpdate.Flags().StringP("api-enabled", "a", "yes", "Toggle User API Access")
-	userUpdate.Flags().StringSliceP("acl", "l", []string{}, "User access control list in a comma separated list. Possible values manage_users,subscriptions,billing,support,provisioning,dns,abuse,upgrade,firewall,alerts]")
+	userUpdate.Flags().StringSliceP(
+		"acl",
+		"l",
+		[]string{},
+		`User access control list in a comma separated list.
+		Possible values manage_users,subscriptions,billing,support,provisioning,dns,abuse,upgrade,firewall,alerts`,
+	)
 
 	userList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	userList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	userList.Flags().IntP("per-page", "p", perPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return cmd
 }

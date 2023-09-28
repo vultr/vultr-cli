@@ -91,7 +91,6 @@ func Cluster(k *govultr.Cluster) {
 
 func NodePools(nodepool []govultr.NodePool, meta *govultr.Meta) {
 	for _, np := range nodepool {
-
 		display(columns{"ID", np.ID})
 		display(columns{"DATE CREATED", np.DateCreated})
 		display(columns{"DATE UPDATED", np.DateUpdated})

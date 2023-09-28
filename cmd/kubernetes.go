@@ -37,7 +37,8 @@ var (
 	createLong    = `Create kubernetes cluster on your Vultr account`
 	createExample = `
 	# Full Example
-	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.20.0+1" --node-pools="quantity:3,plan:vc2-1c-2gb,label:my-nodepool,tag:my-tag"
+	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.20.0+1" \
+		--node-pools="quantity:3,plan:vc2-1c-2gb,label:my-nodepool,tag:my-tag"
 
 	# Shortened with alias commands
 	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.20.0+1" -n="quantity:3,plan:vc2-1c-2gb,label:my-nodepool,tag:my-tag"
@@ -204,24 +205,24 @@ var (
 	deleteNPInstanceLong    = `Delete a specific node pool instance in a kubernetes cluster from your Vultr Account`
 	deleteNPInstanceExample = `
 	# Full example
-	vultr-cli kubernetes node-pool node delete ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421
+	vultr-cli kubernetes node-pool node delete ffd31f18-5f77-454c-9065-212f942c3c35
 
 	# Shortened with alias commands
-	vultr-cli k n node d ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421'
+	vultr-cli k n node d ffd31f18-5f77-454c-9065-212f942c3c35
 	`
 
 	deleteNPInstanceRecycleLong    = `Recycles a specific node pool instance in a kubernetes cluster from your Vultr Account`
 	deleteNPInstanceRecycleExample = `
 	# Full example
-	vultr-cli kubernetes node-pool node recycle ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421
+	vultr-cli kubernetes node-pool node recycle ffd31f18-5f77-454c-9065-212f942c3c35
 
 	# Shortened with alias commands
-	vultr-cli k n node r ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 0c814ecd-6ecd-4883-8550-0b5ff3d2a421'
+	vultr-cli k n node r ffd31f18-5f77-454c-9065-212f942c3c35
 	`
 )
 
 // Kubernetes represents the kubernetes command
-func Kubernetes() *cobra.Command {
+func Kubernetes() *cobra.Command { //nolint: funlen
 	kubernetesCmd := &cobra.Command{
 		Use:     "kubernetes",
 		Aliases: []string{"k"},
@@ -234,7 +235,14 @@ func Kubernetes() *cobra.Command {
 	k8Create.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
 	k8Create.Flags().StringP("region", "r", "", "region you want your kubernetes cluster to be located in")
 	k8Create.Flags().StringP("version", "v", "", "the kubernetes version you want for your cluster")
-	k8Create.Flags().StringArrayP("node-pools", "n", []string{}, "a comma-separated, key-value pair list of node pools. At least one node pool is required. At least one node is required in node pool. Use / between each new node pool. E.g: `plan:vhf-8c-32gb,label:mynodepool,tag:my-tag,quantity:3/plan:vhf-8c-32gb,label:mynodepool2,quantity:3`")
+	k8Create.Flags().StringArrayP(
+		"node-pools",
+		"n",
+		[]string{},
+		`a comma-separated, key-value pair list of node pools. At least one node pool is required. At least one node is
+		required in node pool. Use / between each new node pool.
+		E.g: 'plan:vhf-8c-32gb,label:mynodepool,tag:my-tag,quantity:3/plan:vhf-8c-32gb,label:mynodepool2,quantity:3`,
+	)
 
 	if err := k8Create.MarkFlagRequired("label"); err != nil {
 		fmt.Printf("error marking kubernetes create 'label' flag required: %v\n", err)
@@ -254,7 +262,7 @@ func Kubernetes() *cobra.Command {
 	}
 
 	k8List.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
-	k8List.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	k8List.Flags().IntP("per-page", "p", perPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 	k8List.Flags().BoolP("summarize", "", false, "(optional) Summarize the list output. One line per cluster.")
 
 	k8Update.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
@@ -312,7 +320,7 @@ func Kubernetes() *cobra.Command {
 	}
 
 	npList.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
-	npList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	npList.Flags().IntP("per-page", "p", perPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	npUpdate.Flags().IntP("quantity", "q", 1, "Number of nodes in your node pool. Note that at least one node is required for a node pool.")
 	npUpdate.Flags().StringP("tag", "t", "", "tag you want for your node pool.")
@@ -795,59 +803,72 @@ func formatNodePools(nodePools []string) ([]govultr.NodePoolReq, error) {
 	npList := strings.Split(nodePools[0], "/")
 
 	for _, r := range npList {
-		np := govultr.NodePoolReq{}
-		node := strings.Split(r, ",")
+		nodeData := strings.Split(r, ",")
 
-		if len(node) < 3 || len(node) > 7 {
-			return nil, fmt.Errorf("unable to format node pool. each node pool must include label, quantity, and plan.  Optionally you can include tag, auto-scaler, min-nodes and max-nodes")
+		if len(nodeData) < 3 || len(nodeData) > 7 {
+			return nil, fmt.Errorf(
+				`unable to format node pool. each node pool must include label, quantity, and plan.
+				Optionally you can include tag, auto-scaler, min-nodes and max-nodes`,
+			)
 		}
 
-		for _, f := range node {
-			npKeyVal := strings.Split(f, ":")
-
-			if len(npKeyVal) != 2 && len(npKeyVal) != 3 {
-				return nil, fmt.Errorf("invalid node pool format")
-			}
-
-			field := npKeyVal[0]
-			val := npKeyVal[1]
-
-			switch true {
-			case field == "plan":
-				np.Plan = val
-			case field == "quantity":
-				port, err := strconv.Atoi(val)
-				if err != nil {
-					return nil, fmt.Errorf("invalid value for node pool quantity: %v", err)
-				}
-				np.NodeQuantity = port
-			case field == "label":
-				np.Label = val
-			case field == "tag":
-				np.Tag = val
-			case field == "auto-scaler":
-				v, err := strconv.ParseBool(val)
-				if err != nil {
-					return nil, fmt.Errorf("invalid value for node pool auto-scaler: %v", err)
-				}
-				np.AutoScaler = govultr.BoolToBoolPtr(v)
-			case field == "min-nodes":
-				v, err := strconv.Atoi(val)
-				if err != nil {
-					return nil, fmt.Errorf("invalid value for node pool min-nodes: %v", err)
-				}
-				np.MinNodes = v
-			case field == "max-nodes":
-				v, err := strconv.Atoi(val)
-				if err != nil {
-					return nil, fmt.Errorf("invalid value for max-nodes: %v", err)
-				}
-				np.MaxNodes = v
-			}
+		formattedNodeData, errFormat := formatNodeData(nodeData)
+		if errFormat != nil {
+			return nil, errFormat
 		}
 
-		formattedList = append(formattedList, np)
+		formattedList = append(formattedList, *formattedNodeData)
 	}
 
 	return formattedList, nil
+}
+
+// formatNodeData loops over the parse strings for a node and returns the formatted struct
+func formatNodeData(node []string) (*govultr.NodePoolReq, error) {
+	nodeData := &govultr.NodePoolReq{}
+	for _, f := range node {
+		nodeDataKeyVal := strings.Split(f, ":")
+
+		if len(nodeDataKeyVal) != 2 && len(nodeDataKeyVal) != 3 {
+			return nil, fmt.Errorf("invalid node pool format")
+		}
+
+		field := nodeDataKeyVal[0]
+		val := nodeDataKeyVal[1]
+
+		switch {
+		case field == "plan":
+			nodeData.Plan = val
+		case field == "quantity":
+			port, err := strconv.Atoi(val)
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for node pool quantity: %v", err)
+			}
+			nodeData.NodeQuantity = port
+		case field == "label":
+			nodeData.Label = val
+		case field == "tag":
+			nodeData.Tag = val
+		case field == "auto-scaler":
+			v, err := strconv.ParseBool(val)
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for node pool auto-scaler: %v", err)
+			}
+			nodeData.AutoScaler = govultr.BoolToBoolPtr(v)
+		case field == "min-nodes":
+			v, err := strconv.Atoi(val)
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for node pool min-nodes: %v", err)
+			}
+			nodeData.MinNodes = v
+		case field == "max-nodes":
+			v, err := strconv.Atoi(val)
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for max-nodes: %v", err)
+			}
+			nodeData.MaxNodes = v
+		}
+	}
+
+	return nodeData, nil
 }

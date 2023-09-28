@@ -33,7 +33,7 @@ func Os() *cobra.Command {
 	osCmd.AddCommand(osList)
 
 	osList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	osList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	osList.Flags().IntP("per-page", "p", perPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return osCmd
 }

@@ -44,7 +44,8 @@ var (
 	`
 	firewallRuleCreateExample = `
 	# Full examples
-	vultr-cli firewall rule create --id=f04ae5aa-ff6a-4078-900d-78cc17dca2d5 --ip-type=v4 --protocol=tcp --size=24 --subnet=127.0.0.0 --port=30000
+	vultr-cli firewall rule create --id=f04ae5aa-ff6a-4078-900d-78cc17dca2d5 --ip-type=v4 --protocol=tcp --size=24 \
+		--subnet=127.0.0.0 --port=30000
 
 	vultr-cli firewall rule create --id=f04ae5aa-ff6a-4078-900d-78cc17dca2d5 --ip-type=v4 --protocol=icmp --size=24 --subnet=127.0.0.0
 
@@ -93,11 +94,21 @@ func FirewallRule() *cobra.Command {
 	firewallRuleCreate.Flags().StringP("protocol", "p", "", "Protocol type. Possible values: 'icmp', 'tcp', 'udp', 'gre'.")
 	firewallRuleCreate.Flags().StringP("subnet", "s", "", "The IPv4 network in CIDR notation.")
 	firewallRuleCreate.Flags().IntP("size", "z", 0, "The number of bits for the netmask in CIDR notation.")
-	firewallRuleCreate.Flags().StringP("source", "o", "", "(optional) When empty, uses value from subnet and size. If \"cloudflare\", allows all Cloudflare IP space through firewall.")
+	firewallRuleCreate.Flags().StringP(
+		"source",
+		"o",
+		"",
+		"(optional) When empty, uses value from subnet and size. If \"cloudflare\", allows all Cloudflare IP space through firewall.",
+	)
 	firewallRuleCreate.Flags().StringP("type", "", "", "Deprecated: use ip-type instead. The type of IP rule - v4 or v6.")
 	firewallRuleCreate.Flags().StringP("ip-type", "t", "", "The type of IP rule - v4 or v6.")
 
-	firewallRuleCreate.Flags().StringP("port", "r", "", "(optional) TCP/UDP only. This field can be an integer value specifying a port or a colon separated port range.")
+	firewallRuleCreate.Flags().StringP(
+		"port",
+		"r",
+		"",
+		"(optional) TCP/UDP only. This field can be an integer value specifying a port or a colon separated port range.",
+	)
 	firewallRuleCreate.Flags().StringP("notes", "n", "", "(optional) This field supports notes up to 255 characters.")
 
 	if err := firewallRuleCreate.MarkFlagRequired("id"); err != nil {
@@ -118,7 +129,12 @@ func FirewallRule() *cobra.Command {
 	}
 
 	firewallRuleList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	firewallRuleList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	firewallRuleList.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	return firewallRuleCmd
 }
