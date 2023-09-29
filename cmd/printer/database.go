@@ -8,6 +8,13 @@ import (
 
 // DatabasePlanList will generate a printer display of available Managed Database plans
 func DatabasePlanList(databasePlans []govultr.DatabasePlan, meta *govultr.Meta) {
+	defer flush()
+
+	if len(databasePlans) == 0 {
+		displayString("No database plans available")
+		return
+	}
+
 	for p := range databasePlans {
 		display(columns{"ID", databasePlans[p].ID})
 		display(columns{"NUMBER OF NODES", databasePlans[p].NumberOfNodes})
@@ -37,11 +44,17 @@ func DatabasePlanList(databasePlans []govultr.DatabasePlan, meta *govultr.Meta) 
 	}
 
 	MetaDBaaS(meta)
-	flush()
 }
 
 // DatabaseList will generate a printer display of all Managed Databases on the account
-func DatabaseList(databases []govultr.Database, meta *govultr.Meta) {
+func DatabaseList(databases []govultr.Database, meta *govultr.Meta) { //nolint: funlen,gocyclo
+	defer flush()
+
+	if len(databases) == 0 {
+		displayString("No active databases")
+		return
+	}
+
 	for d := range databases {
 		display(columns{"ID", databases[d].ID})
 		display(columns{"DATE CREATED", databases[d].DateCreated})
@@ -159,22 +172,42 @@ func DatabaseList(databases []govultr.Database, meta *govultr.Meta) {
 	}
 
 	MetaDBaaS(meta)
-	flush()
 }
 
 // DatabaseListSummary will generate a summarized printer display of all Managed Databases on the account
 func DatabaseListSummary(databases []govultr.Database, meta *govultr.Meta) {
+	defer flush()
+
 	display(columns{"ID", "REGION", "LABEL", "STATUS", "ENGINE", "VERSION", "HOST", "PORT", "USER", "PASSWORD"})
-	for _, d := range databases {
-		display(columns{d.ID, d.Region, d.Label, d.Status, d.DatabaseEngine, d.DatabaseEngineVersion, d.Host, d.Port, d.User, d.Password})
+
+	if len(databases) == 0 {
+		display(columns{"---", "---", "---", "---", "---", "---", "---", "---", "---", "---"})
+		MetaDBaaS(meta)
+		return
+	}
+
+	for i := range databases {
+		display(columns{
+			databases[i].ID,
+			databases[i].Region,
+			databases[i].Label,
+			databases[i].Status,
+			databases[i].DatabaseEngine,
+			databases[i].DatabaseEngineVersion,
+			databases[i].Host,
+			databases[i].Port,
+			databases[i].User,
+			databases[i].Password,
+		})
 	}
 
 	MetaDBaaS(meta)
-	flush()
 }
 
 // Database will generate a printer display of a given Managed Database
-func Database(database *govultr.Database) {
+func Database(database *govultr.Database) { //nolint: funlen,gocyclo
+	defer flush()
+
 	display(columns{"ID", database.ID})
 	display(columns{"DATE CREATED", database.DateCreated})
 	display(columns{"PLAN", database.Plan})
@@ -286,12 +319,18 @@ func Database(database *govultr.Database) {
 			display(columns{"CLUSTER TIME ZONE", database.ReadReplicas[r].ClusterTimeZone})
 		}
 	}
-
-	flush()
 }
 
 // DatabaseUserList will generate a printer display of users within a Managed Database
 func DatabaseUserList(databaseUsers []govultr.DatabaseUser, meta *govultr.Meta) {
+	defer flush()
+
+	if len(databaseUsers) == 0 {
+		displayString("No database users")
+		MetaDBaaS(meta)
+		return
+	}
+
 	for u := range databaseUsers {
 		display(columns{"USERNAME", databaseUsers[u].Username})
 		display(columns{"PASSWORD", databaseUsers[u].Password})
@@ -302,51 +341,67 @@ func DatabaseUserList(databaseUsers []govultr.DatabaseUser, meta *govultr.Meta) 
 	}
 
 	MetaDBaaS(meta)
-	flush()
 }
 
 // DatabaseUser will generate a printer display of a given user within a Managed Database
 func DatabaseUser(databaseUser govultr.DatabaseUser) {
+	defer flush()
+
 	display(columns{"USERNAME", databaseUser.Username})
 	display(columns{"PASSWORD", databaseUser.Password})
 	if databaseUser.Encryption != "" {
 		display(columns{"ENCRYPTION", databaseUser.Encryption})
 	}
-
-	flush()
 }
 
 // DatabaseDBList will generate a printer display of logical databases within a Managed Database cluster
 func DatabaseDBList(databaseDBs []govultr.DatabaseDB, meta *govultr.Meta) {
+	defer flush()
+
+	if len(databaseDBs) == 0 {
+		displayString("No database DBs")
+		MetaDBaaS(meta)
+		return
+	}
+
 	for u := range databaseDBs {
 		display(columns{"NAME", databaseDBs[u].Name})
 		display(columns{"---------------------------"})
 	}
 
 	MetaDBaaS(meta)
-	flush()
 }
 
 // DatabaseDB will generate a printer display of a given logical database within a Managed Database cluster
 func DatabaseDB(databaseDB govultr.DatabaseDB) {
+	defer flush()
+
 	display(columns{"NAME", databaseDB.Name})
-	flush()
 }
 
 // DatabaseUpdates will generate a printer display of available updates for a Managed Database cluster
 func DatabaseUpdates(databaseUpdates []string) {
+	defer flush()
+
 	display(columns{"AVAILABLE UPDATES", databaseUpdates})
-	flush()
 }
 
 // DatabaseMessage will generate a printer display of a generic information message for a Managed Database cluster
 func DatabaseMessage(message string) {
+	defer flush()
+
 	display(columns{"MESSAGE", message})
-	flush()
 }
 
 // DatabaseAlertsList will generate a printer display of service alerts for a Managed Database
 func DatabaseAlertsList(databaseAlerts []govultr.DatabaseAlert) {
+	defer flush()
+
+	if len(databaseAlerts) == 0 {
+		displayString("No active database alerts")
+		return
+	}
+
 	for a := range databaseAlerts {
 		display(columns{"TIMESTAMP", databaseAlerts[a].Timestamp})
 		display(columns{"MESSAGE TYPE", databaseAlerts[a].MessageType})
@@ -370,12 +425,12 @@ func DatabaseAlertsList(databaseAlerts []govultr.DatabaseAlert) {
 
 		display(columns{"---------------------------"})
 	}
-
-	flush()
 }
 
 // DatabaseMigrationStatus will generate a printer display of the current migration status of a Managed Database cluster
 func DatabaseMigrationStatus(databaseMigration *govultr.DatabaseMigration) {
+	defer flush()
+
 	display(columns{"STATUS", databaseMigration.Status})
 
 	if databaseMigration.Method != "" {
@@ -403,12 +458,12 @@ func DatabaseMigrationStatus(databaseMigration *govultr.DatabaseMigration) {
 	}
 
 	display(columns{"SSL", *databaseMigration.Credentials.SSL})
-
-	flush()
 }
 
 // DatabaseBackupInfo will generate a printer display of the latest and oldest backups for a Managed Database cluster
 func DatabaseBackupInfo(databaseBackups *govultr.DatabaseBackups) {
+	defer flush()
+
 	display(columns{"LATEST BACKUP"})
 	display(columns{"DATE", databaseBackups.LatestBackup.Date})
 	display(columns{"TIME", databaseBackups.LatestBackup.Time})
@@ -418,12 +473,12 @@ func DatabaseBackupInfo(databaseBackups *govultr.DatabaseBackups) {
 	display(columns{"OLDEST BACKUP"})
 	display(columns{"DATE", databaseBackups.OldestBackup.Date})
 	display(columns{"TIME", databaseBackups.OldestBackup.Time})
-
-	flush()
 }
 
 // DatabaseConnectionPoolList will generate a printer display of connection pools within a PostgreSQL Managed Database
-func DatabaseConnectionPoolList(databaseConnections *govultr.DatabaseConnections, databaseConnectionPools []govultr.DatabaseConnectionPool, meta *govultr.Meta) {
+func DatabaseConnectionPoolList(databaseConnections *govultr.DatabaseConnections, databaseConnectionPools []govultr.DatabaseConnectionPool, meta *govultr.Meta) { //nolint: lll
+	defer flush()
+
 	display(columns{"CONNECTIONS"})
 	display(columns{"USED", databaseConnections.Used})
 	display(columns{"AVAILABLE", databaseConnections.Available})
@@ -442,22 +497,23 @@ func DatabaseConnectionPoolList(databaseConnections *govultr.DatabaseConnections
 	}
 
 	MetaDBaaS(meta)
-	flush()
 }
 
 // DatabaseConnectionPool will generate a printer display of a given connection pool within a PostgreSQL Managed Database
 func DatabaseConnectionPool(databaseConnectionPool govultr.DatabaseConnectionPool) {
+	defer flush()
+
 	display(columns{"NAME", databaseConnectionPool.Name})
 	display(columns{"DATABASE", databaseConnectionPool.Database})
 	display(columns{"USERNAME", databaseConnectionPool.Username})
 	display(columns{"MODE", databaseConnectionPool.Mode})
 	display(columns{"SIZE", databaseConnectionPool.Size})
-
-	flush()
 }
 
 // DatabaseAdvancedOptions will generate a printer display of advanced configuration options for a PostgreSQL Managed Database
-func DatabaseAdvancedOptions(databaseConfiguredOptions *govultr.DatabaseAdvancedOptions, databaseAvailableOptions []govultr.AvailableOption) {
+func DatabaseAdvancedOptions(databaseConfiguredOptions *govultr.DatabaseAdvancedOptions, databaseAvailableOptions []govultr.AvailableOption) { //nolint: lll
+	defer flush()
+
 	if *databaseConfiguredOptions == (govultr.DatabaseAdvancedOptions{}) {
 		display(columns{"CONFIGURED OPTIONS", "None"})
 	} else {
@@ -500,12 +556,11 @@ func DatabaseAdvancedOptions(databaseConfiguredOptions *govultr.DatabaseAdvanced
 
 		display(columns{"---------------------------"})
 	}
-
-	flush()
 }
 
 // DatabaseAvailableVersions will generate a printer display of a list of available version upgrades for a Managed Database
 func DatabaseAvailableVersions(databaseAvailableVersions []string) {
+	defer flush()
+
 	display(columns{"AVAILABLE VERSIONS", databaseAvailableVersions})
-	flush()
 }

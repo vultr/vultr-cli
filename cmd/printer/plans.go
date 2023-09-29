@@ -7,7 +7,19 @@ import (
 func Plan(plan []govultr.Plan, meta *govultr.Meta) {
 	defer flush()
 
-	display(columns{"ID", "VCPU COUNT", "RAM", "DISK", "DISK COUNT", "BANDWIDTH GB", "PRICE PER MONTH", "TYPE", "GPU VRAM", "GPU TYPE", "REGIONS"})
+	display(columns{
+		"ID",
+		"VCPU COUNT",
+		"RAM",
+		"DISK",
+		"DISK COUNT",
+		"BANDWIDTH GB",
+		"PRICE PER MONTH",
+		"TYPE",
+		"GPU VRAM",
+		"GPU TYPE",
+		"REGIONS",
+	})
 
 	if len(plan) == 0 {
 		display(columns{"---", "---", "---", "---", "---", "---", "---", "---", "---", "---", "---"})
@@ -37,7 +49,19 @@ func Plan(plan []govultr.Plan, meta *govultr.Meta) {
 func PlanBareMetal(plan []govultr.BareMetalPlan, meta *govultr.Meta) {
 	defer flush()
 
-	display(columns{"ID", "CPU COUNT", "CPU MODEL", "CPU THREADS", "RAM", "DISK", "DISK COUNT", "BANDWIDTH GB", "PRICE PER MONTH", "TYPE", "REGIONS"})
+	display(columns{
+		"ID",
+		"CPU COUNT",
+		"CPU MODEL",
+		"CPU THREADS",
+		"RAM",
+		"DISK",
+		"DISK COUNT",
+		"BANDWIDTH GB",
+		"PRICE PER MONTH",
+		"TYPE",
+		"REGIONS",
+	})
 
 	if len(plan) == 0 {
 		display(columns{"---", "---", "---", "---", "---", "---", "---", "---", "---", "---", "---"})

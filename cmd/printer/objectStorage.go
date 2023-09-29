@@ -38,7 +38,17 @@ func SingleObjectStorage(obj *govultr.ObjectStorage) {
 	defer flush()
 
 	display(columns{"ID", "REGION", "OBJSTORECLUSTER ID", "STATUS", "LABEL", "DATE CREATED", "S3 HOSTNAME", "S3 ACCESS KEY", "S3 SECRET KEY"})
-	display(columns{obj.ID, obj.Region, obj.ObjectStoreClusterID, obj.Status, obj.Label, obj.DateCreated, obj.S3Keys.S3Hostname, obj.S3Keys.S3AccessKey, obj.S3Keys.S3SecretKey})
+	display(columns{
+		obj.ID,
+		obj.Region,
+		obj.ObjectStoreClusterID,
+		obj.Status,
+		obj.Label,
+		obj.DateCreated,
+		obj.S3Keys.S3Hostname,
+		obj.S3Keys.S3AccessKey,
+		obj.S3Keys.S3SecretKey,
+	})
 }
 
 func ObjectStorageClusterList(cluster []govultr.ObjectStorageCluster, meta *govultr.Meta) {

@@ -1,3 +1,4 @@
+// Package printer provides the console printing functionality for the CLI
 package printer
 
 import (
@@ -8,6 +9,14 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
+const (
+	twMinWidth int  = 0
+	twTabWidth int  = 8
+	twPadding  int  = 2
+	twPadChar  byte = '\t'
+	twFlags    uint = 0
+)
+
 type Printer interface {
 	display(values columns, lengths []int)
 	flush()
@@ -16,7 +25,14 @@ type Printer interface {
 var tw = new(tabwriter.Writer)
 
 func init() {
-	tw.Init(os.Stdout, 0, 8, 2, '\t', 0)
+	tw.Init(
+		os.Stdout,
+		twMinWidth,
+		twTabWidth,
+		twPadding,
+		twPadChar,
+		twFlags,
+	)
 }
 
 // columns is a type to contain the strings

@@ -115,7 +115,6 @@ func NodePools(nodepool []govultr.NodePool, meta *govultr.Meta) {
 	}
 
 	for i := range nodepool {
-
 		display(columns{"ID", nodepool[i].ID})
 		display(columns{"DATE CREATED", nodepool[i].DateCreated})
 		display(columns{"DATE UPDATED", nodepool[i].DateUpdated})
@@ -221,7 +220,6 @@ func K8Versions(versions *govultr.Versions) {
 	for i := range versions.Versions {
 		display(columns{versions.Versions[i]})
 	}
-
 }
 
 func K8Upgrades(upgrades []string) {

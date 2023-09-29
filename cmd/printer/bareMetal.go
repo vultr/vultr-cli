@@ -26,7 +26,6 @@ func BareMetalList(bms []govultr.BareMetalServer, meta *govultr.Meta) {
 		display(columns{
 			bms[i].ID,
 			bms[i].MainIP,
-			bms[i].Tag,
 			bms[i].MacAddress,
 			bms[i].Label,
 			bms[i].Os,

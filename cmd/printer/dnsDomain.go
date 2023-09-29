@@ -9,7 +9,6 @@ func SecInfo(info []string) {
 
 	if len(info) == 0 {
 		display(columns{"---"})
-		Meta(meta)
 		return
 	}
 

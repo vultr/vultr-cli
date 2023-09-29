@@ -37,7 +37,16 @@ func FirewallRule(fwr *govultr.FirewallRule) {
 	defer flush()
 
 	display(columns{"RULE NUMBER", "ACTION", "TYPE", "PROTOCOL", "PORT", "NETWORK", "SOURCE", "NOTES"})
-	display(columns{fwr.ID, fwr.Action, fwr.IPType, fwr.Protocol, fwr.Port, getFirewallNetwork(fwr.Subnet, fwr.SubnetSize), getFirewallSource(fwr.Source), fwr.Notes})
+	display(columns{
+		fwr.ID,
+		fwr.Action,
+		fwr.IPType,
+		fwr.Protocol,
+		fwr.Port,
+		getFirewallNetwork(fwr.Subnet, fwr.SubnetSize),
+		getFirewallSource(fwr.Source),
+		fwr.Notes,
+	})
 }
 
 func getFirewallSource(source string) string {
