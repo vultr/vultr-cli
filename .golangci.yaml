@@ -119,12 +119,11 @@ issues:
   # Default: https://golangci-lint.run/usage/false-positives/#default-exclusions
   exclude:
     - abcdef
+    - ST1023
   exclude-rules:
     # Exclude some linters from running on tests files.
     - path: cmd/printer/
       linters:
-        - funlen
-        - gocyclo
         - dupl
 run:
   timeout: 5m
