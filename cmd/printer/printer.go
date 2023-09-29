@@ -19,8 +19,10 @@ func init() {
 	tw.Init(os.Stdout, 0, 8, 2, '\t', 0)
 }
 
+// columns is a type to contain the strings
 type columns []interface{}
 
+// display loops over the value `columns` and Fprintf the output to tabwriter
 func display(values columns) {
 	for i, value := range values {
 		format := "\t%s"
@@ -32,22 +34,44 @@ func display(values columns) {
 	fmt.Fprintf(tw, "\n")
 }
 
+// displayString will `Fprintln` a string to the tabwriter
+func displayString(message string) {
+	fmt.Fprintln(tw, message)
+}
+
+// flush calls the tabwriter `Flush()` to write output
 func flush() {
-	tw.Flush()
+	if err := tw.Flush(); err != nil {
+		panic("could not flush buffer")
+	}
 }
 
+// Meta prints out the pagination details
 func Meta(meta *govultr.Meta) {
-	display(columns{"======================================"})
-	col := columns{"TOTAL", "NEXT PAGE", "PREV PAGE"}
-	display(col)
+	var pageNext string
+	var pagePrev string
 
-	display(columns{meta.Total, meta.Links.Next, meta.Links.Prev})
+	if meta.Links.Next == "" {
+		pageNext = "---"
+	} else {
+		pageNext = meta.Links.Next
+	}
+
+	if meta.Links.Prev == "" {
+		pagePrev = "---"
+	} else {
+		pagePrev = meta.Links.Prev
+	}
+
+	displayString("======================================")
+	display(columns{"TOTAL", "NEXT PAGE", "PREV PAGE"})
+	display(columns{meta.Total, pageNext, pagePrev})
 }
 
+// MetaDBaaS prints out the pagination details used by database commands
 func MetaDBaaS(meta *govultr.Meta) {
-	display(columns{"======================================"})
-	col := columns{"TOTAL"}
-	display(col)
+	displayString("======================================")
+	display(columns{"TOTAL"})
 
 	display(columns{meta.Total})
 }

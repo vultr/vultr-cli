@@ -5,19 +5,32 @@ import (
 )
 
 func Backups(bs []govultr.Backup, meta *govultr.Meta) {
-	col := columns{"ID", "DATE CREATED", "DESCRIPTION", "SIZE", "STATUS"}
-	display(col)
-	for _, b := range bs {
-		display(columns{b.ID, b.DateCreated, b.Description, b.Size, b.Status})
+	defer flush()
+
+	display(columns{"ID", "DATE CREATED", "DESCRIPTION", "SIZE", "STATUS"})
+
+	if len(bs) == 0 {
+		display(columns{"---", "---", "---", "---", "---"})
+		Meta(meta)
+		return
+	}
+
+	for i := range bs {
+		display(columns{
+			bs[i].ID,
+			bs[i].DateCreated,
+			bs[i].Description,
+			bs[i].Size,
+			bs[i].Status,
+		})
 	}
 
 	Meta(meta)
-	flush()
 }
 
 func Backup(bs *govultr.Backup) {
-	col := columns{"ID", "DATE CREATED", "DESCRIPTION", "SIZE", "STATUS"}
-	display(col)
+	defer flush()
 
-	flush()
+	display(columns{"ID", "DATE CREATED", "DESCRIPTION", "SIZE", "STATUS"})
+	display(columns{bs.ID, bs.DateCreated, bs.Description, bs.Size, bs.Status})
 }

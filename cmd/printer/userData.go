@@ -9,6 +9,8 @@ import (
 )
 
 func UserData(u *govultr.UserData) {
+	defer flush()
+
 	display(columns{"USERDATA"})
 	data, err := base64.StdEncoding.DecodeString(u.Data)
 	if err != nil {
@@ -16,5 +18,4 @@ func UserData(u *govultr.UserData) {
 		os.Exit(1)
 	}
 	display(columns{string(data)})
-	flush()
 }

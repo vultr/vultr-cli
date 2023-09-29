@@ -126,10 +126,5 @@ issues:
         - funlen
         - gocyclo
         - dupl
-        - lll
-        - gomnd
-        - gocritic
-        - stylecheck
-
 run:
   timeout: 5m
