@@ -1,7 +1,9 @@
 # Change Log
 ## [v2.19.0](https://github.com/vultr/vultr-cli/compare/v2.18.2...v2.19.0) (2023-10-18)
 ### Enhancements
-* Add summarize list options for VKE, VLB & database [PR 348](https://github.com/vultr/vultr-cli/pull/348)
+* Kubernetes: Add summarize list options [PR 348](https://github.com/vultr/vultr-cli/pull/348)
+* Database: Add summarize list options [PR 348](https://github.com/vultr/vultr-cli/pull/348)
+* Load Balancer: Add summarize list options [PR 348](https://github.com/vultr/vultr-cli/pull/348)
 * Rework the printer output code [PR 355](https://github.com/vultr/vultr-cli/pull/355)
 
 ### Documentation
