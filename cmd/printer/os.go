@@ -5,12 +5,24 @@ import (
 )
 
 func Os(vultrOS []govultr.OS, meta *govultr.Meta) {
-	col := columns{"ID", "NAME", "ARCH", "FAMILY"}
-	display(col)
-	for _, os := range vultrOS {
-		display(columns{os.ID, os.Name, os.Arch, os.Family})
+	defer flush()
+
+	display(columns{"ID", "NAME", "ARCH", "FAMILY"})
+
+	if len(vultrOS) == 0 {
+		display(columns{"---", "---", "---", "---"})
+		Meta(meta)
+		return
+	}
+
+	for i := range vultrOS {
+		display(columns{
+			vultrOS[i].ID,
+			vultrOS[i].Name,
+			vultrOS[i].Arch,
+			vultrOS[i].Family,
+		})
 	}
 
 	Meta(meta)
-	flush()
 }

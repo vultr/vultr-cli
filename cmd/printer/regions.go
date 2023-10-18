@@ -5,22 +5,40 @@ import (
 )
 
 func Regions(avail []govultr.Region, meta *govultr.Meta) {
-	col := columns{"ID", "CITY", "COUNTRY", "CONTINENT", "OPTIONS"}
-	display(col)
-	for _, r := range avail {
-		display(columns{r.ID, r.City, r.Country, r.Continent, r.Options})
+	defer flush()
+
+	display(columns{"ID", "CITY", "COUNTRY", "CONTINENT", "OPTIONS"})
+
+	if len(avail) == 0 {
+		display(columns{"---", "---", "---", "---", "---"})
+		Meta(meta)
+		return
+	}
+
+	for i := range avail {
+		display(columns{
+			avail[i].ID,
+			avail[i].City,
+			avail[i].Country,
+			avail[i].Continent,
+			avail[i].Options,
+		})
 	}
 
 	Meta(meta)
-	flush()
 }
 
 func RegionAvailability(avail *govultr.PlanAvailability) {
+	defer flush()
+
 	display(columns{"AVAILABLE PLANS"})
 
-	for _, r := range avail.AvailablePlans {
-		display(columns{r})
+	if len(avail.AvailablePlans) == 0 {
+		display(columns{"---"})
+		return
 	}
 
-	flush()
+	for i := range avail.AvailablePlans {
+		display(columns{avail.AvailablePlans[i]})
+	}
 }

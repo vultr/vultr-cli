@@ -3,19 +3,33 @@ package printer
 import "github.com/vultr/govultr/v3"
 
 func NetworkList(network []govultr.Network, meta *govultr.Meta) {
-	col := columns{"ID", "REGION", "DESCRIPTION", "V4 SUBNET", "V4 SUBNET MASK", "DATE CREATED"}
-	display(col)
-	for _, n := range network {
-		display(columns{n.NetworkID, n.Region, n.Description, n.V4Subnet, n.V4SubnetMask, n.DateCreated})
+	defer flush()
+
+	display(columns{"ID", "REGION", "DESCRIPTION", "V4 SUBNET", "V4 SUBNET MASK", "DATE CREATED"})
+
+	if len(network) == 0 {
+		display(columns{"---", "---", "---", "---", "---", "---"})
+		Meta(meta)
+		return
+	}
+
+	for i := range network {
+		display(columns{
+			network[i].NetworkID,
+			network[i].Region,
+			network[i].Description,
+			network[i].V4Subnet,
+			network[i].V4SubnetMask,
+			network[i].DateCreated,
+		})
 	}
 
 	Meta(meta)
-	flush()
 }
 
 func Network(network *govultr.Network) {
+	defer flush()
+
 	display(columns{"ID", "REGION", "DESCRIPTION", "V4 SUBNET", "V4 SUBNET MASK", "DATE CREATED"})
 	display(columns{network.NetworkID, network.Region, network.Description, network.V4Subnet, network.V4SubnetMask, network.DateCreated})
-
-	flush()
 }

@@ -115,7 +115,7 @@ var recordCreate = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.DnsRecord(record)
+		printer.DNSRecord(record)
 	},
 }
 
@@ -139,7 +139,7 @@ var recordGet = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.DnsRecord(record)
+		printer.DNSRecord(record)
 	},
 }
 
@@ -163,7 +163,7 @@ var recordList = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.DnsRecordsList(records, meta)
+		printer.DNSRecordsList(records, meta)
 	},
 }
 

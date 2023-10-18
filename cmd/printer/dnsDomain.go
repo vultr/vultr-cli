@@ -3,36 +3,54 @@ package printer
 import "github.com/vultr/govultr/v3"
 
 func SecInfo(info []string) {
-	col := columns{"DNSSEC INFO"}
-	display(col)
-	for _, i := range info {
-		display(columns{i})
+	defer flush()
+
+	display(columns{"DNSSEC INFO"})
+
+	if len(info) == 0 {
+		display(columns{"---"})
+		return
 	}
-	flush()
+
+	for i := range info {
+		display(columns{
+			info[i],
+		})
+	}
 }
 
 func DomainList(domain []govultr.Domain, meta *govultr.Meta) {
-	col := columns{"DOMAIN", "DATE CREATED", "DNS SEC"}
-	display(col)
-	for _, d := range domain {
-		display(columns{d.Domain, d.DateCreated, d.DNSSec})
+	defer flush()
+
+	display(columns{"DOMAIN", "DATE CREATED", "DNS SEC"})
+
+	if len(domain) == 0 {
+		display(columns{"---", "---", "---"})
+		Meta(meta)
+		return
+	}
+
+	for i := range domain {
+		display(columns{
+			domain[i].Domain,
+			domain[i].DateCreated,
+			domain[i].DNSSec,
+		})
 	}
 
 	Meta(meta)
-	flush()
 }
 
 func Domain(domain *govultr.Domain) {
-	col := columns{"DOMAIN", "DATE CREATED", "DNS SEC"}
-	display(col)
-	display(columns{domain.Domain, domain.DateCreated, domain.DNSSec})
+	defer flush()
 
-	flush()
+	display(columns{"DOMAIN", "DATE CREATED", "DNS SEC"})
+	display(columns{domain.Domain, domain.DateCreated, domain.DNSSec})
 }
 
 func SoaInfo(soa *govultr.Soa) {
-	col := columns{"NS PRIMARY", "EMAIL"}
-	display(col)
+	defer flush()
+
+	display(columns{"NS PRIMARY", "EMAIL"})
 	display(columns{soa.NSPrimary, soa.Email})
-	flush()
 }
