@@ -537,7 +537,7 @@ var k8GetConfig = &cobra.Command{
 			fmt.Printf("Writing kubeconfig to: %s\n", kubeconfigFilePath)
 
 			// Write the kubeconfig to the specified file path
-			err := os.WriteFile(kubeconfigFilePath, []byte(config.KubeConfig), 0644)
+			err := os.WriteFile(kubeconfigFilePath, []byte(config.KubeConfig), 0600)
 			if err != nil {
 				fmt.Printf("\nError writing kubeconfig to %s: %v\n", kubeconfigFilePath, err)
 				os.Exit(1)
@@ -549,7 +549,7 @@ var k8GetConfig = &cobra.Command{
 			defaultKubeconfigPath := filepath.Join(home, ".kube", "config")
 			fmt.Printf("Writing kubeconfig to the default path: %s\n", defaultKubeconfigPath)
 
-			err := os.WriteFile(defaultKubeconfigPath, []byte(config.KubeConfig), 0644)
+			err := os.WriteFile(defaultKubeconfigPath, []byte(config.KubeConfig), 0600)
 			if err != nil {
 				fmt.Printf("\nError writing kubeconfig to %s: %v\n", defaultKubeconfigPath, err)
 				os.Exit(1)
