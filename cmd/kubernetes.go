@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -94,12 +95,20 @@ var (
 
 	getConfigLong    = `Returns a base64 encoded config of a specified kubernetes cluster on your Vultr Account`
 	getConfigExample = `
-	# Full example
-	vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35
-
-	# Shortened with alias commands
-	vultr-cli k config ffd31f18-5f77-454c-9065-212f942c3c35
-	`
+	
+		# Full example
+		vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35
+		vultr-cli kubernetes config --output-file /your/path/ ffd31f18-5f77-454c-9065-212f942c3c35
+	
+		# Use the default config location (~/.kube/config)
+		vultr-cli kubernetes config --output-file ~/.kube/config ffd31f18-5f77-454c-9065-212f942c3c35
+		vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35
+	
+	
+		# Shortened with alias commands
+		vultr-cli k config ffd31f18-5f77-454c-9065-212f942c3c35
+		vultr-cli k config -o /your/path/ ffd31f18-5f77-454c-9065-212f942c3c35
+		`
 
 	getVersionsLong    = `Returns a list of supported kubernetes versions you can deploy`
 	getVersionsExample = `
@@ -235,6 +244,7 @@ func Kubernetes() *cobra.Command { //nolint: funlen
 	k8Create.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
 	k8Create.Flags().StringP("region", "r", "", "region you want your kubernetes cluster to be located in")
 	k8Create.Flags().StringP("version", "v", "", "the kubernetes version you want for your cluster")
+	k8GetConfig.Flags().StringVarP(&kubeconfigFilePath, "output-file", "o", "", "Optional file path to write kubeconfig to")
 	k8Create.Flags().StringArrayP(
 		"node-pools",
 		"n",
@@ -500,9 +510,11 @@ var k8DeleteWithResources = &cobra.Command{
 	},
 }
 
+var kubeconfigFilePath string
+
 var k8GetConfig = &cobra.Command{
 	Use:     "config <clusterID>",
-	Short:   "gets a kubernetes cluster's config",
+	Short:   "gets a Kubernetes cluster's config",
 	Long:    getConfigLong,
 	Example: getConfigExample,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -515,11 +527,36 @@ var k8GetConfig = &cobra.Command{
 		id := args[0]
 		config, _, err := client.Kubernetes.GetKubeConfig(context.Background(), id)
 		if err != nil {
-			fmt.Printf("error retrieving kube config : %v\n", err)
+			fmt.Printf("error retrieving kube config: %v\n", err)
 			os.Exit(1)
 		}
-
 		fmt.Println(config.KubeConfig)
+		fmt.Println()
+
+		if kubeconfigFilePath != "" {
+			fmt.Printf("Writing kubeconfig to: %s\n", kubeconfigFilePath)
+
+			// Write the kubeconfig to the specified file path
+			err := os.WriteFile(kubeconfigFilePath, []byte(config.KubeConfig), 0644)
+			if err != nil {
+				fmt.Printf("\nError writing kubeconfig to %s: %v\n", kubeconfigFilePath, err)
+				os.Exit(1)
+			} else {
+				fmt.Printf("Kubeconfig successfully written to %s\n", kubeconfigFilePath)
+			}
+		} else {
+			home, _ := os.UserHomeDir()
+			defaultKubeconfigPath := filepath.Join(home, ".kube", "config")
+			fmt.Printf("Writing kubeconfig to the default path: %s\n", defaultKubeconfigPath)
+
+			err := os.WriteFile(defaultKubeconfigPath, []byte(config.KubeConfig), 0644)
+			if err != nil {
+				fmt.Printf("\nError writing kubeconfig to %s: %v\n", defaultKubeconfigPath, err)
+				os.Exit(1)
+			} else {
+				fmt.Printf("Kubeconfig successfully written to %s\n", defaultKubeconfigPath)
+			}
+		}
 	},
 }
 
