@@ -72,6 +72,11 @@ func DatabaseList(databases []govultr.Database, meta *govultr.Meta) { //nolint: 
 		display(columns{"TAG", databases[d].Tag})
 		display(columns{"DB NAME", databases[d].DBName})
 		display(columns{"HOST", databases[d].Host})
+
+		if databases[d].PublicHost != "" {
+			display(columns{"PUBLIC HOST", databases[d].PublicHost})
+		}
+
 		display(columns{"USER", databases[d].User})
 		display(columns{"PASSWORD", databases[d].Password})
 		display(columns{"PORT", databases[d].Port})
@@ -129,6 +134,11 @@ func DatabaseList(databases []govultr.Database, meta *govultr.Meta) { //nolint: 
 				display(columns{"TAG", databases[d].ReadReplicas[r].Tag})
 				display(columns{"DB NAME", databases[d].ReadReplicas[r].DBName})
 				display(columns{"HOST", databases[d].ReadReplicas[r].Host})
+
+				if databases[d].ReadReplicas[r].PublicHost != "" {
+					display(columns{"PUBLIC HOST", databases[d].ReadReplicas[r].PublicHost})
+				}
+
 				display(columns{"USER", databases[d].ReadReplicas[r].User})
 				display(columns{"PASSWORD", databases[d].ReadReplicas[r].Password})
 				display(columns{"PORT", databases[d].ReadReplicas[r].Port})
@@ -178,10 +188,10 @@ func DatabaseList(databases []govultr.Database, meta *govultr.Meta) { //nolint: 
 func DatabaseListSummary(databases []govultr.Database, meta *govultr.Meta) {
 	defer flush()
 
-	display(columns{"ID", "REGION", "LABEL", "STATUS", "ENGINE", "VERSION", "HOST", "PORT", "USER", "PASSWORD"})
+	display(columns{"ID", "REGION", "LABEL", "STATUS", "ENGINE", "VERSION"})
 
 	if len(databases) == 0 {
-		display(columns{"---", "---", "---", "---", "---", "---", "---", "---", "---", "---"})
+		display(columns{"---", "---", "---", "---", "---", "---"})
 		MetaDBaaS(meta)
 		return
 	}
@@ -194,10 +204,6 @@ func DatabaseListSummary(databases []govultr.Database, meta *govultr.Meta) {
 			databases[i].Status,
 			databases[i].DatabaseEngine,
 			databases[i].DatabaseEngineVersion,
-			databases[i].Host,
-			databases[i].Port,
-			databases[i].User,
-			databases[i].Password,
 		})
 	}
 
@@ -224,6 +230,11 @@ func Database(database *govultr.Database) { //nolint: funlen,gocyclo
 	display(columns{"TAG", database.Tag})
 	display(columns{"DB NAME", database.DBName})
 	display(columns{"HOST", database.Host})
+
+	if database.PublicHost != "" {
+		display(columns{"PUBLIC HOST", database.PublicHost})
+	}
+
 	display(columns{"USER", database.User})
 	display(columns{"PASSWORD", database.Password})
 	display(columns{"PORT", database.Port})
@@ -281,6 +292,11 @@ func Database(database *govultr.Database) { //nolint: funlen,gocyclo
 			display(columns{"TAG", database.ReadReplicas[r].Tag})
 			display(columns{"DB NAME", database.ReadReplicas[r].DBName})
 			display(columns{"HOST", database.ReadReplicas[r].Host})
+
+			if database.ReadReplicas[r].PublicHost != "" {
+				display(columns{"PUBLIC HOST", database.ReadReplicas[r].PublicHost})
+			}
+
 			display(columns{"USER", database.ReadReplicas[r].User})
 			display(columns{"PASSWORD", database.ReadReplicas[r].Password})
 			display(columns{"PORT", database.ReadReplicas[r].Port})
