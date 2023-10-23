@@ -29,8 +29,12 @@ import (
 )
 
 const (
-	userAgent          = "vultr-cli/" + version
-	perPageDefault int = 100
+	userAgent             = "vultr-cli/" + version
+	perPageDefault int    = 100
+	apiKeyError    string = `
+Please export your VULTR API key as an environment variable or add 'api-key' to your config file, eg:
+export VULTR_API_KEY='<api_key_from_vultr_account>'
+	`
 )
 
 var cfgFile string
@@ -47,7 +51,6 @@ var rootCmd = &cobra.Command{
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
 		os.Exit(1)
 	}
 }
@@ -83,11 +86,13 @@ func init() {
 	rootCmd.AddCommand(User())
 	rootCmd.AddCommand(VPC())
 	rootCmd.AddCommand(VPC2())
-	cobra.OnInitialize(initConfig)
+
+	ctx := initConfig()
+	rootCmd.SetContext(ctx)
 }
 
 // initConfig reads in config file and ENV variables if set.
-func initConfig() {
+func initConfig() context.Context {
 	var token string
 	configPath := viper.GetString("config")
 
@@ -112,18 +117,23 @@ func initConfig() {
 		token = os.Getenv("VULTR_API_KEY")
 	}
 
-	if token == "" {
-		fmt.Println("Please export your VULTR API key as an environment variable or add `api-key` to your config file, eg:")
-		fmt.Println("export VULTR_API_KEY='<api_key_from_vultr_account>'")
-		os.Exit(1)
-	}
+	ctx := context.Background()
 
-	config := &oauth2.Config{}
-	ts := config.TokenSource(context.Background(), &oauth2.Token{AccessToken: token})
-	client = govultr.NewClient(oauth2.NewClient(context.Background(), ts))
+	if token == "" {
+		client = govultr.NewClient(nil)
+		ctx = context.WithValue(ctx, "authenticated", false)
+
+	} else {
+		config := &oauth2.Config{}
+		ts := config.TokenSource(ctx, &oauth2.Token{AccessToken: token})
+		client = govultr.NewClient(oauth2.NewClient(ctx, ts))
+		ctx = context.WithValue(ctx, "authenticated", true)
+	}
 
 	client.SetRateLimit(1 * time.Second)
 	client.SetUserAgent(userAgent)
+
+	return ctx
 }
 
 func getPaging(cmd *cobra.Command) *govultr.ListOptions {
