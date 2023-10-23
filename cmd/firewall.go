@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/spf13/cobra"
 )
@@ -29,7 +29,7 @@ func Firewall() *cobra.Command {
 		Aliases: []string{"fw"},
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if auth := cmd.Context().Value("authenticated"); auth != true {
-				return fmt.Errorf(apiKeyError)
+				return errors.New(apiKeyError)
 			}
 			return nil
 		},

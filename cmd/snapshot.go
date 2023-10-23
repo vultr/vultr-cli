@@ -34,7 +34,7 @@ func Snapshot() *cobra.Command {
 		Long:    `snapshot is used to access snapshot commands`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if auth := cmd.Context().Value("authenticated"); auth != true {
-				return fmt.Errorf(apiKeyError)
+				return errors.New(apiKeyError)
 			}
 			return nil
 		},
