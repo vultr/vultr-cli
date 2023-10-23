@@ -40,6 +40,12 @@ func Network() *cobra.Command {
 		Short:      "network interacts with network actions",
 		Long:       netLong,
 		Deprecated: "Use vpc instead.",
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if auth := cmd.Context().Value("authenticated"); auth != true {
+				return fmt.Errorf(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	networkCmd.AddCommand(networkGet, networkList, networkDelete, networkCreate)

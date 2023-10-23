@@ -113,6 +113,12 @@ func ReservedIP() *cobra.Command {
 		Short:   "reserved-ip lets you interact with reserved-ip ",
 		Long:    reservedIPLong,
 		Example: reservedIPExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if auth := cmd.Context().Value("authenticated"); auth != true {
+				return fmt.Errorf(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	reservedIPCmd.AddCommand(

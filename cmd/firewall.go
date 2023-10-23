@@ -15,6 +15,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -25,6 +27,12 @@ func Firewall() *cobra.Command {
 		Short:   "firewall is used to access firewall commands",
 		Long:    ``,
 		Aliases: []string{"fw"},
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if auth := cmd.Context().Value("authenticated"); auth != true {
+				return fmt.Errorf(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	firewallCmd.AddCommand(FirewallGroup(), FirewallRule())

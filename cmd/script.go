@@ -32,6 +32,12 @@ func Script() *cobra.Command {
 		Aliases: []string{"ss"},
 		Short:   "startup script commands",
 		Long:    `script is used to access startup script commands`,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if auth := cmd.Context().Value("authenticated"); auth != true {
+				return fmt.Errorf(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	cmd.AddCommand(scriptCreate, scriptGet, scriptDelete, scriptList, scriptUpdate)

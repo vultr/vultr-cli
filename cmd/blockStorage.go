@@ -112,6 +112,12 @@ func BlockStorageCmd() *cobra.Command {
 		Aliases: []string{"bs"},
 		Short:   "block storage commands",
 		Long:    `block-storage is used to interact with the block-storage api`,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if auth := cmd.Context().Value("authenticated"); auth != true {
+				return fmt.Errorf(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	bsCmd.AddCommand(bsAttach, bsCreate, bsDelete, bsDetach, bsLabelSet, bsList, bsGet, bsResize)

@@ -32,6 +32,12 @@ func ISO() *cobra.Command {
 		Use:   "iso",
 		Short: "iso is used to access iso commands",
 		Long:  ``,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if auth := cmd.Context().Value("authenticated"); auth != true {
+				return fmt.Errorf(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	isoCmd.AddCommand(isoCreate, isoDelete, isoPrivateGet, isoPrivateList, isoPublic)

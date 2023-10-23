@@ -95,6 +95,12 @@ func Instance() *cobra.Command { //nolint: funlen,gocyclo
 		Short:   "commands to interact with instances on vultr",
 		Long:    instanceLong,
 		Example: instanceExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if auth := cmd.Context().Value("authenticated"); auth != true {
+				return fmt.Errorf(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	instanceCmd.AddCommand(

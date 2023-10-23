@@ -32,6 +32,12 @@ func User() *cobra.Command {
 		Aliases: []string{"u"},
 		Short:   "user commands",
 		Long:    `user is used to access user commands`,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if auth := cmd.Context().Value("authenticated"); auth != true {
+				return fmt.Errorf(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	cmd.AddCommand(userCreate, userDelete, userGet, userList, userUpdate)

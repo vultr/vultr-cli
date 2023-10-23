@@ -229,6 +229,12 @@ func Kubernetes() *cobra.Command { //nolint: funlen
 		Short:   "kubernetes is used to access kubernetes commands",
 		Long:    kubernetesLong,
 		Example: kubernetesExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if auth := cmd.Context().Value("authenticated"); auth != true {
+				return fmt.Errorf(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	kubernetesCmd.AddCommand(k8Create, k8Get, k8List, k8GetConfig, k8Update, k8Delete, k8DeleteWithResources, k8GetVersions)

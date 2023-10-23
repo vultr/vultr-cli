@@ -30,6 +30,12 @@ func Backups() *cobra.Command {
 		Use:     "backups",
 		Aliases: []string{"b"},
 		Short:   "Display backups",
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if auth := cmd.Context().Value("authenticated"); auth != true {
+				return fmt.Errorf(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	backupsCmd.AddCommand(backupsList, backupsGet)
