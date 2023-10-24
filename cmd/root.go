@@ -38,6 +38,7 @@ export VULTR_API_KEY='<api_key_from_vultr_account>'
 	`
 )
 
+// ctxAuthKey is the context key for the authorized token check
 type ctxAuthKey struct{}
 
 var cfgFile string
