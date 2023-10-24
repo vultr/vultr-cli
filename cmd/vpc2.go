@@ -63,7 +63,7 @@ func VPC2() *cobra.Command {
 		Long:    vpc2Long,
 		Example: vpc2Example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if cmd.Context().Value(ctxAuthKey{}).(bool) == false {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
 				return errors.New(apiKeyError)
 			}
 			return nil

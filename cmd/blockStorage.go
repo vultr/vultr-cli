@@ -113,7 +113,7 @@ func BlockStorageCmd() *cobra.Command {
 		Short:   "block storage commands",
 		Long:    `block-storage is used to interact with the block-storage api`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if cmd.Context().Value(ctxAuthKey{}).(bool) == false {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
 				return errors.New(apiKeyError)
 			}
 			return nil

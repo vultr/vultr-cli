@@ -29,9 +29,10 @@ import (
 )
 
 const (
-	userAgent             = "vultr-cli/" + version
-	perPageDefault int    = 100
-	apiKeyError    string = `
+	userAgent          = "vultr-cli/" + version
+	perPageDefault int = 100
+	//nolint: gosec
+	apiKeyError string = `
 Please export your VULTR API key as an environment variable or add 'api-key' to your config file, eg:
 export VULTR_API_KEY='<api_key_from_vultr_account>'
 	`
@@ -124,7 +125,6 @@ func initConfig() context.Context {
 	if token == "" {
 		client = govultr.NewClient(nil)
 		ctx = context.WithValue(ctx, ctxAuthKey{}, false)
-
 	} else {
 		config := &oauth2.Config{}
 		ts := config.TokenSource(ctx, &oauth2.Token{AccessToken: token})

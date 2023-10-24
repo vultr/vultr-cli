@@ -33,7 +33,7 @@ func User() *cobra.Command {
 		Short:   "user commands",
 		Long:    `user is used to access user commands`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if cmd.Context().Value(ctxAuthKey{}).(bool) == false {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
 				return errors.New(apiKeyError)
 			}
 			return nil

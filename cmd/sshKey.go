@@ -33,7 +33,7 @@ func SSHKey() *cobra.Command {
 		Short:   "ssh-key commands",
 		Long:    `ssh-key is used to access SSH key commands`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if cmd.Context().Value(ctxAuthKey{}).(bool) == false {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
 				return errors.New(apiKeyError)
 			}
 			return nil

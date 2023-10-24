@@ -87,7 +87,7 @@ func LoadBalancer() *cobra.Command { //nolint: funlen
 		Long:    lbLong,
 		Example: lbExample,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if cmd.Context().Value(ctxAuthKey{}).(bool) == false {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
 				return errors.New(apiKeyError)
 			}
 			return nil
