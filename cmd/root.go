@@ -37,6 +37,8 @@ export VULTR_API_KEY='<api_key_from_vultr_account>'
 	`
 )
 
+type ctxAuthKey struct{}
+
 var cfgFile string
 var client *govultr.Client
 
@@ -121,13 +123,13 @@ func initConfig() context.Context {
 
 	if token == "" {
 		client = govultr.NewClient(nil)
-		ctx = context.WithValue(ctx, "authenticated", false)
+		ctx = context.WithValue(ctx, ctxAuthKey{}, false)
 
 	} else {
 		config := &oauth2.Config{}
 		ts := config.TokenSource(ctx, &oauth2.Token{AccessToken: token})
 		client = govultr.NewClient(oauth2.NewClient(ctx, ts))
-		ctx = context.WithValue(ctx, "authenticated", true)
+		ctx = context.WithValue(ctx, ctxAuthKey{}, true)
 	}
 
 	client.SetRateLimit(1 * time.Second)

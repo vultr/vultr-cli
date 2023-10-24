@@ -32,7 +32,7 @@ func ObjectStorageCmd() *cobra.Command {
 		Short:   "object storage commands",
 		Long:    `object-storage is used to interact with the object-storage api`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if auth := cmd.Context().Value("authenticated"); auth != true {
+			if cmd.Context().Value(ctxAuthKey{}).(bool) == false {
 				return errors.New(apiKeyError)
 			}
 			return nil

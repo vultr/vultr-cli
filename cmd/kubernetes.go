@@ -230,7 +230,7 @@ func Kubernetes() *cobra.Command { //nolint: funlen
 		Long:    kubernetesLong,
 		Example: kubernetesExample,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if auth := cmd.Context().Value("authenticated"); auth != true {
+			if cmd.Context().Value(ctxAuthKey{}).(bool) == false {
 				return errors.New(apiKeyError)
 			}
 			return nil
