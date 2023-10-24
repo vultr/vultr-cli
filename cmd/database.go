@@ -527,7 +527,7 @@ var databaseUpdate = &cobra.Command{
 			Plan:                plan,
 			Label:               label,
 			Tag:                 tag,
-			VPCID:               vpc,
+			VPCID:               govultr.StringToStringPtr(vpc),
 			MaintenanceDOW:      maintenanceDOW,
 			MaintenanceTime:     maintenanceTime,
 			ClusterTimeZone:     clusterTimeZone,
