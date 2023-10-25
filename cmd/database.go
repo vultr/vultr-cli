@@ -510,6 +510,7 @@ var databaseUpdate = &cobra.Command{
 		label, _ := cmd.Flags().GetString("label")
 		tag, _ := cmd.Flags().GetString("tag")
 		vpc, _ := cmd.Flags().GetString("vpc-id")
+		vpcSet := cmd.Flags().Lookup("vpc-id").Changed
 		maintenanceDOW, _ := cmd.Flags().GetString("maintenance-dow")
 		maintenanceTime, _ := cmd.Flags().GetString("maintenance-time")
 		clusterTimeZone, _ := cmd.Flags().GetString("cluster-time-zone")
@@ -527,7 +528,6 @@ var databaseUpdate = &cobra.Command{
 			Plan:                plan,
 			Label:               label,
 			Tag:                 tag,
-			VPCID:               vpc,
 			MaintenanceDOW:      maintenanceDOW,
 			MaintenanceTime:     maintenanceTime,
 			ClusterTimeZone:     clusterTimeZone,
@@ -535,6 +535,10 @@ var databaseUpdate = &cobra.Command{
 			MySQLSQLModes:       mysqlSQLModes,
 			MySQLLongQueryTime:  mySQLLongQueryTime,
 			RedisEvictionPolicy: redisEvictionPolicy,
+		}
+
+		if vpcSet {
+			opt.VPCID = govultr.StringToStringPtr(vpc)
 		}
 
 		if mysqlRequirePrimaryKeySet && mysqlRequirePrimaryKey {
