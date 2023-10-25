@@ -62,6 +62,12 @@ func BareMetal() *cobra.Command {
 		Aliases: []string{"bm"},
 		Long:    bareMetalLong,
 		Example: bareMetalExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
+				return errors.New(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	bareMetalCmd.AddCommand(

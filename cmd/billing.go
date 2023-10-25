@@ -94,6 +94,12 @@ func Billing() *cobra.Command {
 		Short:   "Display billing information",
 		Long:    billingLong,
 		Example: billingExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
+				return errors.New(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	historyCmd := &cobra.Command{

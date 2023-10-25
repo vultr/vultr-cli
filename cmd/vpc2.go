@@ -62,6 +62,12 @@ func VPC2() *cobra.Command {
 		Short:   "commands to interact with vpc2 on vultr",
 		Long:    vpc2Long,
 		Example: vpc2Example,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
+				return errors.New(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	vpc2Cmd.AddCommand(vpc2List, vpc2Create, vpc2Info, vpc2Update, vpc2Delete)

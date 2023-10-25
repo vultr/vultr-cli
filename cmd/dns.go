@@ -15,6 +15,8 @@
 package cmd
 
 import (
+	"errors"
+
 	"github.com/spf13/cobra"
 )
 
@@ -24,6 +26,12 @@ func DNS() *cobra.Command {
 		Use:   "dns",
 		Short: "dns is used to access dns commands",
 		Long:  ``,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
+				return errors.New(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	dnsCmd.AddCommand(DNSDomain())

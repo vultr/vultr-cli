@@ -82,6 +82,12 @@ func VPC() *cobra.Command {
 		Short:   "Interact with VPCs",
 		Long:    vpcLong,
 		Example: vpcExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
+				return errors.New(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	vpcCmd.AddCommand(vpcGet, vpcList, vpcDelete, vpcCreate, vpcUpdate)
