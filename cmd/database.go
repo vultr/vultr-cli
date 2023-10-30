@@ -66,6 +66,12 @@ func Database() *cobra.Command { //nolint:funlen
 		Short:   "commands to interact with managed databases on vultr",
 		Long:    databaseLong,
 		Example: databaseExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
+				return errors.New(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	databaseCmd.AddCommand(databaseList, databaseCreate, databaseInfo, databaseUpdate, databaseDelete)

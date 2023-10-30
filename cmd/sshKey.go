@@ -32,6 +32,12 @@ func SSHKey() *cobra.Command {
 		Aliases: []string{"ssh"},
 		Short:   "ssh-key commands",
 		Long:    `ssh-key is used to access SSH key commands`,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
+				return errors.New(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	cmd.AddCommand(sshCreate, sshDelete, sshGet, sshList, sshUpdate)

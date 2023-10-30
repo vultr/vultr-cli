@@ -32,6 +32,12 @@ func Snapshot() *cobra.Command {
 		Aliases: []string{"sn"},
 		Short:   "snapshot commands",
 		Long:    `snapshot is used to access snapshot commands`,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
+				return errors.New(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	cmd.AddCommand(snapshotCreate, snapshotCreateFromURL, snapshotGet, snapshotDelete, snapshotList)
