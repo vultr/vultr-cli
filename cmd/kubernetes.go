@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
@@ -537,18 +538,28 @@ var k8GetConfig = &cobra.Command{
 			os.Exit(1)
 		}
 
+		var kubeConfigData []byte
+
 		if kubeconfigFilePath != "" {
 			dir := filepath.Dir(kubeconfigFilePath)
 			if dirErr := os.MkdirAll(dir, kubeconfigDirPermission); dirErr != nil {
 				fmt.Printf("Error creating directory for kubeconfig: %v\n", dirErr)
 				os.Exit(1)
 			}
-			if writeErr := os.WriteFile(kubeconfigFilePath, []byte(config.KubeConfig), kubeconfigFilePermission); writeErr != nil {
+
+			kubeConfigData, err = base64.StdEncoding.DecodeString(config.KubeConfig)
+			if err != nil {
+				fmt.Printf("Error decoding kubeconfig: %v\n", err)
+				os.Exit(1)
+			}
+
+			if writeErr := os.WriteFile(kubeconfigFilePath, kubeConfigData, kubeconfigFilePermission); writeErr != nil {
 				fmt.Printf("Error writing kubeconfig to %s: %v\n", kubeconfigFilePath, writeErr)
 				os.Exit(1)
 			}
 		} else {
-			fmt.Println(config.KubeConfig)
+			kubeConfigData = []byte(config.KubeConfig)
+			fmt.Println(string(kubeConfigData))
 		}
 	},
 }
