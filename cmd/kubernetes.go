@@ -518,12 +518,6 @@ var k8GetConfig = &cobra.Command{
 	Long:    getConfigLong,
 	Example: getConfigExample,
 	Args: func(cmd *cobra.Command, args []string) error {
-		if kubeconfigFilePath != "" {
-			if len(args) < 1 {
-				return errors.New("please provide a file path")
-			}
-			return nil
-		}
 		if len(args) < 1 {
 			return errors.New("please provide a clusterID")
 		}
@@ -540,11 +534,11 @@ var k8GetConfig = &cobra.Command{
 		if kubeconfigFilePath != "" {
 			dir := filepath.Dir(kubeconfigFilePath)
 			if dirErr := os.MkdirAll(dir, kubeconfigDirPermission); dirErr != nil {
-				fmt.Printf("\nError creating directory for kubeconfig: %v\n", dirErr)
+				fmt.Printf("Error creating directory for kubeconfig: %v\n", dirErr)
 				os.Exit(1)
 			}
 			if writeErr := os.WriteFile(kubeconfigFilePath, []byte(config.KubeConfig), kubeconfigFilePermission); writeErr != nil {
-				fmt.Printf("\nError writing kubeconfig to %s: %v\n", kubeconfigFilePath, writeErr)
+				fmt.Printf("Error writing kubeconfig to %s: %v\n", kubeconfigFilePath, writeErr)
 				os.Exit(1)
 			}
 		} else {
