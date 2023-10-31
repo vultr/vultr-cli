@@ -37,11 +37,11 @@ var (
 	createLong    = `Create kubernetes cluster on your Vultr account`
 	createExample = `
 	# Full Example
-	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.20.0+1" \
+	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.28.2+1" \
 		--node-pools="quantity:3,plan:vc2-1c-2gb,label:my-nodepool,tag:my-tag"
 
 	# Shortened with alias commands
-	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.20.0+1" -n="quantity:3,plan:vc2-1c-2gb,label:my-nodepool,tag:my-tag"
+	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.28.2+1" -n="quantity:3,plan:vc2-1c-2gb,label:my-nodepool,tag:my-tag"
 	`
 
 	getLong    = `Get a single kubernetes cluster from your account`
@@ -241,6 +241,7 @@ func Kubernetes() *cobra.Command { //nolint: funlen
 	k8Create.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
 	k8Create.Flags().StringP("region", "r", "", "region you want your kubernetes cluster to be located in")
 	k8Create.Flags().StringP("version", "v", "", "the kubernetes version you want for your cluster")
+	k8Create.Flags().Bool("high-avail", false, "(optional, default false) whether or not the cluster should be deployed with multiple, highly available, control planes")
 	k8Create.Flags().StringArrayP(
 		"node-pools",
 		"n",
@@ -360,6 +361,7 @@ var k8Create = &cobra.Command{
 		region, _ := cmd.Flags().GetString("region")
 		nodepools, _ := cmd.Flags().GetStringArray("node-pools")
 		version, _ := cmd.Flags().GetString("version")
+		ha, _ := cmd.Flags().GetBool("high-avail")
 
 		nps, err := formatNodePools(nodepools)
 		if err != nil {
@@ -368,19 +370,20 @@ var k8Create = &cobra.Command{
 		}
 
 		options := &govultr.ClusterReq{
-			Label:     label,
-			Region:    region,
-			NodePools: nps,
-			Version:   version,
+			Label:           label,
+			Region:          region,
+			NodePools:       nps,
+			Version:         version,
+			HAControlPlanes: ha,
 		}
 
-		kubernetes, _, err := client.Kubernetes.CreateCluster(context.Background(), options)
+		vke, _, err := client.Kubernetes.CreateCluster(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error creating kubernetes cluster : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.Cluster(kubernetes)
+		printer.Cluster(vke)
 	},
 }
 
@@ -394,16 +397,16 @@ var k8List = &cobra.Command{
 		options := getPaging(cmd)
 		summarize, _ := cmd.Flags().GetBool("summarize")
 
-		k8s, meta, _, err := client.Kubernetes.ListClusters(context.Background(), options)
+		vkes, meta, _, err := client.Kubernetes.ListClusters(context.Background(), options)
 		if err != nil {
 			fmt.Printf("error listing kubernetes clusters : %v\n", err)
 			os.Exit(1)
 		}
 
 		if summarize {
-			printer.ClustersSummary(k8s, meta)
+			printer.ClustersSummary(vkes, meta)
 		} else {
-			printer.Clusters(k8s, meta)
+			printer.Clusters(vkes, meta)
 		}
 	},
 }
@@ -422,13 +425,13 @@ var k8Get = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		lb, _, err := client.Kubernetes.GetCluster(context.Background(), id)
+		vke, _, err := client.Kubernetes.GetCluster(context.Background(), id)
 		if err != nil {
 			fmt.Printf("error getting cluster : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.Cluster(lb)
+		printer.Cluster(vke)
 	},
 }
 
