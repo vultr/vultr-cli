@@ -241,7 +241,11 @@ func Kubernetes() *cobra.Command { //nolint: funlen
 	k8Create.Flags().StringP("label", "l", "", "label for your kubernetes cluster")
 	k8Create.Flags().StringP("region", "r", "", "region you want your kubernetes cluster to be located in")
 	k8Create.Flags().StringP("version", "v", "", "the kubernetes version you want for your cluster")
-	k8Create.Flags().Bool("high-avail", false, "(optional, default false) whether or not the cluster should be deployed with multiple, highly available, control planes")
+	k8Create.Flags().Bool(
+		"high-avail",
+		false,
+		"(optional, default false) whether or not the cluster should be deployed with multiple, highly available, control planes",
+	)
 	k8Create.Flags().StringArrayP(
 		"node-pools",
 		"n",
