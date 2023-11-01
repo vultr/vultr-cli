@@ -71,6 +71,24 @@ func DatabaseList(databases []govultr.Database, meta *govultr.Meta) { //nolint: 
 		display(columns{"LABEL", databases[d].Label})
 		display(columns{"TAG", databases[d].Tag})
 		display(columns{"DB NAME", databases[d].DBName})
+
+		if databases[d].DatabaseEngine == "ferretpg" {
+			display(columns{" "})
+
+			display(columns{"FERRETDB CREDENTIALS"})
+			display(columns{"HOST", databases[d].FerretDBCredentials.Host})
+			display(columns{"PORT", databases[d].FerretDBCredentials.Port})
+			display(columns{"USER", databases[d].FerretDBCredentials.User})
+			display(columns{"PASSWORD", databases[d].FerretDBCredentials.Password})
+			display(columns{"PUBLIC IP", databases[d].FerretDBCredentials.PublicIP})
+
+			if databases[d].FerretDBCredentials.PrivateIP != "" {
+				display(columns{"PRIVATE IP", databases[d].FerretDBCredentials.PrivateIP})
+			}
+
+			display(columns{" "})
+		}
+
 		display(columns{"HOST", databases[d].Host})
 
 		if databases[d].PublicHost != "" {
@@ -133,6 +151,24 @@ func DatabaseList(databases []govultr.Database, meta *govultr.Meta) { //nolint: 
 				display(columns{"LABEL", databases[d].ReadReplicas[r].Label})
 				display(columns{"TAG", databases[d].ReadReplicas[r].Tag})
 				display(columns{"DB NAME", databases[d].ReadReplicas[r].DBName})
+
+				if databases[d].ReadReplicas[r].DatabaseEngine == "ferretpg" {
+					display(columns{" "})
+
+					display(columns{"FERRETDB CREDENTIALS"})
+					display(columns{"HOST", databases[d].ReadReplicas[r].FerretDBCredentials.Host})
+					display(columns{"PORT", databases[d].ReadReplicas[r].FerretDBCredentials.Port})
+					display(columns{"USER", databases[d].ReadReplicas[r].FerretDBCredentials.User})
+					display(columns{"PASSWORD", databases[d].ReadReplicas[r].FerretDBCredentials.Password})
+					display(columns{"PUBLIC IP", databases[d].ReadReplicas[r].FerretDBCredentials.PublicIP})
+
+					if databases[d].ReadReplicas[r].FerretDBCredentials.PrivateIP != "" {
+						display(columns{"PRIVATE IP", databases[d].ReadReplicas[r].FerretDBCredentials.PrivateIP})
+					}
+
+					display(columns{" "})
+				}
+
 				display(columns{"HOST", databases[d].ReadReplicas[r].Host})
 
 				if databases[d].ReadReplicas[r].PublicHost != "" {
@@ -229,6 +265,24 @@ func Database(database *govultr.Database) { //nolint: funlen,gocyclo
 	display(columns{"LABEL", database.Label})
 	display(columns{"TAG", database.Tag})
 	display(columns{"DB NAME", database.DBName})
+
+	if database.DatabaseEngine == "ferretpg" {
+		display(columns{" "})
+
+		display(columns{"FERRETDB CREDENTIALS"})
+		display(columns{"HOST", database.FerretDBCredentials.Host})
+		display(columns{"PORT", database.FerretDBCredentials.Port})
+		display(columns{"USER", database.FerretDBCredentials.User})
+		display(columns{"PASSWORD", database.FerretDBCredentials.Password})
+		display(columns{"PUBLIC IP", database.FerretDBCredentials.PublicIP})
+
+		if database.FerretDBCredentials.PrivateIP != "" {
+			display(columns{"PRIVATE IP", database.FerretDBCredentials.PrivateIP})
+		}
+
+		display(columns{" "})
+	}
+
 	display(columns{"HOST", database.Host})
 
 	if database.PublicHost != "" {
@@ -291,6 +345,24 @@ func Database(database *govultr.Database) { //nolint: funlen,gocyclo
 			display(columns{"LABEL", database.ReadReplicas[r].Label})
 			display(columns{"TAG", database.ReadReplicas[r].Tag})
 			display(columns{"DB NAME", database.ReadReplicas[r].DBName})
+
+			if database.ReadReplicas[r].DatabaseEngine == "ferretpg" {
+				display(columns{" "})
+
+				display(columns{"FERRETDB CREDENTIALS"})
+				display(columns{"HOST", database.ReadReplicas[r].FerretDBCredentials.Host})
+				display(columns{"PORT", database.ReadReplicas[r].FerretDBCredentials.Port})
+				display(columns{"USER", database.ReadReplicas[r].FerretDBCredentials.User})
+				display(columns{"PASSWORD", database.ReadReplicas[r].FerretDBCredentials.Password})
+				display(columns{"PUBLIC IP", database.ReadReplicas[r].FerretDBCredentials.PublicIP})
+
+				if database.ReadReplicas[r].FerretDBCredentials.PrivateIP != "" {
+					display(columns{"PRIVATE IP", database.ReadReplicas[r].FerretDBCredentials.PrivateIP})
+				}
+
+				display(columns{" "})
+			}
+
 			display(columns{"HOST", database.ReadReplicas[r].Host})
 
 			if database.ReadReplicas[r].PublicHost != "" {
