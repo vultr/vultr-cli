@@ -1,4 +1,22 @@
 # Change Log
+## [v2.20.0](https://github.com/vultr/vultr-cli/compare/v2.19.0...v2.20.0) 2023-11-01
+### Enhancements
+* Managed Database public/private hostnames, cleanup summarize view [PR 363](https://github.com/vultr/vultr-cli/pull/363)
+* Allow some commands to be run without authenticating against the API [PR 364](https://github.com/vultr/vultr-cli/pull/364)
+* Add support for the VKE HA control plane option [PR 368](https://github.com/vultr/vultr-cli/pull/368)
+* Add Support for DBaaS FerretDB Subscriptions [PR 369](https://github.com/vultr/vultr-cli/pull/369)
+
+### Bug Fixes
+* Adjust DBaaS VPC pointer to detect changes [PR 366](https://github.com/vultr/vultr-cli/pull/366)
+
+### Dependencies
+* Bump golang.org/x/net from 0.15.0 to 0.17.0 [PR 358](https://github.com/vultr/vultr-cli/pull/358)
+* Update govultr to v3.3.2 [PR 362](https://github.com/vultr/vultr-cli/pull/362)
+* Update govultr to v3.3.3 [PR 365](https://github.com/vultr/vultr-cli/pull/365)
+* Update govultr to v3.3.4 [PR 367](https://github.com/vultr/vultr-cli/pull/367)
+* Bump golang.org/x/oauth2 from 0.12.0 to 0.13.0 [PR 356](https://github.com/vultr/vultr-cli/pull/356)
+* Bump github.com/spf13/viper from 1.16.0 to 1.17.0 [PR 357](https://github.com/vultr/vultr-cli/pull/357)
+
 ## [v2.19.0](https://github.com/vultr/vultr-cli/compare/v2.18.2...v2.19.0) (2023-10-18)
 ### Enhancements
 * Kubernetes: Add summarize list options [PR 348](https://github.com/vultr/vultr-cli/pull/348)
