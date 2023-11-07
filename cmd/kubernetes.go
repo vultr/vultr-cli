@@ -99,11 +99,11 @@ var (
 	
 		# Full example
 		vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35
-		vultr-cli kubernetes config --output-file /your/path/ ffd31f18-5f77-454c-9065-212f942c3c35
+		vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35 --output-file /your/path/
 	
 		# Shortened with alias commands
 		vultr-cli k config ffd31f18-5f77-454c-9065-212f942c3c35
-		vultr-cli k config -o /your/path/ ffd31f18-5f77-454c-9065-212f942c3c35
+		vultr-cli k config  ffd31f18-5f77-454c-9065-212f942c3c35 -o /your/path/
 		`
 
 	getVersionsLong    = `Returns a list of supported kubernetes versions you can deploy`
