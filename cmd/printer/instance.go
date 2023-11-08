@@ -1,6 +1,8 @@
 package printer
 
-import "github.com/vultr/govultr/v3"
+import (
+	"github.com/vultr/govultr/v3"
+)
 
 func InstanceBandwidth(bandwidth *govultr.Bandwidth) {
 	display(columns{"DATE", "INCOMING BYTES", "OUTGOING BYTES"})
@@ -80,7 +82,7 @@ func InstanceList(instance []govultr.Instance, meta *govultr.Meta) {
 			instance[i].RAM,
 			instance[i].Disk,
 			instance[i].AllowedBandwidth,
-			instance[i].Tags,
+			arrayOfStringsToString(instance[i].Tags),
 		})
 	}
 
@@ -117,8 +119,8 @@ func Instance(instance *govultr.Instance) {
 	display(columns{"V6 MAIN IP", instance.V6MainIP})
 	display(columns{"V6 NETWORK", instance.V6Network})
 	display(columns{"V6 NETWORK SIZE", instance.V6NetworkSize})
-	display(columns{"FEATURES", instance.Features})
-	display(columns{"TAGS", instance.Tags})
+	display(columns{"FEATURES", arrayOfStringsToString(instance.Features)})
+	display(columns{"TAGS", arrayOfStringsToString(instance.Tags)})
 }
 
 func OsList(os []govultr.OS) {

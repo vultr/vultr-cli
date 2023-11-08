@@ -4,6 +4,7 @@ package printer
 import (
 	"fmt"
 	"os"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/vultr/govultr/v3"
@@ -53,6 +54,19 @@ func display(values columns) {
 // displayString will `Fprintln` a string to the tabwriter
 func displayString(message string) {
 	fmt.Fprintln(tw, message)
+}
+
+// arrayOfStringsToString will build a delimited string from an array for
+// display in the printer functions.  Defaulted to comma-delimited and enclosed
+// in square brackets to maintain consistency with array Fprintf
+func arrayOfStringsToString(a []string) string {
+	delimiter := ", "
+	var sb strings.Builder
+	sb.WriteString("[")
+	sb.WriteString(strings.Join(a, delimiter))
+	sb.WriteString("]")
+
+	return sb.String()
 }
 
 // flush calls the tabwriter `Flush()` to write output
