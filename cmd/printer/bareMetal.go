@@ -11,7 +11,7 @@ func BareMetal(b *govultr.BareMetalServer) {
 	display(columns{
 		b.ID,
 		b.MainIP,
-		b.Tag,
+		b.Tag, //nolint: staticcheck
 		b.MacAddress,
 		b.Label,
 		b.Os,
@@ -40,7 +40,7 @@ func BareMetalList(bms []govultr.BareMetalServer, meta *govultr.Meta) {
 		display(columns{
 			bms[i].ID,
 			bms[i].MainIP,
-			bms[i].Tag,
+			bms[i].Tag, //nolint: staticcheck
 			bms[i].MacAddress,
 			bms[i].Label,
 			bms[i].Os,
