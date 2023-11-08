@@ -8,7 +8,21 @@ func BareMetal(b *govultr.BareMetalServer) {
 	defer flush()
 
 	display(columns{"ID", "IP", "TAG", "MAC ADDRESS", "LABEL", "OS", "STATUS", "REGION", "CPU", "RAM", "DISK", "FEATURES", "TAGS"})
-	display(columns{b.ID, b.MainIP, b.Tag, b.MacAddress, b.Label, b.Os, b.Status, b.Region, b.CPUCount, b.RAM, b.Disk, b.Features, b.Tags}) //nolint:all
+	display(columns{
+		b.ID,
+		b.MainIP,
+		b.Tag,
+		b.MacAddress,
+		b.Label,
+		b.Os,
+		b.Status,
+		b.Region,
+		b.CPUCount,
+		b.RAM,
+		b.Disk,
+		arrayOfStringsToString(b.Features),
+		arrayOfStringsToString(b.Tags),
+	})
 }
 
 func BareMetalList(bms []govultr.BareMetalServer, meta *govultr.Meta) {
@@ -26,6 +40,7 @@ func BareMetalList(bms []govultr.BareMetalServer, meta *govultr.Meta) {
 		display(columns{
 			bms[i].ID,
 			bms[i].MainIP,
+			bms[i].Tag,
 			bms[i].MacAddress,
 			bms[i].Label,
 			bms[i].Os,
@@ -34,8 +49,8 @@ func BareMetalList(bms []govultr.BareMetalServer, meta *govultr.Meta) {
 			bms[i].CPUCount,
 			bms[i].RAM,
 			bms[i].Disk,
-			bms[i].Features,
-			bms[i].Tags,
+			arrayOfStringsToString(bms[i].Features),
+			arrayOfStringsToString(bms[i].Tags),
 		})
 	}
 
