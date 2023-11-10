@@ -1017,7 +1017,7 @@ var databasePromoteReadReplica = &cobra.Command{
 	},
 }
 
-var databaseGetBackupInfo = &cobra.Command{ //nolint:dupl
+var databaseGetBackupInfo = &cobra.Command{
 	Use:   "get <databaseID>",
 	Short: "Get the latest and oldest available backups for a managed database",
 	Long:  "",
