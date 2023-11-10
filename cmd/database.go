@@ -198,7 +198,7 @@ func Database() *cobra.Command { //nolint:funlen
 		Short: "commands to handle managed database read replicas",
 		Long:  ``,
 	}
-	readReplicaCmd.AddCommand(databaseAddReadReplica)
+	readReplicaCmd.AddCommand(databaseAddReadReplica, databasePromoteReadReplica)
 	databaseAddReadReplica.Flags().StringP("region", "r", "", "region id for the new managed database read replica")
 	databaseAddReadReplica.Flags().StringP("label", "l", "", "label for the new managed database read replica")
 	databaseCmd.AddCommand(readReplicaCmd)
@@ -477,7 +477,7 @@ var databaseCreate = &cobra.Command{
 	},
 }
 
-var databaseInfo = &cobra.Command{
+var databaseInfo = &cobra.Command{ //nolint:dupl
 	Use:   "get <databaseID>",
 	Short: "get info about a specific managed database",
 	Long:  ``,
@@ -570,7 +570,7 @@ var databaseUpdate = &cobra.Command{
 	},
 }
 
-var databaseDelete = &cobra.Command{
+var databaseDelete = &cobra.Command{ //nolint:dupl
 	Use:     "delete <databaseID>",
 	Short:   "delete/destroy a managed database",
 	Aliases: []string{"destroy"},
@@ -805,7 +805,7 @@ var databaseDBDelete = &cobra.Command{
 	},
 }
 
-var databaseMaintenanceUpdatesList = &cobra.Command{
+var databaseMaintenanceUpdatesList = &cobra.Command{ //nolint:dupl
 	Use:   "list <databaseID>",
 	Short: "list all available maintenance updates for a managed database",
 	Long:  ``,
@@ -826,7 +826,7 @@ var databaseMaintenanceUpdatesList = &cobra.Command{
 	},
 }
 
-var databaseStartMaintenance = &cobra.Command{
+var databaseStartMaintenance = &cobra.Command{ //nolint:dupl
 	Use:   "start <databaseID>",
 	Short: "Initialize maintenance updates for a managed database",
 	Long:  "",
@@ -996,7 +996,28 @@ var databaseAddReadReplica = &cobra.Command{
 	},
 }
 
-var databaseGetBackupInfo = &cobra.Command{
+var databasePromoteReadReplica = &cobra.Command{
+	Use:   "promote <databaseID>",
+	Short: "Promote a read replica to its own standalone managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		err := client.Database.PromoteReadReplica(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("error promoting read replica : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseMessage("Successfully promoted read replica")
+	},
+}
+
+var databaseGetBackupInfo = &cobra.Command{ //nolint:dupl
 	Use:   "get <databaseID>",
 	Short: "Get the latest and oldest available backups for a managed database",
 	Long:  "",
@@ -1362,7 +1383,7 @@ var databaseAdvancedOptionsUpdate = &cobra.Command{
 	},
 }
 
-var databaseAvailableVersionsList = &cobra.Command{
+var databaseAvailableVersionsList = &cobra.Command{ //nolint:dupl
 	Use:   "list <databaseID>",
 	Short: "list all available version upgrades for a managed database",
 	Long:  ``,
