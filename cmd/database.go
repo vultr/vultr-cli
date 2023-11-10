@@ -477,7 +477,7 @@ var databaseCreate = &cobra.Command{
 	},
 }
 
-var databaseInfo = &cobra.Command{ //nolint:dupl
+var databaseInfo = &cobra.Command{
 	Use:   "get <databaseID>",
 	Short: "get info about a specific managed database",
 	Long:  ``,
@@ -570,7 +570,7 @@ var databaseUpdate = &cobra.Command{
 	},
 }
 
-var databaseDelete = &cobra.Command{ //nolint:dupl
+var databaseDelete = &cobra.Command{
 	Use:     "delete <databaseID>",
 	Short:   "delete/destroy a managed database",
 	Aliases: []string{"destroy"},
@@ -805,7 +805,7 @@ var databaseDBDelete = &cobra.Command{
 	},
 }
 
-var databaseMaintenanceUpdatesList = &cobra.Command{ //nolint:dupl
+var databaseMaintenanceUpdatesList = &cobra.Command{
 	Use:   "list <databaseID>",
 	Short: "list all available maintenance updates for a managed database",
 	Long:  ``,
@@ -826,7 +826,7 @@ var databaseMaintenanceUpdatesList = &cobra.Command{ //nolint:dupl
 	},
 }
 
-var databaseStartMaintenance = &cobra.Command{ //nolint:dupl
+var databaseStartMaintenance = &cobra.Command{
 	Use:   "start <databaseID>",
 	Short: "Initialize maintenance updates for a managed database",
 	Long:  "",
@@ -1383,7 +1383,7 @@ var databaseAdvancedOptionsUpdate = &cobra.Command{
 	},
 }
 
-var databaseAvailableVersionsList = &cobra.Command{ //nolint:dupl
+var databaseAvailableVersionsList = &cobra.Command{
 	Use:   "list <databaseID>",
 	Short: "list all available version upgrades for a managed database",
 	Long:  ``,
