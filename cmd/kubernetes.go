@@ -16,9 +16,11 @@ package cmd
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -94,12 +96,15 @@ var (
 
 	getConfigLong    = `Returns a base64 encoded config of a specified kubernetes cluster on your Vultr Account`
 	getConfigExample = `
-	# Full example
-	vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35
-
-	# Shortened with alias commands
-	vultr-cli k config ffd31f18-5f77-454c-9065-212f942c3c35
-	`
+	
+		# Full example
+		vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35
+		vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35 --output-file /your/path/
+	
+		# Shortened with alias commands
+		vultr-cli k config ffd31f18-5f77-454c-9065-212f942c3c35
+		vultr-cli k config  ffd31f18-5f77-454c-9065-212f942c3c35 -o /your/path/
+		`
 
 	getVersionsLong    = `Returns a list of supported kubernetes versions you can deploy`
 	getVersionsExample = `
@@ -351,6 +356,9 @@ func Kubernetes() *cobra.Command { //nolint: funlen
 	nodepoolsCmd.AddCommand(nodeCmd, npCreate, npGet, npList, npDelete, npUpdate)
 	kubernetesCmd.AddCommand(nodepoolsCmd)
 
+	// Config SubCommands
+	k8GetConfig.Flags().StringVarP(&kubeconfigFilePath, "output-file", "o", "", "Optional file path to write kubeconfig to")
+
 	return kubernetesCmd
 }
 
@@ -513,6 +521,11 @@ var k8DeleteWithResources = &cobra.Command{
 	},
 }
 
+var kubeconfigFilePath string
+
+const kubeconfigFilePermission = 0600
+const kubeconfigDirPermission = 0755
+
 var k8GetConfig = &cobra.Command{
 	Use:     "config <clusterID>",
 	Short:   "gets a kubernetes cluster's config",
@@ -528,11 +541,33 @@ var k8GetConfig = &cobra.Command{
 		id := args[0]
 		config, _, err := client.Kubernetes.GetKubeConfig(context.Background(), id)
 		if err != nil {
-			fmt.Printf("error retrieving kube config : %v\n", err)
+			fmt.Printf("error retrieving kube config: %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Println(config.KubeConfig)
+		var kubeConfigData []byte
+
+		if kubeconfigFilePath != "" {
+			dir := filepath.Dir(kubeconfigFilePath)
+			if dirErr := os.MkdirAll(dir, kubeconfigDirPermission); dirErr != nil {
+				fmt.Printf("Error creating directory for kubeconfig: %v\n", dirErr)
+				os.Exit(1)
+			}
+
+			kubeConfigData, err = base64.StdEncoding.DecodeString(config.KubeConfig)
+			if err != nil {
+				fmt.Printf("Error decoding kubeconfig: %v\n", err)
+				os.Exit(1)
+			}
+
+			if writeErr := os.WriteFile(kubeconfigFilePath, kubeConfigData, kubeconfigFilePermission); writeErr != nil {
+				fmt.Printf("Error writing kubeconfig to %s: %v\n", kubeconfigFilePath, writeErr)
+				os.Exit(1)
+			}
+		} else {
+			kubeConfigData = []byte(config.KubeConfig)
+			fmt.Println(string(kubeConfigData))
+		}
 	},
 }
 
