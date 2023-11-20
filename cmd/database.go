@@ -198,7 +198,7 @@ func Database() *cobra.Command { //nolint:funlen
 		Short: "commands to handle managed database read replicas",
 		Long:  ``,
 	}
-	readReplicaCmd.AddCommand(databaseAddReadReplica)
+	readReplicaCmd.AddCommand(databaseAddReadReplica, databasePromoteReadReplica)
 	databaseAddReadReplica.Flags().StringP("region", "r", "", "region id for the new managed database read replica")
 	databaseAddReadReplica.Flags().StringP("label", "l", "", "label for the new managed database read replica")
 	databaseCmd.AddCommand(readReplicaCmd)
@@ -993,6 +993,27 @@ var databaseAddReadReplica = &cobra.Command{
 		}
 
 		printer.Database(database)
+	},
+}
+
+var databasePromoteReadReplica = &cobra.Command{
+	Use:   "promote <databaseID>",
+	Short: "Promote a read replica to its own standalone managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		err := client.Database.PromoteReadReplica(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("error promoting read replica : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseMessage("Successfully promoted read replica")
 	},
 }
 
