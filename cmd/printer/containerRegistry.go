@@ -45,9 +45,9 @@ func ContainerRegistry(cr *govultr.ContainerRegistry) {
 func ContainerRegistryList(crs []govultr.ContainerRegistry, meta *govultr.Meta) {
 	defer flush()
 
-	display(columns{"ID", "NAME", "URN", "USED/ALLOWED", "REGION ID", "REGION NAME"})
+	display(columns{"ID", "NAME", "URN", "USED/ALLOWED", "REGION ID", "REGION NAME", "PUBLIC"})
 	if len(crs) == 0 {
-		display(columns{"---", "---", "---", "---", "---", "---", "---"})
+		display(columns{"---", "---", "---", "---", "---", "---", "---", "---"})
 		Meta(meta)
 		return
 	}
@@ -62,6 +62,7 @@ func ContainerRegistryList(crs []govultr.ContainerRegistry, meta *govultr.Meta) 
 			usage,
 			crs[i].Metadata.Region.ID,
 			crs[i].Metadata.Region.Name,
+			crs[i].Public,
 		})
 	}
 
