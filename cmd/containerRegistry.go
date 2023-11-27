@@ -106,7 +106,7 @@ func ContainerRegistry() *cobra.Command {
 		},
 	}
 
-	crCmd.AddCommand(crCreate, crGet, crList, crDelete, crUpdate)
+	crCmd.AddCommand(crCreate, crGet, crList, crDelete, crUpdate, crListPlans, crListRegions)
 	crCreate.Flags().StringP("name", "n", "", "The name to use for the container registry")
 	crCreate.Flags().StringP("region", "i", "", "The ID of the region in which to create the container registry")
 	crCreate.Flags().BoolP("public", "p", false, "If the registry is publicly available. Should be true | false (default is false)")
@@ -321,7 +321,7 @@ var crListPlans = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.ContainerRegistryPlans(plans)
+		printer.ContainerRegistryPlans(plans.Plans)
 	},
 }
 
@@ -332,13 +332,13 @@ var crListRegions = &cobra.Command{
 	Long:    crRegionsLong,
 	Example: crRegionsExample,
 	Run: func(cmd *cobra.Command, args []string) {
-		plans, _, err := client.ContainerRegistry.ListRegions(context.Background())
+		regions, _, _, err := client.ContainerRegistry.ListRegions(context.Background())
 		if err != nil {
-			fmt.Printf("error getting container registry plans : %v\n", err)
+			fmt.Printf("error getting container registry regions : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.ContainerRegistry(plans)
+		printer.ContainerRegistryRegions(regions)
 	},
 }
 
@@ -354,26 +354,26 @@ var crCredentialsDocker = &cobra.Command{
 		access, _ := cmd.Flags().GetBool("write-access")
 
 		options := &govultr.DockerCredentialsOpt{
-			ExpirySeconds: expiry,
-			WriteAccess:   access,
+			ExpirySeconds: govultr.IntToIntPtr(expiry),
+			WriteAccess:   govultr.BoolToBoolPtr(access),
 		}
 
 		if access {
 			options.WriteAccess = govultr.BoolToBoolPtr(access)
 		}
 
-		plans, _, err := client.ContainerRegistry.CreateDockerCredentials(context.Background(), id, options)
+		creds, _, err := client.ContainerRegistry.CreateDockerCredentials(context.Background(), id, options)
 		if err != nil {
-			fmt.Printf("error getting container registry plans : %v\n", err)
+			fmt.Printf("error getting container registry docker credentials : %v\n", err)
 			os.Exit(1)
 		}
 
-		printer.ContainerRegistryRegions(plans)
+		printer.ContainerRegistryDockerCredentials(creds)
 	},
 }
 
 var crRepoGet = &cobra.Command{
-	Use:     "get",
+	Use:     "get <Registry ID> <Repository ID>",
 	Aliases: []string{"g"},
 	Short:   "get a container registry repository",
 	Long:    crGetLong,
@@ -403,6 +403,12 @@ var crRepoList = &cobra.Command{
 	Short:   "list all container registries",
 	Long:    crListLong,
 	Example: crListExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a container registry ID")
+		}
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		options := getPaging(cmd)
