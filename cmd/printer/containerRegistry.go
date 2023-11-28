@@ -79,6 +79,7 @@ func ContainerRegistryPlans(plans *govultr.ContainerRegistryPlanTypes) {
 
 		botVals := reflect.ValueOf(topVals.Field(i).Interface())
 
+		//nolint:gomnd
 		display(columns{
 			botVals.FieldByName("VanityName").String(),
 			fmt.Sprintf("%vGB", botVals.FieldByName("MaxStorageMB").Int()/1024),
