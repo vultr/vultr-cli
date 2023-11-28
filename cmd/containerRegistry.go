@@ -134,11 +134,8 @@ func ContainerRegistry() *cobra.Command {
 	crList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	crList.Flags().IntP("per-page", "p", perPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
-	crUpdate.Flags().StringP("description", "d", "", "The description of the container registry")
-	if err := crUpdate.MarkFlagRequired("description"); err != nil {
-		fmt.Printf("error marking container registry update 'description' flag required: %v\n", err)
-		os.Exit(1)
-	}
+	crUpdate.Flags().StringP("plan", "p", "", "Name of the plan used for the container registry")
+	crUpdate.Flags().BoolP("public", "b", false, "The container registry availability status")
 
 	crCredentialsCmd := &cobra.Command{
 		Use:     "credentials",
@@ -271,8 +268,8 @@ var crUpdate = &cobra.Command{
 			Plan: govultr.StringToStringPtr(plan),
 		}
 
-		if public {
-			options.Public = govultr.BoolToBoolPtr(true)
+		if cmd.Flags().Changed("public") {
+			options.Public = govultr.BoolToBoolPtr(public)
 		}
 
 		cr, _, err := client.ContainerRegistry.Update(context.Background(), id, options)
