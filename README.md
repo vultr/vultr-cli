@@ -9,33 +9,34 @@ Usage:
   vultr-cli [command]
 
 Available Commands:
-  account        Retrieve information about your account
-  apps           Display all available applications
-  backups        Display backups
-  bare-metal     bare-metal is used to access bare metal server commands
-  billing        Display billing information
-  block-storage  block storage commands
-  completion     Generate the autocompletion script for the specified shell
-  database       Commands to interact with managed databases on vultr
-  dns            dns is used to access dns commands
-  firewall       firewall is used to access firewall commands
-  help           Help about any command
-  instance       commands to interact with instances on vultr
-  iso            iso is used to access iso commands
-  kubernetes     kubernetes is used to access kubernetes commands
-  load-balancer  load balancer commands
-  object-storage object storage commands
-  os             os is used to access os commands
-  plans          get information about Vultr plans
-  regions        get regions
-  reserved-ip    reserved-ip lets you interact with reserved-ip
-  script         startup script commands
-  snapshot       snapshot commands
-  ssh-key        ssh-key commands
-  user           user commands
-  version        Display current version of Vultr-cli
-  vpc            Interact with VPCs
-  vpc2           Interact with VPC 2.0 networks
+  account            Retrieve information about your account
+  apps               Display all available applications
+  backups            Display backups
+  bare-metal         bare-metal is used to access bare metal server commands
+  billing            Display billing information
+  block-storage      block storage commands
+  completion         Generate the autocompletion script for the specified shell
+  container-registry commands to interact with container registries
+  database           Commands to interact with managed databases on vultr
+  dns                dns is used to access dns commands
+  firewall           firewall is used to access firewall commands
+  help               Help about any command
+  instance           commands to interact with instances on vultr
+  iso                iso is used to access iso commands
+  kubernetes         kubernetes is used to access kubernetes commands
+  load-balancer      load balancer commands
+  object-storage     object storage commands
+  os                 os is used to access os commands
+  plans              get information about Vultr plans
+  regions            get regions
+  reserved-ip        reserved-ip lets you interact with reserved-ip
+  script             startup script commands
+  snapshot           snapshot commands
+  ssh-key            ssh-key commands
+  user               user commands
+  version            Display current version of Vultr-cli
+  vpc                Interact with VPCs
+  vpc2               Interact with VPC 2.0 networks
 
 Flags:
   --config string   config file (default is $HOME/.vultr-cli.yaml) (default "#HOME/.vultr-cli.yaml")

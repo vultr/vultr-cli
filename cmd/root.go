@@ -71,6 +71,7 @@ func init() {
 	rootCmd.AddCommand(BareMetal())
 	rootCmd.AddCommand(Billing())
 	rootCmd.AddCommand(BlockStorageCmd())
+	rootCmd.AddCommand(ContainerRegistry())
 	rootCmd.AddCommand(Database())
 	rootCmd.AddCommand(DNS())
 	rootCmd.AddCommand(Firewall())
