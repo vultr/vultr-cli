@@ -55,7 +55,7 @@ var (
 	# Full example
 	vultr-cli container-registry update 835fd402-e0eb-47aa-a5a9-a9885feea1cf --plan="premium" --public="true" 
 
-	# Shortned example with aliases
+	# Shortened example with aliases
 	vultr-cli cr u 835fd402-e0eb-47aa-a5a9-a9885feea1cf -p="premium" -b="true"
 	`
 	crDeleteLong    = `Delete a container registry`
