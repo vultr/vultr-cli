@@ -409,6 +409,28 @@ func Database(database *govultr.Database) { //nolint: funlen,gocyclo
 	}
 }
 
+// DatabaseUsageInfo will generate a printer display of disk, memory, and CPU usage for a Managed Database
+func DatabaseUsageInfo(databaseUsage *govultr.DatabaseUsage) {
+	defer flush()
+
+	display(columns{"DISK USAGE"})
+	display(columns{"CURRENT (GB)", databaseUsage.Disk.CurrentGB})
+	display(columns{"MAXIMUM (GB)", databaseUsage.Disk.MaxGB})
+	display(columns{"PERCENTAGE", databaseUsage.Disk.Percentage})
+
+	display(columns{" "})
+
+	display(columns{"MEMORY USAGE"})
+	display(columns{"CURRENT (MB)", databaseUsage.Memory.CurrentMB})
+	display(columns{"MAXIMUM (MB)", databaseUsage.Memory.MaxMB})
+	display(columns{"PERCENTAGE", databaseUsage.Memory.Percentage})
+
+	display(columns{" "})
+
+	display(columns{"CPU USAGE"})
+	display(columns{"PERCENTAGE", databaseUsage.CPU.Percentage})
+}
+
 // DatabaseUserList will generate a printer display of users within a Managed Database
 func DatabaseUserList(databaseUsers []govultr.DatabaseUser, meta *govultr.Meta) {
 	defer flush()
