@@ -327,7 +327,7 @@ var crListPlans = &cobra.Command{
 
 var crListRegions = &cobra.Command{
 	Use:     "regions",
-	Aliases: []string{"g"},
+	Aliases: []string{"i"},
 	Short:   "list the available regions for container registry",
 	Long:    crRegionsLong,
 	Example: crRegionsExample,
