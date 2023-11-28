@@ -74,12 +74,14 @@ var (
 	# Shortened example with aliases
 	vultr-cli cr l
 	`
-	crCredentialsLong    = `Commands for accessing the credentials on registries`
+	crCredentialsLong = `Commands for accessing the credentials on registries`
+	//nolint: gosec
 	crCredentialsExample = `
 	# Full example
 	vultr-cli container-registry credentials
 	`
-	crCredentialsDockerLong    = `Create the credential string used by docker`
+	crCredentialsDockerLong = `Create the credential string used by docker`
+	//nolint: gosec
 	crCredentialsDockerExample = `
 	# Full example
 	vultr-cli container-registry credentials docker d24cfdcc-0534-4700-bf88-8ee48f20064e 
@@ -108,7 +110,7 @@ var (
 	# Shortened example with aliases
 	vultr-cli cr r d 4dcdc52e-9c63-401e-8c5f-1582490fe09c -i="my-thing"
 	`
-	crPlansLong    = `Retrieve the current plan details for conatiner registry`
+	crPlansLong    = `Retrieve the current plan details for container registry`
 	crPlansExample = `
 	# Full example
 	vultr-cli container-registry plans
