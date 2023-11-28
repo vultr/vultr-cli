@@ -76,7 +76,6 @@ func ContainerRegistryPlans(plans *govultr.ContainerRegistryPlanTypes) {
 
 	topVals := reflect.ValueOf(*plans)
 	for i := 0; i < topVals.NumField(); i++ {
-
 		botVals := reflect.ValueOf(topVals.Field(i).Interface())
 
 		//nolint:gomnd
