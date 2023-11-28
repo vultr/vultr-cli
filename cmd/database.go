@@ -155,6 +155,15 @@ func Database() *cobra.Command { //nolint:funlen
 	databaseDBCreate.Flags().StringP("name", "n", "", "name of the new logical database within the manaaged database")
 	databaseCmd.AddCommand(dbCmd)
 
+	// Database usage info
+	usageCmd := &cobra.Command{
+		Use:   "usage",
+		Short: "commands to display managed database usage information",
+		Long:  ``,
+	}
+	usageCmd.AddCommand(databaseUsageInfo)
+	databaseCmd.AddCommand(usageCmd)
+
 	// Database maintenance update commands
 	maintenanceCmd := &cobra.Command{
 		Use:   "maintenance",
@@ -802,6 +811,27 @@ var databaseDBDelete = &cobra.Command{
 		}
 
 		fmt.Println("Deleted logical database")
+	},
+}
+
+var databaseUsageInfo = &cobra.Command{
+	Use:   "get <databaseID>",
+	Short: "Retrieve the current disk, memory, and CPU usage for a managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a databaseID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		databaseUsage, _, err := client.Database.GetUsage(context.TODO(), args[0])
+		if err != nil {
+			fmt.Printf("error retrieving usage information : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseUsageInfo(databaseUsage)
 	},
 }
 
