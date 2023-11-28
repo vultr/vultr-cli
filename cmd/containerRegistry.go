@@ -375,7 +375,7 @@ var crListPlans = &cobra.Command{
 			os.Exit(1)
 		}
 
-		printer.ContainerRegistryPlans(plans.Plans)
+		printer.ContainerRegistryPlans(&plans.Plans)
 	},
 }
 

@@ -69,12 +69,12 @@ func ContainerRegistryList(crs []govultr.ContainerRegistry, meta *govultr.Meta) 
 	Meta(meta)
 }
 
-func ContainerRegistryPlans(plans govultr.ContainerRegistryPlanTypes) {
+func ContainerRegistryPlans(plans *govultr.ContainerRegistryPlanTypes) {
 	defer flush()
 
 	display(columns{"NAME", "MAX STORAGE", "MONTHLY PRICE"})
 
-	topVals := reflect.ValueOf(plans)
+	topVals := reflect.ValueOf(*plans)
 	for i := 0; i < topVals.NumField(); i++ {
 
 		botVals := reflect.ValueOf(topVals.Field(i).Interface())
