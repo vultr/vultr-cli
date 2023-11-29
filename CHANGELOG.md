@@ -1,4 +1,20 @@
 # Change Log
+## [v2.21.0](https://github.com/vultr/vultr-cli/compare/v2.20.0...v2.21.0) (2023-11-29)
+### Enhancements
+* Database: Add usage commands [PR 378](https://github.com/vultr/vultr-cli/pull/378)
+* Container Registry: Implemented [PR 380](https://github.com/vultr/vultr-cli/pull/380)
+* Bare Metal: Update tags display to use delimiters [PR 372](https://github.com/vultr/vultr-cli/pull/372)
+* Instance: Update tags display to use delimiters [PR 372](https://github.com/vultr/vultr-cli/pull/372)
+* Database: Add read replica promotion [PR 375](https://github.com/vultr/vultr-cli/pull/375)
+* Kubernetes: Add kubeconfig filepath export [PR 361](https://github.com/vultr/vultr-cli/pull/361)
+
+### Dependencies
+* Update govultr to v3.4.1 [PR 376](https://github.com/vultr/vultr-cli/pull/376)
+* Bump golang.org/x/oauth2 from 0.14.0 to 0.15.0 [PR 379](https://github.com/vultr/vultr-cli/pull/379)
+* Bump github.com/spf13/cobra from 1.7.0 to 1.8.0 [PR 371](https://github.com/vultr/vultr-cli/pull/371)
+* Bump govultr to v3.4.0 [PR 374](https://github.com/vultr/vultr-cli/pull/374)
+* Bump golang.org/x/oauth2 from 0.13.0 to 0.14.0 [PR 373](https://github.com/vultr/vultr-cli/pull/373)
+
 ## [v2.20.0](https://github.com/vultr/vultr-cli/compare/v2.19.0...v2.20.0) 2023-11-01
 ### Enhancements
 * Managed Database public/private hostnames, cleanup summarize view [PR 363](https://github.com/vultr/vultr-cli/pull/363)
