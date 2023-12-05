@@ -447,6 +447,13 @@ func DatabaseUserList(databaseUsers []govultr.DatabaseUser, meta *govultr.Meta) 
 		if databaseUsers[u].Encryption != "" {
 			display(columns{"ENCRYPTION", databaseUsers[u].Encryption})
 		}
+		if databaseUsers[u].AccessControl != nil {
+			display(columns{"ACCESS CONTROL"})
+			display(columns{"REDIS ACL CATEGORIES", databaseUsers[u].AccessControl.RedisACLCategories})
+			display(columns{"REDIS ACL CHANNELS", databaseUsers[u].AccessControl.RedisACLChannels})
+			display(columns{"REDIS ACL COMMANDS", databaseUsers[u].AccessControl.RedisACLCommands})
+			display(columns{"REDIS ACL KEYS", databaseUsers[u].AccessControl.RedisACLKeys})
+		}
 		display(columns{"---------------------------"})
 	}
 
@@ -461,6 +468,13 @@ func DatabaseUser(databaseUser govultr.DatabaseUser) {
 	display(columns{"PASSWORD", databaseUser.Password})
 	if databaseUser.Encryption != "" {
 		display(columns{"ENCRYPTION", databaseUser.Encryption})
+	}
+	if databaseUser.AccessControl != nil {
+		display(columns{"ACCESS CONTROL"})
+		display(columns{"REDIS ACL CATEGORIES", databaseUser.AccessControl.RedisACLCategories})
+		display(columns{"REDIS ACL CHANNELS", databaseUser.AccessControl.RedisACLChannels})
+		display(columns{"REDIS ACL COMMANDS", databaseUser.AccessControl.RedisACLCommands})
+		display(columns{"REDIS ACL KEYS", databaseUser.AccessControl.RedisACLKeys})
 	}
 }
 
