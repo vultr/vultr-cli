@@ -157,6 +157,7 @@ func Database() *cobra.Command { //nolint:funlen
 		"list of rules for individual commands")
 	databaseUserUpdateACL.Flags().StringSliceP("redis-acl-keys", "", []string{},
 		"list of key access rules")
+	databaseUserUpdateACL.MarkFlagsOneRequired("redis-acl-categories", "redis-acl-channels", "redis-acl-commands", "redis-acl-keys")
 	userCmd.AddCommand(userACLCmd)
 	databaseCmd.AddCommand(userCmd)
 
