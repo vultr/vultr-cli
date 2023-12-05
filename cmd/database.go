@@ -143,6 +143,22 @@ func Database() *cobra.Command { //nolint:funlen
 	databaseUserCreate.Flags().StringP("encryption", "e", "", "encryption type for the new managed database user (MySQL only)")
 	databaseUserUpdate.Flags().StringP("password", "p", "",
 		"new password for the manaaged database user (leave empty to generate a random secure password)")
+	userACLCmd := &cobra.Command{
+		Use:   "acl",
+		Short: "commands to handle managed database user access control (Redis only)",
+		Long:  ``,
+	}
+	userACLCmd.AddCommand(databaseUserUpdateACL)
+	databaseUserUpdateACL.Flags().StringSliceP("redis-acl-categories", "", []string{},
+		"list of rules for command categories")
+	databaseUserUpdateACL.Flags().StringSliceP("redis-acl-channels", "", []string{},
+		"list of publish/subscribe channel patterns")
+	databaseUserUpdateACL.Flags().StringSliceP("redis-acl-commands", "", []string{},
+		"list of rules for individual commands")
+	databaseUserUpdateACL.Flags().StringSliceP("redis-acl-keys", "", []string{},
+		"list of key access rules")
+	databaseUserUpdateACL.MarkFlagsOneRequired("redis-acl-categories", "redis-acl-channels", "redis-acl-commands", "redis-acl-keys")
+	userCmd.AddCommand(userACLCmd)
 	databaseCmd.AddCommand(userCmd)
 
 	// Database logical db flags
@@ -721,6 +737,51 @@ var databaseUserDelete = &cobra.Command{
 		}
 
 		fmt.Println("Deleted managed database user")
+	},
+}
+
+var databaseUserUpdateACL = &cobra.Command{
+	Use:   "update <databaseID> <username>",
+	Short: "Update a user's access control configuration within a Redis managed database",
+	Long:  "",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("please provide a databaseID and username")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		redisACLCategories, _ := cmd.Flags().GetStringSlice("redis-acl-categories")
+		redisACLCategoriesSet := cmd.Flags().Lookup("redis-acl-categories").Changed
+		redisACLChannels, _ := cmd.Flags().GetStringSlice("redis-acl-channels")
+		redisACLChannelsSet := cmd.Flags().Lookup("redis-acl-channels").Changed
+		redisACLCommands, _ := cmd.Flags().GetStringSlice("redis-acl-commands")
+		redisACLCommandsSet := cmd.Flags().Lookup("redis-acl-commands").Changed
+		redisACLKeys, _ := cmd.Flags().GetStringSlice("redis-acl-keys")
+		redisACLKeysSet := cmd.Flags().Lookup("redis-acl-keys").Changed
+
+		var opt = &govultr.DatabaseUserACLReq{}
+		if redisACLCategoriesSet {
+			opt.RedisACLCategories = &redisACLCategories
+		}
+		if redisACLChannelsSet {
+			opt.RedisACLChannels = &redisACLChannels
+		}
+		if redisACLCommandsSet {
+			opt.RedisACLCommands = &redisACLCommands
+		}
+		if redisACLKeysSet {
+			opt.RedisACLKeys = &redisACLKeys
+		}
+
+		// Make the request
+		databaseUser, _, err := client.Database.UpdateUserACL(context.TODO(), args[0], args[1], opt)
+		if err != nil {
+			fmt.Printf("error updating managed database user access control : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.DatabaseUser(*databaseUser)
 	},
 }
 
