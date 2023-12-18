@@ -43,7 +43,7 @@ var (
 )
 
 // Marketplace represents the marketplace command
-func Marketplace() *cobra.Command { //nolint:funlen
+func Marketplace() *cobra.Command {
 	marketplaceCmd := &cobra.Command{
 		Use:     "marketplace",
 		Short:   "commands to interact with the vultr marketplace",
