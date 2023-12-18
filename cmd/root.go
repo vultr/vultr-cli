@@ -78,6 +78,7 @@ func init() {
 	rootCmd.AddCommand(ISO())
 	rootCmd.AddCommand(Kubernetes())
 	rootCmd.AddCommand(LoadBalancer())
+	rootCmd.AddCommand(Marketplace())
 	rootCmd.AddCommand(Network())
 	rootCmd.AddCommand(Os())
 	rootCmd.AddCommand(ObjectStorageCmd())

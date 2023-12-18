@@ -25,6 +25,7 @@ Available Commands:
   iso                iso is used to access iso commands
   kubernetes         kubernetes is used to access kubernetes commands
   load-balancer      load balancer commands
+  marketplace        Commands to interact with Vultr Marketplace
   object-storage     object storage commands
   os                 os is used to access os commands
   plans              get information about Vultr plans
