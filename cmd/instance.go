@@ -205,6 +205,14 @@ func Instance() *cobra.Command { //nolint: funlen,gocyclo
 	instanceCreate.Flags().StringSliceP("tags", "", []string{}, "A comma-separated list of tags to assign to this instance")
 	instanceCreate.Flags().StringP("firewall-group", "", "", "The firewall group to assign to this instance")
 
+	var appVariables map[string]string
+	instanceCreate.Flags().StringToStringVar(
+		&appVariables,
+		"app-variables",
+		nil,
+		"Map containing list of user-supplied variables for a marketplace app",
+	)
+
 	instanceList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	instanceList.Flags().IntP(
 		"per-page",
@@ -1289,6 +1297,7 @@ var instanceCreate = &cobra.Command{
 		tag, _ := cmd.Flags().GetString("tag")
 		tags, _ := cmd.Flags().GetStringSlice("tags")
 		fwg, _ := cmd.Flags().GetString("firewall-group")
+		appVariables, _ := cmd.Flags().GetStringToString("app-variables")
 
 		osOptions := map[string]interface{}{"iso_id": iso, "os_id": osID, "app_id": app, "snapshot_id": snapshot, "image_id": image}
 
@@ -1356,6 +1365,9 @@ var instanceCreate = &cobra.Command{
 		}
 		if userData != "" {
 			opt.UserData = base64.StdEncoding.EncodeToString([]byte(userData))
+		}
+		if appVariables != nil {
+			opt.AppVariables = appVariables
 		}
 
 		instance, _, err := client.Instance.Create(context.TODO(), opt)

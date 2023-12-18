@@ -152,6 +152,14 @@ func BareMetal() *cobra.Command {
 	bareMetalCreate.Flags().StringP("ripv4", "v", "", "(optional) IP address of the floating IP to use as the main IP of this server.")
 	bareMetalCreate.Flags().BoolP("persistent_pxe", "x", false, "enable persistent_pxe | true or false")
 
+	var appVariables map[string]string
+	bareMetalCreate.Flags().StringToStringVar(
+		&appVariables,
+		"app-variables",
+		nil,
+		"Map containing list of user-supplied variables for a marketplace app",
+	)
+
 	bareMetalList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	bareMetalList.Flags().IntP(
 		"per-page",
@@ -218,6 +226,7 @@ var bareMetalCreate = &cobra.Command{
 		ripv4, _ := cmd.Flags().GetString("ripv4")
 		pxe, _ := cmd.Flags().GetBool("persistent_pxe")
 		image, _ := cmd.Flags().GetString("image")
+		appVariables, _ := cmd.Flags().GetStringToString("app-variables")
 
 		options := &govultr.BareMetalCreate{
 			StartupScriptID: script,
@@ -246,6 +255,10 @@ var bareMetalCreate = &cobra.Command{
 
 		if ipv6 == "yes" {
 			options.EnableIPv6 = govultr.BoolToBoolPtr(true)
+		}
+
+		if appVariables != nil {
+			options.AppVariables = appVariables
 		}
 
 		osOptions := map[string]interface{}{"app_id": app, "snapshot_id": snapshot, "os_id": osID, "image_id": image}
