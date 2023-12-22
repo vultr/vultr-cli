@@ -21,8 +21,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
 // Script represents the script command
@@ -32,6 +32,12 @@ func Script() *cobra.Command {
 		Aliases: []string{"ss"},
 		Short:   "startup script commands",
 		Long:    `script is used to access startup script commands`,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
+				return errors.New(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	cmd.AddCommand(scriptCreate, scriptGet, scriptDelete, scriptList, scriptUpdate)
@@ -40,15 +46,21 @@ func Script() *cobra.Command {
 	scriptCreate.Flags().StringP("script", "s", "", "Startup script contents.")
 	scriptCreate.Flags().StringP("type", "t", "", "(Optional) Type of startup script. Possible values: 'boot', 'pxe'. Default is 'boot'.")
 
-	scriptCreate.MarkFlagRequired("name")
-	scriptCreate.MarkFlagRequired("script")
+	if err := scriptCreate.MarkFlagRequired("name"); err != nil {
+		fmt.Printf("error marking script create 'name' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	if err := scriptCreate.MarkFlagRequired("script"); err != nil {
+		fmt.Printf("error marking script create 'script' flag required: %v\n", err)
+		os.Exit(1)
+	}
 
 	scriptUpdate.Flags().StringP("name", "n", "", "Name of the startup script.")
 	scriptUpdate.Flags().StringP("script", "s", "", "Startup script contents.")
 	scriptUpdate.Flags().StringP("type", "t", "", "Type of startup script. Possible values: 'boot', 'pxe'. Default is 'boot'.")
 
 	scriptList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	scriptList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	scriptList.Flags().IntP("per-page", "p", perPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	return cmd
 }
@@ -69,7 +81,7 @@ var scriptCreate = &cobra.Command{
 			Type:   scriptType,
 		}
 
-		startup, err := client.StartupScript.Create(context.Background(), options)
+		startup, _, err := client.StartupScript.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -109,7 +121,7 @@ var scriptList = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.StartupScript.List(context.Background(), options)
+		list, meta, _, err := client.StartupScript.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -132,7 +144,7 @@ var scriptGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
-		script, err := client.StartupScript.Get(context.Background(), id)
+		script, _, err := client.StartupScript.Get(context.Background(), id)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)

@@ -1,96 +1,89 @@
 package printer
 
 import (
-	"encoding/json"
-
-	"github.com/go-yaml/yaml"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
-var _ ResourceOutput = &Plans{}
+func Plan(plan []govultr.Plan, meta *govultr.Meta) {
+	defer flush()
 
-type Plans struct {
-	Plan []govultr.Plan
-	Meta *govultr.Meta
-}
+	display(columns{
+		"ID",
+		"VCPU COUNT",
+		"RAM",
+		"DISK",
+		"DISK COUNT",
+		"BANDWIDTH GB",
+		"PRICE PER MONTH",
+		"TYPE",
+		"GPU VRAM",
+		"GPU TYPE",
+		"REGIONS",
+	})
 
-func (p *Plans) JSON() []byte {
-	prettyJSON, err := json.MarshalIndent(p, "", "    ")
-	if err != nil {
-		panic("move this into byte")
+	if len(plan) == 0 {
+		display(columns{"---", "---", "---", "---", "---", "---", "---", "---", "---", "---", "---"})
+		Meta(meta)
+		return
 	}
 
-	return prettyJSON
-}
-
-func (p *Plans) Yaml() []byte {
-	yam, err := yaml.Marshal(p)
-	if err != nil {
-		panic("move this into byte")
-	}
-	return yam
-}
-
-func (p *Plans) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {"ID", "VCPU COUNT", "RAM", "DISK", "DISK COUNT", "BANDWIDTH GB", "PRICE PER MONTH", "TYPE", "REGIONS"}}
-}
-
-func (p *Plans) Data() map[int][]interface{} {
-	data := map[int][]interface{}{}
-	for k, p := range p.Plan {
-		data[k] = []interface{}{p.ID, p.VCPUCount, p.RAM, p.Disk, p.DiskCount, p.Bandwidth, p.MonthlyCost, p.Type, p.Locations}
-	}
-	return data
-}
-
-func (p *Plans) Paging() map[int][]interface{} {
-	return map[int][]interface{}{
-		0: {"======================================"},
-		1: {"TOTAL", "NEXT PAGE", "PREV PAGE"},
-		2: {p.Meta.Total, p.Meta.Links.Next, p.Meta.Links.Prev},
-	}
-}
-
-var _ ResourceOutput = &BaremetalPlans{}
-
-type BaremetalPlans struct {
-	Plan []govultr.BareMetalPlan
-	Meta *govultr.Meta
-}
-
-func (b *BaremetalPlans) JSON() []byte {
-	prettyJSON, err := json.MarshalIndent(b, "", "    ")
-	if err != nil {
-		panic("move this into byte")
+	for i := range plan {
+		display(columns{
+			plan[i].ID,
+			plan[i].VCPUCount,
+			plan[i].RAM,
+			plan[i].Disk,
+			plan[i].DiskCount,
+			plan[i].Bandwidth,
+			plan[i].MonthlyCost,
+			plan[i].Type,
+			plan[i].GPUVRAM,
+			plan[i].GPUType,
+			plan[i].Locations,
+		})
 	}
 
-	return prettyJSON
+	Meta(meta)
 }
 
-func (b *BaremetalPlans) Yaml() []byte {
-	yam, err := yaml.Marshal(b)
-	if err != nil {
-		panic("move this into byte")
+func PlanBareMetal(plan []govultr.BareMetalPlan, meta *govultr.Meta) {
+	defer flush()
+
+	display(columns{
+		"ID",
+		"CPU COUNT",
+		"CPU MODEL",
+		"CPU THREADS",
+		"RAM",
+		"DISK",
+		"DISK COUNT",
+		"BANDWIDTH GB",
+		"PRICE PER MONTH",
+		"TYPE",
+		"REGIONS",
+	})
+
+	if len(plan) == 0 {
+		display(columns{"---", "---", "---", "---", "---", "---", "---", "---", "---", "---", "---"})
+		Meta(meta)
+		return
 	}
-	return yam
-}
 
-func (b *BaremetalPlans) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {"ID", "CPU COUNT", "CPU MODEL", "CPU THREADS", "RAM", "DISK", "DISK COUNT", "BANDWIDTH GB", "PRICE PER MONTH", "TYPE", "REGIONS"}}
-}
-
-func (b *BaremetalPlans) Data() map[int][]interface{} {
-	data := map[int][]interface{}{}
-	for k, p := range b.Plan {
-		data[k] = []interface{}{p.ID, p.CPUCount, p.CPUModel, p.CPUThreads, p.RAM, p.Disk, p.DiskCount, p.Bandwidth, p.MonthlyCost, p.Type, p.Locations}
+	for i := range plan {
+		display(columns{
+			plan[i].ID,
+			plan[i].CPUCount,
+			plan[i].CPUModel,
+			plan[i].CPUThreads,
+			plan[i].RAM,
+			plan[i].Disk,
+			plan[i].DiskCount,
+			plan[i].Bandwidth,
+			plan[i].MonthlyCost,
+			plan[i].Type,
+			plan[i].Locations,
+		})
 	}
-	return data
-}
 
-func (b *BaremetalPlans) Paging() map[int][]interface{} {
-	return map[int][]interface{}{
-		0: {"======================================"},
-		1: {"TOTAL", "NEXT PAGE", "PREV PAGE"},
-		2: {b.Meta.Total, b.Meta.Links.Next, b.Meta.Links.Prev},
-	}
+	Meta(meta)
 }

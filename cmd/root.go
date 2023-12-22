@@ -12,88 +12,92 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package cmd implements the command line commands relevant to the vultr-cli
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
-
-	"github.com/vultr/vultr-cli/cmd/account"
-	"github.com/vultr/vultr-cli/cmd/operatingSystems"
-	"github.com/vultr/vultr-cli/cmd/sshkeys"
+	"path/filepath"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vultr/govultr/v2"
-	"github.com/vultr/vultr-cli/cmd/applications"
-	"github.com/vultr/vultr-cli/cmd/plans"
-	"github.com/vultr/vultr-cli/cmd/regions"
-	"github.com/vultr/vultr-cli/cmd/users"
-	"github.com/vultr/vultr-cli/cmd/version"
-	"github.com/vultr/vultr-cli/pkg/cli"
+	"github.com/vultr/govultr/v3"
+	"golang.org/x/oauth2"
 )
 
-var (
-	cfgFile string
-	output  string
-	base    *cli.Base
-	client  *govultr.Client
+const (
+	userAgent          = "vultr-cli/" + version
+	perPageDefault int = 100
+	//nolint: gosec
+	apiKeyError string = `
+Please export your VULTR API key as an environment variable or add 'api-key' to your config file, eg:
+export VULTR_API_KEY='<api_key_from_vultr_account>'
+	`
 )
+
+// ctxAuthKey is the context key for the authorized token check
+type ctxAuthKey struct{}
+
+var cfgFile string
+var client *govultr.Client
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:     "vultr-cli",
-	Short:   "vultr-cli is a command line interface for the Vultr API",
-	Long:    ``,
-	Aliases: []string{"vultrctl"},
+	Use:   "vultr-cli",
+	Short: "vultr-cli is a command line interface for the Vultr API",
+	Long:  ``,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
 		os.Exit(1)
 	}
 }
 
 func init() {
-	initConfig()
-
+	rootCmd.AddCommand(versionCmd)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", configHome(), "config file (default is $HOME/.vultr-cli.yaml)")
-	viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
-
-	rootCmd.PersistentFlags().StringVar(&output, "output", "text", "out of data json | yaml | text. text is default")
-	viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output"))
-
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.AddCommand(account.NewCmdAccount(base))
-	rootCmd.AddCommand(applications.NewCmdApplications(base))
+	if err := viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config")); err != nil {
+		fmt.Printf("error binding root pflag 'config': %v\n", err)
+	}
+	rootCmd.AddCommand(accountCmd)
+	rootCmd.AddCommand(Applications())
 	rootCmd.AddCommand(Backups())
 	rootCmd.AddCommand(BareMetal())
+	rootCmd.AddCommand(Billing())
 	rootCmd.AddCommand(BlockStorageCmd())
+	rootCmd.AddCommand(ContainerRegistry())
+	rootCmd.AddCommand(Database())
 	rootCmd.AddCommand(DNS())
 	rootCmd.AddCommand(Firewall())
 	rootCmd.AddCommand(ISO())
+	rootCmd.AddCommand(Kubernetes())
 	rootCmd.AddCommand(LoadBalancer())
 	rootCmd.AddCommand(Network())
-	rootCmd.AddCommand(operatingSystems.NewCmdOS(base))
+	rootCmd.AddCommand(Os())
 	rootCmd.AddCommand(ObjectStorageCmd())
-	rootCmd.AddCommand(plans.NewCmdPlan(base))
-	rootCmd.AddCommand(regions.NewCmdRegion(base))
+	rootCmd.AddCommand(Plans())
+	rootCmd.AddCommand(Regions())
 	rootCmd.AddCommand(ReservedIP())
 	rootCmd.AddCommand(Script())
 	rootCmd.AddCommand(Instance())
 	rootCmd.AddCommand(Snapshot())
-	rootCmd.AddCommand(sshkeys.NewCmdSSHKey(base))
-	rootCmd.AddCommand(users.NewCmdUser(base))
-	rootCmd.AddCommand(version.NewCmdVersion())
-	cobra.OnInitialize(initConfig)
+	rootCmd.AddCommand(SSHKey())
+	rootCmd.AddCommand(User())
+	rootCmd.AddCommand(VPC())
+	rootCmd.AddCommand(VPC2())
 
+	ctx := initConfig()
+	rootCmd.SetContext(ctx)
 }
 
 // initConfig reads in config file and ENV variables if set.
-func initConfig() {
+func initConfig() context.Context {
 	var token string
 	configPath := viper.GetString("config")
 
@@ -118,13 +122,22 @@ func initConfig() {
 		token = os.Getenv("VULTR_API_KEY")
 	}
 
+	ctx := context.Background()
+
 	if token == "" {
-		fmt.Println("Please export your VULTR API key as an environment variable or add `api-key` to your config file, eg:")
-		fmt.Println("export VULTR_API_KEY='<api_key_from_vultr_account>'")
-		os.Exit(1)
+		client = govultr.NewClient(nil)
+		ctx = context.WithValue(ctx, ctxAuthKey{}, false)
+	} else {
+		config := &oauth2.Config{}
+		ts := config.TokenSource(ctx, &oauth2.Token{AccessToken: token})
+		client = govultr.NewClient(oauth2.NewClient(ctx, ts))
+		ctx = context.WithValue(ctx, ctxAuthKey{}, true)
 	}
 
-	base = cli.NewCLIBase(token, viper.GetString("output"))
+	client.SetRateLimit(1 * time.Second)
+	client.SetUserAgent(userAgent)
+
+	return ctx
 }
 
 func getPaging(cmd *cobra.Command) *govultr.ListOptions {
@@ -145,20 +158,38 @@ func getPaging(cmd *cobra.Command) *govultr.ListOptions {
 }
 
 func configHome() string {
-	configHome, err := os.UserHomeDir()
-	if err != nil {
+	// check for a config file at ~/.config/vultr-cli.yaml
+	configFolder, errConfig := os.UserConfigDir()
+	if errConfig != nil {
 		os.Exit(1)
 	}
 
-	configHome = fmt.Sprintf("%s/.vultr-cli.yaml", configHome)
-	if _, err := os.Stat(configHome); err != nil {
-		f, err := os.Create(configHome)
+	configFile := fmt.Sprintf("%s/vultr-cli.yaml", configFolder)
+	if _, err := os.Stat(configFile); err == nil {
+		// if one exists, return the path
+		return configFile
+	}
+
+	// check for a config file at ~/.vultr-cli.yaml
+	configFolder, errHome := os.UserHomeDir()
+	if errHome != nil {
+		os.Exit(1)
+	}
+
+	configFile = fmt.Sprintf("%s/.vultr-cli.yaml", configFolder)
+	if _, err := os.Stat(configFile); err != nil {
+		// if it doesn't exist, create one
+		f, err := os.Create(filepath.Clean(configFile))
 		if err != nil {
 			os.Exit(1)
 		}
-		defer f.Close()
 
+		defer func() {
+			if errCls := f.Close(); errCls != nil {
+				fmt.Printf("failed to close config file.. error: %v", errCls)
+			}
+		}()
 	}
 
-	return configHome
+	return configFile
 }

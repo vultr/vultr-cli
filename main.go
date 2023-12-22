@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/vultr/vultr-cli/cmd"
+import "github.com/vultr/vultr-cli/v2/cmd"
 
 func main() {
 	cmd.Execute()

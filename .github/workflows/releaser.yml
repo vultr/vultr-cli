@@ -1,0 +1,95 @@
+name: "Automatic Releaser"
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  check-commit:
+    runs-on: ubuntu-latest
+    outputs:
+      msg_check: ${{ steps.check-msg.outputs.match }}
+    steps:
+      - name: Check Message
+        id: check-msg
+        run: |
+          pattern="^Release v[0-9]+.[0-9]+.[0-9]+ #(minor|major|patch)$"
+          if [[ "${{ github.event.head_commit.message }}" =~ ${pattern} ]]; then
+              echo ::set-output name=match::true
+          fi
+  create-tag:
+    runs-on: ubuntu-latest
+    if: needs.check-commit.outputs.msg_check == 'true'
+    needs: check-commit
+    outputs:
+      new_tag: ${{ steps.tagger.outputs.new_tag }}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+
+    - name: Bump version and push tag
+      id: tagger
+      uses: anothrNick/github-tag-action@1.36.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        WITH_V: true
+        DEFAULT_BUMP: "none"
+
+  goreleaser:
+    runs-on: ubuntu-latest
+    needs: create-tag
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      -
+        name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.21"
+      -
+        name: Docker Login
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+      -
+        name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.VULTRBOT_TOKEN }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      -
+        name: Clear
+        if: always()
+        run: |
+          rm -f ${HOME}/.docker/config.json
+
+  release:
+    runs-on: ubuntu-latest
+    needs: ["goreleaser", "create-tag"]
+    name: Release Notification
+    steps:
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      - run: |
+          echo "{\"text\":\"Vultr-CLI : Release https://github.com/${{ github.repository }}/releases/tag/${{ needs.create-tag.outputs.new_tag }} \"}" > mattermost.json
+      - uses: mattermost/action-mattermost-notify@master
+        env:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_USERNAME: ${{ secrets.MATTERMOST_USERNAME}}
+          MATTERMOST_ICON: ${{ secrets.MATTERMOST_ICON }}

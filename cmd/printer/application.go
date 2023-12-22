@@ -1,52 +1,31 @@
 package printer
 
 import (
-	"encoding/json"
-
-	"github.com/go-yaml/yaml"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
-var _ ResourceOutput = &Applications{}
+func Application(apps []govultr.Application, meta *govultr.Meta) {
+	defer flush()
 
-type Applications struct {
-	Applications []govultr.Application `json:"applications"`
-	Meta         *govultr.Meta
-}
+	display(columns{"ID", "NAME", "SHORT NAME", "DEPLOY NAME", "TYPE", "VENDOR", "IMAGE ID"})
 
-func (a *Applications) JSON() []byte {
-	prettyJSON, err := json.MarshalIndent(a, "", "    ")
-	if err != nil {
-		panic("move this into byte")
+	if len(apps) == 0 {
+		display(columns{"---", "---", "---", "---", "---", "---", "---"})
+		Meta(meta)
+		return
 	}
 
-	return prettyJSON
-}
-
-func (a *Applications) Yaml() []byte {
-	yam, err := yaml.Marshal(a)
-	if err != nil {
-		panic("move this into byte")
+	for i := range apps {
+		display(columns{
+			apps[i].ID,
+			apps[i].Name,
+			apps[i].ShortName,
+			apps[i].DeployName,
+			apps[i].Type,
+			apps[i].Vendor,
+			apps[i].ImageID,
+		})
 	}
-	return yam
-}
 
-func (a *Applications) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {"ID", "NAME", "SHORT NAME", "DEPLOY NAME"}}
-}
-
-func (a *Applications) Data() map[int][]interface{} {
-	data := map[int][]interface{}{}
-	for k, a := range a.Applications {
-		data[k] = []interface{}{a.ID, a.Name, a.ShortName, a.DeployName}
-	}
-	return data
-}
-
-func (a *Applications) Paging() map[int][]interface{} {
-	return map[int][]interface{}{
-		0: {"======================================"},
-		1: {"TOTAL", "NEXT PAGE", "PREV PAGE"},
-		2: {a.Meta.Total, a.Meta.Links.Next, a.Meta.Links.Prev},
-	}
+	Meta(meta)
 }

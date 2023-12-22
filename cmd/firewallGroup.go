@@ -21,8 +21,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
 )
 
 // FirewallGroup represents the firewall group commands
@@ -39,7 +39,12 @@ func FirewallGroup() *cobra.Command {
 	firewallGroupCreate.Flags().StringP("description", "d", "", "(optional) Description of firewall group.")
 
 	firewallGroupList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	firewallGroupList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	firewallGroupList.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	return firewallGroupCmd
 }
@@ -54,7 +59,7 @@ var firewallGroupCreate = &cobra.Command{
 			Description: description,
 		}
 
-		fwg, err := client.FirewallGroup.Create(context.Background(), options)
+		fwg, _, err := client.FirewallGroup.Create(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -120,7 +125,7 @@ var firewallGroupGet = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.FirewallGroup.List(context.Background(), options)
+		list, meta, _, err := client.FirewallGroup.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -136,7 +141,7 @@ var firewallGroupList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.FirewallGroup.List(context.Background(), options)
+		list, meta, _, err := client.FirewallGroup.List(context.Background(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)

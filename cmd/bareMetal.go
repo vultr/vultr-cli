@@ -22,8 +22,36 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v2/cmd/printer"
+)
+
+var (
+	bareMetalLong    = `Show all commands available to bare-metal`
+	bareMetalExample = `
+	# Full example
+	vultr-cli bare-metal
+	`
+
+	bareMetalTagsLong    = `Update the tags on a bare metal server`
+	bareMetalTagsExample = `
+	# Full example
+	vultr-cli bare-metal tags <bareMetalID> tags="tag-1,tag-2"
+
+	# Shortened example with aliases
+	vultr-cli bm tags <bareMetalID> -t="tag-1,tag-2"
+	`
+
+	bareMetalVPC2AttachLong    = `Attaches an existing VPC 2.0 network to the specified bare metal server`
+	bareMetalVPC2AttachExample = `
+	# Full example
+	vultr-cli bare-metal vpc2 attach <bareMetalID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
+	`
+	bareMetalVPC2DetachLong    = `Detaches an existing VPC 2.0 network from the specified bare metal server`
+	bareMetalVPC2DetachExample = `
+	# Full example
+	vultr-cli bare-metal vpc2 detach <bareMetalID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
+	`
 )
 
 // BareMetal represents the baremetal commands
@@ -32,10 +60,19 @@ func BareMetal() *cobra.Command {
 		Use:     "bare-metal",
 		Short:   "bare-metal is used to access bare metal server commands",
 		Aliases: []string{"bm"},
+		Long:    bareMetalLong,
+		Example: bareMetalExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if !cmd.Context().Value(ctxAuthKey{}).(bool) {
+				return errors.New(apiKeyError)
+			}
+			return nil
+		},
 	}
 
 	bareMetalCmd.AddCommand(
 		BareMetalApp(),
+		BareMetalImage(),
 		bareMetalBandwidth,
 		bareMetalCreate,
 		bareMetalDelete,
@@ -49,35 +86,112 @@ func BareMetal() *cobra.Command {
 		BareMetalOS(),
 		bareMetalReboot,
 		bareMetalReinstall,
+		bareMetalTags,
 		BareMetalUserData(),
 	)
 
 	// create server
 	bareMetalCreate.Flags().StringP("region", "r", "", "ID of the region where the server will be created.")
-	bareMetalCreate.MarkFlagRequired("region")
+	if err := bareMetalCreate.MarkFlagRequired("region"); err != nil {
+		fmt.Printf("error marking bare metal create 'region' flag required: %v\n", err)
+		os.Exit(1)
+	}
 	bareMetalCreate.Flags().StringP("plan", "p", "", "ID of the plan that the server will subscribe to.")
-	bareMetalCreate.MarkFlagRequired("plan")
-	bareMetalCreate.Flags().IntP("operatingSystems", "o", 0, "ID of the operating system that will be installed on the server.")
-	bareMetalCreate.Flags().StringP("script", "s", "", "(optional) ID of the startup script that will run after the server is created.")
-	bareMetalCreate.Flags().StringP("snapshot", "", "", "(optional) ID of the snapshot that the server will be restored from.")
-	bareMetalCreate.Flags().StringP("ipv6", "i", "", "(optional) Whether IPv6 is enabled on the server. Possible values: 'yes', 'no'. Defaults to 'no'.")
+	if err := bareMetalCreate.MarkFlagRequired("plan"); err != nil {
+		fmt.Printf("error marking bare metal create 'plan' flag required: %v\n", err)
+		os.Exit(1)
+	}
+	bareMetalCreate.Flags().IntP("os", "o", 0, "ID of the operating system that will be installed on the server.")
+	bareMetalCreate.Flags().StringP(
+		"script",
+		"s",
+		"",
+		"(optional) ID of the startup script that will run after the server is created.",
+	)
+	bareMetalCreate.Flags().StringP(
+		"snapshot",
+		"",
+		"",
+		"(optional) ID of the snapshot that the server will be restored from.",
+	)
+	bareMetalCreate.Flags().StringP(
+		"ipv6",
+		"i",
+		"",
+		"(optional) Whether IPv6 is enabled on the server. Possible values: 'yes', 'no'. Defaults to 'no'.",
+	)
 	bareMetalCreate.Flags().StringP("label", "l", "", "(optional) The label to assign to the server.")
-	bareMetalCreate.Flags().StringSliceP("ssh", "k", []string{}, "(optional) Comma separated list of SSH key IDs that will be added to the server.")
-	bareMetalCreate.Flags().IntP("app", "a", 0, "(optional) ID of the application that will be installed on the server.")
-	bareMetalCreate.Flags().StringP("userdata", "u", "", "(optional) A generic data store, which some provisioning tools and cloud operating systems use as a configuration file.")
-	bareMetalCreate.Flags().StringP("notify", "n", "", "(optional) Whether an activation email will be sent when the server is ready. Possible values: 'yes', 'no'. Defaults to 'yes'.")
+	bareMetalCreate.Flags().StringSliceP(
+		"ssh",
+		"k",
+		[]string{},
+		"(optional) Comma separated list of SSH key IDs that will be added to the server.",
+	)
+	bareMetalCreate.Flags().IntP(
+		"app",
+		"a",
+		0,
+		"(optional) ID of the application that will be installed on the server.",
+	)
+	bareMetalCreate.Flags().StringP("image", "", "", "(optional) Image ID of the application that will be installed on the server.")
+	bareMetalCreate.Flags().StringP(
+		"userdata",
+		"u",
+		"",
+		"(optional) A generic data store, which some provisioning tools and cloud operating systems use as a configuration file.",
+	)
+	bareMetalCreate.Flags().StringP(
+		"notify",
+		"n",
+		"",
+		"(optional) Whether an activation email will be sent when the server is ready. Possible values: 'yes', 'no'. Defaults to 'yes'.",
+	)
 	bareMetalCreate.Flags().StringP("hostname", "m", "", "(optional) The hostname to assign to the server.")
-	bareMetalCreate.Flags().StringP("tag", "t", "", "(optional) The tag to assign to the server.")
+	bareMetalCreate.Flags().StringP("tag", "t", "", "Deprecated: use `tags` instead. (optional) The tag to assign to the server.")
+	bareMetalCreate.Flags().StringSliceP("tags", "", []string{}, "(optional) A comma separated list of tags to assign to the server.")
 	bareMetalCreate.Flags().StringP("ripv4", "v", "", "(optional) IP address of the floating IP to use as the main IP of this server.")
+	bareMetalCreate.Flags().BoolP("persistent_pxe", "x", false, "enable persistent_pxe | true or false")
 
 	bareMetalList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	bareMetalList.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	bareMetalList.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	bareMetalListIPV4.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	bareMetalListIPV4.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	bareMetalListIPV4.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
 
 	bareMetalListIPV6.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	bareMetalListIPV6.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	bareMetalListIPV6.Flags().IntP(
+		"per-page",
+		"p",
+		perPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
+
+	bareMetalTags.Flags().StringSliceP("tags", "t", []string{}, "A comma separated list of tags to apply to the server")
+	if err := bareMetalTags.MarkFlagRequired("tags"); err != nil {
+		fmt.Printf("error marking bare metal create 'tags' flag required: %v\n", err)
+		os.Exit(1)
+	}
+
+	vpc2Cmd := &cobra.Command{
+		Use:   "vpc2",
+		Short: "commands to handle vpc 2.0 on a server",
+		Long:  ``,
+	}
+	vpc2Cmd.AddCommand(bareMetalVPC2List, bareMetalVPC2Attach, bareMetalVPC2Detach)
+	bareMetalVPC2Attach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC 2.0 network you wish to attach")
+	bareMetalVPC2Attach.Flags().StringP("ip-address", "i", "", "the IP address to use for this server on the attached VPC 2.0 network")
+	bareMetalVPC2Detach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC 2.0 network you wish to detach")
+	bareMetalCmd.AddCommand(vpc2Cmd)
 
 	return bareMetalCmd
 }
@@ -89,7 +203,7 @@ var bareMetalCreate = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		region, _ := cmd.Flags().GetString("region")
 		plan, _ := cmd.Flags().GetString("plan")
-		osID, _ := cmd.Flags().GetInt("operatingSystems")
+		osID, _ := cmd.Flags().GetInt("os")
 		script, _ := cmd.Flags().GetString("script")
 		snapshot, _ := cmd.Flags().GetString("snapshot")
 		ipv6, _ := cmd.Flags().GetString("ipv6")
@@ -100,7 +214,10 @@ var bareMetalCreate = &cobra.Command{
 		notify, _ := cmd.Flags().GetString("notify")
 		hostname, _ := cmd.Flags().GetString("hostname")
 		tag, _ := cmd.Flags().GetString("tag")
+		tags, _ := cmd.Flags().GetStringSlice("tags")
 		ripv4, _ := cmd.Flags().GetString("ripv4")
+		pxe, _ := cmd.Flags().GetBool("persistent_pxe")
+		image, _ := cmd.Flags().GetString("image")
 
 		options := &govultr.BareMetalCreate{
 			StartupScriptID: script,
@@ -110,10 +227,13 @@ var bareMetalCreate = &cobra.Command{
 			SSHKeyIDs:       sshKeys,
 			Hostname:        hostname,
 			Tag:             tag,
+			Tags:            tags,
 			ReservedIPv4:    ripv4,
 			OsID:            osID,
 			Region:          region,
 			AppID:           app,
+			ImageID:         image,
+			PersistentPxe:   govultr.BoolToBoolPtr(pxe),
 		}
 
 		if userdata != "" {
@@ -128,7 +248,7 @@ var bareMetalCreate = &cobra.Command{
 			options.EnableIPv6 = govultr.BoolToBoolPtr(true)
 		}
 
-		osOptions := map[string]interface{}{"app_id": app, "snapshot_id": snapshot, "os_id": osID}
+		osOptions := map[string]interface{}{"app_id": app, "snapshot_id": snapshot, "os_id": osID, "image_id": image}
 		osOption, err := optionCheckBM(osOptions)
 
 		if err != nil {
@@ -138,11 +258,11 @@ var bareMetalCreate = &cobra.Command{
 
 		// If no osOptions were selected and osID has a real value then set the osOptions to os_id
 		if osOption == "" && osID == 0 {
-			fmt.Printf("error creating bare metal server : an app, snapshot, or operatingSystems ID must be provided\n")
+			fmt.Printf("error creating bare metal server : an app, image, snapshot, or os ID must be provided\n")
 			os.Exit(1)
 		}
 
-		bm, err := client.BareMetalServer.Create(context.TODO(), options)
+		bm, _, err := client.BareMetalServer.Create(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -178,7 +298,7 @@ var bareMetalList = &cobra.Command{
 	Aliases: []string{"l"},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		list, meta, err := client.BareMetalServer.List(context.TODO(), options)
+		list, meta, _, err := client.BareMetalServer.List(context.TODO(), options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -198,7 +318,7 @@ var bareMetalGet = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		srv, err := client.BareMetalServer.Get(context.TODO(), args[0])
+		srv, _, err := client.BareMetalServer.Get(context.TODO(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -218,7 +338,7 @@ var bareMetalGetVNCUrl = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		vnc, err := client.BareMetalServer.GetVNCUrl(context.TODO(), args[0])
+		vnc, _, err := client.BareMetalServer.GetVNCUrl(context.TODO(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -239,7 +359,7 @@ var bareMetalBandwidth = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		bw, err := client.BareMetalServer.GetBandwidth(context.TODO(), args[0])
+		bw, _, err := client.BareMetalServer.GetBandwidth(context.TODO(), args[0])
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -304,7 +424,7 @@ var bareMetalListIPV4 = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		info, meta, err := client.BareMetalServer.ListIPv4s(context.TODO(), args[0], options)
+		info, meta, _, err := client.BareMetalServer.ListIPv4s(context.TODO(), args[0], options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -326,7 +446,7 @@ var bareMetalListIPV6 = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		options := getPaging(cmd)
-		info, meta, err := client.BareMetalServer.ListIPv6s(context.TODO(), args[0], options)
+		info, meta, _, err := client.BareMetalServer.ListIPv6s(context.TODO(), args[0], options)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
@@ -368,12 +488,39 @@ var bareMetalReinstall = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		if _, err := client.BareMetalServer.Reinstall(context.TODO(), args[0]); err != nil {
+		if _, _, err := client.BareMetalServer.Reinstall(context.TODO(), args[0]); err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
 		fmt.Println("bare metal server reinstalled.")
+	},
+}
+
+var bareMetalTags = &cobra.Command{
+	Use:     "tags <bareMetalID>",
+	Short:   "Add or modify tags on the bare metal server.",
+	Long:    bareMetalTagsLong,
+	Example: bareMetalTagsExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		tags, _ := cmd.Flags().GetStringSlice("tags")
+		options := &govultr.BareMetalUpdate{
+			Tags: tags,
+		}
+
+		if _, _, err := client.BareMetalServer.Update(context.Background(), id, options); err != nil {
+			fmt.Printf("%v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Server tags updated")
 	},
 }
 
@@ -394,7 +541,7 @@ func optionCheckBM(options map[string]interface{}) (string, error) {
 	}
 
 	if len(result) > 1 {
-		return "", fmt.Errorf("Too many options have been selected : %v : please select one", result)
+		return "", fmt.Errorf("too many options have been selected : %v : please select one", result)
 	}
 
 	// Return back an empty slice so we can possibly add in osID
@@ -403,4 +550,79 @@ func optionCheckBM(options map[string]interface{}) (string, error) {
 	}
 
 	return result[0], nil
+}
+
+var bareMetalVPC2List = &cobra.Command{
+	Use:     "list <bareMetalID>",
+	Aliases: []string{"l"},
+	Short:   "list all VPC 2.0 networks attached to a server",
+	Long:    ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		s, _, err := client.BareMetalServer.ListVPC2Info(context.TODO(), id)
+		if err != nil {
+			fmt.Printf("error getting list of attached VPC 2.0 networks : %v\n", err)
+			os.Exit(1)
+		}
+
+		printer.BareMetalVPC2List(s)
+	},
+}
+
+var bareMetalVPC2Attach = &cobra.Command{
+	Use:     "attach <bareMetalID>",
+	Short:   "Attach a VPC 2.0 network to a server",
+	Long:    bareMetalVPC2AttachLong,
+	Example: bareMetalVPC2AttachExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		vpcID, _ := cmd.Flags().GetString("vpc-id")
+		IPAddress, _ := cmd.Flags().GetString("ip-address")
+
+		opt := &govultr.AttachVPC2Req{
+			VPCID:     vpcID,
+			IPAddress: &IPAddress,
+		}
+
+		if err := client.BareMetalServer.AttachVPC2(context.TODO(), id, opt); err != nil {
+			fmt.Printf("error attaching VPC 2.0 network : %v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("VPC 2.0 network has been attached")
+	},
+}
+
+var bareMetalVPC2Detach = &cobra.Command{
+	Use:     "detach <bareMetalID>",
+	Short:   "Detach a VPC 2.0 network from a server",
+	Long:    bareMetalVPC2DetachLong,
+	Example: bareMetalVPC2DetachExample,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a bareMetalID")
+		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		id := args[0]
+		vpcID, _ := cmd.Flags().GetString("vpc-id")
+		if err := client.BareMetalServer.DetachVPC2(context.TODO(), id, vpcID); err != nil {
+			fmt.Printf("error detaching VPC 2.0 network : %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("VPC 2.0 network has been detached")
+	},
 }

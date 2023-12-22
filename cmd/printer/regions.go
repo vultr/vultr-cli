@@ -1,88 +1,44 @@
 package printer
 
 import (
-	"encoding/json"
-
-	"github.com/go-yaml/yaml"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
-var _ ResourceOutput = &Regions{}
+func Regions(avail []govultr.Region, meta *govultr.Meta) {
+	defer flush()
 
-type Regions struct {
-	Regions []govultr.Region `json:"regions"`
-	Meta    *govultr.Meta
-}
+	display(columns{"ID", "CITY", "COUNTRY", "CONTINENT", "OPTIONS"})
 
-func (r *Regions) JSON() []byte {
-	prettyJSON, err := json.MarshalIndent(r, "", "    ")
-	if err != nil {
-		panic("move this into byte")
+	if len(avail) == 0 {
+		display(columns{"---", "---", "---", "---", "---"})
+		Meta(meta)
+		return
 	}
 
-	return prettyJSON
-}
-
-func (r *Regions) Yaml() []byte {
-	yam, err := yaml.Marshal(r)
-	if err != nil {
-		panic("move this into byte")
-	}
-	return yam
-}
-
-func (r *Regions) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {"ID", "CITY", "COUNTRY", "CONTINENT", "OPTIONS"}}
-}
-func (r *Regions) Data() map[int][]interface{} {
-	data := map[int][]interface{}{}
-	for k, r := range r.Regions {
-		data[k] = []interface{}{r.ID, r.City, r.Country, r.Continent, r.Options}
-	}
-	return data
-}
-
-func (r *Regions) Paging() map[int][]interface{} {
-	return map[int][]interface{}{
-		0: {"======================================"},
-		1: {"TOTAL", "NEXT PAGE", "PREV PAGE"},
-		2: {r.Meta.Total, r.Meta.Links.Next, r.Meta.Links.Prev},
-	}
-}
-
-type RegionsAvailability struct {
-	AvailablePlans *govultr.PlanAvailability `json:"available_plans"`
-}
-
-func (r *RegionsAvailability) JSON() []byte {
-	prettyJSON, err := json.MarshalIndent(r.AvailablePlans, "", "    ")
-	if err != nil {
-		panic("move this into byte")
+	for i := range avail {
+		display(columns{
+			avail[i].ID,
+			avail[i].City,
+			avail[i].Country,
+			avail[i].Continent,
+			avail[i].Options,
+		})
 	}
 
-	return prettyJSON
+	Meta(meta)
 }
 
-func (r *RegionsAvailability) Yaml() []byte {
-	yam, err := yaml.Marshal(r.AvailablePlans)
-	if err != nil {
-		panic("move this into byte")
+func RegionAvailability(avail *govultr.PlanAvailability) {
+	defer flush()
+
+	display(columns{"AVAILABLE PLANS"})
+
+	if len(avail.AvailablePlans) == 0 {
+		display(columns{"---"})
+		return
 	}
-	return yam
-}
 
-func (r *RegionsAvailability) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {"AVAILABLE PLANS"}}
-}
-
-func (r *RegionsAvailability) Data() map[int][]interface{} {
-	data := map[int][]interface{}{}
-	for k, r := range r.AvailablePlans.AvailablePlans {
-		data[k] = []interface{}{r}
+	for i := range avail.AvailablePlans {
+		display(columns{avail.AvailablePlans[i]})
 	}
-	return data
-}
-
-func (r RegionsAvailability) Paging() map[int][]interface{} {
-	return nil
 }
