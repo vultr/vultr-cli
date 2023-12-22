@@ -2,7 +2,7 @@ package utils
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func GetPaging(cmd *cobra.Command) *govultr.ListOptions {

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/go-yaml/yaml"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 // SSHKeysPrinter ...

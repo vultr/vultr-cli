@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 type mockVultrUser struct {
