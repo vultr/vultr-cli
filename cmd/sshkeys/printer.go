@@ -3,8 +3,8 @@ package sshkeys
 import (
 	"encoding/json"
 
-	"github.com/go-yaml/yaml"
 	"github.com/vultr/govultr/v3"
+	"gopkg.in/yaml.v3"
 )
 
 // SSHKeysPrinter ...

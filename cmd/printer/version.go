@@ -3,7 +3,7 @@ package printer
 import (
 	"encoding/json"
 
-	"github.com/go-yaml/yaml"
+	"gopkg.in/yaml.v3"
 )
 
 var _ ResourceOutput = &Version{}
