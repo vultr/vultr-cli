@@ -21,9 +21,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vultr/govultr/v3"
-	"github.com/vultr/vultr-cli/cmd/printer"
-	"github.com/vultr/vultr-cli/cmd/utils"
-	"github.com/vultr/vultr-cli/pkg/cli"
+	"github.com/vultr/vultr-cli/v3/cmd/printer"
+	"github.com/vultr/vultr-cli/v3/cmd/utils"
+	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
 
 var (

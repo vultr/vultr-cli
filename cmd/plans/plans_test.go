@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/vultr/govultr/v3"
-	"github.com/vultr/vultr-cli/pkg/cli"
+	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
 
 type mockVultrPlans struct {

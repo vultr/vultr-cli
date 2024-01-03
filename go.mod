@@ -1,4 +1,4 @@
-module github.com/vultr/vultr-cli/v2
+module github.com/vultr/vultr-cli/v3
 
 go 1.21
 

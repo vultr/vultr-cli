@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/vultr/vultr-cli/pkg/cli"
+	"github.com/vultr/vultr-cli/v3/pkg/cli"
 
 	"github.com/vultr/govultr/v3"
 )

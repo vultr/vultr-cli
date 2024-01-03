@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/vultr/govultr/v3"
-	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/vultr-cli/v3/cmd/printer"
 	"golang.org/x/oauth2"
 )
 

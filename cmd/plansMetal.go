@@ -20,7 +20,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/vultr-cli/v2/cmd/printer"
+	"github.com/vultr/vultr-cli/v3/cmd/printer"
 )
 
 var (
