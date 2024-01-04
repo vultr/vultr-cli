@@ -23,8 +23,8 @@ func (s *SSHKeysPrinter) JSON() []byte {
 	return prettyJSON
 }
 
-// Yaml ...
-func (s *SSHKeysPrinter) Yaml() []byte {
+// YAML ...
+func (s *SSHKeysPrinter) YAML() []byte {
 	yam, err := yaml.Marshal(s)
 	if err != nil {
 		panic("move this into byte")
@@ -70,8 +70,8 @@ func (s SSHKeyPrinter) JSON() []byte {
 	return prettyJSON
 }
 
-// Yaml ...
-func (s SSHKeyPrinter) Yaml() []byte {
+// YAML ...
+func (s SSHKeyPrinter) YAML() []byte {
 	yam, err := yaml.Marshal(s)
 	if err != nil {
 		panic("move this into byte")

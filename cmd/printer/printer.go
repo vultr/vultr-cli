@@ -20,7 +20,7 @@ const (
 
 type ResourceOutput interface {
 	JSON() []byte
-	Yaml() []byte
+	YAML() []byte
 	Columns() map[int][]interface{}
 	Data() map[int][]interface{}
 	Paging() map[int][]interface{}
@@ -63,7 +63,7 @@ func (o *Output) Display(r ResourceOutput, err error) {
 		o.displayNonText(r.JSON())
 		os.Exit(1)
 	} else if strings.ToLower(o.Output) == "yaml" {
-		o.displayNonText(r.Yaml())
+		o.displayNonText(r.YAML())
 		os.Exit(1)
 	}
 

@@ -8,10 +8,12 @@ import (
 
 var _ ResourceOutput = &Generic{}
 
+// Generic ...
 type Generic struct {
 	Message string
 }
 
+// JSON ...
 func (g *Generic) JSON() []byte {
 	prettyJSON, err := json.MarshalIndent(g, "", "    ")
 	if err != nil {
@@ -21,7 +23,8 @@ func (g *Generic) JSON() []byte {
 	return prettyJSON
 }
 
-func (g *Generic) Yaml() []byte {
+// YAML ...
+func (g *Generic) YAML() []byte {
 	yam, err := yaml.Marshal(g)
 	if err != nil {
 		panic(err.Error())
@@ -29,14 +32,17 @@ func (g *Generic) Yaml() []byte {
 	return yam
 }
 
+// Columns ...
 func (g *Generic) Columns() map[int][]interface{} {
 	return map[int][]interface{}{0: {"message"}}
 }
 
+// Data ...
 func (g *Generic) Data() map[int][]interface{} {
 	return map[int][]interface{}{0: {g.Message}}
 }
 
+// Paging ...
 func (g *Generic) Paging() map[int][]interface{} {
 	return nil
 }
