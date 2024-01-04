@@ -96,7 +96,7 @@ func (o *Output) displayNonText(data []byte) {
 	fmt.Printf("%s\n", string(data))
 }
 
-// //////////////////////////////////////////////////////////////
+// OLD funcs to be re-written //////////////////////////////////////////////////////////////
 func display(values columns) {
 
 	for i, value := range values {
@@ -109,14 +109,57 @@ func display(values columns) {
 	fmt.Fprintf(tw, "\n")
 }
 
+// displayString will `Fprintln` a string to the tabwriter
+func displayString(message string) {
+	fmt.Fprintln(tw, message)
+}
+
+// arrayOfStringsToString will build a delimited string from an array for
+// display in the printer functions.  Defaulted to comma-delimited and enclosed
+// in square brackets to maintain consistency with array Fprintf
+func arrayOfStringsToString(a []string) string {
+	delimiter := ", "
+	var sb strings.Builder
+	sb.WriteString("[")
+	sb.WriteString(strings.Join(a, delimiter))
+	sb.WriteString("]")
+
+	return sb.String()
+}
+
 func flush() {
+	if err := tw.Flush(); err != nil {
+		panic("could not flush buffer")
+	}
 	tw.Flush()
 }
 
+// Meta prints out the pagination details
 func Meta(meta *govultr.Meta) {
-	display(columns{"======================================"})
-	col := columns{"TOTAL", "NEXT PAGE", "PREV PAGE"}
-	display(col)
+	var pageNext string
+	var pagePrev string
 
-	display(columns{meta.Total, meta.Links.Next, meta.Links.Prev})
+	if meta.Links.Next == "" {
+		pageNext = "---"
+	} else {
+		pageNext = meta.Links.Next
+	}
+
+	if meta.Links.Prev == "" {
+		pagePrev = "---"
+	} else {
+		pagePrev = meta.Links.Prev
+	}
+
+	displayString("======================================")
+	display(columns{"TOTAL", "NEXT PAGE", "PREV PAGE"})
+	display(columns{meta.Total, pageNext, pagePrev})
+}
+
+// MetaDBaaS prints out the pagination details used by database commands
+func MetaDBaaS(meta *govultr.Meta) {
+	displayString("======================================")
+	display(columns{"TOTAL"})
+
+	display(columns{meta.Total})
 }
