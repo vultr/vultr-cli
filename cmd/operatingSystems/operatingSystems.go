@@ -21,7 +21,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vultr/govultr/v3"
-	"github.com/vultr/vultr-cli/v3/cmd/printer"
 	"github.com/vultr/vultr-cli/v3/cmd/utils"
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
@@ -83,7 +82,7 @@ func NewCmdOS(base *cli.Base) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			o.validate(cmd, args)
 			os, meta, err := o.List()
-			data := &printer.OS{OS: os, Meta: meta}
+			data := &OSPrinter{OperatingSystems: os, Meta: meta}
 
 			fmt.Println(o.Base.Printer.Output)
 			o.Base.Printer.Display(data, err)
@@ -105,5 +104,10 @@ func (o *Options) validate(cmd *cobra.Command, args []string) {
 
 // List all os
 func (o *Options) List() ([]govultr.OS, *govultr.Meta, error) {
-	return o.Base.Client.OS.List(context.Background(), o.Base.Options)
+	list, meta, _, err := o.Base.Client.OS.List(context.Background(), o.Base.Options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return list, meta, nil
 }

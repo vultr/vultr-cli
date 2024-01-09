@@ -250,7 +250,7 @@ func (u *UserOptions) validate(cmd *cobra.Command, args []string) {
 
 // Create ...
 func (u *UserOptions) Create() (*govultr.User, error) {
-	user, err := u.Base.Client.User.Create(context.Background(), u.User)
+	user, _, err := u.Base.Client.User.Create(context.Background(), u.User)
 	if err != nil {
 		return nil, err
 	}
@@ -259,7 +259,7 @@ func (u *UserOptions) Create() (*govultr.User, error) {
 
 // Get a single user based on ID
 func (u *UserOptions) Get() (*govultr.User, error) {
-	user, err := u.Base.Client.User.Get(context.Background(), u.Base.Args[0])
+	user, _, err := u.Base.Client.User.Get(context.Background(), u.Base.Args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -267,7 +267,7 @@ func (u *UserOptions) Get() (*govultr.User, error) {
 }
 
 func (u *UserOptions) List() ([]govultr.User, *govultr.Meta, error) {
-	user, meta, err := u.Base.Client.User.List(context.Background(), u.Base.Options)
+	user, meta, _, err := u.Base.Client.User.List(context.Background(), u.Base.Options)
 	if err != nil {
 		return nil, nil, err
 	}

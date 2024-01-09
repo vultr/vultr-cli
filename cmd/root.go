@@ -25,11 +25,20 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v3/cmd/account"
+	"github.com/vultr/vultr-cli/v3/cmd/applications"
+	"github.com/vultr/vultr-cli/v3/cmd/operatingSystems"
+	"github.com/vultr/vultr-cli/v3/cmd/plans"
+	"github.com/vultr/vultr-cli/v3/cmd/regions"
+	"github.com/vultr/vultr-cli/v3/cmd/sshkeys"
+	"github.com/vultr/vultr-cli/v3/cmd/users"
+	"github.com/vultr/vultr-cli/v3/cmd/version"
+	"github.com/vultr/vultr-cli/v3/pkg/cli"
 	"golang.org/x/oauth2"
 )
 
 const (
-	userAgent          = "vultr-cli/" + version
+	userAgent          = "vultr-cli/" + version.Version
 	perPageDefault int = 100
 	//nolint: gosec
 	apiKeyError string = `
@@ -41,8 +50,12 @@ export VULTR_API_KEY='<api_key_from_vultr_account>'
 // ctxAuthKey is the context key for the authorized token check
 type ctxAuthKey struct{}
 
-var cfgFile string
-var client *govultr.Client
+var (
+	cfgFile string
+	output  string
+	base    *cli.Base
+	client  *govultr.Client
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -60,13 +73,18 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.AddCommand(versionCmd)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", configHome(), "config file (default is $HOME/.vultr-cli.yaml)")
 	if err := viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config")); err != nil {
 		fmt.Printf("error binding root pflag 'config': %v\n", err)
 	}
-	rootCmd.AddCommand(accountCmd)
-	rootCmd.AddCommand(Applications())
+
+	rootCmd.PersistentFlags().StringVar(&output, "output", "text", "output format text | json | yaml. default is text")
+	if err := viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output")); err != nil {
+		fmt.Printf("error binding root pflag 'output': %v\n", err)
+	}
+
+	rootCmd.AddCommand(account.NewCmdAccount(base))
+	rootCmd.AddCommand(applications.NewCmdApplications(base))
 	rootCmd.AddCommand(Backups())
 	rootCmd.AddCommand(BareMetal())
 	rootCmd.AddCommand(Billing())
@@ -79,16 +97,17 @@ func init() {
 	rootCmd.AddCommand(Kubernetes())
 	rootCmd.AddCommand(LoadBalancer())
 	rootCmd.AddCommand(Network())
-	rootCmd.AddCommand(Os())
+	rootCmd.AddCommand(operatingSystems.NewCmdOS(base))
 	rootCmd.AddCommand(ObjectStorageCmd())
-	rootCmd.AddCommand(Plans())
-	rootCmd.AddCommand(Regions())
+	rootCmd.AddCommand(plans.NewCmdPlan(base))
+	rootCmd.AddCommand(regions.NewCmdRegion(base))
 	rootCmd.AddCommand(ReservedIP())
 	rootCmd.AddCommand(Script())
 	rootCmd.AddCommand(Instance())
 	rootCmd.AddCommand(Snapshot())
-	rootCmd.AddCommand(SSHKey())
-	rootCmd.AddCommand(User())
+	rootCmd.AddCommand(sshkeys.NewCmdSSHKey(base))
+	rootCmd.AddCommand(users.NewCmdUser(base))
+	rootCmd.AddCommand(version.NewCmdVersion())
 	rootCmd.AddCommand(VPC())
 	rootCmd.AddCommand(VPC2())
 

@@ -20,7 +20,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vultr/govultr/v3"
-	"github.com/vultr/vultr-cli/v3/cmd/printer"
 	"github.com/vultr/vultr-cli/v3/cmd/utils"
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
@@ -44,8 +43,17 @@ var (
 		vultr-cli p l
 	`
 
-	metalLong    = `List all available bare metal plans on Vultr.`
+	metalLong    = `Get commands available to metal`
 	metalExample = `
+	#Full example
+	vultr-cli plans metal
+
+	#Shortened with aliased commands
+	vultr-cli p m
+	`
+
+	metalListLong    = `List all available bare metal plans on Vultr.`
+	metalListExample = `
 	# Full example
 	vultr-cli plans metal
 		
@@ -57,14 +65,14 @@ var (
 	`
 )
 
-// PlanOptionsInterface interface
+// PlanOptionsInterface implementes the command options for the plan command
 type PlanOptionsInterface interface {
 	validate(cmd *cobra.Command, args []string)
 	List() ([]govultr.Plan, *govultr.Meta, error)
 	MetalList() ([]govultr.BareMetalPlan, *govultr.Meta, error)
 }
 
-// PlanOptions struct specific for plans
+// PlanOptions represents the data used by the plan command
 type PlanOptions struct {
 	Base     *cli.Base
 	PlanType string
@@ -96,7 +104,7 @@ func NewCmdPlan(Base *cli.Base) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			p.validate(cmd, args)
 			plans, meta, err := p.List()
-			data := &printer.Plans{Plan: plans, Meta: meta}
+			data := &PlansPrinter{Plans: plans, Meta: meta}
 			p.Base.Printer.Display(data, err)
 		},
 	}
@@ -109,15 +117,12 @@ func NewCmdPlan(Base *cli.Base) *cobra.Command {
 		Use:     "metal",
 		Short:   "list all bare metal plans",
 		Aliases: []string{"m"},
-		Long:    metalLong,
-		Example: metalExample,
+		Long:    metalListLong,
+		Example: metalListExample,
 		Run: func(cmd *cobra.Command, args []string) {
 			p.validate(cmd, args)
 			m, meta, err := p.MetalList()
-			data := &printer.BaremetalPlans{
-				Plan: m,
-				Meta: meta,
-			}
+			data := &MetalPlansPrinter{Plans: m, Meta: meta}
 			p.Base.Printer.Display(data, err)
 		},
 	}
@@ -137,7 +142,7 @@ func (p *PlanOptions) validate(cmd *cobra.Command, args []string) {
 
 // List retrieves all available instance plans
 func (p *PlanOptions) List() ([]govultr.Plan, *govultr.Meta, error) {
-	plans, meta, err := p.Base.Client.Plan.List(context.Background(), p.PlanType, p.Base.Options)
+	plans, meta, _, err := p.Base.Client.Plan.List(context.Background(), p.PlanType, p.Base.Options)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -147,7 +152,7 @@ func (p *PlanOptions) List() ([]govultr.Plan, *govultr.Meta, error) {
 
 // MetalList retrieves all available bare metal plans
 func (p *PlanOptions) MetalList() ([]govultr.BareMetalPlan, *govultr.Meta, error) {
-	plans, meta, err := p.Base.Client.Plan.ListBareMetal(context.Background(), p.Base.Options)
+	plans, meta, _, err := p.Base.Client.Plan.ListBareMetal(context.Background(), p.Base.Options)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -235,17 +235,20 @@ func (o *Options) validate(cmd *cobra.Command, args []string) {
 
 // Create a ssh key
 func (o *Options) Create() (*govultr.SSHKey, error) {
-	return o.Base.Client.SSHKey.Create(context.Background(), o.SSHKey)
+	key, _, err := o.Base.Client.SSHKey.Create(context.Background(), o.SSHKey)
+	return key, err
 }
 
 // Get a specific ssh key on your account
 func (o *Options) Get() (*govultr.SSHKey, error) {
-	return o.Base.Client.SSHKey.Get(context.Background(), o.Base.Args[0])
+	key, _, err := o.Base.Client.SSHKey.Get(context.Background(), o.Base.Args[0])
+	return key, err
 }
 
 // List all ssh keys on your account.
 func (o *Options) List() ([]govultr.SSHKey, *govultr.Meta, error) {
-	return o.Base.Client.SSHKey.List(context.Background(), o.Base.Options)
+	keys, meta, _, err := o.Base.Client.SSHKey.List(context.Background(), o.Base.Options)
+	return keys, meta, err
 }
 
 // Update a specific ssh key on your account

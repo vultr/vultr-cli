@@ -11,11 +11,13 @@ import (
 )
 
 const (
-	twMinWidth int  = 0
-	twTabWidth int  = 8
-	twPadding  int  = 2
-	twPadChar  byte = '\t'
-	twFlags    uint = 0
+	twMinWidth       int    = 0
+	twTabWidth       int    = 8
+	twPadding        int    = 2
+	twPadChar        byte   = '\t'
+	twFlags          uint   = 0
+	emptyPlaceholder string = "---"
+	JSONIndent       string = "    "
 )
 
 type ResourceOutput interface {
@@ -37,6 +39,12 @@ type Output struct {
 	Output   string
 }
 
+type Paging struct {
+	Total      int
+	CursorNext string
+	CursorPrev string
+}
+
 type columns2 map[int][]interface{}
 type columns []interface{}
 
@@ -53,6 +61,8 @@ func init() {
 	)
 }
 
+// Display confirms the output format then displays the ResourceOutput data to
+// the CLI.  If there is an error, that is displayed instead via Error
 func (o *Output) Display(r ResourceOutput, err error) {
 	if err != nil {
 		//todo move this so it can follow the flow of the other printers and support json/yaml
@@ -96,6 +106,35 @@ func (o *Output) displayNonText(data []byte) {
 	fmt.Printf("%s\n", string(data))
 }
 
+// NewPaging validates and intializes the paging data
+func NewPaging(total int, next *string, prev *string) *Paging {
+	p := new(Paging)
+	p.Total = total
+
+	if next != nil {
+		p.CursorNext = *next
+	} else {
+		p.CursorNext = emptyPlaceholder
+	}
+
+	if prev != nil {
+		p.CursorPrev = *prev
+	} else {
+		p.CursorPrev = emptyPlaceholder
+	}
+
+	return p
+}
+
+// Compose returns the paging data for output
+func (p *Paging) Compose() map[int][]interface{} {
+	return map[int][]interface{}{
+		0: {"======================================"},
+		1: {"TOTAL", "NEXT PAGE", "PREV PAGE"},
+		2: {p.Total, p.CursorNext, p.CursorPrev},
+	}
+}
+
 // OLD funcs to be re-written //////////////////////////////////////////////////////////////
 func display(values columns) {
 
@@ -134,7 +173,7 @@ func flush() {
 	tw.Flush()
 }
 
-// Meta prints out the pagination details
+// Meta prints out the pagination details TODO: old
 func Meta(meta *govultr.Meta) {
 	var pageNext string
 	var pagePrev string

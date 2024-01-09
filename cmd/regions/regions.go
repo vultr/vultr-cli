@@ -21,7 +21,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vultr/govultr/v3"
-	"github.com/vultr/vultr-cli/v3/cmd/printer"
 	"github.com/vultr/vultr-cli/v3/cmd/utils"
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
@@ -98,7 +97,7 @@ func NewCmdRegion(base *cli.Base) *cobra.Command {
 			o.validate(cmd, args)
 			o.Base.Options = utils.GetPaging(cmd)
 			regions, meta, err := o.List()
-			data := &printer.Regions{Regions: regions, Meta: meta}
+			data := &RegionsPrinter{Regions: regions, Meta: meta}
 			o.Base.Printer.Display(data, err)
 		},
 	}
@@ -120,7 +119,7 @@ func NewCmdRegion(base *cli.Base) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			o.validate(cmd, args)
 			avail, err := o.Availability()
-			data := &printer.RegionsAvailability{AvailablePlans: avail}
+			data := &RegionsAvailabilityPrinter{Plans: avail}
 			o.Base.Printer.Display(data, err)
 		},
 	}
@@ -138,10 +137,20 @@ func (o *Options) validate(cmd *cobra.Command, args []string) {
 
 // List all regions
 func (o *Options) List() ([]govultr.Region, *govultr.Meta, error) {
-	return o.Base.Client.Region.List(context.Background(), o.Base.Options)
+	list, meta, _, err := o.Base.Client.Region.List(context.Background(), o.Base.Options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return list, meta, nil
 }
 
 // Availability returns all available plans for a given region
 func (o *Options) Availability() (*govultr.PlanAvailability, error) {
-	return o.Base.Client.Region.Availability(context.Background(), o.Base.Args[0], o.PlanType)
+	avail, _, err := o.Base.Client.Region.Availability(context.Background(), o.Base.Args[0], o.PlanType)
+	if err != nil {
+		return nil, err
+	}
+
+	return avail, nil
 }

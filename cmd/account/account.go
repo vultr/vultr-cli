@@ -75,7 +75,7 @@ func (o *Options) validate(cmd *cobra.Command, args []string) {
 
 // Get account information
 func (o *Options) Get() (*govultr.Account, error) {
-	account, err := o.Base.Client.Account.Get(context.Background())
+	account, _, err := o.Base.Client.Account.Get(context.Background())
 	if err != nil {
 		fmt.Printf("Error getting account information : %v\n", err)
 		os.Exit(1)

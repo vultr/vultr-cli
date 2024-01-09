@@ -81,7 +81,7 @@ func NewCmdApplications(base *cli.Base) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			o.validate(cmd, args)
 			apps, meta, err := o.List()
-			data := &printer.Applications{Applications: apps, Meta: meta}
+			data := &ApplicationsPrinter{Applications: apps, Meta: meta}
 			o.Printer.Display(data, err)
 		},
 	}
@@ -101,5 +101,10 @@ func (o *Options) validate(cmd *cobra.Command, args []string) {
 
 // List all applications
 func (o *Options) List() ([]govultr.Application, *govultr.Meta, error) {
-	return o.Base.Client.Application.List(context.Background(), o.Base.Options)
+	list, meta, _, err := o.Base.Client.Application.List(context.Background(), o.Base.Options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return list, meta, nil
 }

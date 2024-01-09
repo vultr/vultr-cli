@@ -15,9 +15,15 @@
 package version
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
+)
+
+const (
+	Version string = "v2.21.0"
 )
 
 // Interface for version
@@ -59,7 +65,7 @@ func NewCmdVersion() *cobra.Command {
 		Example: example,
 		Run: func(cmd *cobra.Command, args []string) {
 			v.Printer.Output = viper.GetString("output")
-			v.Printer.Display(&printer.Version{Version: v.Get()}, nil)
+			v.Printer.Display(&VersionPrinter{Version: v.Get()}, nil)
 		},
 	}
 
@@ -68,5 +74,5 @@ func NewCmdVersion() *cobra.Command {
 
 // Get the version for vultr-cli
 func (v *Options) Get() string {
-	return "Vultr-cli v2.4.1"
+	return fmt.Sprintf("Vultr-CLI %s", Version)
 }
