@@ -16,12 +16,14 @@ package account
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v3/cmd/utils"
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
 
@@ -58,6 +60,12 @@ func NewCmdAccount(base *cli.Base) *cobra.Command {
 		Short:   "get account information",
 		Long:    accountLong,
 		Example: accountExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if !o.Base.HasAuth {
+				return errors.New(utils.APIKeyError)
+			}
+			return nil
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			o.validate(cmd, args)
 			account, err := o.Get()
