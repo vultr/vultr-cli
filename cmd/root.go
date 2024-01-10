@@ -16,11 +16,9 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -34,7 +32,6 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/users"
 	"github.com/vultr/vultr-cli/v3/cmd/version"
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
-	"golang.org/x/oauth2"
 )
 
 const (
@@ -53,7 +50,6 @@ type ctxAuthKey struct{}
 var (
 	cfgFile string
 	output  string
-	base    *cli.Base
 	client  *govultr.Client
 )
 
@@ -73,6 +69,9 @@ func Execute() {
 }
 
 func init() {
+	// init the config file with viper
+	initConfig()
+
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", configHome(), "config file (default is $HOME/.vultr-cli.yaml)")
 	if err := viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config")); err != nil {
 		fmt.Printf("error binding root pflag 'config': %v\n", err)
@@ -82,6 +81,12 @@ func init() {
 	if err := viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output")); err != nil {
 		fmt.Printf("error binding root pflag 'output': %v\n", err)
 	}
+
+	base := cli.NewCLIBase(
+		os.Getenv("VULTR_API_KEY"),
+		userAgent,
+		output,
+	)
 
 	rootCmd.AddCommand(account.NewCmdAccount(base))
 	rootCmd.AddCommand(applications.NewCmdApplications(base))
@@ -110,14 +115,10 @@ func init() {
 	rootCmd.AddCommand(version.NewCmdVersion())
 	rootCmd.AddCommand(VPC())
 	rootCmd.AddCommand(VPC2())
-
-	ctx := initConfig()
-	rootCmd.SetContext(ctx)
 }
 
 // initConfig reads in config file and ENV variables if set.
-func initConfig() context.Context {
-	var token string
+func initConfig() {
 	configPath := viper.GetString("config")
 
 	if configPath == "" {
@@ -135,28 +136,6 @@ func initConfig() context.Context {
 	if err := viper.ReadInConfig(); err != nil {
 		fmt.Println("Error Reading in file:", viper.ConfigFileUsed())
 	}
-
-	token = viper.GetString("api-key")
-	if token == "" {
-		token = os.Getenv("VULTR_API_KEY")
-	}
-
-	ctx := context.Background()
-
-	if token == "" {
-		client = govultr.NewClient(nil)
-		ctx = context.WithValue(ctx, ctxAuthKey{}, false)
-	} else {
-		config := &oauth2.Config{}
-		ts := config.TokenSource(ctx, &oauth2.Token{AccessToken: token})
-		client = govultr.NewClient(oauth2.NewClient(ctx, ts))
-		ctx = context.WithValue(ctx, ctxAuthKey{}, true)
-	}
-
-	client.SetRateLimit(1 * time.Second)
-	client.SetUserAgent(userAgent)
-
-	return ctx
 }
 
 func getPaging(cmd *cobra.Command) *govultr.ListOptions {
