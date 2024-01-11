@@ -22,6 +22,7 @@ type Base struct {
 	Client  *govultr.Client
 	Options *govultr.ListOptions
 	Printer *printer.Output
+	Context context.Context
 	HasAuth bool
 }
 
@@ -30,6 +31,7 @@ func NewCLIBase(apiKey, userAgent, output string) *Base {
 	base := new(Base)
 	base.configurePrinter()
 	base.configureClient(apiKey, userAgent)
+	base.configureContext()
 	return base
 }
 
@@ -57,4 +59,8 @@ func (b *Base) configureClient(apiKey, userAgent string) {
 
 func (b *Base) configurePrinter() {
 	b.Printer = &printer.Output{}
+}
+
+func (b *Base) configureContext() {
+	b.Context = context.Background()
 }
