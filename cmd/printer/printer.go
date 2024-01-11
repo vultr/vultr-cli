@@ -71,10 +71,10 @@ func (o *Output) Display(r ResourceOutput, err error) {
 
 	if strings.ToLower(o.Output) == "json" {
 		o.displayNonText(r.JSON())
-		os.Exit(1)
+		os.Exit(0)
 	} else if strings.ToLower(o.Output) == "yaml" {
 		o.displayNonText(r.YAML())
-		os.Exit(1)
+		os.Exit(0)
 	}
 
 	o.display(r.Columns())
