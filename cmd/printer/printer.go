@@ -2,12 +2,14 @@
 package printer
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
 	"text/tabwriter"
 
 	"github.com/vultr/govultr/v3"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -133,6 +135,26 @@ func (p *Paging) Compose() map[int][]interface{} {
 		1: {"TOTAL", "NEXT PAGE", "PREV PAGE"},
 		2: {p.Total, p.CursorNext, p.CursorPrev},
 	}
+}
+
+func MarshalObject(input interface{}, format string) []byte {
+	var output []byte
+	if format == "json" {
+		j, errJ := json.MarshalIndent(input, "", JSONIndent)
+		if errJ != nil {
+			panic(fmt.Errorf("error marshalling JSON : %v", errJ))
+		}
+		output = j
+
+	} else if format == "yaml" {
+		y, errY := yaml.Marshal(input)
+		if errY != nil {
+			panic(fmt.Errorf("error marshalling YAML : %v", errY))
+		}
+		output = y
+	}
+
+	return output
 }
 
 // OLD funcs to be re-written //////////////////////////////////////////////////////////////
