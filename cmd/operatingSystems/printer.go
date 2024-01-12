@@ -1,4 +1,4 @@
-package operatingSystems
+package operatingsystems
 
 import (
 	"encoding/json"
