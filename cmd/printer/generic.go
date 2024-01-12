@@ -10,7 +10,7 @@ var _ ResourceOutput = &Generic{}
 
 // Generic ...
 type Generic struct {
-	Message string
+	Message string `json:"message"`
 }
 
 // JSON ...
@@ -34,7 +34,7 @@ func (g *Generic) YAML() []byte {
 
 // Columns ...
 func (g *Generic) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {"message"}}
+	return map[int][]interface{}{0: {"MESSAGE"}}
 }
 
 // Data ...
