@@ -157,6 +157,19 @@ func MarshalObject(input interface{}, format string) []byte {
 	return output
 }
 
+// ArrayOfStringsToString will build a delimited string from an array for
+// display in the printer functions.  It defaults to comma-delimited and
+// enclosed in square brackets to maintain consistency with array Fprintf
+func ArrayOfStringsToString(a []string) string {
+	delimiter := ", "
+	var sb strings.Builder
+	sb.WriteString("[")
+	sb.WriteString(strings.Join(a, delimiter))
+	sb.WriteString("]")
+
+	return sb.String()
+}
+
 // OLD funcs to be re-written //////////////////////////////////////////////////////////////
 func display(values columns) {
 
