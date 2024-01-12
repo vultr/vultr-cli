@@ -35,13 +35,13 @@ func (b *BackupsPrinter) Columns() map[int][]interface{} {
 // Data ...
 func (b *BackupsPrinter) Data() map[int][]interface{} {
 	data := map[int][]interface{}{}
-	for k, v := range b.Backups {
-		data[k] = []interface{}{
-			v.ID,
-			v.DateCreated,
-			v.Description,
-			v.Size,
-			v.Status,
+	for i := range b.Backups {
+		data[i] = []interface{}{
+			b.Backups[i].ID,
+			b.Backups[i].DateCreated,
+			b.Backups[i].Description,
+			b.Backups[i].Size,
+			b.Backups[i].Status,
 		}
 	}
 	return data
