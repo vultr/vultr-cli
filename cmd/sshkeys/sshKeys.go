@@ -37,10 +37,10 @@ var (
 	createLong    = `Create a SSH key on your Vultr account`
 	createExample = `
 	# Full Example
-	vultr-cli ssh create --name="ssh key name" --key "ssh-rsa AAAAB3NzaC1yc...."
+	vultr-cli ssh create --name="ssh key name" --key="ssh-rsa AAAAB3NzaC1yc...."
 	
 	# Shortened with alias commands
-	vultr-cli s c -n="ssh key name" -k "ssh-rsa AAAAB3NzaC1yc...."
+	vultr-cli s c -n="ssh key name" -k="ssh-rsa AAAAB3NzaC1yc...."
 	`
 
 	getLong    = `Get a single SSH Key from your account`
@@ -114,6 +114,12 @@ func NewCmdSSHKey(base *cli.Base) *cobra.Command {
 		Short:   "ssh-key commands",
 		Long:    sshLong,
 		Example: sshExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if !o.Base.HasAuth {
+				return errors.New(utils.APIKeyError)
+			}
+			return nil
+		},
 	}
 
 	create := &cobra.Command{
