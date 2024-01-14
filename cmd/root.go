@@ -25,7 +25,9 @@ import (
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/account"
 	"github.com/vultr/vultr-cli/v3/cmd/applications"
-	"github.com/vultr/vultr-cli/v3/cmd/operatingSystems"
+	"github.com/vultr/vultr-cli/v3/cmd/backups"
+	baremetal "github.com/vultr/vultr-cli/v3/cmd/bareMetal"
+	operatingsystems "github.com/vultr/vultr-cli/v3/cmd/operatingSystems"
 	"github.com/vultr/vultr-cli/v3/cmd/plans"
 	"github.com/vultr/vultr-cli/v3/cmd/regions"
 	"github.com/vultr/vultr-cli/v3/cmd/sshkeys"
@@ -37,15 +39,7 @@ import (
 const (
 	userAgent          = "vultr-cli/" + version.Version
 	perPageDefault int = 100
-	//nolint: gosec
-	apiKeyError string = `
-Please export your VULTR API key as an environment variable or add 'api-key' to your config file, eg:
-export VULTR_API_KEY='<api_key_from_vultr_account>'
-	`
 )
-
-// ctxAuthKey is the context key for the authorized token check
-type ctxAuthKey struct{}
 
 var (
 	cfgFile string
@@ -77,7 +71,7 @@ func init() {
 		fmt.Printf("error binding root pflag 'config': %v\n", err)
 	}
 
-	rootCmd.PersistentFlags().StringVar(&output, "output", "text", "output format text | json | yaml. default is text")
+	rootCmd.PersistentFlags().StringVarP(&output, "output", "o", "text", "output format [ text | json | yaml ]")
 	if err := viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output")); err != nil {
 		fmt.Printf("error binding root pflag 'output': %v\n", err)
 	}
@@ -90,8 +84,8 @@ func init() {
 
 	rootCmd.AddCommand(account.NewCmdAccount(base))
 	rootCmd.AddCommand(applications.NewCmdApplications(base))
-	rootCmd.AddCommand(Backups())
-	rootCmd.AddCommand(BareMetal())
+	rootCmd.AddCommand(backups.NewCmdBackups(base))
+	rootCmd.AddCommand(baremetal.NewCmdBareMetal(base))
 	rootCmd.AddCommand(Billing())
 	rootCmd.AddCommand(BlockStorageCmd())
 	rootCmd.AddCommand(ContainerRegistry())
@@ -102,7 +96,7 @@ func init() {
 	rootCmd.AddCommand(Kubernetes())
 	rootCmd.AddCommand(LoadBalancer())
 	rootCmd.AddCommand(Network())
-	rootCmd.AddCommand(operatingSystems.NewCmdOS(base))
+	rootCmd.AddCommand(operatingsystems.NewCmdOS(base))
 	rootCmd.AddCommand(ObjectStorageCmd())
 	rootCmd.AddCommand(plans.NewCmdPlan(base))
 	rootCmd.AddCommand(regions.NewCmdRegion(base))
