@@ -103,6 +103,7 @@ func NewCmdPlan(Base *cli.Base) *cobra.Command {
 		Example: listExample,
 		Run: func(cmd *cobra.Command, args []string) {
 			p.validate(cmd, args)
+			p.Base.Options = utils.GetPaging(cmd)
 			plans, meta, err := p.List()
 			data := &PlansPrinter{Plans: plans, Meta: meta}
 			p.Base.Printer.Display(data, err)
