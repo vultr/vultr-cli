@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"text/tabwriter"
 
@@ -25,9 +26,9 @@ const (
 type ResourceOutput interface {
 	JSON() []byte
 	YAML() []byte
-	Columns() map[int][]interface{}
-	Data() map[int][]interface{}
-	Paging() map[int][]interface{}
+	Columns() [][]string
+	Data() [][]string
+	Paging() [][]string
 }
 
 type Printer interface {
@@ -47,7 +48,6 @@ type Paging struct {
 	CursorPrev string
 }
 
-type columns2 map[int][]interface{}
 type columns []interface{}
 
 var tw = new(tabwriter.Writer)
@@ -66,6 +66,8 @@ func init() {
 // Display confirms the output format then displays the ResourceOutput data to
 // the CLI.  If there is an error, that is displayed instead via Error
 func (o *Output) Display(r ResourceOutput, err error) {
+	defer o.flush()
+
 	if err != nil {
 		//todo move this so it can follow the flow of the other printers and support json/yaml
 		Error(err)
@@ -84,17 +86,16 @@ func (o *Output) Display(r ResourceOutput, err error) {
 	if r.Paging() != nil {
 		o.display(r.Paging())
 	}
-	defer o.flush()
 }
 
-func (o *Output) display(d columns2) {
-	for _, values := range d {
-		for i, value := range values {
+func (o *Output) display(d [][]string) {
+	for n := range d {
+		for i := range d[n] {
 			format := "\t%s"
 			if i == 0 {
 				format = "%s"
 			}
-			fmt.Fprintf(tw, format, fmt.Sprintf("%v", value))
+			fmt.Fprintf(tw, format, fmt.Sprintf("%v", d[n][i]))
 		}
 		fmt.Fprintf(tw, "\n")
 	}
@@ -129,11 +130,21 @@ func NewPaging(total int, next *string, prev *string) *Paging {
 }
 
 // Compose returns the paging data for output
-func (p *Paging) Compose() map[int][]interface{} {
-	return map[int][]interface{}{
+func (p *Paging) Compose() [][]string {
+	cNext := p.CursorNext
+	if cNext == "" {
+		cNext = "---"
+	}
+
+	cPrev := p.CursorPrev
+	if cPrev == "" {
+		cPrev = "---"
+	}
+
+	return [][]string{
 		0: {"======================================"},
 		1: {"TOTAL", "NEXT PAGE", "PREV PAGE"},
-		2: {p.Total, p.CursorNext, p.CursorPrev},
+		2: {strconv.Itoa(p.Total), cNext, cPrev},
 	}
 }
 

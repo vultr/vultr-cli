@@ -2,6 +2,7 @@ package plans
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
@@ -16,12 +17,12 @@ type PlansPrinter struct {
 
 // JSON provides the JSON formatted byte data
 func (p *PlansPrinter) JSON() []byte {
-	json, err := json.MarshalIndent(p, "", "    ")
+	js, err := json.MarshalIndent(p, "", "    ")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	return json
+	return js
 }
 
 // YAML provides the YAML formatted byte data
@@ -34,8 +35,8 @@ func (p *PlansPrinter) YAML() []byte {
 }
 
 // Columns provides the plan columns for the printer
-func (p *PlansPrinter) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {
+func (p *PlansPrinter) Columns() [][]string {
+	return [][]string{0: {
 		"ID",
 		"VCPU COUNT",
 		"RAM",
@@ -51,35 +52,35 @@ func (p *PlansPrinter) Columns() map[int][]interface{} {
 }
 
 // Data provides the plan data for the printer
-func (p *PlansPrinter) Data() map[int][]interface{} {
-	data := map[int][]interface{}{}
+func (p *PlansPrinter) Data() [][]string {
+	data := [][]string{}
 
 	if len(p.Plans) == 0 {
-		data[0] = []interface{}{"---", "---", "---", "---", "---", "---", "---", "---", "---", "---", "---"}
+		data = append(data, []string{"---", "---", "---", "---", "---", "---", "---", "---", "---", "---", "---"})
 		return data
 	}
 
-	for k, v := range p.Plans {
-		data[k] = []interface{}{
-			v.ID,
-			v.VCPUCount,
-			v.RAM,
-			v.Disk,
-			v.DiskCount,
-			v.Bandwidth,
-			v.MonthlyCost,
-			v.Type,
-			v.GPUVRAM,
-			v.GPUType,
-			v.Locations,
-		}
+	for i := range p.Plans {
+		data = append(data, []string{
+			p.Plans[i].ID,
+			strconv.Itoa(p.Plans[i].VCPUCount),
+			strconv.Itoa(p.Plans[i].RAM),
+			strconv.Itoa(p.Plans[i].Disk),
+			strconv.Itoa(p.Plans[i].DiskCount),
+			strconv.Itoa(p.Plans[i].Bandwidth),
+			strconv.FormatFloat(float64(p.Plans[i].MonthlyCost), 'f', 2, 32),
+			p.Plans[i].Type,
+			strconv.Itoa(p.Plans[i].GPUVRAM),
+			p.Plans[i].GPUType,
+			printer.ArrayOfStringsToString(p.Plans[i].Locations),
+		})
 	}
 
 	return data
 }
 
 // Paging validates and forms the paging data for output
-func (p *PlansPrinter) Paging() map[int][]interface{} {
+func (p *PlansPrinter) Paging() [][]string {
 	return printer.NewPaging(p.Meta.Total, &p.Meta.Links.Next, &p.Meta.Links.Prev).Compose()
 }
 
@@ -91,12 +92,12 @@ type MetalPlansPrinter struct {
 
 // JSON provides the JSON formatted byte data
 func (m *MetalPlansPrinter) JSON() []byte {
-	json, err := json.MarshalIndent(m, "", "    ")
+	js, err := json.MarshalIndent(m, "", "    ")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	return json
+	return js
 }
 
 // YAML provides the YAML formatted byte data
@@ -109,8 +110,8 @@ func (m *MetalPlansPrinter) YAML() []byte {
 }
 
 // Columns provides the plan columns for the printer
-func (m *MetalPlansPrinter) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {
+func (m *MetalPlansPrinter) Columns() [][]string {
+	return [][]string{0: {
 		"ID",
 		"CPU COUNT",
 		"CPU MODEL",
@@ -126,34 +127,34 @@ func (m *MetalPlansPrinter) Columns() map[int][]interface{} {
 }
 
 // Data provides the plan data for the printer
-func (m *MetalPlansPrinter) Data() map[int][]interface{} {
-	data := map[int][]interface{}{}
+func (m *MetalPlansPrinter) Data() [][]string {
+	data := [][]string{}
 
 	if len(data) == 0 {
-		data[0] = []interface{}{"---", "---", "---", "---", "---", "---", "---", "---", "---", "---", "---"}
+		data = append(data, []string{"---", "---", "---", "---", "---", "---", "---", "---", "---", "---", "---"})
 		return data
 	}
 
-	for k, v := range m.Plans {
-		data[k] = []interface{}{
-			v.ID,
-			v.CPUCount,
-			v.CPUModel,
-			v.CPUThreads,
-			v.RAM,
-			v.Disk,
-			v.DiskCount,
-			v.Bandwidth,
-			v.MonthlyCost,
-			v.Type,
-			v.Locations,
-		}
+	for i := range m.Plans {
+		data = append(data, []string{
+			m.Plans[i].ID,
+			strconv.Itoa(m.Plans[i].CPUCount),
+			m.Plans[i].CPUModel,
+			strconv.Itoa(m.Plans[i].CPUThreads),
+			strconv.Itoa(m.Plans[i].RAM),
+			strconv.Itoa(m.Plans[i].Disk),
+			strconv.Itoa(m.Plans[i].DiskCount),
+			strconv.Itoa(m.Plans[i].Bandwidth),
+			strconv.FormatFloat(float64(m.Plans[i].MonthlyCost), 'f', 2, 32),
+			m.Plans[i].Type,
+			printer.ArrayOfStringsToString(m.Plans[i].Locations),
+		})
 	}
 
 	return data
 }
 
 // Paging validates and forms the paging data for output
-func (m *MetalPlansPrinter) Paging() map[int][]interface{} {
+func (m *MetalPlansPrinter) Paging() [][]string {
 	return printer.NewPaging(m.Meta.Total, &m.Meta.Links.Next, &m.Meta.Links.Prev).Compose()
 }

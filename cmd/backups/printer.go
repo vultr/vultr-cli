@@ -1,6 +1,8 @@
 package backups
 
 import (
+	"strconv"
+
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
 )
@@ -22,8 +24,8 @@ func (b *BackupsPrinter) YAML() []byte {
 }
 
 // Columns ...
-func (b *BackupsPrinter) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {
+func (b *BackupsPrinter) Columns() [][]string {
+	return [][]string{0: {
 		"ID",
 		"DATE CREATED",
 		"DESCRIPTION",
@@ -33,22 +35,22 @@ func (b *BackupsPrinter) Columns() map[int][]interface{} {
 }
 
 // Data ...
-func (b *BackupsPrinter) Data() map[int][]interface{} {
-	data := map[int][]interface{}{}
+func (b *BackupsPrinter) Data() [][]string {
+	data := [][]string{}
 	for i := range b.Backups {
-		data[i] = []interface{}{
+		data = append(data, []string{
 			b.Backups[i].ID,
 			b.Backups[i].DateCreated,
 			b.Backups[i].Description,
-			b.Backups[i].Size,
+			strconv.Itoa(b.Backups[i].Size),
 			b.Backups[i].Status,
-		}
+		})
 	}
 	return data
 }
 
 // Paging ...
-func (b *BackupsPrinter) Paging() map[int][]interface{} {
+func (b *BackupsPrinter) Paging() [][]string {
 	return printer.NewPaging(b.Meta.Total, &b.Meta.Links.Next, &b.Meta.Links.Prev).Compose()
 }
 
@@ -70,8 +72,8 @@ func (b *BackupPrinter) YAML() []byte {
 }
 
 // Columns ...
-func (b *BackupPrinter) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {
+func (b *BackupPrinter) Columns() [][]string {
+	return [][]string{0: {
 		"ID",
 		"DATE CREATED",
 		"DESCRIPTION",
@@ -81,17 +83,17 @@ func (b *BackupPrinter) Columns() map[int][]interface{} {
 }
 
 // Data ...
-func (b *BackupPrinter) Data() map[int][]interface{} {
-	return map[int][]interface{}{0: {
+func (b *BackupPrinter) Data() [][]string {
+	return [][]string{0: {
 		b.Backup.ID,
 		b.Backup.DateCreated,
 		b.Backup.Description,
-		b.Backup.Size,
+		strconv.Itoa(b.Backup.Size),
 		b.Backup.Status,
 	}}
 }
 
 // Paging ...
-func (b *BackupPrinter) Paging() map[int][]interface{} {
+func (b *BackupPrinter) Paging() [][]string {
 	return nil
 }

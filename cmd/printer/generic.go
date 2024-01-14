@@ -33,16 +33,16 @@ func (g *Generic) YAML() []byte {
 }
 
 // Columns ...
-func (g *Generic) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {"MESSAGE"}}
+func (g *Generic) Columns() [][]string {
+	return [][]string{0: {"MESSAGE"}}
 }
 
 // Data ...
-func (g *Generic) Data() map[int][]interface{} {
-	return map[int][]interface{}{0: {g.Message}}
+func (g *Generic) Data() [][]string {
+	return [][]string{0: {g.Message}}
 }
 
 // Paging ...
-func (g *Generic) Paging() map[int][]interface{} {
+func (g *Generic) Paging() [][]string {
 	return nil
 }

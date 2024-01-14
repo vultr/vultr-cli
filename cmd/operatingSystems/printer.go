@@ -2,6 +2,7 @@ package operatingsystems
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
@@ -16,12 +17,12 @@ type OSPrinter struct {
 
 // JSON provides the JSON formatted byte data
 func (o *OSPrinter) JSON() []byte {
-	json, err := json.MarshalIndent(o, "", "    ")
+	js, err := json.MarshalIndent(o, "", "    ")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	return json
+	return js
 }
 
 // YAML provides the YAML formatted byte data
@@ -34,8 +35,8 @@ func (o *OSPrinter) YAML() []byte {
 }
 
 // Columns provides the plan columns for the printer
-func (o *OSPrinter) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {
+func (o *OSPrinter) Columns() [][]string {
+	return [][]string{0: {
 		"ID",
 		"NAME",
 		"ARCH",
@@ -44,27 +45,27 @@ func (o *OSPrinter) Columns() map[int][]interface{} {
 }
 
 // Data provides the plan data for the printer
-func (o *OSPrinter) Data() map[int][]interface{} {
-	data := map[int][]interface{}{}
+func (o *OSPrinter) Data() [][]string {
+	data := [][]string{}
 
 	if len(o.OperatingSystems) == 0 {
-		data[0] = []interface{}{"---", "---", "---", "---"}
+		data = append(data, []string{"---", "---", "---", "---"})
 		return data
 	}
 
-	for k, v := range o.OperatingSystems {
-		data[k] = []interface{}{
-			v.ID,
-			v.Name,
-			v.Arch,
-			v.Family,
-		}
+	for i := range o.OperatingSystems {
+		data = append(data, []string{
+			strconv.Itoa(o.OperatingSystems[i].ID),
+			o.OperatingSystems[i].Name,
+			o.OperatingSystems[i].Arch,
+			o.OperatingSystems[i].Family,
+		})
 	}
 
 	return data
 }
 
 // Paging validates and forms the paging data for output
-func (o *OSPrinter) Paging() map[int][]interface{} {
+func (o *OSPrinter) Paging() [][]string {
 	return printer.NewPaging(o.Meta.Total, &o.Meta.Links.Next, &o.Meta.Links.Prev).Compose()
 }

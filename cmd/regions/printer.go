@@ -35,8 +35,8 @@ func (r *RegionsPrinter) YAML() []byte {
 }
 
 // Columns provides the columns for the printer
-func (r *RegionsPrinter) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {
+func (r *RegionsPrinter) Columns() [][]string {
+	return [][]string{0: {
 		"ID",
 		"CITY",
 		"COUNTRY",
@@ -46,29 +46,29 @@ func (r *RegionsPrinter) Columns() map[int][]interface{} {
 }
 
 // Data provides the data for the printer
-func (r *RegionsPrinter) Data() map[int][]interface{} {
-	data := map[int][]interface{}{}
+func (r *RegionsPrinter) Data() [][]string {
+	data := [][]string{}
 
 	if len(r.Regions) == 0 {
-		data[0] = []interface{}{"---", "---", "---", "---", "---"}
+		data = append(data, []string{"---", "---", "---", "---", "---"})
 		return data
 	}
 
-	for k, v := range r.Regions {
-		data[k] = []interface{}{
-			v.ID,
-			v.City,
-			v.Country,
-			v.Continent,
-			v.Options,
-		}
+	for i := range r.Regions {
+		data = append(data, []string{
+			r.Regions[i].ID,
+			r.Regions[i].City,
+			r.Regions[i].Country,
+			r.Regions[i].Continent,
+			printer.ArrayOfStringsToString(r.Regions[i].Options),
+		})
 	}
 
 	return data
 }
 
 // Paging validates and forms the paging data for output
-func (r *RegionsPrinter) Paging() map[int][]interface{} {
+func (r *RegionsPrinter) Paging() [][]string {
 	return printer.NewPaging(r.Meta.Total, &r.Meta.Links.Next, &r.Meta.Links.Prev).Compose()
 }
 
@@ -83,12 +83,12 @@ type RegionsAvailabilityPrinter struct {
 
 // JSON provides the JSON formatted byte data
 func (r *RegionsAvailabilityPrinter) JSON() []byte {
-	json, err := json.MarshalIndent(r, "", "    ")
+	js, err := json.MarshalIndent(r, "", "    ")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	return json
+	return js
 }
 
 // YAML provides the YAML formatted byte data
@@ -101,31 +101,31 @@ func (r *RegionsAvailabilityPrinter) YAML() []byte {
 }
 
 // Columns provides the available plans columns for the printer
-func (r *RegionsAvailabilityPrinter) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {
+func (r *RegionsAvailabilityPrinter) Columns() [][]string {
+	return [][]string{0: {
 		"AVAILABLE PLANS",
 	}}
 }
 
 // Data provides the region availability plan data for the printer
-func (r *RegionsAvailabilityPrinter) Data() map[int][]interface{} {
-	data := map[int][]interface{}{}
+func (r *RegionsAvailabilityPrinter) Data() [][]string {
+	data := [][]string{}
 
 	if len(r.Plans.AvailablePlans) == 0 {
-		data[0] = []interface{}{"---"}
+		data = append(data, []string{"---"})
 		return data
 	}
 
-	for k, v := range r.Plans.AvailablePlans {
-		data[k] = []interface{}{
-			v,
-		}
+	for i := range r.Plans.AvailablePlans {
+		data = append(data, []string{
+			r.Plans.AvailablePlans[i],
+		})
 	}
 
 	return data
 }
 
 // Paging validates and forms the paging data for output
-func (r *RegionsAvailabilityPrinter) Paging() map[int][]interface{} {
+func (r *RegionsAvailabilityPrinter) Paging() [][]string {
 	return printer.NewPaging(r.Meta.Total, &r.Meta.Links.Next, &r.Meta.Links.Prev).Compose()
 }

@@ -14,12 +14,12 @@ type VersionPrinter struct {
 
 // JSON ...
 func (v *VersionPrinter) JSON() []byte {
-	prettyJSON, err := json.MarshalIndent(v, "", printer.JSONIndent)
+	js, err := json.MarshalIndent(v, "", printer.JSONIndent)
 	if err != nil {
 		panic("move this into byte")
 	}
 
-	return prettyJSON
+	return js
 }
 
 // YAML ...
@@ -32,16 +32,16 @@ func (v *VersionPrinter) YAML() []byte {
 }
 
 // Columns ...
-func (v *VersionPrinter) Columns() map[int][]interface{} {
+func (v *VersionPrinter) Columns() [][]string {
 	return nil
 }
 
 // Data ...
-func (v *VersionPrinter) Data() map[int][]interface{} {
-	return map[int][]interface{}{0: {v.Version}}
+func (v *VersionPrinter) Data() [][]string {
+	return [][]string{0: {v.Version}}
 }
 
 // Paging ...
-func (v *VersionPrinter) Paging() map[int][]interface{} {
+func (v *VersionPrinter) Paging() [][]string {
 	return nil
 }

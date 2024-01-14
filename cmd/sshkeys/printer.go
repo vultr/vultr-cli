@@ -2,6 +2,7 @@ package sshkeys
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/vultr/govultr/v3"
 	"gopkg.in/yaml.v3"
@@ -33,25 +34,35 @@ func (s *SSHKeysPrinter) YAML() []byte {
 }
 
 // Columns ...
-func (s *SSHKeysPrinter) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {"ID", "DATE CREATED", "NAME", "KEY"}}
+func (s *SSHKeysPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"DATE CREATED",
+		"NAME",
+		"KEY",
+	}}
 }
 
 // Data ...
-func (s *SSHKeysPrinter) Data() map[int][]interface{} {
-	data := map[int][]interface{}{}
-	for k, v := range s.SSHKeys {
-		data[k] = []interface{}{v.ID, v.DateCreated, v.Name, v.SSHKey}
+func (s *SSHKeysPrinter) Data() [][]string {
+	data := [][]string{}
+	for i := range s.SSHKeys {
+		data = append(data, []string{
+			s.SSHKeys[i].ID,
+			s.SSHKeys[i].DateCreated,
+			s.SSHKeys[i].Name,
+			s.SSHKeys[i].SSHKey,
+		})
 	}
 	return data
 }
 
 // Paging ...
-func (s *SSHKeysPrinter) Paging() map[int][]interface{} {
-	return map[int][]interface{}{
+func (s *SSHKeysPrinter) Paging() [][]string {
+	return [][]string{
 		0: {"======================================"},
 		1: {"TOTAL", "NEXT PAGE", "PREV PAGE"},
-		2: {s.Meta.Total, s.Meta.Links.Next, s.Meta.Links.Prev},
+		2: {strconv.Itoa(s.Meta.Total), s.Meta.Links.Next, s.Meta.Links.Prev},
 	}
 }
 
@@ -62,12 +73,12 @@ type SSHKeyPrinter struct {
 
 // JSON ...
 func (s SSHKeyPrinter) JSON() []byte {
-	prettyJSON, err := json.MarshalIndent(s, "", "    ")
+	js, err := json.MarshalIndent(s, "", "    ")
 	if err != nil {
 		panic("move this into byte")
 	}
 
-	return prettyJSON
+	return js
 }
 
 // YAML ...
@@ -80,16 +91,26 @@ func (s SSHKeyPrinter) YAML() []byte {
 }
 
 // Columns ...
-func (s SSHKeyPrinter) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {"ID", "DATE CREATED", "NAME", "KEY"}}
+func (s SSHKeyPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"DATE CREATED",
+		"NAME",
+		"KEY",
+	}}
 }
 
 // Data ...
-func (s SSHKeyPrinter) Data() map[int][]interface{} {
-	return map[int][]interface{}{0: {s.SSHKey.ID, s.SSHKey.DateCreated, s.SSHKey.Name, s.SSHKey.SSHKey}}
+func (s SSHKeyPrinter) Data() [][]string {
+	return [][]string{0: {
+		s.SSHKey.ID,
+		s.SSHKey.DateCreated,
+		s.SSHKey.Name,
+		s.SSHKey.SSHKey,
+	}}
 }
 
 // Paging ...
-func (s SSHKeyPrinter) Paging() map[int][]interface{} {
+func (s SSHKeyPrinter) Paging() [][]string {
 	return nil
 }
