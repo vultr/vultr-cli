@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package operatingsystems provides the operating systems  functionality for
+// the CLI
 package operatingsystems
 
 import (
