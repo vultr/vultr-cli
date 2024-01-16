@@ -1,3 +1,5 @@
+// Package baremetal provides functionality to perform operations on
+// bare metal servers through the CLI
 package baremetal
 
 import (

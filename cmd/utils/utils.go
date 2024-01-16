@@ -1,4 +1,4 @@
-// Utils provides some common utility functions
+// Package utils provides some common utility functions
 package utils
 
 import (

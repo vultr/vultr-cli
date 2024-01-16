@@ -1,3 +1,4 @@
+// Package backups provides access to the backups for the CLI
 package backups
 
 import (
