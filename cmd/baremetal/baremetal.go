@@ -977,6 +977,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command {
 		ipv6,
 		vpc2,
 	)
+
 	return cmd
 }
 
@@ -1030,54 +1031,54 @@ func (b *BareMetalOptions) Reinstall() error {
 	return err
 }
 
-// GetUpgrades
+// GetUpgrades ...
 func (b *BareMetalOptions) GetUpgrades() (*govultr.Upgrades, error) {
 	list, _, err := b.Base.Client.BareMetalServer.GetUpgrades(b.Base.Context, b.Base.Args[0])
 	return list, err
 }
 
-// GetUserData
+// GetUserData ...
 func (b *BareMetalOptions) GetUserData() (*govultr.UserData, error) {
 	ud, _, err := b.Base.Client.BareMetalServer.GetUserData(b.Base.Context, b.Base.Args[0])
 	return ud, err
 }
 
-// GetVNCURL
+// GetVNCURL ...
 func (b *BareMetalOptions) GetVNCURL() (*govultr.VNCUrl, error) {
 	url, _, err := b.Base.Client.BareMetalServer.GetVNCUrl(b.Base.Context, b.Base.Args[0])
 	return url, err
 }
 
-// GetBandwidth
+// GetBandwidth ...
 func (b *BareMetalOptions) GetBandwidth() (*govultr.Bandwidth, error) {
 	bw, _, err := b.Base.Client.BareMetalServer.GetBandwidth(b.Base.Context, b.Base.Args[0])
 	return bw, err
 }
 
-// GetIPv4Addresses
+// GetIPv4Addresses ...
 func (b *BareMetalOptions) GetIPv4Addresses() ([]govultr.IPv4, *govultr.Meta, error) {
 	ips, meta, _, err := b.Base.Client.BareMetalServer.ListIPv4s(b.Base.Context, b.Base.Args[0], b.Base.Options)
 	return ips, meta, err
 }
 
-// GetIPv6Addresses
+// GetIPv6Addresses ...
 func (b *BareMetalOptions) GetIPv6Addresses() ([]govultr.IPv6, *govultr.Meta, error) {
 	ips, meta, _, err := b.Base.Client.BareMetalServer.ListIPv6s(b.Base.Context, b.Base.Args[0], b.Base.Options)
 	return ips, meta, err
 }
 
-// VPC2NetworksList
+// VPC2NetworksList ...
 func (b *BareMetalOptions) VPC2NetworksList() ([]govultr.VPC2Info, error) {
 	vpc2s, _, err := b.Base.Client.BareMetalServer.ListVPC2Info(b.Base.Context, b.Base.Args[0])
 	return vpc2s, err
 }
 
-// VPC2NetworksAttach
+// VPC2NetworksAttach ...
 func (b *BareMetalOptions) VPC2NetworksAttach() error {
 	return b.Base.Client.BareMetalServer.AttachVPC2(b.Base.Context, b.Base.Args[0], b.VPC2Req)
 }
 
-// VPC2NetworksDetach
+// VPC2NetworksDetach ...
 func (b *BareMetalOptions) VPC2NetworksDetach() error {
 	return b.Base.Client.BareMetalServer.DetachVPC2(b.Base.Context, b.Base.Args[0], b.VPC2ID)
 }
