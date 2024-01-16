@@ -6,6 +6,7 @@ import (
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
+	"github.com/vultr/vultr-cli/v3/cmd/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -49,10 +50,10 @@ func (a *AccountPrinter) Columns() [][]string {
 // Data ...
 func (a *AccountPrinter) Data() [][]string {
 	return [][]string{0: {
-		strconv.FormatFloat(float64(a.Account.Balance), 'f', 2, 32),
-		strconv.FormatFloat(float64(a.Account.PendingCharges), 'f', 2, 32),
+		strconv.FormatFloat(float64(a.Account.Balance), 'f', utils.DecimalPrecision, 32),
+		strconv.FormatFloat(float64(a.Account.PendingCharges), 'f', utils.DecimalPrecision, 32),
 		a.Account.LastPaymentDate,
-		strconv.FormatFloat(float64(a.Account.LastPaymentAmount), 'f', 2, 32),
+		strconv.FormatFloat(float64(a.Account.LastPaymentAmount), 'f', utils.DecimalPrecision, 32),
 		a.Account.Name,
 		a.Account.Email,
 		printer.ArrayOfStringsToString(a.Account.ACL),

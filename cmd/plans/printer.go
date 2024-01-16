@@ -6,6 +6,7 @@ import (
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
+	"github.com/vultr/vultr-cli/v3/cmd/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -68,7 +69,7 @@ func (p *PlansPrinter) Data() [][]string {
 			strconv.Itoa(p.Plans[i].Disk),
 			strconv.Itoa(p.Plans[i].DiskCount),
 			strconv.Itoa(p.Plans[i].Bandwidth),
-			strconv.FormatFloat(float64(p.Plans[i].MonthlyCost), 'f', 2, 32),
+			strconv.FormatFloat(float64(p.Plans[i].MonthlyCost), 'f', utils.DecimalPrecision, 32),
 			p.Plans[i].Type,
 			strconv.Itoa(p.Plans[i].GPUVRAM),
 			p.Plans[i].GPUType,
@@ -145,7 +146,7 @@ func (m *MetalPlansPrinter) Data() [][]string {
 			strconv.Itoa(m.Plans[i].Disk),
 			strconv.Itoa(m.Plans[i].DiskCount),
 			strconv.Itoa(m.Plans[i].Bandwidth),
-			strconv.FormatFloat(float64(m.Plans[i].MonthlyCost), 'f', 2, 32),
+			strconv.FormatFloat(float64(m.Plans[i].MonthlyCost), 'f', utils.DecimalPrecision, 32),
 			m.Plans[i].Type,
 			printer.ArrayOfStringsToString(m.Plans[i].Locations),
 		})
