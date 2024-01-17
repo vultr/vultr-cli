@@ -1,3 +1,5 @@
+// Package billing provides the account billing operations and
+// functionality for the CLI
 package billing
 
 import (
@@ -11,7 +13,7 @@ import (
 // BillingHistoryPrinter ...
 type BillingHistoryPrinter struct {
 	Billing []govultr.History `json:"billing_history"`
-	Meta    *govultr.Meta
+	Meta    *govultr.Meta     `json:"meta"`
 }
 
 // JSON ...
@@ -163,7 +165,7 @@ func (b *BillingInvoicePrinter) Paging() [][]string {
 // BillingInvoiceItemsPrinter ...
 type BillingInvoiceItemsPrinter struct {
 	InvoiceItems []govultr.InvoiceItem `json:"invoice_items"`
-	Meta         *govultr.Meta
+	Meta         *govultr.Meta         `json:"meta"`
 }
 
 // JSON ...

@@ -10,7 +10,7 @@ import (
 // BareMetalsPrinter ...
 type BareMetalsPrinter struct {
 	BareMetals []govultr.BareMetalServer `json:"bare_metals"`
-	Meta       *govultr.Meta
+	Meta       *govultr.Meta             `json:"meta"`
 }
 
 // JSON ...

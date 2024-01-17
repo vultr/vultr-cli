@@ -10,7 +10,7 @@ import (
 // BackupsPrinter ...
 type BackupsPrinter struct {
 	Backups []govultr.Backup `json:"backups"`
-	Meta    *govultr.Meta
+	Meta    *govultr.Meta    `json:"meta"`
 }
 
 // JSON ...
