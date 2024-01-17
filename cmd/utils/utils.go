@@ -7,6 +7,11 @@ import (
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
 
+const (
+	PerPageDefault   int = 100
+	DecimalPrecision int = 4
+)
+
 // SetOptions initializes values used in all CLI commands
 func SetOptions(b *cli.Base, cmd *cobra.Command, args []string) {
 	b.Args = args
