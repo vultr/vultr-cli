@@ -75,21 +75,13 @@ var (
 	`
 )
 
-type BillingOptionsInterface interface {
-	setOptions(cmd *cobra.Command, args []string)
-}
-
-type BillingOptions struct {
+type Options struct {
 	Base          *cli.Base
 	InvoiceItemID int
 }
 
-func NewBillingOptions(base *cli.Base) *BillingOptions {
-	return &BillingOptions{Base: base}
-}
-
 func NewCmdBilling(base *cli.Base) *cobra.Command {
-	o := NewBillingOptions(base)
+	o := &Options{Base: base}
 
 	cmd := &cobra.Command{
 		Use:     "billing",
@@ -262,25 +254,25 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 }
 
 // HistoryList ...
-func (b *BillingOptions) HistoryList() ([]govultr.History, *govultr.Meta, error) {
+func (b *Options) HistoryList() ([]govultr.History, *govultr.Meta, error) {
 	hs, meta, _, err := b.Base.Client.Billing.ListHistory(b.Base.Context, b.Base.Options)
 	return hs, meta, err
 }
 
 // InvoiceGet ...
-func (b *BillingOptions) InvoiceGet() (*govultr.Invoice, error) {
+func (b *Options) InvoiceGet() (*govultr.Invoice, error) {
 	inv, _, err := b.Base.Client.Billing.GetInvoice(b.Base.Context, b.Base.Args[0])
 	return inv, err
 }
 
 // InvoicesList ...
-func (b *BillingOptions) InvoicesList() ([]govultr.Invoice, *govultr.Meta, error) {
+func (b *Options) InvoicesList() ([]govultr.Invoice, *govultr.Meta, error) {
 	invs, meta, _, err := b.Base.Client.Billing.ListInvoices(b.Base.Context, b.Base.Options)
 	return invs, meta, err
 }
 
 // InvoiceItemsList ...
-func (b *BillingOptions) InvoiceItemsList() ([]govultr.InvoiceItem, *govultr.Meta, error) {
+func (b *Options) InvoiceItemsList() ([]govultr.InvoiceItem, *govultr.Meta, error) {
 	items, meta, _, err := b.Base.Client.Billing.ListInvoiceItems(b.Base.Context, b.InvoiceItemID, b.Base.Options)
 	return items, meta, err
 }
