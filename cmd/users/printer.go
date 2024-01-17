@@ -9,7 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// SSHKeysPrinter ...
+// UsersPrinter ...
 type UsersPrinter struct {
 	Users []govultr.User `json:"users"`
 	Meta  *govultr.Meta
