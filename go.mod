@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.17.0
-	github.com/vultr/govultr/v3 v3.6.0
+	github.com/vultr/govultr/v3 v3.6.1
 	golang.org/x/oauth2 v0.15.0
 )
 
