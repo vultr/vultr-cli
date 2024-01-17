@@ -95,12 +95,11 @@ var (
 )
 
 type Options struct {
-	Base           *cli.Base
-	BlockStorageID string
-	CreateReq      *govultr.BlockStorageCreate
-	UpdateReq      *govultr.BlockStorageUpdate
-	AttachReq      *govultr.BlockStorageAttach
-	DetachReq      *govultr.BlockStorageDetach
+	Base      *cli.Base
+	CreateReq *govultr.BlockStorageCreate
+	UpdateReq *govultr.BlockStorageUpdate
+	AttachReq *govultr.BlockStorageAttach
+	DetachReq *govultr.BlockStorageDetach
 }
 
 func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
