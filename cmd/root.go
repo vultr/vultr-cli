@@ -26,8 +26,11 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/account"
 	"github.com/vultr/vultr-cli/v3/cmd/applications"
 	"github.com/vultr/vultr-cli/v3/cmd/backups"
-	baremetal "github.com/vultr/vultr-cli/v3/cmd/bareMetal"
-	operatingsystems "github.com/vultr/vultr-cli/v3/cmd/operatingSystems"
+	"github.com/vultr/vultr-cli/v3/cmd/baremetal"
+	"github.com/vultr/vultr-cli/v3/cmd/billing"
+	"github.com/vultr/vultr-cli/v3/cmd/blockstorage"
+	"github.com/vultr/vultr-cli/v3/cmd/containerregistry"
+	"github.com/vultr/vultr-cli/v3/cmd/operatingsystems"
 	"github.com/vultr/vultr-cli/v3/cmd/plans"
 	"github.com/vultr/vultr-cli/v3/cmd/regions"
 	"github.com/vultr/vultr-cli/v3/cmd/sshkeys"
@@ -86,9 +89,9 @@ func init() {
 	rootCmd.AddCommand(applications.NewCmdApplications(base))
 	rootCmd.AddCommand(backups.NewCmdBackups(base))
 	rootCmd.AddCommand(baremetal.NewCmdBareMetal(base))
-	rootCmd.AddCommand(Billing())
-	rootCmd.AddCommand(BlockStorageCmd())
-	rootCmd.AddCommand(ContainerRegistry())
+	rootCmd.AddCommand(billing.NewCmdBilling(base))
+	rootCmd.AddCommand(blockstorage.NewCmdBlockStorage(base))
+	rootCmd.AddCommand(containerregistry.NewCmdContainerRegistry(base))
 	rootCmd.AddCommand(Database())
 	rootCmd.AddCommand(DNS())
 	rootCmd.AddCommand(Firewall())
