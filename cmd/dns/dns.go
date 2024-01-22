@@ -32,7 +32,7 @@ type Options struct {
 	RecordReq           *govultr.DomainRecordReq
 }
 
-// NewCmdContainerRegistry provides the CLI command functionality for container registry
+// NewCmdDNS provides the CLI command functionality for DNS
 func NewCmdDNS(base *cli.Base) *cobra.Command {
 	o := &Options{Base: base}
 
