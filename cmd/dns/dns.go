@@ -174,22 +174,30 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			enabled, errEn := cmd.Flags().GetBool("enabled")
 			if errEn != nil {
-				printer.Error(fmt.Errorf("error parsing 'enabled' flag for dnssec enable : %v", errEn))
+				printer.Error(fmt.Errorf("error parsing 'enabled' flag for dnssec : %v", errEn))
 				os.Exit(1)
 			}
 
 			disabled, errDi := cmd.Flags().GetBool("disabled")
 			if errEn != nil {
-				printer.Error(fmt.Errorf("error parsing 'disabled' flag for dnssec enable : %v", errDi))
+				printer.Error(fmt.Errorf("error parsing 'disabled' flag for dnssec : %v", errDi))
 				os.Exit(1)
 			}
 
-			if enabled {
-				o.DomainDNSSECEnabled = "enabled"
+			if cmd.Flags().Changed("enabled") {
+				if enabled {
+					o.DomainDNSSECEnabled = "enabled"
+				} else {
+					o.DomainDNSSECEnabled = "disabled"
+				}
 			}
 
-			if disabled {
-				o.DomainDNSSECEnabled = "disabled"
+			if cmd.Flags().Changed("disabled") {
+				if disabled {
+					o.DomainDNSSECEnabled = "disabled"
+				} else {
+					o.DomainDNSSECEnabled = "enabled"
+				}
 			}
 
 			if err := o.DomainUpdate(); err != nil {
@@ -201,8 +209,8 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 		},
 	}
 
-	domainDNSSEC.Flags().BoolP("enabled", "e", true, "dns sec is enabled")
-	domainDNSSEC.Flags().BoolP("disabled", "d", true, "dns sec is disabled")
+	domainDNSSEC.Flags().BoolP("enabled", "e", true, "enable dnssec")
+	domainDNSSEC.Flags().BoolP("disabled", "d", true, "disable dnssec")
 	domainDNSSEC.MarkFlagsOneRequired("enabled", "disabled")
 	domainDNSSEC.MarkFlagsMutuallyExclusive("enabled", "disabled")
 
@@ -291,10 +299,6 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	}
 
 	domainSOAUpdate.Flags().StringP("ns-primary", "n", "", "primary nameserver to store in the SOA record")
-	if err := domainSOAUpdate.MarkFlagRequired("ns-primary"); err != nil {
-		printer.Error(fmt.Errorf("error marking domain soa update 'ns-primary' flag required: %v\n", err))
-		os.Exit(1)
-	}
 	domainSOAUpdate.Flags().StringP("email", "e", "", "administrative email to store in the SOA record")
 
 	domain.AddCommand(
@@ -349,7 +353,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 2 {
-				return errors.New("please provide a domain name and recordID")
+				return errors.New("please provide a domain name and record ID")
 			}
 			return nil
 		},
@@ -426,27 +430,35 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 		},
 	}
 
-	recordCreate.Flags().StringP("name", "n", "", "name of record")
-	recordCreate.Flags().StringP("data", "d", "", "data for the record")
-	if err := recordCreate.MarkFlagRequired("domain"); err != nil {
-		printer.Error(fmt.Errorf("error marking dns record create 'domain' flag required: %v", err))
-		os.Exit(1)
-	}
+	recordCreate.Flags().StringP("type", "t", "", "type for the record")
 	if err := recordCreate.MarkFlagRequired("type"); err != nil {
 		printer.Error(fmt.Errorf("error marking dns record create 'type' flag required: %v", err))
 		os.Exit(1)
 	}
+
+	recordCreate.Flags().StringP("name", "n", "", "name of the record")
 	if err := recordCreate.MarkFlagRequired("name"); err != nil {
 		printer.Error(fmt.Errorf("error marking dns record create 'name' flag required: %v", err))
 		os.Exit(1)
 	}
+
+	recordCreate.Flags().StringP("data", "d", "", "data for the record")
 	if err := recordCreate.MarkFlagRequired("data"); err != nil {
 		printer.Error(fmt.Errorf("error marking dns record create 'data' flag required: %v", err))
 		os.Exit(1)
 	}
 
-	recordCreate.Flags().IntP("ttl", "", 0, "time to live for the record")
+	recordCreate.Flags().IntP("ttl", "l", 0, "ttl for the record")
+	if err := recordCreate.MarkFlagRequired("ttl"); err != nil {
+		printer.Error(fmt.Errorf("error marking dns record create 'ttl' flag required: %v", err))
+		os.Exit(1)
+	}
+
 	recordCreate.Flags().IntP("priority", "p", 0, "only required for MX and SRV")
+	if err := recordCreate.MarkFlagRequired("priority"); err != nil {
+		printer.Error(fmt.Errorf("error marking dns record create 'priority' flag required: %v", err))
+		os.Exit(1)
+	}
 
 	// Record Delete
 	recordDelete := &cobra.Command{
@@ -607,7 +619,7 @@ func (o *Options) RecordList() ([]govultr.DomainRecord, *govultr.Meta, error) {
 
 // RecordGet ...
 func (o *Options) RecordGet() (*govultr.DomainRecord, error) {
-	rec, _, err := o.Base.Client.DomainRecord.Get(o.Base.Context, o.Base.Args[0], o.Base.Args[0])
+	rec, _, err := o.Base.Client.DomainRecord.Get(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
 	return rec, err
 }
 
