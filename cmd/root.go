@@ -32,6 +32,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/containerregistry"
 	"github.com/vultr/vultr-cli/v3/cmd/dns"
 	"github.com/vultr/vultr-cli/v3/cmd/firewall"
+	"github.com/vultr/vultr-cli/v3/cmd/iso"
 	"github.com/vultr/vultr-cli/v3/cmd/operatingsystems"
 	"github.com/vultr/vultr-cli/v3/cmd/plans"
 	"github.com/vultr/vultr-cli/v3/cmd/regions"
