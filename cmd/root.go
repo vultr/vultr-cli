@@ -54,9 +54,10 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "vultr-cli",
-	Short: "vultr-cli is a command line interface for the Vultr API",
-	Long:  ``,
+	Use:          "vultr-cli",
+	Short:        "vultr-cli is a command line interface for the Vultr API",
+	Long:         ``,
+	SilenceUsage: true,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
