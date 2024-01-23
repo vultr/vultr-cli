@@ -133,7 +133,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 
 	domainCreate.Flags().StringP("domain", "d", "", "name of the domain")
 	if err := domainCreate.MarkFlagRequired("domain"); err != nil {
-		printer.Error(fmt.Errorf("error marking domain create 'domain' flag required: %v\n", err))
+		printer.Error(fmt.Errorf("error marking domain create 'domain' flag required: %v", err))
 		os.Exit(1)
 	}
 	domainCreate.Flags().StringP("ip", "i", "", "instance ip you want to assign this domain to")
@@ -152,7 +152,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := o.DomainDelete(); err != nil {
-				printer.Error(fmt.Errorf("error delete dns domain : %v\n", err))
+				printer.Error(fmt.Errorf("error delete dns domain : %v", err))
 				os.Exit(1)
 			}
 
@@ -251,7 +251,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			info, err := o.DomainSOAGet()
 			if err != nil {
-				printer.Error(fmt.Errorf("error getting domain soa info : %v\n", err))
+				printer.Error(fmt.Errorf("error getting domain soa info : %v", err))
 				os.Exit(1)
 			}
 
