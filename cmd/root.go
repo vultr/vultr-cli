@@ -88,33 +88,35 @@ func init() {
 		output,
 	)
 
-	rootCmd.AddCommand(account.NewCmdAccount(base))
-	rootCmd.AddCommand(applications.NewCmdApplications(base))
-	rootCmd.AddCommand(backups.NewCmdBackups(base))
-	rootCmd.AddCommand(baremetal.NewCmdBareMetal(base))
-	rootCmd.AddCommand(billing.NewCmdBilling(base))
-	rootCmd.AddCommand(blockstorage.NewCmdBlockStorage(base))
-	rootCmd.AddCommand(containerregistry.NewCmdContainerRegistry(base))
-	rootCmd.AddCommand(Database())
-	rootCmd.AddCommand(dns.NewCmdDNS(base))
-	rootCmd.AddCommand(firewall.NewCmdFirewall(base))
-	rootCmd.AddCommand(ISO())
-	rootCmd.AddCommand(Kubernetes())
-	rootCmd.AddCommand(LoadBalancer())
-	rootCmd.AddCommand(Network())
-	rootCmd.AddCommand(operatingsystems.NewCmdOS(base))
-	rootCmd.AddCommand(ObjectStorageCmd())
-	rootCmd.AddCommand(plans.NewCmdPlan(base))
-	rootCmd.AddCommand(regions.NewCmdRegion(base))
-	rootCmd.AddCommand(ReservedIP())
-	rootCmd.AddCommand(Script())
-	rootCmd.AddCommand(Instance())
-	rootCmd.AddCommand(Snapshot())
-	rootCmd.AddCommand(sshkeys.NewCmdSSHKey(base))
-	rootCmd.AddCommand(users.NewCmdUser(base))
-	rootCmd.AddCommand(version.NewCmdVersion())
-	rootCmd.AddCommand(VPC())
-	rootCmd.AddCommand(VPC2())
+	rootCmd.AddCommand(
+		account.NewCmdAccount(base),
+		applications.NewCmdApplications(base),
+		backups.NewCmdBackups(base),
+		baremetal.NewCmdBareMetal(base),
+		billing.NewCmdBilling(base),
+		blockstorage.NewCmdBlockStorage(base),
+		containerregistry.NewCmdContainerRegistry(base),
+		Database(),
+		dns.NewCmdDNS(base),
+		firewall.NewCmdFirewall(base),
+		iso.NewCmdISO(base),
+		Kubernetes(),
+		LoadBalancer(),
+		Network(),
+		operatingsystems.NewCmdOS(base),
+		ObjectStorageCmd(),
+		plans.NewCmdPlan(base),
+		regions.NewCmdRegion(base),
+		ReservedIP(),
+		Script(),
+		Instance(),
+		Snapshot(),
+		sshkeys.NewCmdSSHKey(base),
+		users.NewCmdUser(base),
+		version.NewCmdVersion(),
+		VPC(),
+		VPC2(),
+	)
 }
 
 // initConfig reads in config file and ENV variables if set.
