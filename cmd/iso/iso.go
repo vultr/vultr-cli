@@ -1,4 +1,4 @@
-// Package iso provides the functionality for ISO related commands to the CLI
+// Package iso provides the ISO related commands to the CLI
 package iso
 
 import (
