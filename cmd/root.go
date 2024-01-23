@@ -31,6 +31,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/blockstorage"
 	"github.com/vultr/vultr-cli/v3/cmd/containerregistry"
 	"github.com/vultr/vultr-cli/v3/cmd/dns"
+	"github.com/vultr/vultr-cli/v3/cmd/firewall"
 	"github.com/vultr/vultr-cli/v3/cmd/operatingsystems"
 	"github.com/vultr/vultr-cli/v3/cmd/plans"
 	"github.com/vultr/vultr-cli/v3/cmd/regions"
@@ -95,7 +96,7 @@ func init() {
 	rootCmd.AddCommand(containerregistry.NewCmdContainerRegistry(base))
 	rootCmd.AddCommand(Database())
 	rootCmd.AddCommand(dns.NewCmdDNS(base))
-	rootCmd.AddCommand(Firewall())
+	rootCmd.AddCommand(firewall.NewCmdFirewall(base))
 	rootCmd.AddCommand(ISO())
 	rootCmd.AddCommand(Kubernetes())
 	rootCmd.AddCommand(LoadBalancer())
