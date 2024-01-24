@@ -33,6 +33,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/dns"
 	"github.com/vultr/vultr-cli/v3/cmd/firewall"
 	"github.com/vultr/vultr-cli/v3/cmd/iso"
+	"github.com/vultr/vultr-cli/v3/cmd/objectstorage"
 	"github.com/vultr/vultr-cli/v3/cmd/operatingsystems"
 	"github.com/vultr/vultr-cli/v3/cmd/plans"
 	"github.com/vultr/vultr-cli/v3/cmd/regions"
@@ -97,25 +98,25 @@ func init() {
 		billing.NewCmdBilling(base),
 		blockstorage.NewCmdBlockStorage(base),
 		containerregistry.NewCmdContainerRegistry(base),
-		Database(),
+		Database(), // TODO
 		dns.NewCmdDNS(base),
 		firewall.NewCmdFirewall(base),
 		iso.NewCmdISO(base),
-		Kubernetes(),
-		LoadBalancer(),
+		Kubernetes(),   // TODO
+		LoadBalancer(), // TODO
 		operatingsystems.NewCmdOS(base),
-		ObjectStorageCmd(),
+		objectstorage.NewCmdObjectStorage(base),
 		plans.NewCmdPlan(base),
 		regions.NewCmdRegion(base),
-		ReservedIP(),
-		Script(),
-		Instance(),
-		Snapshot(),
+		ReservedIP(), // TODO
+		Script(),     // TODO
+		Instance(),   // TODO
+		Snapshot(),   // TODO
 		sshkeys.NewCmdSSHKey(base),
 		users.NewCmdUser(base),
 		version.NewCmdVersion(),
-		VPC(),
-		VPC2(),
+		VPC(),  // TODO
+		VPC2(), // TODO
 	)
 }
 
