@@ -109,7 +109,7 @@ func NewCmdISO(base *cli.Base) *cobra.Command {
 
 	create.Flags().StringP("url", "u", "", "url from where the ISO will be downloaded")
 	if err := create.MarkFlagRequired("url"); err != nil {
-		printer.Error(fmt.Errorf("error marking iso create 'url' flag required: %v", err))
+		printer.Error(fmt.Errorf("error marking iso create 'url' flag required : %v", err))
 		os.Exit(1)
 	}
 
