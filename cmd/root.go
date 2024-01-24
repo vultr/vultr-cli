@@ -103,7 +103,6 @@ func init() {
 		iso.NewCmdISO(base),
 		Kubernetes(),
 		LoadBalancer(),
-		Network(),
 		operatingsystems.NewCmdOS(base),
 		ObjectStorageCmd(),
 		plans.NewCmdPlan(base),
