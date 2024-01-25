@@ -66,12 +66,6 @@ var (
 	`
 )
 
-type Options struct {
-	Base     *cli.Base
-	GroupReq *govultr.FirewallGroupReq
-	RuleReq  *govultr.FirewallRuleReq
-}
-
 // NewCmdFirewall provides the CLI command functionality for Firewall
 func NewCmdFirewall(base *cli.Base) *cobra.Command {
 	o := &Options{Base: base}
@@ -463,6 +457,12 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 	cmd.AddCommand(group, rule)
 
 	return cmd
+}
+
+type Options struct {
+	Base     *cli.Base
+	GroupReq *govultr.FirewallGroupReq
+	RuleReq  *govultr.FirewallRuleReq
 }
 
 // GroupList ...
