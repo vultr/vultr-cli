@@ -50,6 +50,14 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command {
 		},
 	}
 
+	list.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	list.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
+
 	// Get
 	get := &cobra.Command{
 		Use:   "get <Object Storage ID>",
@@ -73,14 +81,6 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command {
 			return nil
 		},
 	}
-
-	list.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	list.Flags().IntP(
-		"per-page",
-		"p",
-		utils.PerPageDefault,
-		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
-	)
 
 	// Create
 	create := &cobra.Command{
