@@ -38,6 +38,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/plans"
 	"github.com/vultr/vultr-cli/v3/cmd/regions"
 	"github.com/vultr/vultr-cli/v3/cmd/reservedip"
+	"github.com/vultr/vultr-cli/v3/cmd/script"
 	"github.com/vultr/vultr-cli/v3/cmd/sshkeys"
 	"github.com/vultr/vultr-cli/v3/cmd/users"
 	"github.com/vultr/vultr-cli/v3/cmd/version"
@@ -110,7 +111,7 @@ func init() {
 		plans.NewCmdPlan(base),
 		regions.NewCmdRegion(base),
 		reservedip.NewCmdReservedIP(base),
-		Script(),   // TODO
+		script.NewCmdScript(base),
 		Instance(), // TODO
 		Snapshot(), // TODO
 		sshkeys.NewCmdSSHKey(base),
