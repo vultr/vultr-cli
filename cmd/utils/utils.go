@@ -2,14 +2,19 @@
 package utils
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
 
 const (
-	PerPageDefault   int = 100
+	PerPageDefault int = 100
+	// TODO; replace
 	DecimalPrecision int = 4
+	FloatPrecision   int = 4
+	FloatBitDepth    int = 32
 )
 
 // SetOptions initializes values used in all CLI commands
