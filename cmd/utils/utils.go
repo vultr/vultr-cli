@@ -17,3 +17,17 @@ func SetOptions(b *cli.Base, cmd *cobra.Command, args []string) {
 	b.Args = args
 	b.Printer.Output = viper.GetString("output")
 }
+
+// GetFirewallSource parses the source and if empty, returns 'anywhere'
+func GetFirewallSource(source string) string {
+	if source == "" {
+		return "anywhere"
+	}
+	return source
+}
+
+// FormatFirewalNetwork returns the subnet and size of a network in CIDR
+// notation
+func FormatFirewallNetwork(subnet string, size int) string {
+	return fmt.Sprintf("%s/%d", subnet, size)
+}
