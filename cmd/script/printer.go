@@ -5,7 +5,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
 )
 
-// ReservedIPsPrinter...
+// ScriptsPrinter ...
 type ScriptsPrinter struct {
 	Scripts []govultr.StartupScript `json:"startup_scripts"`
 	Meta    *govultr.Meta           `json:"meta"`
@@ -60,7 +60,7 @@ func (s *ScriptsPrinter) Paging() [][]string {
 
 // ======================================
 
-// ReservedIPPrinter...
+// ScriptIPPrinter...
 type ScriptPrinter struct {
 	Script *govultr.StartupScript `json:"startup_script"`
 }
