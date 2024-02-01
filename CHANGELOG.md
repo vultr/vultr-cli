@@ -1,4 +1,23 @@
 # Change Log
+## [v2.22.0](https://github.com/vultr/vultr-cli/compare/v2.21.0...v2.22.0) (2024-02-01)
+### Enhancements
+* Database: add user access control for redis [PR 383](https://github.com/vultr/vultr-cli/pull/383)
+* Marketplace: add support for app variables [PR 389](https://github.com/vultr/vultr-cli/pull/389)
+
+### Bug Fixes
+* Conatiner Registry: fix read-write flag on docker credentials [PR 395](https://github.com/vultr/vultr-cli/pull/395)
+
+### Dependencies
+* Bump github.com/vultr/govultr/v3 from 3.4.1 to 3.5.0 [PR 382](https://github.com/vultr/vultr-cli/pull/382)
+* Update govultr from v3.5.0 to v3.6.0 [PR 388](https://github.com/vultr/vultr-cli/pull/388)
+* Bump github.com/vultr/govultr/v3 from 3.6.0 to 3.6.1 [PR 393](https://github.com/vultr/vultr-cli/pull/393)
+* Bump golang.org/x/oauth2 from 0.15.0 to 0.16.0 [PR 392](https://github.com/vultr/vultr-cli/pull/392)
+* Bump github.com/spf13/viper from 1.17.0 to 1.18.2 [PR 390](https://github.com/vultr/vultr-cli/pull/390)
+
+### New Contributors
+* @biondizzle made their first contribution in [PR 395](https://github.com/vultr/vultr-cli/pull/395)
+
+**Full Changelog**: https://github.com/vultr/vultr-cli/compare/v2.21.0...v2.22.0
 ## [v2.21.0](https://github.com/vultr/vultr-cli/compare/v2.20.0...v2.21.0) (2023-11-29)
 ### Enhancements
 * Database: Add usage commands [PR 378](https://github.com/vultr/vultr-cli/pull/378)
