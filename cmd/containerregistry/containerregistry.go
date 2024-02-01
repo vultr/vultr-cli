@@ -560,9 +560,9 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 				os.Exit(1)
 			}
 
-			access, errAc := cmd.Flags().GetBool("write-access")
+			access, errAc := cmd.Flags().GetBool("read-write")
 			if errAc != nil {
-				printer.Error(fmt.Errorf("error parsing 'write-access' flag for container registry docker creds : %v", errAc))
+				printer.Error(fmt.Errorf("error parsing 'read-write' flag for container registry docker creds : %v", errAc))
 				os.Exit(1)
 			}
 
@@ -583,16 +583,16 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	}
 
 	credentialsDocker.Flags().IntP(
-		"expiry-seconds", 
-		"e", 
-		0, 
+		"expiry-seconds",
+		"e",
+		0,
 		"(optional) The seconds until these credentials expire.  Default is 0, never",
 	)
 
 	credentialsDocker.Flags().BoolP(
-		"write-access", 
-		"w", 
-		false, 
+		"read-write",
+		"w",
+		false,
 		"(optional) Whether or not these credentials have write access.  Should be true or false.  Default is false",
 	)
 
