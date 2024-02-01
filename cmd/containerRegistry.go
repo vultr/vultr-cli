@@ -45,7 +45,7 @@ var (
 	crGetLong    = `Display information for a specific VPC`
 	crGetExample = `
 	# Full example
-	vultr-cli container-registry get e8ba183d-df3b-487a-acbf-f6c06aa32468 
+	vultr-cli container-registry get e8ba183d-df3b-487a-acbf-f6c06aa32468
 
 	# Shortened example with aliases
 	vultr-cli cr g e8ba183d-df3b-487a-acbf-f6c06aa32468
@@ -53,7 +53,7 @@ var (
 	crUpdateLong    = `Update an existing container registry`
 	crUpdateExample = `
 	# Full example
-	vultr-cli container-registry update 835fd402-e0eb-47aa-a5a9-a9885feea1cf --plan="premium" --public="true" 
+	vultr-cli container-registry update 835fd402-e0eb-47aa-a5a9-a9885feea1cf --plan="premium" --public="true"
 
 	# Shortened example with aliases
 	vultr-cli cr u 835fd402-e0eb-47aa-a5a9-a9885feea1cf -p="premium" -b="true"
@@ -64,7 +64,7 @@ var (
 	vultr-cli container-registry delete b20fa61e-4abb-46c5-92c3-8700150e1f9a
 
 	#Shortened example with aliases
-	vultr-cli cr d b20fa61e-4abb-46c5-92c3-8700150e1f9a 
+	vultr-cli cr d b20fa61e-4abb-46c5-92c3-8700150e1f9a
 	`
 	crListLong    = `List all container registries on the account`
 	crListExample = `
@@ -84,7 +84,7 @@ var (
 	//nolint: gosec
 	crCredentialsDockerExample = `
 	# Full example
-	vultr-cli container-registry credentials docker d24cfdcc-0534-4700-bf88-8ee48f20064e 
+	vultr-cli container-registry credentials docker d24cfdcc-0534-4700-bf88-8ee48f20064e
 	`
 	crRepoLong    = `Access commands for individual repositories on a container registry`
 	crRepoExample = `
@@ -124,7 +124,7 @@ var (
 	vultr-cli container-registry regions
 
 	# Shortened example with aliases
-	vultr-cli cr r 
+	vultr-cli cr r
 	`
 )
 
@@ -405,7 +405,7 @@ var crCredentialsDocker = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id := args[0]
 		expiry, _ := cmd.Flags().GetInt("expiry-seconds")
-		access, _ := cmd.Flags().GetBool("write-access")
+		access, _ := cmd.Flags().GetBool("read-write")
 
 		options := &govultr.DockerCredentialsOpt{
 			ExpirySeconds: govultr.IntToIntPtr(expiry),
