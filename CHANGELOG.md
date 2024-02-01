@@ -17,7 +17,6 @@
 ### New Contributors
 * @biondizzle made their first contribution in [PR 395](https://github.com/vultr/vultr-cli/pull/395)
 
-**Full Changelog**: https://github.com/vultr/vultr-cli/compare/v2.21.0...v2.22.0
 ## [v2.21.0](https://github.com/vultr/vultr-cli/compare/v2.20.0...v2.21.0) (2023-11-29)
 ### Enhancements
 * Database: Add usage commands [PR 378](https://github.com/vultr/vultr-cli/pull/378)
