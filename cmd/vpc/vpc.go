@@ -1,4 +1,4 @@
-// Package snapshot provides functionality for the CLI to control VPCs
+// Package vpc provides functionality for the CLI to control VPCs
 package vpc
 
 import (
