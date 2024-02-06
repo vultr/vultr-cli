@@ -44,6 +44,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/users"
 	"github.com/vultr/vultr-cli/v3/cmd/version"
 	"github.com/vultr/vultr-cli/v3/cmd/vpc"
+	"github.com/vultr/vultr-cli/v3/cmd/vpc2"
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
 
@@ -120,7 +121,7 @@ func init() {
 		users.NewCmdUser(base),
 		version.NewCmdVersion(),
 		vpc.NewCmdVPC(base),
-		VPC2(), // TODO
+		vpc2.NewCmdVPC2(base),
 	)
 }
 
