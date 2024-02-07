@@ -33,6 +33,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/dns"
 	"github.com/vultr/vultr-cli/v3/cmd/firewall"
 	"github.com/vultr/vultr-cli/v3/cmd/iso"
+	"github.com/vultr/vultr-cli/v3/cmd/kubernetes"
 	"github.com/vultr/vultr-cli/v3/cmd/objectstorage"
 	"github.com/vultr/vultr-cli/v3/cmd/operatingsystems"
 	"github.com/vultr/vultr-cli/v3/cmd/plans"
@@ -107,7 +108,7 @@ func init() {
 		dns.NewCmdDNS(base),
 		firewall.NewCmdFirewall(base),
 		iso.NewCmdISO(base),
-		Kubernetes(),   // TODO
+		kubernetes.NewCmdKubernetes(base),
 		LoadBalancer(), // TODO
 		operatingsystems.NewCmdOS(base),
 		objectstorage.NewCmdObjectStorage(base),
