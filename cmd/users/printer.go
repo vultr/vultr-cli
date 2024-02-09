@@ -1,37 +1,26 @@
 package users
 
 import (
-	"encoding/json"
 	"strconv"
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
-	"gopkg.in/yaml.v3"
 )
 
 // UsersPrinter ...
 type UsersPrinter struct {
 	Users []govultr.User `json:"users"`
-	Meta  *govultr.Meta
+	Meta  *govultr.Meta  `json:"meta"`
 }
 
 // JSON ...
 func (u *UsersPrinter) JSON() []byte {
-	js, err := json.MarshalIndent(u, "", printer.JSONIndent)
-	if err != nil {
-		panic("move this into byte")
-	}
-
-	return js
+	return printer.MarshalObject(u, "json")
 }
 
 // YAML ...
 func (u *UsersPrinter) YAML() []byte {
-	yam, err := yaml.Marshal(u)
-	if err != nil {
-		panic("move this into byte")
-	}
-	return yam
+	return printer.MarshalObject(u, "yaml")
 }
 
 // Columns ...
@@ -63,4 +52,48 @@ func (u *UsersPrinter) Data() [][]string {
 // Paging ...
 func (u *UsersPrinter) Paging() [][]string {
 	return printer.NewPaging(u.Meta.Total, &u.Meta.Links.Next, &u.Meta.Links.Prev).Compose()
+}
+
+// ======================================
+
+// UserPrinter ...
+type UserPrinter struct {
+	User govultr.User `json:"user"`
+}
+
+// JSON ...
+func (u *UserPrinter) JSON() []byte {
+	return printer.MarshalObject(u, "json")
+}
+
+// YAML ...
+func (u *UserPrinter) YAML() []byte {
+	return printer.MarshalObject(u, "yaml")
+}
+
+// Columns ...
+func (u *UserPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"NAME",
+		"EMAIL",
+		"API",
+		"ACL",
+	}}
+}
+
+// Data ...
+func (u *UserPrinter) Data() [][]string {
+	return [][]string{0: {
+		u.User.ID,
+		u.User.Name,
+		u.User.Email,
+		strconv.FormatBool(*u.User.APIEnabled),
+		printer.ArrayOfStringsToString(u.User.ACL),
+	}}
+}
+
+// Paging ...
+func (u *UserPrinter) Paging() [][]string {
+	return nil
 }

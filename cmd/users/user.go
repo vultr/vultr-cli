@@ -14,12 +14,6 @@ import (
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
 
-//todo move the lens checks into a function
-//todo move error checking intos own package?
-//todo add cli verbiage to vars
-//todo tests
-//todo break subcommands into their own vars
-
 var (
 	userLong    = ``
 	userExample = ``
@@ -27,10 +21,12 @@ var (
 	createLong    = `Create a sub user on your Vultr account.`
 	createExample = `
 		# Full Example
-		vultr-cli users create --email="vultrcli@vultr.com" --name="Vultr-cli" --password="Password123" --api-enabled="yes" --acl="manage_users,billing"
+		vultr-cli users create --email="vultrcli@vultr.com" --name="Vultr-cli" \ 
+			--password="Password123" --api-enabled="true" --acl="manage_users,billing"
 
 		# Shortened with alias commands
-		vultr-cli users create -e="vultrcli@vultr.com" -n="Vultr-cli" -p="Password123" -a-enabled="yes" -l="manage_users,billing"
+		vultr-cli users create -e="vultrcli@vultr.com" -n="Vultr-cli" \
+			-p="Password123" --api-enabled="true" --acl="manage_users,billing"
 	`
 
 	getLong    = `Get a sub user from your Vultr account based on it's ID.`
@@ -49,10 +45,12 @@ var (
 	updateLong    = `Update a sub user from your Vultr account based on it's ID.`
 	updateExample = `
 		# Full Example
-		vultr-cli users update --email="vultrcli@vultr.com" --name="Vultr-cli" --password="Password123" --api-enabled="yes" --acl="manage_users,billing"
+		vultr-cli users update --email="vultrcli@vultr.com" --name="Vultr-cli" --password="Password123" \
+			--api-enabled="false" --acl="manage_users,billing"
 
 		# Shortened with alias commands
-		vultr-cli u u -e="vultrcli@vultr.com" -n="Vultr-cli" -p="Password123" -a-enabled="yes" -l="manage_users,billing"
+		vultr-cli u u -e="vultrcli@vultr.com" -n="Vultr-cli" -p="Password123" \
+			--api-enabled="false" --acl="manage_users,billing"
 	`
 
 	deleteLong    = `Delete a sub user from your vultr account based on it's ID.'`
@@ -65,214 +63,313 @@ var (
 	`
 )
 
-// UserOptionsInterface ...
-type UserOptionsInterface interface {
-	validate(cmd *cobra.Command, args []string)
-	Create() *govultr.User
-	Get() *govultr.User
-}
-
-// UserOptions ...
-type UserOptions struct {
-	Base *cli.Base
-	User *govultr.UserReq
-}
-
-// NewUserOptions ...
-func NewUserOptions(base *cli.Base) *UserOptions {
-	return &UserOptions{Base: base}
-}
-
 // NewCmdUser ...
 func NewCmdUser(base *cli.Base) *cobra.Command {
-	u := NewUserOptions(base)
+	o := &options{Base: base}
 
 	cmd := &cobra.Command{
 		Use:     "user",
 		Aliases: []string{"users", "u"},
-		Short:   "user commands",
+		Short:   "User commands",
 		Long:    userLong,
 		Example: userExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			utils.SetOptions(o.Base, cmd, args)
+			if !o.Base.HasAuth {
+				return errors.New(utils.APIKeyError)
+			}
+			return nil
+		},
 	}
 
+	// List
+	list := &cobra.Command{
+		Use:     "list",
+		Short:   "List all users",
+		Aliases: []string{"l"},
+		Long:    listLong,
+		Example: listExample,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			o.Base.Options = utils.GetPaging(cmd)
+
+			user, meta, err := o.list()
+			if err != nil {
+				return fmt.Errorf("error retrieving user list : %v", err)
+			}
+
+			data := &UsersPrinter{Users: user, Meta: meta}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+	list.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
+	list.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+	)
+
+	// Get
+	get := &cobra.Command{
+		Use:     "get <User ID>",
+		Short:   "Get a user",
+		Aliases: []string{"g"},
+		Long:    getLong,
+		Example: getExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a user ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			user, err := o.get()
+			if err != nil {
+				return fmt.Errorf("error retrieving user : %v", err)
+			}
+
+			data := &UserPrinter{User: *user}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Create
 	create := &cobra.Command{
 		Use:     "create",
 		Short:   "Create a user",
 		Aliases: []string{"c"},
 		Long:    createLong,
 		Example: createExample,
-		Run: func(cmd *cobra.Command, args []string) {
-			u.validate(cmd, args)
-			user, err := u.Create()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			email, errEm := cmd.Flags().GetString("email")
+			if errEm != nil {
+				return fmt.Errorf("error parsing flag 'email' for user create : %v", errEm)
+			}
+
+			name, errNa := cmd.Flags().GetString("name")
+			if errNa != nil {
+				return fmt.Errorf("error parsing flag 'name' for user create : %v", errNa)
+			}
+
+			pass, errPa := cmd.Flags().GetString("password")
+			if errPa != nil {
+				return fmt.Errorf("error parsing flag 'password' for user create : %v", errPa)
+			}
+
+			api, errAp := cmd.Flags().GetBool("api-enabled")
+			if errAp != nil {
+				return fmt.Errorf("error parsing flag 'api-enabled' for user create : %v", errAp)
+			}
+
+			acl, errAc := cmd.Flags().GetStringSlice("acl")
+			if errAc != nil {
+				return fmt.Errorf("error parsing flag 'acl' for user create : %v", errAc)
+			}
+
+			o.CreateReq = &govultr.UserReq{
+				Email:    email,
+				Name:     name,
+				Password: pass,
+				ACL:      acl,
+			}
+
+			if cmd.Flags().Changed("api-enabled") {
+				o.CreateReq.APIEnabled = &api
+			}
+
+			user, err := o.create()
 			if err != nil {
-				printer.Error(err)
+				return fmt.Errorf("error creating user : %v", err)
 			}
-			printer.User(user)
-		},
-	}
-	create.Flags().StringP("email", "e", "", "(required) User email")
-	_ = create.MarkFlagRequired("email")
 
-	create.Flags().StringP("name", "n", "", "(required) User name")
-	_ = create.MarkFlagRequired("name")
+			data := &UserPrinter{User: *user}
+			o.Base.Printer.Display(data, nil)
 
-	create.Flags().StringP("password", "p", "", "(required) User password")
-	_ = create.MarkFlagRequired("password")
-
-	create.Flags().StringP("api-enabled", "a", "yes", "Toggle User API Access")
-	create.Flags().StringSliceP("acl", "l", []string{}, "User access control list in a comma separated list. Possible values manage_users subscriptions_view subscriptions billing support provisioning dns abuse upgrade firewall alerts objstore loadbalancer")
-
-	// Get Command
-	get := &cobra.Command{
-		Use:     "get {userID}",
-		Short:   "get a user",
-		Aliases: []string{"g"},
-		Long:    getLong,
-		Example: getExample,
-		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("please provide a userID")
-			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			u.validate(cmd, args)
-			user, err := u.Create()
-			if err != nil {
-				printer.Error(err)
-			}
-			printer.User(user)
-		},
 	}
 
-	//list
-	list := &cobra.Command{
-		Use:     "list",
-		Short:   "list users",
-		Aliases: []string{"l"},
-		Long:    listLong,
-		Example: listExample,
-		Run: func(cmd *cobra.Command, args []string) {
-			u.validate(cmd, args)
-			u.Base.Options = utils.GetPaging(cmd)
-			user, meta, err := u.List()
-			if err != nil {
-				printer.Error(err)
-			}
-			printer.Users(user, meta)
-		},
+	create.Flags().StringP("email", "e", "", "(required) User email")
+	if err := create.MarkFlagRequired("email"); err != nil {
+		fmt.Printf("error marking user create 'email' flag required: %v", err)
+		os.Exit(1)
 	}
-	list.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	list.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
-	//update
+	create.Flags().StringP("name", "n", "", "(required) User name")
+	if err := create.MarkFlagRequired("name"); err != nil {
+		fmt.Printf("error marking user create 'name' flag required: %v", err)
+		os.Exit(1)
+	}
+
+	create.Flags().StringP("password", "p", "", "(required) User password")
+	if err := create.MarkFlagRequired("password"); err != nil {
+		fmt.Printf("error marking user create 'password' flag required: %v", err)
+		os.Exit(1)
+	}
+
+	create.Flags().Bool("api-enabled", false, "User API access enabled")
+	create.Flags().StringSliceP(
+		"acl",
+		"l",
+		nil,
+		`User access control list in a comma separated list. Possible values:
+manage_users subscriptions_view subscriptions billing support provisioning dns abuse upgrade firewall alerts objstore loadbalancer`,
+	)
+
+	// Update
 	update := &cobra.Command{
-		Use:     "update {userID}",
-		Short:   "update a user",
+		Use:     "update <User ID>",
+		Short:   "Update a user",
 		Aliases: []string{"u"},
 		Long:    updateLong,
 		Example: updateExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("please provide a userID")
+				return errors.New("please provide a user ID")
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			u.validate(cmd, args)
-			if err := u.Update(); err != nil {
-				printer.Error(err)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			email, errEm := cmd.Flags().GetString("email")
+			if errEm != nil {
+				return fmt.Errorf("error parsing flag 'email' for user create : %v", errEm)
 			}
-			fmt.Println("updated user")
+
+			name, errNa := cmd.Flags().GetString("name")
+			if errNa != nil {
+				return fmt.Errorf("error parsing flag 'name' for user create : %v", errNa)
+			}
+
+			pass, errPa := cmd.Flags().GetString("password")
+			if errPa != nil {
+				return fmt.Errorf("error parsing flag 'password' for user create : %v", errPa)
+			}
+
+			api, errAp := cmd.Flags().GetBool("api-enabled")
+			if errAp != nil {
+				return fmt.Errorf("error parsing flag 'api-enabled' for user create : %v", errAp)
+			}
+
+			acl, errAc := cmd.Flags().GetStringSlice("acl")
+			if errAc != nil {
+				return fmt.Errorf("error parsing flag 'acl' for user create : %v", errAc)
+			}
+
+			o.UpdateReq = &govultr.UserReq{}
+
+			if cmd.Flags().Changed("email") {
+				o.UpdateReq.Email = email
+			}
+
+			if cmd.Flags().Changed("name") {
+				o.UpdateReq.Name = name
+			}
+
+			if cmd.Flags().Changed("api-enabled") {
+				o.UpdateReq.APIEnabled = &api
+			}
+
+			if cmd.Flags().Changed("acl") {
+				o.UpdateReq.ACL = acl
+			}
+
+			if cmd.Flags().Changed("password") {
+				o.UpdateReq.Password = pass
+			}
+
+			if err := o.update(); err != nil {
+				return fmt.Errorf("error updating user : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("User updated"), nil)
+
+			return nil
 		},
 	}
 	update.Flags().StringP("email", "e", "", "User email")
 	update.Flags().StringP("name", "n", "", "User name")
 	update.Flags().StringP("password", "p", "", "User password")
-	update.Flags().StringP("api-enabled", "a", "yes", "Toggle User API Access")
-	update.Flags().StringSliceP("acl", "l", []string{}, "User access control list in a comma separated list. Possible values manage_users subscriptions_view subscriptions billing support provisioning dns abuse upgrade firewall alerts objstore loadbalancer")
+	update.Flags().Bool("api-enabled", false, "API access enabled")
+	update.Flags().StringSliceP(
+		"acl",
+		"l",
+		nil,
+		`User access control list in a comma separated list. Possible values:
+manage_users subscriptions_view subscriptions billing support provisioning dns abuse upgrade firewall alerts objstore loadbalancer`,
+	)
 
-	// Delete Command
+	update.MarkFlagsOneRequired(
+		"email",
+		"name",
+		"password",
+		"api-enabled",
+		"acl",
+	)
+
+	// Delete
 	del := &cobra.Command{
-		Use:     "delete {userID}",
-		Short:   "delete a user",
+		Use:     "delete <user ID>",
+		Short:   "Delete a user",
 		Aliases: []string{"d"},
 		Long:    deleteLong,
 		Example: deleteExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("please provide a userID")
+				return errors.New("please provide a user ID")
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			u.validate(cmd, args)
-			if err := u.Delete(); err != nil {
-				printer.Error(err)
-				os.Exit(1)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.del(); err != nil {
+				return fmt.Errorf("error deleting user : %v", err)
 			}
-			fmt.Println("User has been deleted")
+
+			o.Base.Printer.Display(printer.Info("User deleted"), nil)
+
+			return nil
 		},
 	}
 
-	cmd.AddCommand(create, get, list, update, del)
+	cmd.AddCommand(
+		create,
+		get,
+		list,
+		update,
+		del,
+	)
+
 	return cmd
 }
 
-func (u *UserOptions) validate(cmd *cobra.Command, args []string) {
-	u.User.Name, _ = cmd.Flags().GetString("name")
-	u.User.Email, _ = cmd.Flags().GetString("email")
-	u.User.Password, _ = cmd.Flags().GetString("password")
-	u.User.ACL, _ = cmd.Flags().GetStringSlice("acl")
-
-	api, _ := cmd.Flags().GetString("api-enabled")
-	if api == "yes" {
-		u.User.APIEnabled = govultr.BoolToBoolPtr(true)
-	} else {
-		u.User.APIEnabled = govultr.BoolToBoolPtr(false)
-	}
-
-	u.Base.Args = args
+type options struct {
+	Base      *cli.Base
+	CreateReq *govultr.UserReq
+	UpdateReq *govultr.UserReq
 }
 
-// Create ...
-func (u *UserOptions) Create() (*govultr.User, error) {
-	user, _, err := u.Base.Client.User.Create(context.Background(), u.User)
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
+func (o *options) list() ([]govultr.User, *govultr.Meta, error) {
+	users, meta, _, err := o.Base.Client.User.List(context.Background(), o.Base.Options)
+	return users, meta, err
 }
 
-// Get a single user based on ID
-func (u *UserOptions) Get() (*govultr.User, error) {
-	user, _, err := u.Base.Client.User.Get(context.Background(), u.Base.Args[0])
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
+func (o *options) get() (*govultr.User, error) {
+	user, _, err := o.Base.Client.User.Get(context.Background(), o.Base.Args[0])
+	return user, err
 }
 
-func (u *UserOptions) List() ([]govultr.User, *govultr.Meta, error) {
-	user, meta, _, err := u.Base.Client.User.List(context.Background(), u.Base.Options)
-	if err != nil {
-		return nil, nil, err
-	}
-	return user, meta, nil
+func (o *options) create() (*govultr.User, error) {
+	user, _, err := o.Base.Client.User.Create(o.Base.Context, o.CreateReq)
+	return user, err
 }
 
-// Update ...
-func (u *UserOptions) Update() error {
-	if err := u.Base.Client.User.Update(context.Background(), u.Base.Args[0], u.User); err != nil {
-		return err
-	}
-	return nil
+func (o *options) update() error {
+	return o.Base.Client.User.Update(o.Base.Context, o.Base.Args[0], o.UpdateReq)
 }
 
-// Delete ...
-func (u *UserOptions) Delete() error {
-	if err := u.Base.Client.User.Delete(context.Background(), u.Base.Args[0]); err != nil {
-		return err
-	}
-	return nil
+func (o *options) del() error {
+	return o.Base.Client.User.Delete(o.Base.Context, o.Base.Args[0])
 }
