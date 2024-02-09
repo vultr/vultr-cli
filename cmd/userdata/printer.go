@@ -38,6 +38,10 @@ func (u *UserDataPrinter) Data() [][]string {
 		printer.Error(fmt.Errorf("error decoding base64 user data : %v", err))
 	}
 
+	if len(ud) == 0 {
+		return [][]string{0: {"None"}}
+	}
+
 	return [][]string{0: {
 		string(ud),
 	}}
