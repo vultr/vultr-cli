@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/applications"
+	"github.com/vultr/vultr-cli/v3/cmd/ip"
 	"github.com/vultr/vultr-cli/v3/cmd/operatingsystems"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
 	"github.com/vultr/vultr-cli/v3/cmd/userdata"
@@ -816,7 +817,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command {
 				printer.Error(fmt.Errorf("error retrieving bare metal IPv4 information : %v", err))
 				os.Exit(1)
 			}
-			data := &BareMetalIPv4Printer{IPv4: ipv4, Meta: meta}
+			data := &ip.IPv4sPrinter{IPv4s: ipv4, Meta: meta}
 			o.Base.Printer.Display(data, nil)
 		},
 	}
@@ -840,7 +841,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command {
 				printer.Error(fmt.Errorf("error retrieving bare metal IPv6 information : %v", err))
 				os.Exit(1)
 			}
-			data := &BareMetalIPv6Printer{IPv6: ipv6, Meta: meta}
+			data := &ip.IPv6sPrinter{IPv6s: ipv6, Meta: meta}
 			o.Base.Printer.Display(data, nil)
 		},
 	}
