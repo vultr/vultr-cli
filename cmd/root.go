@@ -32,6 +32,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/containerregistry"
 	"github.com/vultr/vultr-cli/v3/cmd/dns"
 	"github.com/vultr/vultr-cli/v3/cmd/firewall"
+	"github.com/vultr/vultr-cli/v3/cmd/instance"
 	"github.com/vultr/vultr-cli/v3/cmd/iso"
 	"github.com/vultr/vultr-cli/v3/cmd/kubernetes"
 	"github.com/vultr/vultr-cli/v3/cmd/objectstorage"
@@ -116,7 +117,7 @@ func init() {
 		regions.NewCmdRegion(base),
 		reservedip.NewCmdReservedIP(base),
 		script.NewCmdScript(base),
-		Instance(), // TODO
+		instance.NewCmdInstance(base),
 		snapshot.NewCmdSnapshot(base),
 		sshkeys.NewCmdSSHKey(base),
 		users.NewCmdUser(base),
