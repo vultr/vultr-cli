@@ -85,12 +85,12 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command {
 		},
 	}
 
-	list.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	list.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
 	list.Flags().IntP(
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
 	)
 
 	// Get
