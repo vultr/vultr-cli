@@ -1,13 +1,11 @@
 package account
 
 import (
-	"encoding/json"
 	"strconv"
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
 	"github.com/vultr/vultr-cli/v3/cmd/utils"
-	"gopkg.in/yaml.v3"
 )
 
 // AccountPrinter ...
@@ -17,21 +15,12 @@ type AccountPrinter struct {
 
 // JSON ...
 func (s *AccountPrinter) JSON() []byte {
-	js, err := json.MarshalIndent(s, "", "    ")
-	if err != nil {
-		panic("move this into byte")
-	}
-
-	return js
+	return printer.MarshalObject(s, "json")
 }
 
 // YAML ...
 func (s *AccountPrinter) YAML() []byte {
-	yml, err := yaml.Marshal(s)
-	if err != nil {
-		panic("move this into byte")
-	}
-	return yml
+	return printer.MarshalObject(s, "yaml")
 }
 
 // Columns ...
