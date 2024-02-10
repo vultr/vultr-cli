@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	version string = "v2.21.0"
+	Version string = "v2.21.0"
 )
 
 var (
@@ -48,5 +48,5 @@ type options struct {
 }
 
 func (o *options) get() string {
-	return fmt.Sprintf("Vultr-CLI %s", version)
+	return fmt.Sprintf("Vultr-CLI %s", Version)
 }

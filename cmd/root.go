@@ -107,7 +107,7 @@ func init() {
 		snapshot.NewCmdSnapshot(base),
 		sshkeys.NewCmdSSHKey(base),
 		users.NewCmdUser(base),
-		version.NewCmdVersion(),
+		version.NewCmdVersion(base),
 		vpc.NewCmdVPC(base),
 		vpc2.NewCmdVPC2(base),
 	)
