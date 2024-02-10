@@ -1,10 +1,7 @@
 package version
 
 import (
-	"encoding/json"
-
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
-	"gopkg.in/yaml.v3"
 )
 
 // VersionPrinter represents the version data
@@ -14,21 +11,12 @@ type VersionPrinter struct {
 
 // JSON ...
 func (v *VersionPrinter) JSON() []byte {
-	js, err := json.MarshalIndent(v, "", printer.JSONIndent)
-	if err != nil {
-		panic("move this into byte")
-	}
-
-	return js
+	return printer.MarshalObject(v, "json")
 }
 
 // YAML ...
 func (v *VersionPrinter) YAML() []byte {
-	yam, err := yaml.Marshal(v)
-	if err != nil {
-		panic("move this into byte")
-	}
-	return yam
+	return printer.MarshalObject(v, "yaml")
 }
 
 // Columns ...

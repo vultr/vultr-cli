@@ -69,8 +69,8 @@ func NewCmdUser(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "user",
-		Aliases: []string{"users", "u"},
 		Short:   "User commands",
+		Aliases: []string{"users", "u"},
 		Long:    userLong,
 		Example: userExample,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {

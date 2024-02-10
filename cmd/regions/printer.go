@@ -1,11 +1,8 @@
 package regions
 
 import (
-	"encoding/json"
-
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
-	"gopkg.in/yaml.v3"
 )
 
 // RegionsPrinter represents the regions data from the API and contains the
@@ -17,21 +14,12 @@ type RegionsPrinter struct {
 
 // JSON provides the JSON formatted byte data
 func (r *RegionsPrinter) JSON() []byte {
-	json, err := json.MarshalIndent(r, "", "    ")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return json
+	return printer.MarshalObject(r, "json")
 }
 
 // YAML provides the YAML formatted byte data
 func (r *RegionsPrinter) YAML() []byte {
-	yml, err := yaml.Marshal(r)
-	if err != nil {
-		panic(err.Error())
-	}
-	return yml
+	return printer.MarshalObject(r, "yaml")
 }
 
 // Columns provides the columns for the printer
@@ -72,32 +60,24 @@ func (r *RegionsPrinter) Paging() [][]string {
 	return printer.NewPaging(r.Meta.Total, &r.Meta.Links.Next, &r.Meta.Links.Prev).Compose()
 }
 
+// ======================================
+
 // RegionsAvailabilityPrinter represents the plan availability data for a
 // region from the API and contains the methods to format and print the data
 // via the ResourceOutput interface
 type RegionsAvailabilityPrinter struct {
-	// TODO: test json marshalling on this
 	Plans *govultr.PlanAvailability `json:"available_plans"`
 	Meta  *govultr.Meta             `json:"meta"`
 }
 
 // JSON provides the JSON formatted byte data
 func (r *RegionsAvailabilityPrinter) JSON() []byte {
-	js, err := json.MarshalIndent(r, "", "    ")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return js
+	return printer.MarshalObject(r, "json")
 }
 
 // YAML provides the YAML formatted byte data
 func (r *RegionsAvailabilityPrinter) YAML() []byte {
-	yml, err := yaml.Marshal(r)
-	if err != nil {
-		panic(err.Error())
-	}
-	return yml
+	return printer.MarshalObject(r, "yaml")
 }
 
 // Columns provides the available plans columns for the printer

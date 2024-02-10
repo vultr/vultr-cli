@@ -122,7 +122,7 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 	// List
 	list := &cobra.Command{
 		Use:     "list",
-		Short:   "retrieves a list of active block storage",
+		Short:   "List block storage",
 		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,
@@ -139,13 +139,18 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 		},
 	}
 
-	list.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	list.Flags().IntP("per-page", "p", utils.PerPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	list.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
+	list.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+	)
 
 	// Get
 	get := &cobra.Command{
-		Use:     "get <BLOCK_STORAGE_ID>",
-		Short:   "retrieves a block storage",
+		Use:     "get <Block Storage ID>",
+		Short:   "Retrieve a block storage",
 		Aliases: []string{"g"},
 		Long:    getLong,
 		Example: getExample,
@@ -170,7 +175,7 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 	// Create
 	create := &cobra.Command{
 		Use:     "create",
-		Short:   "create a new block storage",
+		Short:   "Create a new block storage",
 		Aliases: []string{"c"},
 		Long:    createLong,
 		Example: createExample,
@@ -241,8 +246,8 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 
 	// Delete
 	del := &cobra.Command{
-		Use:     "delete <BLOCK_STORAGE_ID>",
-		Short:   "delete a block storage",
+		Use:     "delete <Block Storage ID>",
+		Short:   "Delete a block storage",
 		Aliases: []string{"d", "destroy"},
 		Long:    deleteLong,
 		Example: deleteExample,
@@ -264,8 +269,8 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 
 	// Attach
 	attach := &cobra.Command{
-		Use:     "attach <BLOCK_STORAGE_ID>",
-		Short:   "attaches a block storage to an instance",
+		Use:     "attach <Block Storage ID>",
+		Short:   "Attach a block storage to an instance",
 		Aliases: []string{"a"},
 		Long:    attachLong,
 		Example: attachExample,
@@ -312,8 +317,8 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 
 	// Detach
 	detach := &cobra.Command{
-		Use:     "detach <BLOCK_STORAGE_ID>",
-		Short:   "detaches a block storage from an instance",
+		Use:     "detach <Block Storage ID>",
+		Short:   "Detach a block storage from an instance",
 		Long:    detachLong,
 		Example: detachExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -346,8 +351,8 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 
 	// Label
 	label := &cobra.Command{
-		Use:     "label <BLOCK_STORAGE_ID>",
-		Short:   "sets a label for a block storage",
+		Use:     "label <Block Storage ID>",
+		Short:   "Label a block storage",
 		Long:    labelLong,
 		Example: labelExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -384,8 +389,8 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 
 	// Resize
 	resize := &cobra.Command{
-		Use:     "resize <BLOCK_STORAGE_ID>",
-		Short:   "resize a block storage",
+		Use:     "resize <Block Storage ID>",
+		Short:   "Resize a block storage",
 		Aliases: []string{"r"},
 		Long:    resizeLong,
 		Example: resizeExample,

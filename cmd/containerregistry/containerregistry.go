@@ -130,8 +130,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "container-registry",
+		Short:   "Commands to interact with container registries",
 		Aliases: []string{"cr"},
-		Short:   "commands to interact with container registries",
 		Long:    long,
 		Example: example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -146,8 +146,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	// List
 	list := &cobra.Command{
 		Use:     "list",
+		Short:   "List all container registries",
 		Aliases: []string{"l"},
-		Short:   "list all container registries",
 		Long:    listLong,
 		Example: listExample,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -163,14 +163,19 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 		},
 	}
 
-	list.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	list.Flags().IntP("per-page", "p", utils.PerPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	list.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
+	list.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+	)
 
 	// Get
 	get := &cobra.Command{
 		Use:     "get <Registry ID>",
 		Aliases: []string{"g"},
-		Short:   "get a container registry",
+		Short:   "Get a container registry",
 		Long:    getLong,
 		Example: getExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -194,8 +199,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	// Create
 	create := &cobra.Command{
 		Use:     "create",
+		Short:   "Create a container registry",
 		Aliases: []string{"c"},
-		Short:   "create a container registry",
 		Long:    createLong,
 		Example: createExample,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -268,8 +273,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	// Update
 	update := &cobra.Command{
 		Use:     "update <Registry ID>",
+		Short:   "Update a container registry",
 		Aliases: []string{"u"},
-		Short:   "update a container registry",
 		Long:    updateLong,
 		Example: updateExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -314,8 +319,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	// Delete
 	del := &cobra.Command{
 		Use:     "delete <Registry ID>",
+		Short:   "Delete a container registry",
 		Aliases: []string{"destroy", "d"},
-		Short:   "delete a container registry",
 		Long:    deleteLong,
 		Example: deleteExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -337,8 +342,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	// Plans
 	plans := &cobra.Command{
 		Use:     "plans",
+		Short:   "List the plan names for container registry",
 		Aliases: []string{"p"},
-		Short:   "list the plan names for container registry",
 		Long:    plansLong,
 		Example: plansExample,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -356,8 +361,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	// Regions
 	regions := &cobra.Command{
 		Use:     "regions",
+		Short:   "List the available regions for container registry",
 		Aliases: []string{"i"},
-		Short:   "list the available regions for container registry",
 		Long:    regionsLong,
 		Example: regionsExample,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -375,8 +380,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	// Repository
 	repository := &cobra.Command{
 		Use:     "repository",
+		Short:   "Interact with container registry repositories",
 		Aliases: []string{"r", "repo"},
-		Short:   "interact with container registry repositories",
 		Long:    repoLong,
 		Example: repoExample,
 	}
@@ -384,8 +389,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	// Repository List
 	repoList := &cobra.Command{
 		Use:     "list <Registry ID>",
+		Short:   "List all container registries",
 		Aliases: []string{"l"},
-		Short:   "list all container registries",
 		Long:    listLong,
 		Example: listExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -410,8 +415,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	// Repository Get
 	repoGet := &cobra.Command{
 		Use:     "get <Registry ID>",
+		Short:   "Get a container registry repository",
 		Aliases: []string{"g"},
-		Short:   "get a container registry repository",
 		Long:    getLong,
 		Example: getExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -449,8 +454,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	// Repository Update
 	repoUpdate := &cobra.Command{
 		Use:     "update <registry ID>",
+		Short:   "Update a container registry repository",
 		Aliases: []string{"u"},
-		Short:   "update a container registry repository",
 		Long:    repoUpdateLong,
 		Example: repoUpdateExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -501,8 +506,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	// Repository Delete
 	repoDelete := &cobra.Command{
 		Use:     "delete <registry ID>",
+		Short:   "Delete a container registry repository",
 		Aliases: []string{"destroy", "d"},
-		Short:   "delete a container registry repository",
 		Long:    repoDeleteLong,
 		Example: repoDeleteExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -540,8 +545,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	// Credentials
 	credentials := &cobra.Command{
 		Use:     "credentials",
-		Aliases: []string{""},
 		Short:   "Commands for container registry credentials",
+		Aliases: []string{""},
 		Long:    credentialsLong,
 		Example: credentialsExample,
 	}
@@ -549,8 +554,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 	// Credentials Docker
 	credentialsDocker := &cobra.Command{
 		Use:     "docker <Registry ID>",
+		Short:   "Create Docker credentials for a container registry",
 		Aliases: []string{"d"},
-		Short:   "create Docker credentials for a container registry",
 		Long:    credentialsDockerLong,
 		Example: credentialsDockerExample,
 		Run: func(cmd *cobra.Command, args []string) {

@@ -19,9 +19,8 @@ func NewCmdSnapshot(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "snapshot",
+		Short:   "Commands to interact with snapshots",
 		Aliases: []string{"sn"},
-		Short:   "snapshot commands",
-		Long:    `snapshot is used to access snapshot commands`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			utils.SetOptions(o.Base, cmd, args)
 			if !o.Base.HasAuth {
@@ -35,7 +34,6 @@ func NewCmdSnapshot(base *cli.Base) *cobra.Command {
 	list := &cobra.Command{
 		Use:   "list",
 		Short: "List all snapshots",
-		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 
@@ -55,7 +53,6 @@ func NewCmdSnapshot(base *cli.Base) *cobra.Command {
 	get := &cobra.Command{
 		Use:   "get <Snapshot ID>",
 		Short: "Get a snapshot",
-		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a snapshot ID")
@@ -79,7 +76,6 @@ func NewCmdSnapshot(base *cli.Base) *cobra.Command {
 	create := &cobra.Command{
 		Use:   "create",
 		Short: "Create a snapshot",
-		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			id, errID := cmd.Flags().GetString("id")
 			if errID != nil {
@@ -120,7 +116,6 @@ func NewCmdSnapshot(base *cli.Base) *cobra.Command {
 	createURL := &cobra.Command{
 		Use:   "create-url",
 		Short: "Create a snapshot from a URL",
-		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			url, errUR := cmd.Flags().GetString("url")
 			if errUR != nil {
@@ -155,7 +150,6 @@ func NewCmdSnapshot(base *cli.Base) *cobra.Command {
 		Use:     "delete <Snapshot ID>",
 		Short:   "Delete a snapshot",
 		Aliases: []string{"destroy"},
-		Long:    ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a snapshot ID")

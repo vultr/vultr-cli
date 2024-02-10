@@ -99,8 +99,8 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "reserved-ip",
+		Short:   "Commands to interact with reserved IPs",
 		Aliases: []string{"rip"},
-		Short:   "reserved-ip lets you interact with reserved-ip ",
 		Long:    long,
 		Example: example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -115,10 +115,10 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command {
 	// List
 	list := &cobra.Command{
 		Use:     "list",
-		Short:   "list all reserved IPs",
+		Short:   "List all reserved IPs",
+		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,
-		Aliases: []string{"l"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 
@@ -139,13 +139,13 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command {
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
 	)
 
 	// Get
 	get := &cobra.Command{
 		Use:     "get <Reserved IP ID>",
-		Short:   "get a reserved IP",
+		Short:   "Get a reserved IP",
 		Long:    getLong,
 		Example: getExample,
 		Aliases: []string{"g"},
@@ -171,10 +171,10 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command {
 	// Create
 	create := &cobra.Command{
 		Use:     "create ",
-		Short:   "create reserved IP",
+		Short:   "Create reserved IP",
+		Aliases: []string{"c"},
 		Long:    createLong,
 		Example: createExample,
-		Aliases: []string{"c"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			region, errRe := cmd.Flags().GetString("region")
 			if errRe != nil {
@@ -224,10 +224,10 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command {
 	// Update
 	update := &cobra.Command{
 		Use:     "update <Reserved IP ID>",
-		Short:   "update reserved IP",
+		Short:   "Update reserved IP",
+		Aliases: []string{"u"},
 		Long:    updateLong,
 		Example: updateExample,
-		Aliases: []string{"u"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a reserved IP ID")
@@ -265,10 +265,10 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command {
 	// Attach
 	attach := &cobra.Command{
 		Use:     "attach <Reserved IP ID>",
-		Short:   "attach a reserved IP to an instance",
+		Short:   "Attach a reserved IP to an instance",
+		Aliases: []string{"a"},
 		Long:    attachLong,
 		Example: attachExample,
-		Aliases: []string{"a"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a reserved IP ID")
@@ -302,10 +302,10 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command {
 	// Detach
 	detach := &cobra.Command{
 		Use:     "detach <Reserved IP ID>",
-		Short:   "detach a reserved IP from an instance",
+		Short:   "Detach a reserved IP from an instance",
+		Aliases: []string{"d"},
 		Long:    detachLong,
 		Example: detachExample,
-		Aliases: []string{"d"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a reserved IP ID")
@@ -326,10 +326,10 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command {
 	// Convert
 	convert := &cobra.Command{
 		Use:     "convert ",
-		Short:   "convert IP address to reserved IP",
+		Short:   "Convert IP address to reserved IP",
+		Aliases: []string{"v"},
 		Long:    convertLong,
 		Example: convertExample,
-		Aliases: []string{"v"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ip, errIp := cmd.Flags().GetString("ip")
 			if errIp != nil {

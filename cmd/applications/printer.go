@@ -1,12 +1,10 @@
 package applications
 
 import (
-	"encoding/json"
 	"strconv"
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
-	"gopkg.in/yaml.v3"
 )
 
 // ApplicationsPrinter represents the plans data from the API
@@ -17,21 +15,12 @@ type ApplicationsPrinter struct {
 
 // JSON provides the JSON formatted byte data
 func (a *ApplicationsPrinter) JSON() []byte {
-	js, err := json.MarshalIndent(a, "", "    ")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return js
+	return printer.MarshalObject(a, "json")
 }
 
 // YAML provides the YAML formatted byte data
 func (a *ApplicationsPrinter) YAML() []byte {
-	yml, err := yaml.Marshal(a)
-	if err != nil {
-		panic(err.Error())
-	}
-	return yml
+	return printer.MarshalObject(a, "yaml")
 }
 
 // Columns provides the plan columns for the printer

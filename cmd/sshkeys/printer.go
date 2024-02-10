@@ -1,11 +1,8 @@
 package sshkeys
 
 import (
-	"encoding/json"
-	"strconv"
-
 	"github.com/vultr/govultr/v3"
-	"gopkg.in/yaml.v3"
+	"github.com/vultr/vultr-cli/v3/cmd/printer"
 )
 
 // SSHKeysPrinter ...
@@ -16,21 +13,12 @@ type SSHKeysPrinter struct {
 
 // JSON ...
 func (s *SSHKeysPrinter) JSON() []byte {
-	prettyJSON, err := json.MarshalIndent(s, "", "    ")
-	if err != nil {
-		panic("move this into byte")
-	}
-
-	return prettyJSON
+	return printer.MarshalObject(s, "json")
 }
 
 // YAML ...
 func (s *SSHKeysPrinter) YAML() []byte {
-	yam, err := yaml.Marshal(s)
-	if err != nil {
-		panic("move this into byte")
-	}
-	return yam
+	return printer.MarshalObject(s, "yaml")
 }
 
 // Columns ...
@@ -59,11 +47,7 @@ func (s *SSHKeysPrinter) Data() [][]string {
 
 // Paging ...
 func (s *SSHKeysPrinter) Paging() [][]string {
-	return [][]string{
-		0: {"======================================"},
-		1: {"TOTAL", "NEXT PAGE", "PREV PAGE"},
-		2: {strconv.Itoa(s.Meta.Total), s.Meta.Links.Next, s.Meta.Links.Prev},
-	}
+	return printer.NewPaging(s.Meta.Total, &s.Meta.Links.Next, &s.Meta.Links.Prev).Compose()
 }
 
 // SSHKeyPrinter ...
@@ -73,21 +57,12 @@ type SSHKeyPrinter struct {
 
 // JSON ...
 func (s SSHKeyPrinter) JSON() []byte {
-	js, err := json.MarshalIndent(s, "", "    ")
-	if err != nil {
-		panic("move this into byte")
-	}
-
-	return js
+	return printer.MarshalObject(s, "json")
 }
 
 // YAML ...
 func (s SSHKeyPrinter) YAML() []byte {
-	yam, err := yaml.Marshal(s)
-	if err != nil {
-		panic("move this into byte")
-	}
-	return yam
+	return printer.MarshalObject(s, "yaml")
 }
 
 // Columns ...

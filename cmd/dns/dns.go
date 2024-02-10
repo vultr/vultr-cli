@@ -38,7 +38,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "dns",
-		Short:   "dns is used to access dns commands",
+		Short:   "Commands to control DNS records",
 		Long:    dnsLong,
 		Example: dnsExample,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -52,7 +52,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 
 	domain := &cobra.Command{
 		Use:     "domain",
-		Short:   "dns domain",
+		Short:   "DNS domain commands",
 		Long:    domainLong,
 		Example: domainExample,
 	}
@@ -60,8 +60,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	// Domain List
 	domainList := &cobra.Command{
 		Use:   "list",
-		Short: "get list of domains",
-		Long:  ``,
+		Short: "Get list of domains",
 		Run: func(cmd *cobra.Command, args []string) {
 			o.Base.Options = utils.GetPaging(cmd)
 
@@ -82,7 +81,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	// Domain Get
 	domainGet := &cobra.Command{
 		Use:   "get <Domain Name>",
-		Short: "get a domain",
+		Short: "Get a domain",
 		Long:  ``,
 		Run: func(cmd *cobra.Command, args []string) {
 			dm, err := o.DomainGet()
@@ -99,7 +98,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	// Domain Create
 	domainCreate := &cobra.Command{
 		Use:     "create",
-		Short:   "create a domain",
+		Short:   "Create a domain",
 		Long:    createLong,
 		Example: createExample,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -141,9 +140,8 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	// Domain Delete
 	domainDelete := &cobra.Command{
 		Use:     "delete <Domain Name>",
-		Short:   "delete a domain",
+		Short:   "Delete a domain",
 		Aliases: []string{"destroy"},
-		Long:    ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a domain name")
@@ -217,7 +215,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	// Domain DNSSEC Info
 	domainDNSSECInfo := &cobra.Command{
 		Use:   "dnssec-info <Domain Name>",
-		Short: "get dns sec info",
+		Short: "Get DNS SEC info",
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -240,7 +238,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	// Domain SOA Info
 	domainSOAInfo := &cobra.Command{
 		Use:   "soa-info <Domain Name>",
-		Short: "get dns soa info",
+		Short: "Get DNS SOA info",
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -263,7 +261,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	// Domain SOA Update
 	domainSOAUpdate := &cobra.Command{
 		Use:   "soa-update <Domain Name>",
-		Short: "update soa for a domain",
+		Short: "Update SOA for a domain",
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -321,7 +319,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	// Record List
 	recordList := &cobra.Command{
 		Use:   "list <Domain Name>",
-		Short: "list all dns records",
+		Short: "List all DNS records",
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -349,7 +347,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	// Record Get
 	recordGet := &cobra.Command{
 		Use:   "get <Domain Name> <Record ID>",
-		Short: "get dns record",
+		Short: "Get a DNS record",
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 2 {
@@ -372,8 +370,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	// Record Create
 	recordCreate := &cobra.Command{
 		Use:   "create <Domain Name>",
-		Short: "create a dns record",
-		Long:  ``,
+		Short: "Create a dns record",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a domain name")
@@ -462,10 +459,9 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 
 	// Record Delete
 	recordDelete := &cobra.Command{
-		Use:     "delete <domainName> <recordID>",
-		Short:   "delete dns record",
+		Use:     "delete <Domain Name> <Record ID>",
+		Short:   "Delete DNS record",
 		Aliases: []string{"destroy"},
-		Long:    ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 2 {
 				return errors.New("please provide a domain name & record ID")
@@ -484,12 +480,11 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 
 	// Record Update
 	recordUpdate := &cobra.Command{
-		Use:   "update <domainName> <recordID>",
-		Short: "update dns record",
-		Long:  ``,
+		Use:   "update <Domain Name> <Record ID>",
+		Short: "Update DNS record",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 2 {
-				return errors.New("please provide a domainName & recordID")
+				return errors.New("please provide a domain name & record ID")
 			}
 			return nil
 		},

@@ -5,24 +5,12 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/vultr/vultr-cli/v3/cmd/printer"
+	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
 
 const (
-	Version string = "v2.21.0"
+	version string = "v2.21.0"
 )
-
-// Interface for version
-type Interface interface {
-	Get() string
-}
-
-// Options for version
-type Options struct {
-	Version string
-	Printer *printer.Output
-}
 
 var (
 	long = `Displays current version of the Vultr-CLI`
@@ -36,30 +24,29 @@ var (
 	`
 )
 
-// NewVersionOptions returns a VersionOptions struct
-func NewVersionOptions() *Options {
-	return &Options{Printer: &printer.Output{}}
-}
-
 // NewCmdVersion returns cobra command for version
-func NewCmdVersion() *cobra.Command {
-	v := NewVersionOptions()
+func NewCmdVersion(base *cli.Base) *cobra.Command {
+	o := &options{Base: base}
+
 	cmd := &cobra.Command{
 		Use:     "version",
+		Short:   "Print the vultr-cli version",
 		Aliases: []string{"v"},
-		Short:   "vultr-cli version",
 		Long:    long,
 		Example: example,
 		Run: func(cmd *cobra.Command, args []string) {
-			v.Printer.Output = viper.GetString("output")
-			v.Printer.Display(&VersionPrinter{Version: v.Get()}, nil)
+			o.Base.Printer.Display(&VersionPrinter{Version: o.get()}, nil)
 		},
 	}
 
 	return cmd
 }
 
-// Get the version for vultr-cli
-func (v *Options) Get() string {
-	return fmt.Sprintf("Vultr-CLI %s", Version)
+type options struct {
+	Base    *cli.Base
+	Version string
+}
+
+func (o *options) get() string {
+	return fmt.Sprintf("Vultr-CLI %s", version)
 }

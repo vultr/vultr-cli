@@ -19,9 +19,8 @@ func NewCmdScript(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "script",
+		Short:   "Commands to interact with startup scripts",
 		Aliases: []string{"ss", "startup-script"},
-		Short:   "startup script commands",
-		Long:    `script is used to access startup script commands`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			utils.SetOptions(o.Base, cmd, args)
 			if !o.Base.HasAuth {
@@ -34,8 +33,7 @@ func NewCmdScript(base *cli.Base) *cobra.Command {
 	// List
 	list := &cobra.Command{
 		Use:   "list",
-		Short: "list all startup scripts",
-		Long:  ``,
+		Short: "List all startup scripts",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 
@@ -56,14 +54,13 @@ func NewCmdScript(base *cli.Base) *cobra.Command {
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
 	)
 
 	// Get
 	get := &cobra.Command{
 		Use:   "get <Script ID>",
-		Short: "display the contents of specified script",
-		Long:  ``,
+		Short: "Display the contents of specified script",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a script ID")
@@ -86,8 +83,7 @@ func NewCmdScript(base *cli.Base) *cobra.Command {
 	// Create
 	create := &cobra.Command{
 		Use:   "create",
-		Short: "create a startup script",
-		Long:  ``,
+		Short: "Create a startup script",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name, errNa := cmd.Flags().GetString("name")
 			if errNa != nil {
@@ -139,14 +135,13 @@ func NewCmdScript(base *cli.Base) *cobra.Command {
 	// Update
 	update := &cobra.Command{
 		Use:   "update <Script ID>",
-		Short: "update startup script",
+		Short: "Update startup script",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a script ID")
 			}
 			return nil
 		},
-		Long: ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name, errNa := cmd.Flags().GetString("name")
 			if errNa != nil {
@@ -201,9 +196,8 @@ func NewCmdScript(base *cli.Base) *cobra.Command {
 	// Delete
 	del := &cobra.Command{
 		Use:     "delete <Script ID>",
-		Short:   "delete a startup script",
+		Short:   "Delete a startup script",
 		Aliases: []string{"destroy"},
-		Long:    ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a script ID")

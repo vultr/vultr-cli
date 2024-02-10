@@ -1,3 +1,4 @@
+// Package billing provides the billing commands for the CLI
 package billing
 
 import (
@@ -75,13 +76,8 @@ var (
 	`
 )
 
-type Options struct {
-	Base          *cli.Base
-	InvoiceItemID int
-}
-
 func NewCmdBilling(base *cli.Base) *cobra.Command {
-	o := &Options{Base: base}
+	o := &options{Base: base}
 
 	cmd := &cobra.Command{
 		Use:     "billing",
@@ -96,42 +92,6 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 			return nil
 		},
 	}
-
-	// History
-	history := &cobra.Command{
-		Use:     "history",
-		Aliases: []string{"h"},
-		Short:   "display billing history information",
-		Long:    historyLong,
-		Example: historyExample,
-	}
-
-	// History List
-	historyList := &cobra.Command{
-		Use:     "list",
-		Short:   "list billing history",
-		Aliases: []string{"l"},
-		Long:    historyListLong,
-		Example: historyListExample,
-		Run: func(cmd *cobra.Command, args []string) {
-			o.Base.Options = utils.GetPaging(cmd)
-			hs, meta, err := o.HistoryList()
-			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving billing history list : %v", err))
-				os.Exit(1)
-			}
-			data := &BillingHistoryPrinter{Billing: hs, Meta: meta}
-			o.Base.Printer.Display(data, err)
-		},
-	}
-
-	historyList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	historyList.Flags().IntP(
-		"per-page",
-		"p",
-		utils.PerPageDefault,
-		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
-	)
 
 	// Invoice
 	invoice := &cobra.Command{
@@ -151,7 +111,7 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 		Example: invoiceListExample,
 		Run: func(cmd *cobra.Command, args []string) {
 			o.Base.Options = utils.GetPaging(cmd)
-			invs, meta, err := o.InvoicesList()
+			invs, meta, err := o.listInvoices()
 			if err != nil {
 				printer.Error(fmt.Errorf("error retrieving billing invoice list : %v", err))
 				os.Exit(1)
@@ -183,7 +143,7 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			inv, err := o.InvoiceGet()
+			inv, err := o.get()
 			if err != nil {
 				printer.Error(fmt.Errorf("error getting invoice : %v", err))
 				os.Exit(1)
@@ -217,7 +177,7 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 
 			o.InvoiceItemID = id
 
-			items, meta, err := o.InvoiceItemsList()
+			items, meta, err := o.listInvoiceItems()
 			if err != nil {
 				printer.Error(fmt.Errorf("error retrieving billing invoice item list : %v", err))
 				os.Exit(1)
@@ -232,17 +192,53 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
-	)
-
-	history.AddCommand(
-		historyList,
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
 	)
 
 	invoice.AddCommand(
 		invoicesList,
 		invoiceGet,
 		invoiceItemsList,
+	)
+
+	// History
+	history := &cobra.Command{
+		Use:     "history",
+		Aliases: []string{"h"},
+		Short:   "display billing history information",
+		Long:    historyLong,
+		Example: historyExample,
+	}
+
+	// History List
+	historyList := &cobra.Command{
+		Use:     "list",
+		Short:   "list billing history",
+		Aliases: []string{"l"},
+		Long:    historyListLong,
+		Example: historyListExample,
+		Run: func(cmd *cobra.Command, args []string) {
+			o.Base.Options = utils.GetPaging(cmd)
+			hs, meta, err := o.listHistory()
+			if err != nil {
+				printer.Error(fmt.Errorf("error retrieving billing history list : %v", err))
+				os.Exit(1)
+			}
+			data := &BillingHistoryPrinter{Billing: hs, Meta: meta}
+			o.Base.Printer.Display(data, err)
+		},
+	}
+
+	historyList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	historyList.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+	)
+
+	history.AddCommand(
+		historyList,
 	)
 
 	cmd.AddCommand(
@@ -253,26 +249,27 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 	return cmd
 }
 
-// HistoryList ...
-func (b *Options) HistoryList() ([]govultr.History, *govultr.Meta, error) {
+type options struct {
+	Base          *cli.Base
+	InvoiceItemID int
+}
+
+func (b *options) listHistory() ([]govultr.History, *govultr.Meta, error) {
 	hs, meta, _, err := b.Base.Client.Billing.ListHistory(b.Base.Context, b.Base.Options)
 	return hs, meta, err
 }
 
-// InvoiceGet ...
-func (b *Options) InvoiceGet() (*govultr.Invoice, error) {
+func (b *options) get() (*govultr.Invoice, error) {
 	inv, _, err := b.Base.Client.Billing.GetInvoice(b.Base.Context, b.Base.Args[0])
 	return inv, err
 }
 
-// InvoicesList ...
-func (b *Options) InvoicesList() ([]govultr.Invoice, *govultr.Meta, error) {
+func (b *options) listInvoices() ([]govultr.Invoice, *govultr.Meta, error) {
 	invs, meta, _, err := b.Base.Client.Billing.ListInvoices(b.Base.Context, b.Base.Options)
 	return invs, meta, err
 }
 
-// InvoiceItemsList ...
-func (b *Options) InvoiceItemsList() ([]govultr.InvoiceItem, *govultr.Meta, error) {
+func (b *options) listInvoiceItems() ([]govultr.InvoiceItem, *govultr.Meta, error) {
 	items, meta, _, err := b.Base.Client.Billing.ListInvoiceItems(b.Base.Context, b.InvoiceItemID, b.Base.Options)
 	return items, meta, err
 }

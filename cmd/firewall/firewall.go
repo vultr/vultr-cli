@@ -68,12 +68,11 @@ var (
 
 // NewCmdFirewall provides the CLI command functionality for Firewall
 func NewCmdFirewall(base *cli.Base) *cobra.Command {
-	o := &Options{Base: base}
+	o := &options{Base: base}
 
 	cmd := &cobra.Command{
 		Use:     "firewall",
-		Short:   "firewall is used to access firewall commands",
-		Long:    ``,
+		Short:   "Access firewall commands",
 		Aliases: []string{"fw"},
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			utils.SetOptions(o.Base, cmd, args)
@@ -87,8 +86,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 	// Group
 	group := &cobra.Command{
 		Use:     "group",
-		Short:   "group is used to access firewall group commands",
-		Long:    ``,
+		Short:   "Commands to access firewall group functions",
 		Aliases: []string{"g"},
 	}
 
@@ -100,7 +98,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			o.Base.Options = utils.GetPaging(cmd)
 
-			groups, meta, err := o.GroupList()
+			groups, meta, err := o.listGroups()
 			if err != nil {
 				printer.Error(fmt.Errorf("error retrieving firewall group list : %v", err))
 				os.Exit(1)
@@ -111,18 +109,18 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 		},
 	}
 
-	groupList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	groupList.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
 	groupList.Flags().IntP(
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		"(optional) Number of items requested per page. Default is 100 and Max is 500.",
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
 	)
 
 	// Group Get
 	groupGet := &cobra.Command{
 		Use:   "get <Firewall Group ID>",
-		Short: "get firewall group",
+		Short: "Get firewall group",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a firewall group ID")
@@ -130,7 +128,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			group, err := o.GroupGet()
+			group, err := o.getGroup()
 			if err != nil {
 				printer.Error(fmt.Errorf("error getting firewall group : %v", err))
 				os.Exit(1)
@@ -157,7 +155,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 				Description: description,
 			}
 
-			grp, err := o.GroupCreate()
+			grp, err := o.createGroup()
 			if err != nil {
 				printer.Error(fmt.Errorf("error creating firewall group : %v", err))
 				os.Exit(1)
@@ -192,7 +190,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 				Description: description,
 			}
 
-			if err := o.GroupUpdate(); err != nil {
+			if err := o.updateGroup(); err != nil {
 				printer.Error(fmt.Errorf("error updating firewall group : %v", err))
 				os.Exit(1)
 			}
@@ -219,7 +217,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := o.GroupDelete(); err != nil {
+			if err := o.deleteGroup(); err != nil {
 				printer.Error(fmt.Errorf("error deleting firewall group : %v", err))
 				os.Exit(1)
 			}
@@ -228,24 +226,30 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 		},
 	}
 
-	group.AddCommand(groupList, groupGet, groupCreate, groupUpdate, groupDelete)
+	group.AddCommand(
+		groupList,
+		groupGet,
+		groupCreate,
+		groupUpdate,
+		groupDelete,
+	)
 
 	// Rule
 	rule := &cobra.Command{
 		Use:     "rule",
-		Short:   "rule is used to access firewall rule commands",
+		Short:   "Commands to access firewall rules",
+		Aliases: []string{"r"},
 		Long:    ruleLong,
 		Example: ruleExample,
-		Aliases: []string{"r"},
 	}
 
 	// Rule List
 	ruleList := &cobra.Command{
 		Use:     "list <firewall group ID>",
 		Short:   "List all firewall rules",
+		Aliases: []string{"l"},
 		Long:    ruleListLong,
 		Example: ruleListExample,
-		Aliases: []string{"l"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a firewall group ID")
@@ -255,7 +259,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			o.Base.Options = utils.GetPaging(cmd)
 
-			rules, meta, err := o.RuleList()
+			rules, meta, err := o.listRules()
 			if err != nil {
 				printer.Error(fmt.Errorf("error retrieving firewall rule list : %v", err))
 				os.Exit(1)
@@ -287,7 +291,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			rule, err := o.RuleGet()
+			rule, err := o.getRule()
 			if err != nil {
 				printer.Error(fmt.Errorf("error getting firewall rule : %v", err))
 				os.Exit(1)
@@ -301,10 +305,10 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 	// Rule Create
 	ruleCreate := &cobra.Command{
 		Use:     "create",
-		Short:   "create a firewall rule",
+		Short:   "Create a firewall rule",
+		Aliases: []string{"c"},
 		Long:    ruleCreateLong,
 		Example: ruleCreateExample,
-		Aliases: []string{"c"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a firewall group ID")
@@ -378,7 +382,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 				o.RuleReq.IPType = ipType
 			}
 
-			rule, err := o.RuleCreate()
+			rule, err := o.createRule()
 			if err != nil {
 				printer.Error(fmt.Errorf("error creating firewall rule : %v", err))
 				os.Exit(1)
@@ -432,10 +436,10 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 	// Rule Delete
 	ruleDelete := &cobra.Command{
 		Use:     "delete <Firewall Group ID> <Firewall Rule Number>",
-		Short:   "delete a firewall rule",
+		Short:   "Delete a firewall rule",
+		Aliases: []string{"d", "destroy"},
 		Long:    ruleDeleteLong,
 		Example: ruleDeleteExample,
-		Aliases: []string{"d", "destroy"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 2 {
 				return errors.New("please provide a firewall group ID and firewall rule number")
@@ -443,7 +447,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := o.RuleDelete(); err != nil {
+			if err := o.deleteRule(); err != nil {
 				printer.Error(fmt.Errorf("error deleting firewall rule : %v", err))
 				os.Exit(1)
 			}
@@ -452,55 +456,63 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 		},
 	}
 
-	rule.AddCommand(ruleList, ruleGet, ruleCreate, ruleDelete)
+	rule.AddCommand(
+		ruleList,
+		ruleGet,
+		ruleCreate,
+		ruleDelete,
+	)
 
-	cmd.AddCommand(group, rule)
+	cmd.AddCommand(
+		group,
+		rule,
+	)
 
 	return cmd
 }
 
-type Options struct {
+type options struct {
 	Base     *cli.Base
 	GroupReq *govultr.FirewallGroupReq
 	RuleReq  *govultr.FirewallRuleReq
 }
 
-// GroupList ...
-func (o *Options) GroupList() ([]govultr.FirewallGroup, *govultr.Meta, error) {
+// listGroups ...
+func (o *options) listGroups() ([]govultr.FirewallGroup, *govultr.Meta, error) {
 	groups, meta, _, err := o.Base.Client.FirewallGroup.List(o.Base.Context, o.Base.Options)
 	return groups, meta, err
 }
 
-// GroupGet ...
-func (o *Options) GroupGet() (*govultr.FirewallGroup, error) {
+// getGroup ...
+func (o *options) getGroup() (*govultr.FirewallGroup, error) {
 	group, _, err := o.Base.Client.FirewallGroup.Get(o.Base.Context, o.Base.Args[0])
 	return group, err
 }
 
-// GroupCreate ...
-func (o *Options) GroupCreate() (*govultr.FirewallGroup, error) {
+// createGroup ...
+func (o *options) createGroup() (*govultr.FirewallGroup, error) {
 	group, _, err := o.Base.Client.FirewallGroup.Create(o.Base.Context, o.GroupReq)
 	return group, err
 }
 
-// GroupUpdate ...
-func (o *Options) GroupUpdate() error {
+// updateGroup ...
+func (o *options) updateGroup() error {
 	return o.Base.Client.FirewallGroup.Update(o.Base.Context, o.Base.Args[0], o.GroupReq)
 }
 
-// GroupDelete ...
-func (o *Options) GroupDelete() error {
+// deleteGroup ...
+func (o *options) deleteGroup() error {
 	return o.Base.Client.FirewallGroup.Delete(o.Base.Context, o.Base.Args[0])
 }
 
-// RuleList ...
-func (o *Options) RuleList() ([]govultr.FirewallRule, *govultr.Meta, error) {
+// listRules ...
+func (o *options) listRules() ([]govultr.FirewallRule, *govultr.Meta, error) {
 	rules, meta, _, err := o.Base.Client.FirewallRule.List(o.Base.Context, o.Base.Args[0], o.Base.Options)
 	return rules, meta, err
 }
 
-// RuleGet ...
-func (o *Options) RuleGet() (*govultr.FirewallRule, error) {
+// getRule ...
+func (o *options) getRule() (*govultr.FirewallRule, error) {
 	id, errIn := strconv.Atoi(o.Base.Args[1])
 	if errIn != nil {
 		return nil, fmt.Errorf("unable to convert int to string : %v", errIn)
@@ -510,14 +522,14 @@ func (o *Options) RuleGet() (*govultr.FirewallRule, error) {
 	return rule, err
 }
 
-// RuleCreate ...
-func (o *Options) RuleCreate() (*govultr.FirewallRule, error) {
+// createRule ...
+func (o *options) createRule() (*govultr.FirewallRule, error) {
 	rule, _, err := o.Base.Client.FirewallRule.Create(o.Base.Context, o.Base.Args[0], o.RuleReq)
 	return rule, err
 }
 
-// RuleDelete ...
-func (o *Options) RuleDelete() error {
+// deleteRule ...
+func (o *options) deleteRule() error {
 	id, err := strconv.Atoi(o.Base.Args[1])
 	if err != nil {
 		return fmt.Errorf("unable to convert int to string : %v", err)
