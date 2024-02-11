@@ -23,10 +23,10 @@ var (
 	# Full example
 	vultr-cli marketplace app
 	`
-	listAppVariableLong    = `List all user-supplied variables for a given Vultr Marketplace app`
-	listAppVariableExample = `
+	listAppVariablesLong    = `List all user-supplied variables for a given marketplace app`
+	listAppVariablesExample = `
 	# Full example
-	vultr-cli marketplace app list-variables exampleapp
+	vultr-cli marketplace app list-variables drupal
 	`
 )
 
@@ -36,7 +36,7 @@ func NewCmdMarketplace(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "marketplace",
-		Short:   "Commands to interact with Marketplace functions",
+		Short:   "Commands to interact with marketplace functions",
 		Long:    long,
 		Example: example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -48,7 +48,7 @@ func NewCmdMarketplace(base *cli.Base) *cobra.Command {
 	// App
 	app := &cobra.Command{
 		Use:     "app",
-		Short:   "commands to interact with vultr marketplace apps",
+		Short:   "Commands to interact with vultr marketplace apps",
 		Long:    appLong,
 		Example: appExample,
 	}
@@ -58,8 +58,8 @@ func NewCmdMarketplace(base *cli.Base) *cobra.Command {
 		Use:     "list-variables",
 		Short:   "List all user-supplied variables for a marketplace app",
 		Aliases: []string{"l"},
-		Long:    listAppVariableLong,
-		Example: listAppVariableExample,
+		Long:    listAppVariablesLong,
+		Example: listAppVariablesExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide an image ID")
