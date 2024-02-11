@@ -58,7 +58,7 @@ func NewCmdApplications(base *cli.Base) *cobra.Command {
 			}
 
 			data := &ApplicationsPrinter{Applications: apps, Meta: meta}
-			o.Printer.Display(data, err)
+			o.Base.Printer.Display(data, err)
 
 			return nil
 		},
