@@ -38,7 +38,7 @@ func (a *ApplicationsPrinter) Columns() [][]string {
 
 // Data provides the plan data for the printer
 func (a *ApplicationsPrinter) Data() [][]string {
-	data := [][]string{}
+	var data [][]string
 
 	if len(a.Applications) == 0 {
 		data = append(data, []string{"---", "---", "---", "---", "---", "---", "---"})
