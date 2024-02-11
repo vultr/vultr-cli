@@ -64,6 +64,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command {
 			return nil
 		},
 	}
+
 	// List
 	list := &cobra.Command{
 		Use:     "list",
