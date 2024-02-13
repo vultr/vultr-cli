@@ -240,7 +240,7 @@ func (l *LBPrinter) Data() [][]string {
 }
 
 // Paging ...
-func (s *LBPrinter) Paging() [][]string {
+func (l *LBPrinter) Paging() [][]string {
 	return nil
 }
 
