@@ -143,6 +143,22 @@ func (p *Paging) Compose() [][]string {
 	return display
 }
 
+// Total holds the values used by the Meta section in the printer
+// output for outputs that don't include paging cursors
+type Total struct {
+	Total int
+}
+
+// Compose returns the total data for output
+func (t *Total) Compose() [][]string {
+	var display [][]string
+	display = append(display,
+		[]string{"======================================"},
+		[]string{"TOTAL"},
+		[]string{strconv.Itoa(t.Total)},
+	)
+
+	return display
 }
 
 // MarshalObject ...
