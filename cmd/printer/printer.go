@@ -179,6 +179,22 @@ func ArrayOfStringsToString(a []string) string {
 	return sb.String()
 }
 
+// ArrayOfIntsToString will build a delimited string from an array for
+// display in the printer functions.  It defaults to comma-delimited and
+// enclosed in square brackets to maintain consistency with array Fprintf
+func ArrayOfIntsToString(a []int) string {
+	delimiter := ", "
+	var sb strings.Builder
+	sb.WriteString("[")
+	for i := range a {
+		sb.WriteString(strconv.Itoa(a[i]))
+		sb.WriteString(delimiter)
+	}
+	sb.WriteString("]")
+
+	return sb.String()
+}
+
 // OLD funcs to be re-written //////////////////////////////////////////////////////////////
 func display(values columns) {
 
