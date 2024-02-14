@@ -240,7 +240,7 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command {
 
 	// List
 	list := &cobra.Command{
-		Use:     "list <Cluster ID>",
+		Use:     "list",
 		Short:   "List kubernetes clusters",
 		Aliases: []string{"l"},
 		Long:    listLong,
