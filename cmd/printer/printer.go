@@ -42,12 +42,6 @@ type Output struct {
 	Output   string
 }
 
-type Paging struct {
-	Total      int
-	CursorNext string
-	CursorPrev string
-}
-
 type columns []interface{}
 
 var tw = new(tabwriter.Writer)
@@ -109,8 +103,16 @@ func (o *Output) displayNonText(data []byte) {
 	fmt.Printf("%s\n", string(data))
 }
 
+// Paging struct holds the values used by the Meta section in the printer
+// output
+type Paging struct {
+	Total      int
+	CursorNext string
+	CursorPrev string
+}
+
 // NewPaging validates and intializes the paging data
-func NewPaging(total int, next *string, prev *string) *Paging {
+func NewPaging(total int, next, prev *string) *Paging {
 	p := new(Paging)
 	p.Total = total
 
@@ -131,23 +133,19 @@ func NewPaging(total int, next *string, prev *string) *Paging {
 
 // Compose returns the paging data for output
 func (p *Paging) Compose() [][]string {
-	cNext := p.CursorNext
-	if cNext == "" {
-		cNext = "---"
-	}
+	var display [][]string
+	display = append(display,
+		[]string{"======================================"},
+		[]string{"TOTAL", "NEXT PAGE", "PREV PAGE"},
+		[]string{strconv.Itoa(p.Total), p.CursorNext, p.CursorPrev},
+	)
 
-	cPrev := p.CursorPrev
-	if cPrev == "" {
-		cPrev = "---"
-	}
-
-	return [][]string{
-		0: {"======================================"},
-		1: {"TOTAL", "NEXT PAGE", "PREV PAGE"},
-		2: {strconv.Itoa(p.Total), cNext, cPrev},
-	}
+	return display
 }
 
+}
+
+// MarshalObject ...
 func MarshalObject(input interface{}, format string) []byte {
 	var output []byte
 	if format == "json" {
