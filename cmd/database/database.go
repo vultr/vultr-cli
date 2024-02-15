@@ -48,7 +48,7 @@ var (
 )
 
 // NewCmdDatabase provides the CLI command for database functions
-func NewCmdDatabase(base *cli.Base) *cobra.Command {
+func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
@@ -1703,9 +1703,9 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command {
 				return fmt.Errorf("error parsing flag 'default-toast-compression' for advanced options update : %v", errDf)
 			}
 
-			idleInTransactionSessionTimeout, errId := cmd.Flags().GetInt("idle-in-transaction-session-timeout")
-			if errId != nil {
-				return fmt.Errorf("error parsing flag 'idle-in-transaction-session-timeout' for advanced options update : %v", errId)
+			idleInTransactionSessionTimeout, errIl := cmd.Flags().GetInt("idle-in-transaction-session-timeout")
+			if errIl != nil {
+				return fmt.Errorf("error parsing flag 'idle-in-transaction-session-timeout' for advanced options update : %v", errIl)
 			}
 
 			jit, errJi := cmd.Flags().GetBool("jit")

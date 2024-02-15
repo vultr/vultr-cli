@@ -31,15 +31,13 @@ func (d *DBsPrinter) Columns() [][]string {
 }
 
 // Data ...
-func (d *DBsPrinter) Data() [][]string {
+func (d *DBsPrinter) Data() [][]string { //nolint:funlen
 	if len(d.DBs) == 0 {
 		return [][]string{0: {"No databases"}}
-
 	}
 
 	var data [][]string
 	for i := range d.DBs {
-
 		data = append(data,
 			[]string{"ID", d.DBs[i].ID},
 			[]string{"DATE CREATED", d.DBs[i].DateCreated},
@@ -271,7 +269,7 @@ func (d *DBPrinter) Columns() [][]string {
 }
 
 // Data ...
-func (d *DBPrinter) Data() [][]string {
+func (d *DBPrinter) Data() [][]string { //nolint:funlen
 	var data [][]string
 	data = append(data,
 		[]string{"ID", d.DB.ID},
@@ -511,12 +509,10 @@ func (d *DBsSummaryPrinter) Columns() [][]string {
 func (d *DBsSummaryPrinter) Data() [][]string {
 	if len(d.DBs) == 0 {
 		return [][]string{0: {"---", "---", "---", "---", "---", "---"}}
-
 	}
 
 	var data [][]string
 	for i := range d.DBs {
-
 		data = append(data, []string{
 
 			d.DBs[i].ID,
@@ -568,7 +564,6 @@ func (p *PlansPrinter) Data() [][]string {
 
 	var data [][]string
 	for i := range p.Plans {
-
 		data = append(data,
 			[]string{"ID", p.Plans[i].ID},
 			[]string{"NUMBER OF NODES", strconv.Itoa(p.Plans[i].NumberOfNodes)},
@@ -722,7 +717,6 @@ func (u *UsersPrinter) Columns() [][]string {
 func (u *UsersPrinter) Data() [][]string {
 	if len(u.Users) == 0 {
 		return [][]string{0: {"No database users"}}
-
 	}
 
 	var data [][]string
@@ -1051,7 +1045,7 @@ func (m *MigrationPrinter) Data() [][]string {
 }
 
 // Paging ...
-func (a *MigrationPrinter) Paging() [][]string {
+func (m *MigrationPrinter) Paging() [][]string {
 	return nil
 }
 
