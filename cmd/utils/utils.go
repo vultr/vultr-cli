@@ -31,7 +31,7 @@ func GetFirewallSource(source string) string {
 	return source
 }
 
-// FormatFirewalNetwork returns the subnet and size of a network in CIDR
+// FormatFirewallNetwork returns the subnet and size of a network in CIDR
 // notation
 func FormatFirewallNetwork(subnet string, size int) string {
 	return fmt.Sprintf("%s/%d", subnet, size)
