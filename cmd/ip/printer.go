@@ -8,7 +8,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
 )
 
-// IPv4Printer ...
+// IPv4sPrinter ...
 type IPv4sPrinter struct {
 	IPv4s []govultr.IPv4 `json:"ipv4s"`
 	Meta  *govultr.Meta  `json:"meta"`
