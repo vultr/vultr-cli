@@ -8,7 +8,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/account"
 	"github.com/vultr/vultr-cli/v3/cmd/applications"
 	"github.com/vultr/vultr-cli/v3/cmd/backups"
@@ -47,7 +46,6 @@ const (
 var (
 	cfgFile string
 	output  string
-	client  *govultr.Client
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -136,23 +134,6 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err != nil {
 		fmt.Println("Error Reading in file:", viper.ConfigFileUsed())
 	}
-}
-
-func getPaging(cmd *cobra.Command) *govultr.ListOptions {
-	options := &govultr.ListOptions{}
-
-	cursor, _ := cmd.Flags().GetString("cursor")
-	perPage, _ := cmd.Flags().GetInt("per-page")
-
-	if cursor != "" {
-		options.Cursor = cursor
-	}
-
-	if perPage != 0 {
-		options.PerPage = perPage
-	}
-
-	return options
 }
 
 func configHome() string {
