@@ -138,10 +138,6 @@ type options struct {
 	PlanType string
 }
 
-func (o *options) validate(cmd *cobra.Command, args []string) {
-	o.Base.Args = args
-}
-
 func (o *options) list() ([]govultr.Plan, *govultr.Meta, error) {
 	plans, meta, _, err := o.Base.Client.Plan.List(context.Background(), o.PlanType, o.Base.Options)
 	return plans, meta, err
