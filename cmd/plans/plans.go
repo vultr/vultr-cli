@@ -53,6 +53,10 @@ func NewCmdPlan(base *cli.Base) *cobra.Command {
 		Aliases: []string{"p", "plan"},
 		Long:    planLong,
 		Example: planExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			utils.SetOptions(o.Base, cmd, args)
+			return nil
+		},
 	}
 
 	list := &cobra.Command{
