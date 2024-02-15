@@ -216,7 +216,7 @@ const (
 )
 
 // NewCmdKubernetes provides the CLI command for VKE functions
-func NewCmdKubernetes(base *cli.Base) *cobra.Command {
+func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
@@ -460,7 +460,6 @@ required in node pool. Use / between each new node pool.  E.g:
 				if err := o.delWithRes(); err != nil {
 					return fmt.Errorf("error deleting kubernetes cluster and resources : %v", err)
 				}
-
 			} else {
 				if err := o.del(); err != nil {
 					return fmt.Errorf("error deleting kubernetes cluster : %v", err)
@@ -512,9 +511,7 @@ required in node pool. Use / between each new node pool.  E.g:
 				if errWr := os.WriteFile(path, kubeConfigData, kubeconfigFilePermission); errWr != nil {
 					return fmt.Errorf("error writing kubeconfig to %s : %v", path, errWr)
 				}
-
 			} else {
-
 				data := &ConfigPrinter{Config: config}
 				o.Base.Printer.Display(data, nil)
 			}

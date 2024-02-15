@@ -187,7 +187,6 @@ func (c *ClusterPrinter) Columns() [][]string {
 
 // Data ...
 func (c *ClusterPrinter) Data() [][]string {
-
 	var data [][]string
 	data = append(data,
 		[]string{"ID", c.Cluster.ID},
