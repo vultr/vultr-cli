@@ -1,4 +1,4 @@
-module github.com/vultr/vultr-cli/v2
+module github.com/vultr/vultr-cli/v3
 
 go 1.21
 
@@ -6,7 +6,9 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
 	github.com/vultr/govultr/v3 v3.6.1
+	github.com/vultr/vultr-cli/v2 v2.22.0
 	golang.org/x/oauth2 v0.16.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -35,7 +37,5 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
