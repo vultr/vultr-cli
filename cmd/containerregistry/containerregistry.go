@@ -63,12 +63,14 @@ var (
 	# Shortened example with aliases
 	vultr-cli cr l
 	`
-	credentialsLong    = `Commands for accessing the credentials on registries`
+	credentialsLong = `Commands for accessing the credentials on registries`
+	//nolint:gosec
 	credentialsExample = `
 	# Full example
 	vultr-cli container-registry credentials
 	`
-	credentialsDockerLong    = `Create the credential string used by docker`
+	credentialsDockerLong = `Create the credential string used by docker`
+	//nolint:gosec
 	credentialsDockerExample = `
 	# Full example
 	vultr-cli container-registry credentials docker d24cfdcc-0534-4700-bf88-8ee48f20064e 
@@ -116,7 +118,7 @@ var (
 )
 
 // NewCmdContainerRegistry provides the CLI command functionality for container registry
-func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
+func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
@@ -485,13 +487,13 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 
 	repoUpdate.Flags().StringP("image-name", "i", "", "The name of the image/repo")
 	if err := repoUpdate.MarkFlagRequired("image-name"); err != nil {
-		printer.Error(fmt.Errorf("error marking update container registry repository 'image-name' flag required: %v\n", err))
+		printer.Error(fmt.Errorf("error marking update container registry repository 'image-name' flag required: %v", err))
 		os.Exit(1)
 	}
 
 	repoUpdate.Flags().StringP("description", "d", "", "The description of the image/repo")
 	if err := repoUpdate.MarkFlagRequired("description"); err != nil {
-		printer.Error(fmt.Errorf("error marking update container registry repository 'description' flag required: %v\n", err))
+		printer.Error(fmt.Errorf("error marking update container registry repository 'description' flag required: %v", err))
 		os.Exit(1)
 	}
 
@@ -528,7 +530,7 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command {
 
 	repoDelete.Flags().StringP("image-name", "i", "", "The name of the image/repo")
 	if err := repoDelete.MarkFlagRequired("image-name"); err != nil {
-		printer.Error(fmt.Errorf("error marking delete container registry repository 'image-name' flag required: %v\n", err))
+		printer.Error(fmt.Errorf("error marking delete container registry repository 'image-name' flag required: %v", err))
 		os.Exit(1)
 	}
 

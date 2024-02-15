@@ -171,7 +171,7 @@ func (c *ContainerRegistryPlansPrinter) Data() [][]string {
 
 		data = append(data, []string{
 			botVals.FieldByName("VanityName").String(),
-			fmt.Sprintf("%vGB", botVals.FieldByName("MaxStorageMB").Int()/1024),
+			fmt.Sprintf("%vGB", botVals.FieldByName("MaxStorageMB").Int()/1024), //nolint:gomnd
 			strconv.FormatInt(botVals.FieldByName("MonthlyPrice").Int(), 10),
 		})
 	}
