@@ -16,6 +16,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/billing"
 	"github.com/vultr/vultr-cli/v3/cmd/blockstorage"
 	"github.com/vultr/vultr-cli/v3/cmd/containerregistry"
+	"github.com/vultr/vultr-cli/v3/cmd/database"
 	"github.com/vultr/vultr-cli/v3/cmd/dns"
 	"github.com/vultr/vultr-cli/v3/cmd/firewall"
 	"github.com/vultr/vultr-cli/v3/cmd/instance"
@@ -93,7 +94,7 @@ func init() {
 		billing.NewCmdBilling(base),
 		blockstorage.NewCmdBlockStorage(base),
 		containerregistry.NewCmdContainerRegistry(base),
-		Database(), // TODO
+		database.NewCmdDatabase(base),
 		dns.NewCmdDNS(base),
 		firewall.NewCmdFirewall(base),
 		iso.NewCmdISO(base),
