@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
@@ -110,7 +111,9 @@ There is no going back from this call.`
 	ipv4Long    = `IP information is only available for bare metal servers in the "active" state.`
 	ipv4Example = ``
 
-	ipv6Long    = `List the IPv6 information of a bare metal server. IP information is only available for bare metal servers in the "active" state.`
+	ipv6Long = `
+List the IPv6 information of a bare metal server. IP information is only available for bare metal servers in the "active" state.
+`
 	ipv6Example = ``
 
 	vpc2Long        = ``
@@ -119,7 +122,7 @@ There is no going back from this call.`
 )
 
 // NewCmdBareMetal ...
-func NewCmdBareMetal(base *cli.Base) *cobra.Command {
+func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	o := options{Base: base}
 
 	cmd := &cobra.Command{
@@ -193,6 +196,8 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command {
 		Use:     "create",
 		Short:   "Create a bare metal server",
 		Aliases: []string{"c"},
+		Long:    createLong,
+		Example: createExample,
 		Run: func(cmd *cobra.Command, args []string) {
 			o.CreateReq = parseCreateFlags(cmd)
 			bm, err := o.create()
@@ -398,6 +403,8 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command {
 		Use:     "change <Bare Metal ID>",
 		Short:   "Change a bare metal server application",
 		Aliases: []string{"c"},
+		Long:    applicationChangeLong,
+		Example: applicationChangeExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a bare metal ID")
@@ -405,7 +412,6 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-
 			appID, err := cmd.Flags().GetInt("app")
 			if err != nil {
 				printer.Error(fmt.Errorf("error parsing app flag for bare metal app ID change : %v", err))
@@ -452,7 +458,6 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-
 			upgrades, err := o.getUpgrades()
 			if err != nil {
 				printer.Error(fmt.Errorf("error with bare metal get upgrades : %v", err))
@@ -591,7 +596,6 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-
 			upgrades, err := o.getUpgrades()
 			if err != nil {
 				printer.Error(fmt.Errorf("error with bare metal get upgrades : %v", err))
@@ -658,7 +662,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command {
 				os.Exit(1)
 			}
 
-			rawData, err := os.ReadFile(path)
+			rawData, err := os.ReadFile(filepath.Clean(path))
 			if err != nil {
 				printer.Error(fmt.Errorf("error reading user-data : %v", err))
 				os.Exit(1)
@@ -1049,7 +1053,7 @@ func (b *options) vpc2NetworksDetach() error {
 
 // ============================
 
-func parseCreateFlags(cmd *cobra.Command) *govultr.BareMetalCreate {
+func parseCreateFlags(cmd *cobra.Command) *govultr.BareMetalCreate { //nolint:funlen,gocyclo
 	region, err := cmd.Flags().GetString("region")
 	if err != nil {
 		printer.Error(fmt.Errorf("error parsing region flag for bare metal create : %v", err))
@@ -1176,7 +1180,7 @@ func parseCreateFlags(cmd *cobra.Command) *govultr.BareMetalCreate {
 	return options
 }
 
-func parseUpdateFlags(cmd *cobra.Command) *govultr.BareMetalUpdate {
+func parseUpdateFlags(cmd *cobra.Command) *govultr.BareMetalUpdate { //nolint:unused
 	osID, err := cmd.Flags().GetInt("os")
 	if err != nil {
 		printer.Error(fmt.Errorf("error parsing os flag for bare metal update : %v", err))
