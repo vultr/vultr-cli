@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/utils"
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
@@ -44,27 +43,9 @@ var (
 	`
 )
 
-// PlanOptionsInterface implements the command options for the plan command
-type PlanOptionsInterface interface {
-	validate(cmd *cobra.Command, args []string)
-	List() ([]govultr.Plan, *govultr.Meta, error)
-	MetalList() ([]govultr.BareMetalPlan, *govultr.Meta, error)
-}
-
-// PlanOptions represents the data used by the plan command
-type PlanOptions struct {
-	Base     *cli.Base
-	PlanType string
-}
-
-// NewPlanOptions returns a PlanOptions struct
-func NewPlanOptions(Base *cli.Base) *PlanOptions {
-	return &PlanOptions{Base: Base}
-}
-
 // NewCmdPlan returns the cobra command for Plans
-func NewCmdPlan(Base *cli.Base) *cobra.Command {
-	p := NewPlanOptions(Base)
+func NewCmdPlan(base *cli.Base) *cobra.Command {
+	o := &options{Base: base}
 
 	cmd := &cobra.Command{
 		Use:     "plans",
@@ -76,16 +57,29 @@ func NewCmdPlan(Base *cli.Base) *cobra.Command {
 
 	list := &cobra.Command{
 		Use:     "list",
-		Short:   "list all instance plans",
+		Short:   "List all instance plans",
 		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,
-		Run: func(cmd *cobra.Command, args []string) {
-			p.validate(cmd, args)
-			p.Base.Options = utils.GetPaging(cmd)
-			plans, meta, err := p.List()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			o.Base.Options = utils.GetPaging(cmd)
+
+			planType, errTy := cmd.Flags().GetString("type")
+			if errTy != nil {
+				return fmt.Errorf("error parsing flag 'type' for plan list: %v", errTy)
+			}
+
+			o.PlanType = planType
+
+			plans, meta, err := o.list()
+			if err != nil {
+				return fmt.Errorf("error getting plans : %v", err)
+			}
+
 			data := &PlansPrinter{Plans: plans, Meta: meta}
-			p.Base.Printer.Display(data, err)
+			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 
@@ -105,19 +99,26 @@ func NewCmdPlan(Base *cli.Base) *cobra.Command {
 
 	metal := &cobra.Command{
 		Use:     "metal",
-		Short:   "list all bare metal plans",
+		Short:   "List all bare metal plans",
 		Aliases: []string{"m"},
 		Long:    metalListLong,
 		Example: metalListExample,
-		Run: func(cmd *cobra.Command, args []string) {
-			p.validate(cmd, args)
-			m, meta, err := p.MetalList()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			o.Base.Options = utils.GetPaging(cmd)
+
+			m, meta, err := o.metalList()
+			if err != nil {
+				return fmt.Errorf("error getting bare metal plans : %v", err)
+			}
+
 			data := &MetalPlansPrinter{Plans: m, Meta: meta}
-			p.Base.Printer.Display(data, err)
+			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 	metal.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	list.Flags().IntP(
+	metal.Flags().IntP(
 		"per-page",
 		"p",
 		utils.PerPageDefault,
@@ -128,29 +129,21 @@ func NewCmdPlan(Base *cli.Base) *cobra.Command {
 	return cmd
 }
 
-func (p *PlanOptions) validate(cmd *cobra.Command, args []string) {
-	p.Base.Args = args
-	p.Base.Options = utils.GetPaging(cmd)
-	p.PlanType, _ = cmd.Flags().GetString("type")
-	p.Base.Printer.Output = viper.GetString("output")
+type options struct {
+	Base     *cli.Base
+	PlanType string
 }
 
-// List retrieves all available instance plans
-func (p *PlanOptions) List() ([]govultr.Plan, *govultr.Meta, error) {
-	plans, meta, _, err := p.Base.Client.Plan.List(context.Background(), p.PlanType, p.Base.Options)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return plans, meta, nil
+func (o *options) validate(cmd *cobra.Command, args []string) {
+	o.Base.Args = args
 }
 
-// MetalList retrieves all available bare metal plans
-func (p *PlanOptions) MetalList() ([]govultr.BareMetalPlan, *govultr.Meta, error) {
-	plans, meta, _, err := p.Base.Client.Plan.ListBareMetal(context.Background(), p.Base.Options)
-	if err != nil {
-		return nil, nil, err
-	}
+func (o *options) list() ([]govultr.Plan, *govultr.Meta, error) {
+	plans, meta, _, err := o.Base.Client.Plan.List(context.Background(), o.PlanType, o.Base.Options)
+	return plans, meta, err
+}
 
-	return plans, meta, nil
+func (o *options) metalList() ([]govultr.BareMetalPlan, *govultr.Meta, error) {
+	plans, meta, _, err := o.Base.Client.Plan.ListBareMetal(context.Background(), o.Base.Options)
+	return plans, meta, err
 }
