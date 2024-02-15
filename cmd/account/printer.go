@@ -14,13 +14,13 @@ type AccountPrinter struct {
 }
 
 // JSON ...
-func (s *AccountPrinter) JSON() []byte {
-	return printer.MarshalObject(s, "json")
+func (a *AccountPrinter) JSON() []byte {
+	return printer.MarshalObject(a, "json")
 }
 
 // YAML ...
-func (s *AccountPrinter) YAML() []byte {
-	return printer.MarshalObject(s, "yaml")
+func (a *AccountPrinter) YAML() []byte {
+	return printer.MarshalObject(a, "yaml")
 }
 
 // Columns ...

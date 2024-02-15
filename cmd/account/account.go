@@ -4,8 +4,6 @@ package account
 import (
 	"context"
 	"errors"
-	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
@@ -52,10 +50,5 @@ type options struct {
 
 func (o *options) get() (*govultr.Account, error) {
 	account, _, err := o.Base.Client.Account.Get(context.Background())
-	if err != nil {
-		fmt.Printf("Error getting account information : %v", err)
-		os.Exit(1)
-	}
-
-	return account, nil
+	return account, err
 }
