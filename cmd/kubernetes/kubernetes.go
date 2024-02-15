@@ -74,14 +74,10 @@ var (
 
 	# Shortened with alias commands
 	vultr-cli k d ffd31f18-5f77-454c-9065-212f942c3c35'
-	`
 
-	deleteWithResourcesLong    = `Delete a specific kubernetes cluster and all linked load balancers and block storages off your Vultr Account`
-	deleteWithResourcesExample = `
-	# Full example
+	# Delete a specific kubernetes cluster and all linked load balancers and block storages off your Vultr Account
 	vultr-cli kubernetes delete-with-resources ffd31f18-5f77-454c-9065-212f942c3c35
 	`
-
 	getConfigLong    = `Returns a base64 encoded config of a specified kubernetes cluster on your Vultr Account`
 	getConfigExample = `
 	
