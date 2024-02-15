@@ -2,6 +2,7 @@ package printer
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 )
 
@@ -11,11 +12,13 @@ type T struct {
 }
 
 func Error(err error) {
-	t := errorToStruct(err)
+	// TODO make errors uniform
+	// t := errorToStruct(err)
 
 	col := columns{"ERROR MESSAGE", "STATUS CODE"}
 	display(col)
-	display(columns{t.Error, t.Status})
+	// display(columns{t.Error, t.Status})
+	fmt.Printf("%v", err)
 	flush()
 
 	os.Exit(1)
