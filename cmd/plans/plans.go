@@ -3,6 +3,7 @@ package plans
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -30,16 +31,7 @@ var (
 		vultr-cli p l
 	`
 
-	metalLong    = `Get commands available to metal`
-	metalExample = `
-	#Full example
-	vultr-cli plans metal
-
-	#Shortened with aliased commands
-	vultr-cli p m
-	`
-
-	metalListLong    = `List all available bare metal plans on Vultr.`
+	metalListLong    = `Get plans for bare-metal servers`
 	metalListExample = `
 	# Full example
 	vultr-cli plans metal
@@ -52,7 +44,7 @@ var (
 	`
 )
 
-// PlanOptionsInterface implementes the command options for the plan command
+// PlanOptionsInterface implements the command options for the plan command
 type PlanOptionsInterface interface {
 	validate(cmd *cobra.Command, args []string)
 	List() ([]govultr.Plan, *govultr.Meta, error)
@@ -98,8 +90,18 @@ func NewCmdPlan(Base *cli.Base) *cobra.Command {
 	}
 
 	list.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	list.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
-	list.Flags().StringP("type", "t", "", "(optional) The type of plans to return. Possible values: 'vc2', 'vdc', 'vhf', 'dedicated'. Defaults to all Instances plans.")
+	list.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+	)
+	list.Flags().StringP(
+		"type",
+		"t",
+		"",
+		"(optional) The type of plans to return. Possible values: 'vc2', 'vdc', 'vhf', 'dedicated'. Defaults to all Instances plans.",
+	)
 
 	metal := &cobra.Command{
 		Use:     "metal",
@@ -115,7 +117,12 @@ func NewCmdPlan(Base *cli.Base) *cobra.Command {
 		},
 	}
 	metal.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	metal.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	list.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+	)
 
 	cmd.AddCommand(list, metal)
 	return cmd
