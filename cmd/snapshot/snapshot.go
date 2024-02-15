@@ -135,7 +135,6 @@ func NewCmdSnapshot(base *cli.Base) *cobra.Command {
 			o.Base.Printer.Display(data, nil)
 
 			return nil
-
 		},
 	}
 

@@ -41,7 +41,6 @@ func (s *SnapshotsPrinter) Columns() [][]string {
 func (s *SnapshotsPrinter) Data() [][]string {
 	if len(s.Snapshots) == 0 {
 		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---", "---"}}
-
 	}
 
 	var data [][]string
