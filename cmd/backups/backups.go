@@ -22,25 +22,9 @@ var (
 	getExample     = ``
 )
 
-type BackupsOptionsInterface interface {
-	setOptions(cmd *cobra.Command, args []string)
-	List() []govultr.Backup
-	Get() *govultr.Backup
-}
-
-// BackupOptions ...
-type BackupsOptions struct {
-	Base *cli.Base
-}
-
-// NewBackupOptions ...
-func NewBackupsOptions(base *cli.Base) *BackupsOptions {
-	return &BackupsOptions{Base: base}
-}
-
-// NewCmdBackup ...
+// NewCmdBackups provides the backup command for the CLI
 func NewCmdBackups(base *cli.Base) *cobra.Command {
-	o := NewBackupsOptions(base)
+	o := &options{Base: base}
 
 	cmd := &cobra.Command{
 		Use:     "backups",
@@ -66,7 +50,7 @@ func NewCmdBackups(base *cli.Base) *cobra.Command {
 		Example: listExample,
 		Run: func(cmd *cobra.Command, args []string) {
 			o.Base.Options = utils.GetPaging(cmd)
-			backups, meta, err := o.List()
+			backups, meta, err := o.list()
 			if err != nil {
 				printer.Error(fmt.Errorf("error retrieving backups list : %v", err))
 				os.Exit(1)
@@ -77,7 +61,12 @@ func NewCmdBackups(base *cli.Base) *cobra.Command {
 	}
 
 	list.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	list.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	list.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+	)
 
 	// Get
 	get := &cobra.Command{
@@ -92,7 +81,7 @@ func NewCmdBackups(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			backup, err := o.Get()
+			backup, err := o.get()
 			if err != nil {
 				panic(fmt.Errorf("error retrieving backup : %v", err))
 			}
@@ -106,22 +95,16 @@ func NewCmdBackups(base *cli.Base) *cobra.Command {
 	return cmd
 }
 
-func (b *BackupsOptions) List() ([]govultr.Backup, *govultr.Meta, error) {
-	backups, meta, _, err := b.Base.Client.Backup.List(b.Base.Context, b.Base.Options)
-	if err != nil {
-		fmt.Printf("Error with backups list request : %v\n", err)
-		os.Exit(1)
-	}
-
-	return backups, meta, nil
+type options struct {
+	Base *cli.Base
 }
 
-func (b *BackupsOptions) Get() (*govultr.Backup, error) {
-	backup, _, err := b.Base.Client.Backup.Get(b.Base.Context, b.Base.Args[0])
-	if err != nil {
-		fmt.Printf("Error with backups get request : %v\n", err)
-		os.Exit(1)
-	}
+func (b *options) list() ([]govultr.Backup, *govultr.Meta, error) {
+	backups, meta, _, err := b.Base.Client.Backup.List(b.Base.Context, b.Base.Options)
+	return backups, meta, err
+}
 
-	return backup, nil
+func (b *options) get() (*govultr.Backup, error) {
+	backup, _, err := b.Base.Client.Backup.Get(b.Base.Context, b.Base.Args[0])
+	return backup, err
 }
