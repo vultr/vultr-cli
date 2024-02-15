@@ -14,7 +14,7 @@ import (
 )
 
 // NewCmdObjectStorage provides the CLI command for object storage functions
-func NewCmdObjectStorage(base *cli.Base) *cobra.Command {
+func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
