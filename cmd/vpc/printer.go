@@ -39,7 +39,6 @@ func (s *VPCsPrinter) Columns() [][]string {
 func (s *VPCsPrinter) Data() [][]string {
 	if len(s.VPCs) == 0 {
 		return [][]string{0: {"---", "---", "---", "---", "---", "---"}}
-
 	}
 
 	var data [][]string

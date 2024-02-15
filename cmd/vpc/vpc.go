@@ -64,7 +64,7 @@ var (
 )
 
 // NewCmdVPC provides the CLI command for VPC functions
-func NewCmdVPC(base *cli.Base) *cobra.Command {
+func NewCmdVPC(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
