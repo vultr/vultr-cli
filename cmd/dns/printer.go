@@ -7,7 +7,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
 )
 
-// DNSRecordsPrinter...
+// DNSRecordsPrinter ...
 type DNSRecordsPrinter struct {
 	Records []govultr.DomainRecord `json:"records"`
 	Meta    *govultr.Meta          `json:"meta"`
@@ -63,7 +63,7 @@ func (d *DNSRecordsPrinter) Paging() [][]string {
 
 // ======================================
 
-// DNSRecordPrinter...
+// DNSRecordPrinter ...
 type DNSRecordPrinter struct {
 	Record govultr.DomainRecord `json:"records"`
 }

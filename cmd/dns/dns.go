@@ -25,7 +25,7 @@ var (
 )
 
 // NewCmdDNS provides the CLI command functionality for DNS
-func NewCmdDNS(base *cli.Base) *cobra.Command {
+func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
@@ -68,7 +68,12 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	}
 
 	domainList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	domainList.Flags().IntP("per-page", "p", utils.PerPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	domainList.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+	)
 
 	// Domain Get
 	domainGet := &cobra.Command{
@@ -334,7 +339,12 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	}
 
 	recordList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	recordList.Flags().IntP("per-page", "p", utils.PerPageDefault, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	recordList.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+	)
 
 	// Record Get
 	recordGet := &cobra.Command{
