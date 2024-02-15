@@ -35,7 +35,6 @@ func (v *VariablesPrinter) Columns() [][]string {
 func (v *VariablesPrinter) Data() [][]string {
 	if len(v.Variables) == 0 {
 		return [][]string{0: {"---", "---", "---"}}
-
 	}
 
 	var data [][]string
@@ -51,6 +50,6 @@ func (v *VariablesPrinter) Data() [][]string {
 }
 
 // Paging ...
-func (s *VariablesPrinter) Paging() [][]string {
+func (v *VariablesPrinter) Paging() [][]string {
 	return nil
 }
