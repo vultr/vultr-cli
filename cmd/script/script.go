@@ -14,7 +14,7 @@ import (
 )
 
 // NewCmdScript provides the CLI command for startup script functions
-func NewCmdScript(base *cli.Base) *cobra.Command {
+func NewCmdScript(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{

@@ -36,7 +36,6 @@ func (s *ScriptsPrinter) Columns() [][]string {
 func (s *ScriptsPrinter) Data() [][]string {
 	if len(s.Scripts) == 0 {
 		return [][]string{0: {"---", "---", "---", "---", "---"}}
-
 	}
 
 	var data [][]string
@@ -60,7 +59,7 @@ func (s *ScriptsPrinter) Paging() [][]string {
 
 // ======================================
 
-// ScriptIPPrinter...
+// ScriptPrinter ...
 type ScriptPrinter struct {
 	Script *govultr.StartupScript `json:"startup_script"`
 }
