@@ -32,7 +32,6 @@ func (l *LBsPrinter) Columns() [][]string {
 func (l *LBsPrinter) Data() [][]string {
 	if len(l.LBs) == 0 {
 		return [][]string{0: {"No active load balancers"}}
-
 	}
 
 	var data [][]string
@@ -80,9 +79,7 @@ func (l *LBsPrinter) Data() [][]string {
 
 		if len(l.LBs[i].ForwardingRules) == 0 {
 			data = append(data, []string{"---", "---", "---", "---", "---"})
-
 		} else {
-
 			for j := range l.LBs[i].ForwardingRules {
 				data = append(data,
 					[]string{
@@ -104,9 +101,7 @@ func (l *LBsPrinter) Data() [][]string {
 
 		if len(l.LBs[i].FirewallRules) == 0 {
 			data = append(data, []string{"---", "---", "---", "---"})
-
 		} else {
-
 			for j := range l.LBs[i].FirewallRules {
 				data = append(data,
 					[]string{
@@ -197,9 +192,7 @@ func (l *LBPrinter) Data() [][]string {
 
 	if len(l.LB.ForwardingRules) == 0 {
 		data = append(data, []string{"---", "---", "---", "---", "---"})
-
 	} else {
-
 		for i := range l.LB.ForwardingRules {
 			data = append(data,
 				[]string{
@@ -221,9 +214,7 @@ func (l *LBPrinter) Data() [][]string {
 
 	if len(l.LB.FirewallRules) == 0 {
 		data = append(data, []string{"---", "---", "---", "---"})
-
 	} else {
-
 		for i := range l.LB.FirewallRules {
 			data = append(data,
 				[]string{
@@ -279,12 +270,10 @@ func (l *LBsSummaryPrinter) Columns() [][]string {
 func (l *LBsSummaryPrinter) Data() [][]string {
 	if len(l.LBs) == 0 {
 		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
-
 	}
 
 	var data [][]string
 	for i := range l.LBs {
-
 		forwardRuleCount := len(l.LBs[i].ForwardingRules)
 		firewallRuleCount := len(l.LBs[i].FirewallRules)
 		instanceCount := len(l.LBs[i].Instances)
@@ -342,7 +331,6 @@ func (l *LBRulesPrinter) Columns() [][]string {
 func (l *LBRulesPrinter) Data() [][]string {
 	if len(l.LBRules) == 0 {
 		return [][]string{0: {"---", "---", "---", "---", "---"}}
-
 	}
 
 	var data [][]string
@@ -440,7 +428,6 @@ func (f *FWRulesPrinter) Columns() [][]string {
 func (f *FWRulesPrinter) Data() [][]string {
 	if len(f.Rules) == 0 {
 		return [][]string{0: {"---", "---", "---", "---"}}
-
 	}
 
 	var data [][]string
@@ -451,7 +438,6 @@ func (f *FWRulesPrinter) Data() [][]string {
 			f.Rules[i].Source,
 			f.Rules[i].IPType,
 		})
-
 	}
 
 	return data

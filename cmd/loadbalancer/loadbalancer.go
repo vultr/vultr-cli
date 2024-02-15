@@ -67,7 +67,7 @@ var (
 )
 
 // NewCmdLoadBalancer provides the CLI command for load balancers
-func NewCmdLoadBalancer(base *cli.Base) *cobra.Command {
+func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
@@ -758,7 +758,6 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			frontProtocol, errFr := cmd.Flags().GetString("frontend-protocol")
 			if errFr != nil {
 				return fmt.Errorf("error parsing flag 'frontend-protocol' for forwarding rule create : %v", errFr)
@@ -777,7 +776,6 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command {
 			backPort, errBp := cmd.Flags().GetInt("backend-port")
 			if errBp != nil {
 				return fmt.Errorf("error parsing flag 'backend-port' for forwarding rule create : %v", errBp)
-
 			}
 
 			o.RuleCreateReq = &govultr.ForwardingRule{
@@ -799,7 +797,11 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command {
 		},
 	}
 
-	createForwardingRule.Flags().String("frontend-protocol", "http", "the protocol on the Load Balancer to forward to the backend. | HTTP, HTTPS, TCP")
+	createForwardingRule.Flags().String(
+		"frontend-protocol",
+		"http",
+		"the protocol on the Load Balancer to forward to the backend. | HTTP, HTTPS, TCP",
+	)
 	if err := createForwardingRule.MarkFlagRequired("frontend-protocol"); err != nil {
 		fmt.Printf("error marking load-balancer rule create 'frontend-protocol' flag required: %v", err)
 		os.Exit(1)
