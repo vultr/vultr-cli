@@ -67,7 +67,7 @@ var (
 )
 
 // NewCmdFirewall provides the CLI command functionality for Firewall
-func NewCmdFirewall(base *cli.Base) *cobra.Command {
+func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
@@ -328,9 +328,9 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command {
 				os.Exit(1)
 			}
 
-			ipType, errIp := cmd.Flags().GetString("ip-type")
-			if errIp != nil {
-				printer.Error(fmt.Errorf("error parsing 'ip-type' flag for firewall group create : %v", errIp))
+			ipType, errIP := cmd.Flags().GetString("ip-type")
+			if errIP != nil {
+				printer.Error(fmt.Errorf("error parsing 'ip-type' flag for firewall group create : %v", errIP))
 				os.Exit(1)
 			}
 

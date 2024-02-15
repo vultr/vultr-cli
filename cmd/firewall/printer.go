@@ -8,7 +8,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/utils"
 )
 
-// FirewallGroupsPrinter...
+// FirewallGroupsPrinter ...
 type FirewallGroupsPrinter struct {
 	Groups []govultr.FirewallGroup `json:"firewall_groups"`
 	Meta   *govultr.Meta           `json:"meta"`
@@ -41,7 +41,6 @@ func (f *FirewallGroupsPrinter) Columns() [][]string {
 func (f *FirewallGroupsPrinter) Data() [][]string {
 	if len(f.Groups) == 0 {
 		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
-
 	}
 
 	var data [][]string
@@ -67,7 +66,7 @@ func (f *FirewallGroupsPrinter) Paging() [][]string {
 
 // ======================================
 
-// FirewallGroupPrinter...
+// FirewallGroupPrinter ...
 type FirewallGroupPrinter struct {
 	Group govultr.FirewallGroup `json:"firewall_group"`
 }
@@ -115,7 +114,7 @@ func (f *FirewallGroupPrinter) Paging() [][]string {
 
 // ======================================
 
-// FirewallRulesPrinter...
+// FirewallRulesPrinter ...
 type FirewallRulesPrinter struct {
 	Rules []govultr.FirewallRule `json:"firewall_rules"`
 	Meta  *govultr.Meta          `json:"meta"`
@@ -149,7 +148,6 @@ func (f *FirewallRulesPrinter) Columns() [][]string {
 func (f *FirewallRulesPrinter) Data() [][]string {
 	if len(f.Rules) == 0 {
 		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---", "---"}}
-
 	}
 
 	var data [][]string
@@ -176,7 +174,7 @@ func (f *FirewallRulesPrinter) Paging() [][]string {
 
 // ======================================
 
-// FirewallGroupPrinter...
+// FirewallRulePrinter ...
 type FirewallRulePrinter struct {
 	Rule govultr.FirewallRule `json:"firewall_rule"`
 }
