@@ -63,7 +63,7 @@ var (
 	`
 )
 
-// NewCmdUser ...
+// NewCmdUser provides the user command to the CLI
 func NewCmdUser(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	o := &options{Base: base}
 
