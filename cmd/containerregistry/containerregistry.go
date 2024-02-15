@@ -118,7 +118,7 @@ var (
 )
 
 // NewCmdContainerRegistry provides the CLI command functionality for container registry
-func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen
+func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
