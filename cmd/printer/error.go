@@ -24,10 +24,10 @@ func Error(err error) {
 	os.Exit(1)
 }
 
-func errorToStruct(err error) *T {
+func errorToStruct(err error) *T { //nolint:unused
 	t := &T{}
-	if err := json.Unmarshal([]byte(err.Error()), t); err != nil {
-		panic(err)
+	if errMar := json.Unmarshal([]byte(err.Error()), t); errMar != nil {
+		panic(errMar)
 	}
 	return t
 }

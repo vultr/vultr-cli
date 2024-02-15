@@ -96,7 +96,9 @@ func (o *Output) display(d [][]string) {
 }
 
 func (o *Output) flush() {
-	tw.Flush()
+	if err := tw.Flush(); err != nil {
+		panic(fmt.Errorf("unable to flush display : %v", err))
+	}
 }
 
 func (o *Output) displayNonText(data []byte) {
@@ -167,14 +169,13 @@ func MarshalObject(input interface{}, format string) []byte {
 	if format == "json" {
 		j, errJ := json.MarshalIndent(input, "", JSONIndent)
 		if errJ != nil {
-			panic(fmt.Errorf("error marshalling JSON : %v", errJ))
+			panic(fmt.Errorf("error marshaling JSON : %v", errJ))
 		}
 		output = j
-
 	} else if format == "yaml" {
 		y, errY := yaml.Marshal(input)
 		if errY != nil {
-			panic(fmt.Errorf("error marshalling YAML : %v", errY))
+			panic(fmt.Errorf("error marshaling YAML : %v", errY))
 		}
 		output = y
 	}
@@ -213,7 +214,6 @@ func ArrayOfIntsToString(a []int) string {
 
 // OLD funcs to be re-written //////////////////////////////////////////////////////////////
 func display(values columns) {
-
 	for i, value := range values {
 		format := "\t%s"
 		if i == 0 {
@@ -229,24 +229,10 @@ func displayString(message string) {
 	fmt.Fprintln(tw, message)
 }
 
-// arrayOfStringsToString will build a delimited string from an array for
-// display in the printer functions.  Defaulted to comma-delimited and enclosed
-// in square brackets to maintain consistency with array Fprintf
-func arrayOfStringsToString(a []string) string {
-	delimiter := ", "
-	var sb strings.Builder
-	sb.WriteString("[")
-	sb.WriteString(strings.Join(a, delimiter))
-	sb.WriteString("]")
-
-	return sb.String()
-}
-
 func flush() {
 	if err := tw.Flush(); err != nil {
 		panic("could not flush buffer")
 	}
-	tw.Flush()
 }
 
 // Meta prints out the pagination details TODO: old
