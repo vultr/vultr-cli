@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/utils"
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
@@ -33,25 +32,9 @@ var (
 	`
 )
 
-// Interface for os
-type Interface interface {
-	validate(cmd *cobra.Command, args []string)
-	List() ([]govultr.OS, *govultr.Meta, error)
-}
-
-// Options for os
-type Options struct {
-	Base *cli.Base
-}
-
-// NewOSOptions returns Options struct
-func NewOSOptions(base *cli.Base) *Options {
-	return &Options{Base: base}
-}
-
-// NewCmdOS creates cobra command for OS
+// NewCmdOS provides the command for operating systems to the CLI
 func NewCmdOS(base *cli.Base) *cobra.Command {
-	o := NewOSOptions(base)
+	o := &options{Base: base}
 
 	cmd := &cobra.Command{
 		Use:     "os",
@@ -59,21 +42,29 @@ func NewCmdOS(base *cli.Base) *cobra.Command {
 		Aliases: []string{"o"},
 		Long:    long,
 		Example: example,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			utils.SetOptions(o.Base, cmd, args)
+			return nil
+		},
 	}
 
+	// List
 	list := &cobra.Command{
 		Use:     "list",
 		Short:   "list all available operating systems",
 		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,
-		Run: func(cmd *cobra.Command, args []string) {
-			o.validate(cmd, args)
-			os, meta, err := o.List()
-			data := &OSPrinter{OperatingSystems: os, Meta: meta}
+		RunE: func(cmd *cobra.Command, args []string) error {
+			os, meta, err := o.list()
+			if err != nil {
+				return fmt.Errorf("error getting operating systems : %v", err)
+			}
 
-			fmt.Println(o.Base.Printer.Output)
+			data := &OSPrinter{OperatingSystems: os, Meta: meta}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 
@@ -89,18 +80,11 @@ func NewCmdOS(base *cli.Base) *cobra.Command {
 	return cmd
 }
 
-func (o *Options) validate(cmd *cobra.Command, args []string) {
-	o.Base.Args = args
-	o.Base.Options = utils.GetPaging(cmd)
-	o.Base.Printer.Output = viper.GetString("output")
+type options struct {
+	Base *cli.Base
 }
 
-// List all os
-func (o *Options) List() ([]govultr.OS, *govultr.Meta, error) {
+func (o *options) list() ([]govultr.OS, *govultr.Meta, error) {
 	list, meta, _, err := o.Base.Client.OS.List(context.Background(), o.Base.Options)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return list, meta, nil
+	return list, meta, err
 }

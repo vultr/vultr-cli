@@ -1,12 +1,10 @@
 package operatingsystems
 
 import (
-	"encoding/json"
 	"strconv"
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
-	"gopkg.in/yaml.v3"
 )
 
 // OSPrinter represents the plans data from the API
@@ -17,21 +15,12 @@ type OSPrinter struct {
 
 // JSON provides the JSON formatted byte data
 func (o *OSPrinter) JSON() []byte {
-	js, err := json.MarshalIndent(o, "", "    ")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return js
+	return printer.MarshalObject(o, "json")
 }
 
 // YAML provides the YAML formatted byte data
 func (o *OSPrinter) YAML() []byte {
-	yml, err := yaml.Marshal(o)
-	if err != nil {
-		panic(err.Error())
-	}
-	return yml
+	return printer.MarshalObject(o, "yaml")
 }
 
 // Columns provides the plan columns for the printer
@@ -46,7 +35,7 @@ func (o *OSPrinter) Columns() [][]string {
 
 // Data provides the plan data for the printer
 func (o *OSPrinter) Data() [][]string {
-	data := [][]string{}
+	var data [][]string
 
 	if len(o.OperatingSystems) == 0 {
 		data = append(data, []string{"---", "---", "---", "---"})
