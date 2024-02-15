@@ -9,7 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// ApplicationsPrinter represents the plans data from the API
+// OSPrinter represents the plans data from the API
 type OSPrinter struct {
 	OperatingSystems []govultr.OS  `json:"os"`
 	Meta             *govultr.Meta `json:"meta"`
