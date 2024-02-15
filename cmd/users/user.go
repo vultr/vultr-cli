@@ -64,7 +64,7 @@ var (
 )
 
 // NewCmdUser ...
-func NewCmdUser(base *cli.Base) *cobra.Command {
+func NewCmdUser(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
