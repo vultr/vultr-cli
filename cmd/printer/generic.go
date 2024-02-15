@@ -3,15 +3,17 @@ package printer
 import (
 	"encoding/json"
 
-	"github.com/go-yaml/yaml"
+	"gopkg.in/yaml.v3"
 )
 
 var _ ResourceOutput = &Generic{}
 
+// Generic ...
 type Generic struct {
-	Message string
+	Message string `json:"message"`
 }
 
+// JSON ...
 func (g *Generic) JSON() []byte {
 	prettyJSON, err := json.MarshalIndent(g, "", "    ")
 	if err != nil {
@@ -21,7 +23,8 @@ func (g *Generic) JSON() []byte {
 	return prettyJSON
 }
 
-func (g *Generic) Yaml() []byte {
+// YAML ...
+func (g *Generic) YAML() []byte {
 	yam, err := yaml.Marshal(g)
 	if err != nil {
 		panic(err.Error())
@@ -29,14 +32,17 @@ func (g *Generic) Yaml() []byte {
 	return yam
 }
 
-func (g *Generic) Columns() map[int][]interface{} {
-	return map[int][]interface{}{0: {"message"}}
+// Columns ...
+func (g *Generic) Columns() [][]string {
+	return [][]string{0: {"MESSAGE"}}
 }
 
-func (g *Generic) Data() map[int][]interface{} {
-	return map[int][]interface{}{0: {g.Message}}
+// Data ...
+func (g *Generic) Data() [][]string {
+	return [][]string{0: {g.Message}}
 }
 
-func (g *Generic) Paging() map[int][]interface{} {
+// Paging ...
+func (g *Generic) Paging() [][]string {
 	return nil
 }

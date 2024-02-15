@@ -1,7 +1,7 @@
 .PHONY: remove format
 
 export CGO=0
-export GOFLAGS=-mod=vendor -trimpath
+export GOFLAGS=-trimpath
 
 DIR?=builds
 
@@ -28,6 +28,9 @@ $(DIR)/vultr-cli_windows_386.exe: $(DIR)
 
 $(DIR)/vultr-cli_windows_amd64.exe: $(DIR)
 	env GOOS=windows GOARCH=amd64 go build -o $@
+
+$(DIR)/vultr-cli_linux_arm: $(DIR)
+	env GOOS=linux GOARCH=arm go build -o $@
 
 remove:
 	@rm -rf builds

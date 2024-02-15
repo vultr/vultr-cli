@@ -1,17 +1,4 @@
-// Copyright © 2019 The Vultr-cli Authors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
+// Package sshkeys provides the commands for the CLI to access ssh keys
 package sshkeys
 
 import (
@@ -20,11 +7,10 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/vultr/govultr/v2"
-	"github.com/vultr/vultr-cli/cmd/printer"
-	"github.com/vultr/vultr-cli/cmd/utils"
-	"github.com/vultr/vultr-cli/pkg/cli"
+	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v3/cmd/printer"
+	"github.com/vultr/vultr-cli/v3/cmd/utils"
+	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
 
 var (
@@ -37,10 +23,10 @@ var (
 	createLong    = `Create a SSH key on your Vultr account`
 	createExample = `
 	# Full Example
-	vultr-cli ssh create --name="ssh key name" --key "ssh-rsa AAAAB3NzaC1yc...."
+	vultr-cli ssh create --name="ssh key name" --key="ssh-rsa AAAAB3NzaC1yc...."
 	
 	# Shortened with alias commands
-	vultr-cli s c -n="ssh key name" -k "ssh-rsa AAAAB3NzaC1yc...."
+	vultr-cli s c -n="ssh key name" -k="ssh-rsa AAAAB3NzaC1yc...."
 	`
 
 	getLong    = `Get a single SSH Key from your account`
@@ -83,112 +69,164 @@ var (
 	`
 )
 
-// Interface for ssh-keys
-type Interface interface {
-	validate(cmd *cobra.Command, args []string)
-	Create() (*govultr.SSHKey, error)
-	Get() (*govultr.SSHKey, error)
-	List() ([]govultr.SSHKey, *govultr.Meta, error)
-	Update() error
-	Delete() error
-}
-
-// Options for ssh-keys
-type Options struct {
-	Base   *cli.Base
-	SSHKey *govultr.SSHKeyReq
-}
-
-// NewSSHKeyOptions returns Options struct
-func NewSSHKeyOptions(base *cli.Base) *Options {
-	return &Options{Base: base}
-}
-
 // NewCmdSSHKey creates a cobra command for Regions
-func NewCmdSSHKey(base *cli.Base) *cobra.Command {
-	o := NewSSHKeyOptions(base)
+func NewCmdSSHKey(base *cli.Base) *cobra.Command { //nolint:gocyclo
+	o := &options{Base: base}
 
 	cmd := &cobra.Command{
 		Use:     "ssh-key",
+		Short:   "Commands to access SSH key functions",
 		Aliases: []string{"ssh", "ssh-keys", "sshkeys"},
-		Short:   "ssh-key commands",
 		Long:    sshLong,
 		Example: sshExample,
-	}
-
-	create := &cobra.Command{
-		Use:     "create",
-		Aliases: []string{"c"},
-		Short:   "Create an SSH key",
-		Long:    createLong,
-		Example: createExample,
-		Run: func(cmd *cobra.Command, args []string) {
-			o.validate(cmd, args)
-			key, err := o.Create()
-			o.Base.Printer.Display(&SSHKeyPrinter{SSHKey: key}, err)
-		},
-	}
-	create.Flags().StringP("name", "n", "", "Name of the SSH key")
-	create.Flags().StringP("key", "k", "", "SSH public key (in authorized_keys format)")
-	_ = create.MarkFlagRequired("name")
-	_ = create.MarkFlagRequired("key")
-
-	get := &cobra.Command{
-		Use:     "get <sshKeyID>",
-		Short:   "Get an SSH key",
-		Aliases: []string{"g"},
-		Long:    getLong,
-		Example: getExample,
-		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("please provide an sshKeyID")
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			utils.SetOptions(o.Base, cmd, args)
+			if !o.Base.HasAuth {
+				return errors.New(utils.APIKeyError)
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			o.validate(cmd, args)
-			key, err := o.Get()
-			o.Base.Printer.Display(&SSHKeyPrinter{SSHKey: key}, err)
-		},
 	}
 
+	// List
 	list := &cobra.Command{
 		Use:     "list",
 		Short:   "List all SSH keys",
 		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,
-		Run: func(cmd *cobra.Command, args []string) {
-			o.validate(cmd, args)
-			list, meta, err := o.List()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			o.Base.Options = utils.GetPaging(cmd)
+			list, meta, err := o.list()
+			if err != nil {
+				return fmt.Errorf("error retrieving ssh key list : %v", err)
+			}
+
 			data := &SSHKeysPrinter{SSHKeys: list, Meta: meta}
-			o.Base.Printer.Display(data, err)
+			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
-	list.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	list.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
+	list.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
+	list.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+	)
+
+	// Get
+	get := &cobra.Command{
+		Use:     "get <SSH Key ID>",
+		Short:   "Get an SSH key",
+		Aliases: []string{"g"},
+		Long:    getLong,
+		Example: getExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide an SSH Key ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			key, err := o.get()
+			if err != nil {
+				return fmt.Errorf("error getting ssh key : %v", err)
+			}
+
+			o.Base.Printer.Display(&SSHKeyPrinter{SSHKey: key}, nil)
+
+			return nil
+		},
+	}
+
+	// Create
+	create := &cobra.Command{
+		Use:     "create",
+		Short:   "Create an SSH key",
+		Aliases: []string{"c"},
+		Long:    createLong,
+		Example: createExample,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			name, errNa := cmd.Flags().GetString("name")
+			if errNa != nil {
+				return fmt.Errorf("error parsing flag 'name' for ssh key create : %v", errNa)
+			}
+
+			key, errKe := cmd.Flags().GetString("key")
+			if errKe != nil {
+				return fmt.Errorf("error parsing flag 'key' for ssh key create : %v", errKe)
+			}
+
+			o.SSHKeyReq = &govultr.SSHKeyReq{
+				Name:   name,
+				SSHKey: key,
+			}
+
+			k, err := o.create()
+			if err != nil {
+				return fmt.Errorf("error creating ssh key : %v", err)
+			}
+
+			o.Base.Printer.Display(&SSHKeyPrinter{SSHKey: k}, err)
+
+			return nil
+		},
+	}
+	create.Flags().StringP("name", "n", "", "Name of the SSH key")
+	create.Flags().StringP("key", "k", "", "SSH public key (in authorized_keys format)")
+	create.MarkFlagsRequiredTogether("name", "key")
+
+	// Update
 	update := &cobra.Command{
-		Use:     "update <sshKeyID>",
+		Use:     "update <SSH Key ID>",
 		Short:   "Update SSH key",
 		Aliases: []string{"u"},
 		Long:    updateLong,
 		Example: updateExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("please provide an sshKeyID")
+				return errors.New("please provide an SSH Key ID")
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			o.validate(cmd, args)
-			o.Base.Printer.Display(&printer.Generic{Message: "SSH Key has been updated"}, o.Update())
+		RunE: func(cmd *cobra.Command, args []string) error {
+			name, errNa := cmd.Flags().GetString("name")
+			if errNa != nil {
+				return fmt.Errorf("error parsing flag 'name' for ssh key update : %v", errNa)
+			}
+
+			key, errKe := cmd.Flags().GetString("key")
+			if errKe != nil {
+				return fmt.Errorf("error parsing flag 'key' for ssh key update : %v", errKe)
+			}
+
+			o.SSHKeyReq = &govultr.SSHKeyReq{}
+
+			if cmd.Flags().Changed("name") {
+				o.SSHKeyReq.Name = name
+			}
+
+			if cmd.Flags().Changed("key") {
+				o.SSHKeyReq.SSHKey = key
+			}
+
+			if err := o.update(); err != nil {
+				return fmt.Errorf("error updating ssh key : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("SSH Key has been updated"), nil)
+
+			return nil
 		},
 	}
 	update.Flags().StringP("name", "n", "", "Name of the SSH key")
 	update.Flags().StringP("key", "k", "", "SSH public key (in authorized_keys format)")
 
-	deleteCmd := &cobra.Command{
+	// Delete
+	del := &cobra.Command{
 		Use:     "delete <sshKeyID>",
 		Short:   "Delete an SSH key",
 		Aliases: []string{"destroy", "d"},
@@ -196,65 +234,55 @@ func NewCmdSSHKey(base *cli.Base) *cobra.Command {
 		Example: deleteExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("please provide an sshKeyID")
+				return errors.New("please provide an SSH Key ID")
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			o.validate(cmd, args)
-			o.Base.Printer.Display(&printer.Generic{Message: "SSH Key has been deleted"}, o.Delete())
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.del(); err != nil {
+				return fmt.Errorf("error deleting ssh key : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("SSH Key has been deleted"), nil)
+
+			return nil
 		},
 	}
 
-	cmd.AddCommand(create, get, list, update, update, deleteCmd)
+	cmd.AddCommand(
+		create,
+		get,
+		list,
+		update,
+		del,
+	)
 	return cmd
 }
 
-func (o *Options) validate(cmd *cobra.Command, args []string) {
-	fields := map[string]bool{"create": true, "update <sshKeyID>": true}
-	if fields[cmd.Use] {
-		name, _ := cmd.Flags().GetString("name")
-		key, _ := cmd.Flags().GetString("key")
-		o.SSHKey = &govultr.SSHKeyReq{
-			Name: name,
-		}
-
-		// On updates we do not want this to be empty
-		if key != "" {
-			o.SSHKey.SSHKey = key
-		}
-	}
-
-	if cmd.Use == "list" {
-		o.Base.Options = utils.GetPaging(cmd)
-	}
-
-	o.Base.Args = args
-	o.Base.Printer.Output = viper.GetString("output")
+type options struct {
+	Base      *cli.Base
+	SSHKeyReq *govultr.SSHKeyReq
 }
 
-// Create a ssh key
-func (o *Options) Create() (*govultr.SSHKey, error) {
-	return o.Base.Client.SSHKey.Create(context.Background(), o.SSHKey)
+func (o *options) create() (*govultr.SSHKey, error) {
+	key, _, err := o.Base.Client.SSHKey.Create(context.Background(), o.SSHKeyReq)
+	return key, err
 }
 
-// Get a specific ssh key on your account
-func (o *Options) Get() (*govultr.SSHKey, error) {
-	return o.Base.Client.SSHKey.Get(context.Background(), o.Base.Args[0])
+func (o *options) get() (*govultr.SSHKey, error) {
+	key, _, err := o.Base.Client.SSHKey.Get(context.Background(), o.Base.Args[0])
+	return key, err
 }
 
-// List all ssh keys on your account.
-func (o *Options) List() ([]govultr.SSHKey, *govultr.Meta, error) {
-	return o.Base.Client.SSHKey.List(context.Background(), o.Base.Options)
+func (o *options) list() ([]govultr.SSHKey, *govultr.Meta, error) {
+	keys, meta, _, err := o.Base.Client.SSHKey.List(context.Background(), o.Base.Options)
+	return keys, meta, err
 }
 
-// Update a specific ssh key on your account
-func (o *Options) Update() error {
-	fmt.Println(o.SSHKey)
-	return o.Base.Client.SSHKey.Update(context.Background(), o.Base.Args[0], o.SSHKey)
+func (o *options) update() error {
+	return o.Base.Client.SSHKey.Update(context.Background(), o.Base.Args[0], o.SSHKeyReq)
 }
 
-// Delete a specific ssh key on your account
-func (o *Options) Delete() error {
+func (o *options) del() error {
 	return o.Base.Client.SSHKey.Delete(context.Background(), o.Base.Args[0])
 }

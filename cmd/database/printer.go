@@ -1,0 +1,1318 @@
+package database
+
+import (
+	"reflect"
+	"strconv"
+
+	"github.com/vultr/govultr/v3"
+	"github.com/vultr/vultr-cli/v3/cmd/printer"
+	"github.com/vultr/vultr-cli/v3/cmd/utils"
+)
+
+// DBsPrinter ...
+type DBsPrinter struct {
+	DBs  []govultr.Database `json:"databases"`
+	Meta *govultr.Meta      `json:"meta"`
+}
+
+// JSON ...
+func (d *DBsPrinter) JSON() []byte {
+	return printer.MarshalObject(d, "json")
+}
+
+// YAML ...
+func (d *DBsPrinter) YAML() []byte {
+	return printer.MarshalObject(d, "yaml")
+}
+
+// Columns ...
+func (d *DBsPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
+	if len(d.DBs) == 0 {
+		return [][]string{0: {"No databases"}}
+	}
+
+	var data [][]string
+	for i := range d.DBs {
+		data = append(data,
+			[]string{"ID", d.DBs[i].ID},
+			[]string{"DATE CREATED", d.DBs[i].DateCreated},
+			[]string{"PLAN", d.DBs[i].Plan},
+			[]string{"PLAN DISK", strconv.Itoa(d.DBs[i].PlanDisk)},
+			[]string{"PLAN RAM", strconv.Itoa(d.DBs[i].PlanRAM)},
+			[]string{"PLAN VCPUS", strconv.Itoa(d.DBs[i].PlanVCPUs)},
+			[]string{"PLAN REPLICAS", strconv.Itoa(d.DBs[i].PlanReplicas)},
+			[]string{"REGION", d.DBs[i].Region},
+			[]string{"DATABASE ENGINE", d.DBs[i].DatabaseEngine},
+			[]string{"DATABASE ENGINE VERSION", d.DBs[i].DatabaseEngineVersion},
+			[]string{"VPC ID", d.DBs[i].VPCID},
+			[]string{"STATUS", d.DBs[i].Status},
+			[]string{"LABEL", d.DBs[i].Label},
+			[]string{"TAG", d.DBs[i].Tag},
+			[]string{"DB NAME", d.DBs[i].DBName},
+		)
+
+		if d.DBs[i].DatabaseEngine == "ferretpg" {
+			data = append(data,
+				[]string{" "},
+				[]string{"FERRETDB CREDENTIALS"},
+				[]string{"HOST", d.DBs[i].FerretDBCredentials.Host},
+				[]string{"PORT", strconv.Itoa(d.DBs[i].FerretDBCredentials.Port)},
+				[]string{"USER", d.DBs[i].FerretDBCredentials.User},
+				[]string{"PASSWORD", d.DBs[i].FerretDBCredentials.Password},
+				[]string{"PUBLIC IP", d.DBs[i].FerretDBCredentials.PublicIP},
+			)
+
+			if d.DBs[i].FerretDBCredentials.PrivateIP != "" {
+				data = append(data,
+					[]string{"PRIVATE IP", d.DBs[i].FerretDBCredentials.PrivateIP},
+				)
+			}
+
+			data = append(data, []string{" "})
+		}
+
+		data = append(data, []string{"HOST", d.DBs[i].Host})
+
+		if d.DBs[i].PublicHost != "" {
+			data = append(data, []string{"PUBLIC HOST", d.DBs[i].PublicHost})
+		}
+
+		data = append(data,
+			[]string{"USER", d.DBs[i].User},
+			[]string{"PASSWORD", d.DBs[i].Password},
+			[]string{"PORT", d.DBs[i].Port},
+			[]string{"MAINTENANCE DOW", d.DBs[i].MaintenanceDOW},
+			[]string{"MAINTENANCE TIME", d.DBs[i].MaintenanceTime},
+			[]string{"LATEST BACKUP", d.DBs[i].LatestBackup},
+			[]string{"TRUSTED IPS", printer.ArrayOfStringsToString(d.DBs[i].TrustedIPs)},
+		)
+
+		if d.DBs[i].DatabaseEngine == "mysql" {
+			data = append(data,
+				[]string{"MYSQL SQL MODES", printer.ArrayOfStringsToString(d.DBs[i].MySQLSQLModes)},
+				[]string{"MYSQL REQUIRE PRIMARY KEY", strconv.FormatBool(*d.DBs[i].MySQLRequirePrimaryKey)},
+				[]string{"MYSQL SLOW QUERY LOG", strconv.FormatBool(*d.DBs[i].MySQLSlowQueryLog)},
+			)
+
+			if *d.DBs[i].MySQLSlowQueryLog {
+				data = append(data,
+					[]string{"MYSQL LONG QUERY TIME", strconv.Itoa(d.DBs[i].MySQLLongQueryTime)},
+				)
+			}
+		}
+
+		if d.DBs[i].DatabaseEngine == "pg" && len(d.DBs[i].PGAvailableExtensions) > 0 {
+			data = append(data,
+				[]string{" "},
+				[]string{"PG AVAILABLE EXTENSIONS"},
+				[]string{"NAME", "VERSIONS"},
+			)
+
+			for j := range d.DBs[i].PGAvailableExtensions {
+				if len(d.DBs[i].PGAvailableExtensions[j].Versions) > 0 {
+					data = append(data, []string{
+						d.DBs[i].PGAvailableExtensions[j].Name,
+						printer.ArrayOfStringsToString(d.DBs[i].PGAvailableExtensions[j].Versions)})
+				} else {
+					data = append(data, []string{d.DBs[i].PGAvailableExtensions[j].Name, ""})
+				}
+			}
+			data = append(data, []string{" "})
+		}
+
+		if d.DBs[i].DatabaseEngine == "redis" {
+			data = append(data, []string{"REDIS EVICTION POLICY", d.DBs[i].RedisEvictionPolicy})
+		}
+
+		data = append(data, []string{"CLUSTER TIME ZONE", d.DBs[i].ClusterTimeZone})
+
+		if len(d.DBs[i].ReadReplicas) > 0 {
+			data = append(data,
+				[]string{" "},
+				[]string{"READ REPLICAS"},
+			)
+
+			for j := range d.DBs[i].ReadReplicas {
+				data = append(data,
+					[]string{"ID", d.DBs[i].ReadReplicas[j].ID},
+					[]string{"DATE CREATED", d.DBs[i].ReadReplicas[j].DateCreated},
+					[]string{"PLAN", d.DBs[i].ReadReplicas[j].Plan},
+					[]string{"PLAN DISK", strconv.Itoa(d.DBs[i].ReadReplicas[j].PlanDisk)},
+					[]string{"PLAN RAM", strconv.Itoa(d.DBs[i].ReadReplicas[j].PlanRAM)},
+					[]string{"PLAN VCPUS", strconv.Itoa(d.DBs[i].ReadReplicas[j].PlanVCPUs)},
+					[]string{"PLAN REPLICAS", strconv.Itoa(d.DBs[i].ReadReplicas[j].PlanReplicas)},
+					[]string{"REGION", d.DBs[i].ReadReplicas[j].Region},
+					[]string{"DATABASE ENGINE", d.DBs[i].ReadReplicas[j].DatabaseEngine},
+					[]string{"DATABASE ENGINE VERSION", d.DBs[i].ReadReplicas[j].DatabaseEngineVersion},
+					[]string{"VPC ID", d.DBs[i].ReadReplicas[j].VPCID},
+					[]string{"STATUS", d.DBs[i].ReadReplicas[j].Status},
+					[]string{"LABEL", d.DBs[i].ReadReplicas[j].Label},
+					[]string{"TAG", d.DBs[i].ReadReplicas[j].Tag},
+					[]string{"DB NAME", d.DBs[i].ReadReplicas[j].DBName},
+				)
+
+				if d.DBs[i].ReadReplicas[j].DatabaseEngine == "ferretpg" {
+					data = append(data,
+						[]string{" "},
+
+						[]string{"FERRETDB CREDENTIALS"},
+						[]string{"HOST", d.DBs[i].ReadReplicas[j].FerretDBCredentials.Host},
+						[]string{"PORT", strconv.Itoa(d.DBs[i].ReadReplicas[j].FerretDBCredentials.Port)},
+						[]string{"USER", d.DBs[i].ReadReplicas[j].FerretDBCredentials.User},
+						[]string{"PASSWORD", d.DBs[i].ReadReplicas[j].FerretDBCredentials.Password},
+						[]string{"PUBLIC IP", d.DBs[i].ReadReplicas[j].FerretDBCredentials.PublicIP},
+					)
+
+					if d.DBs[i].ReadReplicas[j].FerretDBCredentials.PrivateIP != "" {
+						data = append(data,
+							[]string{"PRIVATE IP", d.DBs[i].ReadReplicas[j].FerretDBCredentials.PrivateIP},
+						)
+					}
+
+					data = append(data, []string{" "})
+				}
+
+				data = append(data, []string{"HOST", d.DBs[i].ReadReplicas[j].Host})
+
+				if d.DBs[i].ReadReplicas[j].PublicHost != "" {
+					data = append(data, []string{"PUBLIC HOST", d.DBs[i].ReadReplicas[j].PublicHost})
+				}
+
+				data = append(data,
+					[]string{"USER", d.DBs[i].ReadReplicas[j].User},
+					[]string{"PASSWORD", d.DBs[i].ReadReplicas[j].Password},
+					[]string{"PORT", d.DBs[i].ReadReplicas[j].Port},
+					[]string{"MAINTENANCE DOW", d.DBs[i].ReadReplicas[j].MaintenanceDOW},
+					[]string{"MAINTENANCE TIME", d.DBs[i].ReadReplicas[j].MaintenanceTime},
+					[]string{"LATEST BACKUP", d.DBs[i].ReadReplicas[j].LatestBackup},
+					[]string{"TRUSTED IPS", printer.ArrayOfStringsToString(d.DBs[i].ReadReplicas[j].TrustedIPs)},
+				)
+
+				if d.DBs[i].ReadReplicas[j].DatabaseEngine == "mysql" {
+					data = append(data,
+						[]string{"MYSQL SQL MODES", printer.ArrayOfStringsToString(d.DBs[i].ReadReplicas[j].MySQLSQLModes)},
+						[]string{"MYSQL REQUIRE PRIMARY KEY", strconv.FormatBool(*d.DBs[i].ReadReplicas[j].MySQLRequirePrimaryKey)},
+						[]string{"MYSQL SLOW QUERY LOG", strconv.FormatBool(*d.DBs[i].ReadReplicas[j].MySQLSlowQueryLog)},
+					)
+
+					if *d.DBs[i].ReadReplicas[j].MySQLSlowQueryLog {
+						data = append(data, []string{"MYSQL LONG QUERY TIME", strconv.Itoa(d.DBs[i].ReadReplicas[j].MySQLLongQueryTime)})
+					}
+				}
+
+				if d.DBs[i].ReadReplicas[j].DatabaseEngine == "pg" && len(d.DBs[i].ReadReplicas[j].PGAvailableExtensions) > 0 {
+					data = append(data,
+						[]string{" "},
+						[]string{"PG AVAILABLE EXTENSIONS"},
+						[]string{"NAME", "VERSIONS"},
+					)
+
+					for k := range d.DBs[i].ReadReplicas[j].PGAvailableExtensions {
+						if len(d.DBs[i].ReadReplicas[j].PGAvailableExtensions[k].Versions) > 0 {
+							data = append(data, []string{
+								d.DBs[i].ReadReplicas[j].PGAvailableExtensions[k].Name,
+								printer.ArrayOfStringsToString(d.DBs[i].ReadReplicas[j].PGAvailableExtensions[k].Versions),
+							})
+						} else {
+							data = append(data, []string{d.DBs[i].ReadReplicas[j].PGAvailableExtensions[k].Name, ""})
+						}
+					}
+
+					data = append(data, []string{" "})
+				}
+
+				if d.DBs[i].ReadReplicas[j].DatabaseEngine == "redis" {
+					data = append(data, []string{"REDIS EVICTION POLICY", d.DBs[i].ReadReplicas[j].RedisEvictionPolicy})
+				}
+
+				data = append(data, []string{"CLUSTER TIME ZONE", d.DBs[i].ReadReplicas[j].ClusterTimeZone})
+			}
+		}
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (d *DBsPrinter) Paging() [][]string {
+	paging := &printer.Total{Total: d.Meta.Total}
+	return paging.Compose()
+}
+
+// ======================================
+
+// DBPrinter ...
+type DBPrinter struct {
+	DB *govultr.Database `json:"database"`
+}
+
+// JSON ...
+func (d *DBPrinter) JSON() []byte {
+	return printer.MarshalObject(d, "json")
+}
+
+// YAML ...
+func (d *DBPrinter) YAML() []byte {
+	return printer.MarshalObject(d, "yaml")
+}
+
+// Columns ...
+func (d *DBPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
+	var data [][]string
+	data = append(data,
+		[]string{"ID", d.DB.ID},
+		[]string{"DATE CREATED", d.DB.DateCreated},
+		[]string{"PLAN", d.DB.Plan},
+		[]string{"PLAN DISK", strconv.Itoa(d.DB.PlanDisk)},
+		[]string{"PLAN RAM", strconv.Itoa(d.DB.PlanRAM)},
+		[]string{"PLAN VCPUS", strconv.Itoa(d.DB.PlanVCPUs)},
+		[]string{"PLAN REPLICAS", strconv.Itoa(d.DB.PlanReplicas)},
+		[]string{"REGION", d.DB.Region},
+		[]string{"DATABASE ENGINE", d.DB.DatabaseEngine},
+		[]string{"DATABASE ENGINE VERSION", d.DB.DatabaseEngineVersion},
+		[]string{"VPC ID", d.DB.VPCID},
+		[]string{"STATUS", d.DB.Status},
+		[]string{"LABEL", d.DB.Label},
+		[]string{"TAG", d.DB.Tag},
+		[]string{"DB NAME", d.DB.DBName},
+	)
+
+	if d.DB.DatabaseEngine == "ferretpg" {
+		data = append(data,
+			[]string{" "},
+			[]string{"FERRETDB CREDENTIALS"},
+			[]string{"HOST", d.DB.FerretDBCredentials.Host},
+			[]string{"PORT", strconv.Itoa(d.DB.FerretDBCredentials.Port)},
+			[]string{"USER", d.DB.FerretDBCredentials.User},
+			[]string{"PASSWORD", d.DB.FerretDBCredentials.Password},
+			[]string{"PUBLIC IP", d.DB.FerretDBCredentials.PublicIP},
+		)
+
+		if d.DB.FerretDBCredentials.PrivateIP != "" {
+			data = append(data,
+				[]string{"PRIVATE IP", d.DB.FerretDBCredentials.PrivateIP},
+			)
+		}
+
+		data = append(data, []string{" "})
+	}
+
+	data = append(data, []string{"HOST", d.DB.Host})
+
+	if d.DB.PublicHost != "" {
+		data = append(data, []string{"PUBLIC HOST", d.DB.PublicHost})
+	}
+
+	data = append(data,
+		[]string{"USER", d.DB.User},
+		[]string{"PASSWORD", d.DB.Password},
+		[]string{"PORT", d.DB.Port},
+		[]string{"MAINTENANCE DOW", d.DB.MaintenanceDOW},
+		[]string{"MAINTENANCE TIME", d.DB.MaintenanceTime},
+		[]string{"LATEST BACKUP", d.DB.LatestBackup},
+		[]string{"TRUSTED IPS", printer.ArrayOfStringsToString(d.DB.TrustedIPs)},
+	)
+
+	if d.DB.DatabaseEngine == "mysql" {
+		data = append(data,
+			[]string{"MYSQL SQL MODES", printer.ArrayOfStringsToString(d.DB.MySQLSQLModes)},
+			[]string{"MYSQL REQUIRE PRIMARY KEY", strconv.FormatBool(*d.DB.MySQLRequirePrimaryKey)},
+			[]string{"MYSQL SLOW QUERY LOG", strconv.FormatBool(*d.DB.MySQLSlowQueryLog)},
+		)
+
+		if *d.DB.MySQLSlowQueryLog {
+			data = append(data,
+				[]string{"MYSQL LONG QUERY TIME", strconv.Itoa(d.DB.MySQLLongQueryTime)},
+			)
+		}
+	}
+
+	if d.DB.DatabaseEngine == "pg" && len(d.DB.PGAvailableExtensions) > 0 {
+		data = append(data,
+			[]string{" "},
+			[]string{"PG AVAILABLE EXTENSIONS"},
+			[]string{"NAME", "VERSIONS"},
+		)
+
+		for i := range d.DB.PGAvailableExtensions {
+			if len(d.DB.PGAvailableExtensions[i].Versions) > 0 {
+				data = append(data, []string{
+					d.DB.PGAvailableExtensions[i].Name,
+					printer.ArrayOfStringsToString(d.DB.PGAvailableExtensions[i].Versions)})
+			} else {
+				data = append(data, []string{d.DB.PGAvailableExtensions[i].Name, ""})
+			}
+		}
+		data = append(data, []string{" "})
+	}
+
+	if d.DB.DatabaseEngine == "redis" {
+		data = append(data, []string{"REDIS EVICTION POLICY", d.DB.RedisEvictionPolicy})
+	}
+
+	data = append(data, []string{"CLUSTER TIME ZONE", d.DB.ClusterTimeZone})
+
+	if len(d.DB.ReadReplicas) > 0 {
+		data = append(data,
+			[]string{" "},
+			[]string{"READ REPLICAS"},
+		)
+
+		for i := range d.DB.ReadReplicas {
+			data = append(data,
+				[]string{"ID", d.DB.ReadReplicas[i].ID},
+				[]string{"DATE CREATED", d.DB.ReadReplicas[i].DateCreated},
+				[]string{"PLAN", d.DB.ReadReplicas[i].Plan},
+				[]string{"PLAN DISK", strconv.Itoa(d.DB.ReadReplicas[i].PlanDisk)},
+				[]string{"PLAN RAM", strconv.Itoa(d.DB.ReadReplicas[i].PlanRAM)},
+				[]string{"PLAN VCPUS", strconv.Itoa(d.DB.ReadReplicas[i].PlanVCPUs)},
+				[]string{"PLAN REPLICAS", strconv.Itoa(d.DB.ReadReplicas[i].PlanReplicas)},
+				[]string{"REGION", d.DB.ReadReplicas[i].Region},
+				[]string{"DATABASE ENGINE", d.DB.ReadReplicas[i].DatabaseEngine},
+				[]string{"DATABASE ENGINE VERSION", d.DB.ReadReplicas[i].DatabaseEngineVersion},
+				[]string{"VPC ID", d.DB.ReadReplicas[i].VPCID},
+				[]string{"STATUS", d.DB.ReadReplicas[i].Status},
+				[]string{"LABEL", d.DB.ReadReplicas[i].Label},
+				[]string{"TAG", d.DB.ReadReplicas[i].Tag},
+				[]string{"DB NAME", d.DB.ReadReplicas[i].DBName},
+			)
+
+			if d.DB.ReadReplicas[i].DatabaseEngine == "ferretpg" {
+				data = append(data,
+					[]string{" "},
+
+					[]string{"FERRETDB CREDENTIALS"},
+					[]string{"HOST", d.DB.ReadReplicas[i].FerretDBCredentials.Host},
+					[]string{"PORT", strconv.Itoa(d.DB.ReadReplicas[i].FerretDBCredentials.Port)},
+					[]string{"USER", d.DB.ReadReplicas[i].FerretDBCredentials.User},
+					[]string{"PASSWORD", d.DB.ReadReplicas[i].FerretDBCredentials.Password},
+					[]string{"PUBLIC IP", d.DB.ReadReplicas[i].FerretDBCredentials.PublicIP},
+				)
+
+				if d.DB.ReadReplicas[i].FerretDBCredentials.PrivateIP != "" {
+					data = append(data,
+						[]string{"PRIVATE IP", d.DB.ReadReplicas[i].FerretDBCredentials.PrivateIP},
+					)
+				}
+
+				data = append(data, []string{" "})
+			}
+
+			data = append(data, []string{"HOST", d.DB.ReadReplicas[i].Host})
+
+			if d.DB.ReadReplicas[i].PublicHost != "" {
+				data = append(data, []string{"PUBLIC HOST", d.DB.ReadReplicas[i].PublicHost})
+			}
+
+			data = append(data,
+				[]string{"USER", d.DB.ReadReplicas[i].User},
+				[]string{"PASSWORD", d.DB.ReadReplicas[i].Password},
+				[]string{"PORT", d.DB.ReadReplicas[i].Port},
+				[]string{"MAINTENANCE DOW", d.DB.ReadReplicas[i].MaintenanceDOW},
+				[]string{"MAINTENANCE TIME", d.DB.ReadReplicas[i].MaintenanceTime},
+				[]string{"LATEST BACKUP", d.DB.ReadReplicas[i].LatestBackup},
+				[]string{"TRUSTED IPS", printer.ArrayOfStringsToString(d.DB.ReadReplicas[i].TrustedIPs)},
+			)
+
+			if d.DB.ReadReplicas[i].DatabaseEngine == "mysql" {
+				data = append(data,
+					[]string{"MYSQL SQL MODES", printer.ArrayOfStringsToString(d.DB.ReadReplicas[i].MySQLSQLModes)},
+					[]string{"MYSQL REQUIRE PRIMARY KEY", strconv.FormatBool(*d.DB.ReadReplicas[i].MySQLRequirePrimaryKey)},
+					[]string{"MYSQL SLOW QUERY LOG", strconv.FormatBool(*d.DB.ReadReplicas[i].MySQLSlowQueryLog)},
+				)
+
+				if *d.DB.ReadReplicas[i].MySQLSlowQueryLog {
+					data = append(data, []string{"MYSQL LONG QUERY TIME", strconv.Itoa(d.DB.ReadReplicas[i].MySQLLongQueryTime)})
+				}
+			}
+
+			if d.DB.ReadReplicas[i].DatabaseEngine == "pg" && len(d.DB.ReadReplicas[i].PGAvailableExtensions) > 0 {
+				data = append(data,
+					[]string{" "},
+					[]string{"PG AVAILABLE EXTENSIONS"},
+					[]string{"NAME", "VERSIONS"},
+				)
+
+				for j := range d.DB.ReadReplicas[i].PGAvailableExtensions {
+					if len(d.DB.ReadReplicas[i].PGAvailableExtensions[j].Versions) > 0 {
+						data = append(data, []string{
+							d.DB.ReadReplicas[i].PGAvailableExtensions[j].Name,
+							printer.ArrayOfStringsToString(d.DB.ReadReplicas[i].PGAvailableExtensions[j].Versions),
+						})
+					} else {
+						data = append(data, []string{d.DB.ReadReplicas[i].PGAvailableExtensions[j].Name, ""})
+					}
+				}
+
+				data = append(data, []string{" "})
+			}
+
+			if d.DB.ReadReplicas[i].DatabaseEngine == "redis" {
+				data = append(data, []string{"REDIS EVICTION POLICY", d.DB.ReadReplicas[i].RedisEvictionPolicy})
+			}
+
+			data = append(data, []string{"CLUSTER TIME ZONE", d.DB.ReadReplicas[i].ClusterTimeZone})
+		}
+	}
+
+	return data
+}
+
+// Paging ...
+func (d *DBPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// DBsSummaryPrinter ...
+type DBsSummaryPrinter struct {
+	DBs  []govultr.Database `json:"databases"`
+	Meta *govultr.Meta      `json:"meta"`
+}
+
+// JSON ...
+func (d *DBsSummaryPrinter) JSON() []byte {
+	return printer.MarshalObject(d, "json")
+}
+
+// YAML ...
+func (d *DBsSummaryPrinter) YAML() []byte {
+	return printer.MarshalObject(d, "yaml")
+}
+
+// Columns ...
+func (d *DBsSummaryPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"REGION",
+		"LABEL",
+		"STATUS",
+		"ENGINE",
+		"VERSION",
+	}}
+}
+
+// Data ...
+func (d *DBsSummaryPrinter) Data() [][]string {
+	if len(d.DBs) == 0 {
+		return [][]string{0: {"---", "---", "---", "---", "---", "---"}}
+	}
+
+	var data [][]string
+	for i := range d.DBs {
+		data = append(data, []string{
+
+			d.DBs[i].ID,
+			d.DBs[i].Region,
+			d.DBs[i].Label,
+			d.DBs[i].Status,
+			d.DBs[i].DatabaseEngine,
+			d.DBs[i].DatabaseEngineVersion,
+		})
+	}
+
+	return data
+}
+
+// Paging ...
+func (d *DBsSummaryPrinter) Paging() [][]string {
+	paging := &printer.Total{Total: d.Meta.Total}
+	return paging.Compose()
+}
+
+// ======================================
+
+// PlansPrinter ...
+type PlansPrinter struct {
+	Plans []govultr.DatabasePlan `json:"plans"`
+	Meta  *govultr.Meta          `json:"meta"`
+}
+
+// JSON ...
+func (p *PlansPrinter) JSON() []byte {
+	return printer.MarshalObject(p, "json")
+}
+
+// YAML ...
+func (p *PlansPrinter) YAML() []byte {
+	return printer.MarshalObject(p, "yaml")
+}
+
+// Columns ...
+func (p *PlansPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (p *PlansPrinter) Data() [][]string {
+	if len(p.Plans) == 0 {
+		return [][]string{0: {"No database plans available"}}
+	}
+
+	var data [][]string
+	for i := range p.Plans {
+		data = append(data,
+			[]string{"ID", p.Plans[i].ID},
+			[]string{"NUMBER OF NODES", strconv.Itoa(p.Plans[i].NumberOfNodes)},
+			[]string{"TYPE", p.Plans[i].Type},
+			[]string{"VCPU COUNT", strconv.Itoa(p.Plans[i].VCPUCount)},
+			[]string{"RAM", strconv.Itoa(p.Plans[i].RAM)},
+			[]string{"DISK", strconv.Itoa(p.Plans[i].Disk)},
+			[]string{"MONTHLY COST", strconv.Itoa(p.Plans[i].MonthlyCost)},
+
+			[]string{" "},
+
+			[]string{"SUPPORTED ENGINES"},
+			[]string{"MYSQL", strconv.FormatBool(*p.Plans[i].SupportedEngines.MySQL)},
+			[]string{"PG", strconv.FormatBool(*p.Plans[i].SupportedEngines.PG)},
+			[]string{"REDIS", strconv.FormatBool(*p.Plans[i].SupportedEngines.Redis)},
+		)
+
+		if !*p.Plans[i].SupportedEngines.Redis {
+			data = append(data,
+				[]string{" "},
+				[]string{"MAX CONNECTIONS"},
+				[]string{"MYSQL", strconv.Itoa(p.Plans[i].MaxConnections.MySQL)},
+				[]string{"PG", strconv.Itoa(p.Plans[i].MaxConnections.PG)},
+				[]string{" "},
+			)
+		}
+
+		data = append(data,
+			[]string{"LOCATIONS", printer.ArrayOfStringsToString(p.Plans[i].Locations)},
+			[]string{"---------------------------"},
+		)
+	}
+
+	return data
+}
+
+// Paging ...
+func (p *PlansPrinter) Paging() [][]string {
+	paging := &printer.Total{Total: p.Meta.Total}
+	return paging.Compose()
+}
+
+// ======================================
+
+// UsagePrinter ...
+type UsagePrinter struct {
+	Usage *govultr.DatabaseUsage `json:"usage"`
+}
+
+// JSON ...
+func (u *UsagePrinter) JSON() []byte {
+	return printer.MarshalObject(u, "json")
+}
+
+// YAML ...
+func (u *UsagePrinter) YAML() []byte {
+	return printer.MarshalObject(u, "yaml")
+}
+
+// Columns ...
+func (u *UsagePrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (u *UsagePrinter) Data() [][]string {
+	var data [][]string
+	data = append(data,
+		[]string{"DISK USAGE"},
+		[]string{"CURRENT (GB)", strconv.FormatFloat(
+			float64(u.Usage.Disk.CurrentGB),
+			'f',
+			utils.FloatPrecision,
+			utils.FloatBitDepth,
+		)},
+		[]string{"MAXIMUM (GB)", strconv.FormatFloat(
+			float64(u.Usage.Disk.MaxGB),
+			'f',
+			utils.FloatPrecision,
+			utils.FloatBitDepth,
+		)},
+		[]string{"PERCENTAGE", strconv.FormatFloat(
+			float64(u.Usage.Disk.Percentage),
+			'f',
+			utils.FloatPrecision,
+			utils.FloatBitDepth,
+		)},
+		[]string{" "},
+		[]string{"MEMORY USAGE"},
+		[]string{"CURRENT (MB)", strconv.FormatFloat(
+			float64(u.Usage.Memory.CurrentMB),
+			'f',
+			utils.FloatPrecision,
+			utils.FloatBitDepth,
+		)},
+		[]string{"MAXIMUM (MB)", strconv.FormatFloat(
+			float64(u.Usage.Memory.MaxMB),
+			'f',
+			utils.FloatPrecision,
+			utils.FloatBitDepth,
+		)},
+		[]string{"PERCENTAGE", strconv.FormatFloat(
+			float64(u.Usage.Memory.Percentage),
+			'f',
+			utils.FloatPrecision,
+			utils.FloatBitDepth,
+		)},
+		[]string{" "},
+		[]string{"CPU USAGE"},
+		[]string{"PERCENTAGE", strconv.FormatFloat(
+			float64(u.Usage.CPU.Percentage),
+			'f',
+			utils.FloatPrecision,
+			utils.FloatBitDepth,
+		)},
+	)
+
+	return data
+}
+
+// Paging ...
+func (u *UsagePrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// UsersPrinter ...
+type UsersPrinter struct {
+	Users []govultr.DatabaseUser `json:"users"`
+	Meta  *govultr.Meta          `json:"meta"`
+}
+
+// JSON ...
+func (u *UsersPrinter) JSON() []byte {
+	return printer.MarshalObject(u, "json")
+}
+
+// YAML ...
+func (u *UsersPrinter) YAML() []byte {
+	return printer.MarshalObject(u, "yaml")
+}
+
+// Columns ...
+func (u *UsersPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (u *UsersPrinter) Data() [][]string {
+	if len(u.Users) == 0 {
+		return [][]string{0: {"No database users"}}
+	}
+
+	var data [][]string
+	for i := range u.Users {
+		data = append(data,
+			[]string{"USERNAME", u.Users[i].Username},
+			[]string{"PASSWORD", u.Users[i].Password},
+		)
+
+		if u.Users[i].Encryption != "" {
+			data = append(data, []string{"ENCRYPTION", u.Users[i].Encryption})
+		}
+
+		if u.Users[i].AccessControl != nil {
+			data = append(data,
+				[]string{"ACCESS CONTROL"},
+				[]string{"REDIS ACL CATEGORIES", printer.ArrayOfStringsToString(u.Users[i].AccessControl.RedisACLCategories)},
+				[]string{"REDIS ACL CHANNELS", printer.ArrayOfStringsToString(u.Users[i].AccessControl.RedisACLChannels)},
+				[]string{"REDIS ACL COMMANDS", printer.ArrayOfStringsToString(u.Users[i].AccessControl.RedisACLCommands)},
+				[]string{"REDIS ACL KEYS", printer.ArrayOfStringsToString(u.Users[i].AccessControl.RedisACLKeys)},
+			)
+		}
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (u *UsersPrinter) Paging() [][]string {
+	paging := &printer.Total{Total: u.Meta.Total}
+	return paging.Compose()
+}
+
+// ======================================
+
+// UserPrinter ...
+type UserPrinter struct {
+	User *govultr.DatabaseUser `json:"user"`
+}
+
+// JSON ...
+func (u *UserPrinter) JSON() []byte {
+	return printer.MarshalObject(u, "json")
+}
+
+// YAML ...
+func (u *UserPrinter) YAML() []byte {
+	return printer.MarshalObject(u, "yaml")
+}
+
+// Columns ...
+func (u *UserPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (u *UserPrinter) Data() [][]string {
+	var data [][]string
+	data = append(data,
+		[]string{"USERNAME", u.User.Username},
+		[]string{"PASSWORD", u.User.Password},
+	)
+
+	if u.User.Encryption != "" {
+		data = append(data, []string{"ENCRYPTION", u.User.Encryption})
+	}
+
+	if u.User.AccessControl != nil {
+		data = append(data,
+			[]string{"ACCESS CONTROL"},
+			[]string{"REDIS ACL CATEGORIES", printer.ArrayOfStringsToString(u.User.AccessControl.RedisACLCategories)},
+			[]string{"REDIS ACL CHANNELS", printer.ArrayOfStringsToString(u.User.AccessControl.RedisACLChannels)},
+			[]string{"REDIS ACL COMMANDS", printer.ArrayOfStringsToString(u.User.AccessControl.RedisACLCommands)},
+			[]string{"REDIS ACL KEYS", printer.ArrayOfStringsToString(u.User.AccessControl.RedisACLKeys)},
+		)
+	}
+
+	return data
+}
+
+// Paging ...
+func (u *UserPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// LogicalDBsPrinter ...
+type LogicalDBsPrinter struct {
+	DBs  []govultr.DatabaseDB `json:"dbs"`
+	Meta *govultr.Meta        `json:"meta"`
+}
+
+// JSON ...
+func (l *LogicalDBsPrinter) JSON() []byte {
+	return printer.MarshalObject(l, "json")
+}
+
+// YAML ...
+func (l *LogicalDBsPrinter) YAML() []byte {
+	return printer.MarshalObject(l, "yaml")
+}
+
+// Columns ...
+func (l *LogicalDBsPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"NAME",
+	}}
+}
+
+// Data ...
+func (l *LogicalDBsPrinter) Data() [][]string {
+	if len(l.DBs) == 0 {
+		return [][]string{0: {"---"}}
+	}
+
+	var data [][]string
+	for i := range l.DBs {
+		data = append(data, []string{l.DBs[i].Name})
+	}
+
+	return data
+}
+
+// Paging ...
+func (l *LogicalDBsPrinter) Paging() [][]string {
+	paging := &printer.Total{Total: l.Meta.Total}
+	return paging.Compose()
+}
+
+// ======================================
+
+// LogicalDBPrinter ...
+type LogicalDBPrinter struct {
+	DB *govultr.DatabaseDB `json:"db"`
+}
+
+// JSON ...
+func (l *LogicalDBPrinter) JSON() []byte {
+	return printer.MarshalObject(l, "json")
+}
+
+// YAML ...
+func (l *LogicalDBPrinter) YAML() []byte {
+	return printer.MarshalObject(l, "yaml")
+}
+
+// Columns ...
+func (l *LogicalDBPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"NAME",
+	}}
+}
+
+// Data ...
+func (l *LogicalDBPrinter) Data() [][]string {
+	return [][]string{0: {l.DB.Name}}
+}
+
+// Paging ...
+func (l *LogicalDBPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// UpdatesPrinter ...
+type UpdatesPrinter struct {
+	Updates []string `json:"available_updates"`
+}
+
+// JSON ...
+func (u *UpdatesPrinter) JSON() []byte {
+	return printer.MarshalObject(u, "json")
+}
+
+// YAML ...
+func (u *UpdatesPrinter) YAML() []byte {
+	return printer.MarshalObject(u, "yaml")
+}
+
+// Columns ...
+func (u *UpdatesPrinter) Columns() [][]string {
+	return [][]string{0: {"AVAILABLE UPDATES"}}
+}
+
+// Data ...
+func (u *UpdatesPrinter) Data() [][]string {
+	var data [][]string
+
+	for i := range u.Updates {
+		data = append(data, []string{u.Updates[i]})
+	}
+
+	return data
+}
+
+// Paging ...
+func (u *UpdatesPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// AlertsPrinter ...
+type AlertsPrinter struct {
+	Alerts []govultr.DatabaseAlert `json:"alerts"`
+}
+
+// JSON ...
+func (a *AlertsPrinter) JSON() []byte {
+	return printer.MarshalObject(a, "json")
+}
+
+// YAML ...
+func (a *AlertsPrinter) YAML() []byte {
+	return printer.MarshalObject(a, "yaml")
+}
+
+// Columns ...
+func (a *AlertsPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"NAME",
+	}}
+}
+
+// Data ...
+func (a *AlertsPrinter) Data() [][]string {
+	if len(a.Alerts) == 0 {
+		return [][]string{0: {"No active database alerts"}}
+	}
+
+	var data [][]string
+	for i := range a.Alerts {
+		data = append(data,
+			[]string{"TIMESTAMP", a.Alerts[i].Timestamp},
+			[]string{"MESSAGE TYPE", a.Alerts[i].MessageType},
+			[]string{"DESCRIPTION", a.Alerts[i].Description},
+		)
+
+		if a.Alerts[i].Recommendation != "" {
+			data = append(data, []string{"RECOMMENDATION", a.Alerts[i].Recommendation})
+		}
+
+		if a.Alerts[i].MaintenanceScheduled != "" {
+			data = append(data, []string{"MAINTENANCE SCHEDULED", a.Alerts[i].MaintenanceScheduled})
+		}
+
+		if a.Alerts[i].ResourceType != "" {
+			data = append(data, []string{"RESOURCE TYPE", a.Alerts[i].ResourceType})
+		}
+
+		if a.Alerts[i].TableCount != 0 {
+			data = append(data, []string{"TABLE COUNT", strconv.Itoa(a.Alerts[i].TableCount)})
+		}
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (a *AlertsPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// MigrationPrinter ...
+type MigrationPrinter struct {
+	Migration *govultr.DatabaseMigration `json:"migration"`
+}
+
+// JSON ...
+func (m *MigrationPrinter) JSON() []byte {
+	return printer.MarshalObject(m, "json")
+}
+
+// YAML ...
+func (m *MigrationPrinter) YAML() []byte {
+	return printer.MarshalObject(m, "yaml")
+}
+
+// Columns ...
+func (m *MigrationPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (m *MigrationPrinter) Data() [][]string {
+	var data [][]string
+	data = append(data, []string{"STATUS", m.Migration.Status})
+
+	if m.Migration.Method != "" {
+		data = append(data, []string{"METHOD", m.Migration.Method})
+	}
+
+	if m.Migration.Error != "" {
+		data = append(data, []string{"ERROR", m.Migration.Error})
+	}
+
+	data = append(data,
+		[]string{" "},
+		[]string{"CREDENTIALS"},
+		[]string{"HOST", m.Migration.Credentials.Host},
+		[]string{"PORT", strconv.Itoa(m.Migration.Credentials.Port)},
+		[]string{"USERNAME", m.Migration.Credentials.Username},
+		[]string{"PASSWORD", m.Migration.Credentials.Password},
+	)
+
+	if m.Migration.Credentials.Database != "" {
+		data = append(data, []string{"DATABASE", m.Migration.Credentials.Database})
+	}
+
+	if m.Migration.Credentials.IgnoredDatabases != "" {
+		data = append(data, []string{"IGNORED DATABASES", m.Migration.Credentials.IgnoredDatabases})
+	}
+
+	data = append(data, []string{"SSL", strconv.FormatBool(*m.Migration.Credentials.SSL)})
+
+	return data
+}
+
+// Paging ...
+func (m *MigrationPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// BackupPrinter ...
+type BackupPrinter struct {
+	Backup *govultr.DatabaseBackups `json:"backups"`
+}
+
+// JSON ...
+func (b *BackupPrinter) JSON() []byte {
+	return printer.MarshalObject(b, "json")
+}
+
+// YAML ...
+func (b *BackupPrinter) YAML() []byte {
+	return printer.MarshalObject(b, "yaml")
+}
+
+// Columns ...
+func (b *BackupPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (b *BackupPrinter) Data() [][]string {
+	var data [][]string
+	data = append(data,
+		[]string{"LATEST BACKUP"},
+		[]string{"DATE", b.Backup.LatestBackup.Date},
+		[]string{"TIME", b.Backup.LatestBackup.Time},
+		[]string{" "},
+		[]string{"OLDEST BACKUP"},
+		[]string{"DATE", b.Backup.OldestBackup.Date},
+		[]string{"TIME", b.Backup.OldestBackup.Time},
+	)
+
+	return data
+}
+
+// Paging ...
+func (b *BackupPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// ConnectionsPrinter ...
+type ConnectionsPrinter struct {
+	Connections     *govultr.DatabaseConnections     `json:"connections"`
+	ConnectionPools []govultr.DatabaseConnectionPool `json:"connection_pools"`
+	Meta            *govultr.Meta                    `json:"meta"`
+}
+
+// JSON ...
+func (c *ConnectionsPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *ConnectionsPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *ConnectionsPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (c *ConnectionsPrinter) Data() [][]string {
+	var data [][]string
+
+	data = append(data,
+		[]string{"CONNECTIONS"},
+		[]string{"USED", strconv.Itoa(c.Connections.Used)},
+		[]string{"AVAILABLE", strconv.Itoa(c.Connections.Available)},
+		[]string{"MAX", strconv.Itoa(c.Connections.Max)},
+
+		[]string{" "},
+		[]string{"CONNECTION POOLS"},
+	)
+
+	for i := range c.ConnectionPools {
+		data = append(data,
+			[]string{"NAME", c.ConnectionPools[i].Name},
+			[]string{"DATABASE", c.ConnectionPools[i].Database},
+			[]string{"USERNAME", c.ConnectionPools[i].Username},
+			[]string{"MODE", c.ConnectionPools[i].Mode},
+			[]string{"SIZE", strconv.Itoa(c.ConnectionPools[i].Size)},
+			[]string{"---------------------------"},
+		)
+	}
+
+	return data
+}
+
+// Paging ...
+func (c *ConnectionsPrinter) Paging() [][]string {
+	paging := &printer.Total{Total: c.Meta.Total}
+	return paging.Compose()
+}
+
+// ======================================
+
+// ConnectionPoolPrinter ...
+type ConnectionPoolPrinter struct {
+	ConnectionPool *govultr.DatabaseConnectionPool `json:"connection_pool"`
+}
+
+// JSON ...
+func (c *ConnectionPoolPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *ConnectionPoolPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *ConnectionPoolPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"NAME",
+		"DATABASE",
+		"USERNAME",
+		"MODE",
+		"SIZE",
+	}}
+}
+
+// Data ...
+func (c *ConnectionPoolPrinter) Data() [][]string {
+	return [][]string{0: {
+		c.ConnectionPool.Name,
+		c.ConnectionPool.Database,
+		c.ConnectionPool.Username,
+		c.ConnectionPool.Mode,
+		strconv.Itoa(c.ConnectionPool.Size),
+	}}
+}
+
+// Paging ...
+func (c *ConnectionPoolPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// AdvancedOptionsPrinter ...
+type AdvancedOptionsPrinter struct {
+	Configured *govultr.DatabaseAdvancedOptions `json:"configured_options"`
+	Available  []govultr.AvailableOption        `json:"available_options"`
+}
+
+// JSON ...
+func (a *AdvancedOptionsPrinter) JSON() []byte {
+	return printer.MarshalObject(a, "json")
+}
+
+// YAML ...
+func (a *AdvancedOptionsPrinter) YAML() []byte {
+	return printer.MarshalObject(a, "yaml")
+}
+
+// Columns ...
+func (a *AdvancedOptionsPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (a *AdvancedOptionsPrinter) Data() [][]string {
+	var data [][]string
+
+	if a.Configured == (&govultr.DatabaseAdvancedOptions{}) {
+		data = append(data, []string{"CONFIGURED OPTIONS", "None"})
+	} else {
+		data = append(data, []string{"CONFIGURED OPTIONS"})
+		v := reflect.ValueOf(*a.Configured)
+		for i := 0; i < v.NumField(); i++ {
+			if !v.Field(i).IsZero() {
+				if v.Field(i).Kind() == reflect.Pointer {
+					data = append(data, []string{v.Type().Field(i).Name, v.Field(i).Elem().Interface().(string)})
+				} else {
+					data = append(data, []string{v.Type().Field(i).Name, v.Field(i).Interface().(string)})
+				}
+			}
+		}
+	}
+
+	data = append(data,
+		[]string{" "},
+		[]string{"AVAILABLE OPTIONS"},
+	)
+
+	for i := range a.Available {
+		data = append(data,
+			[]string{"NAME", a.Available[i].Name},
+			[]string{"TYPE", a.Available[i].Type},
+		)
+
+		if a.Available[i].Type == "enum" {
+			data = append(data,
+				[]string{"ENUMERALS", printer.ArrayOfStringsToString(a.Available[i].Enumerals)},
+			)
+		}
+
+		if a.Available[i].Type == "int" || a.Available[i].Type == "float" {
+			data = append(data,
+				[]string{"MIN VALUE", strconv.Itoa(*a.Available[i].MinValue)},
+				[]string{"MAX VALUE", strconv.Itoa(*a.Available[i].MaxValue)},
+			)
+		}
+
+		if len(a.Available[i].AltValues) > 0 {
+			data = append(data, []string{"ALT VALUES", printer.ArrayOfIntsToString(a.Available[i].AltValues)})
+		}
+
+		if a.Available[i].Units != "" {
+			data = append(data, []string{"UNITS", a.Available[i].Units})
+		}
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (a *AdvancedOptionsPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// VersionsPrinter ...
+type VersionsPrinter struct {
+	Versions []string `json:"available_versions"`
+}
+
+// JSON ...
+func (v *VersionsPrinter) JSON() []byte {
+	return printer.MarshalObject(v, "json")
+}
+
+// YAML ...
+func (v *VersionsPrinter) YAML() []byte {
+	return printer.MarshalObject(v, "yaml")
+}
+
+// Columns ...
+func (v *VersionsPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"AVAILABLE VERSIONS",
+	}}
+}
+
+// Data ...
+func (v *VersionsPrinter) Data() [][]string {
+	var data [][]string
+	for i := range v.Versions {
+		data = append(data, []string{v.Versions[i]})
+	}
+
+	return data
+}
+
+// Paging ...
+func (v *VersionsPrinter) Paging() [][]string {
+	return nil
+}
