@@ -42,6 +42,10 @@ func NewCmdApplications(base *cli.Base) *cobra.Command {
 		Aliases: []string{"a", "application", "applications", "app"},
 		Long:    appLong,
 		Example: appExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			utils.SetOptions(o.Base, cmd, args)
+			return nil
+		},
 	}
 
 	// List

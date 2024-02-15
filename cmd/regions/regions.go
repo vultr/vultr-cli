@@ -54,6 +54,10 @@ func NewCmdRegion(base *cli.Base) *cobra.Command {
 		Aliases: []string{"r", "region"},
 		Long:    regionLong,
 		Example: regionExample,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			utils.SetOptions(o.Base, cmd, args)
+			return nil
+		},
 	}
 
 	list := &cobra.Command{
