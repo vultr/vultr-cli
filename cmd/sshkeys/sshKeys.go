@@ -70,7 +70,7 @@ var (
 )
 
 // NewCmdSSHKey creates a cobra command for Regions
-func NewCmdSSHKey(base *cli.Base) *cobra.Command {
+func NewCmdSSHKey(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
