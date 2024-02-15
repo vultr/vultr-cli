@@ -1,4 +1,19 @@
 # Change Log
+## [v3.0.0](https://github.com/vultr/vultr-cli/compare/v2.22.0...v3.0.0) (2024-02-15)
+### Enhancements
+* [Complete refactor](https://github.com/vultr/vultr-cli/pull/402) of the CLI commands and project packages. All commands have been restructured and standardized with these goals in mind:
+  * Move commands into separate packages
+  * All output through a common interface.  Now supporting JSON and YAML on all commands using the `--output` flag.
+  * Auth only checks happen when appropriate to the API endpoint
+  * Some generically useful stuff like printers for IPs or User Data have been moved out to their own packages
+  * Base functionality should all be the same at this point, but there is room for improvement:
+    * Common error formatting for API messages
+    * More configuration options
+    * Better testability
+
+### Dependencies
+* Bump golang.org/x/oauth2 from 0.16.0 to 0.17.0 [PR 397](https://github.com/vultr/vultr-cli/pull/397)
+
 ## [v2.22.0](https://github.com/vultr/vultr-cli/compare/v2.21.0...v2.22.0) (2024-02-01)
 ### Enhancements
 * Database: add user access control for redis [PR 383](https://github.com/vultr/vultr-cli/pull/383)
