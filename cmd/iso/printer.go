@@ -7,7 +7,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
 )
 
-// ISOsPrinter...
+// ISOsPrinter ...
 type ISOsPrinter struct {
 	ISOs []govultr.ISO `json:"isos"`
 	Meta *govultr.Meta `json:"meta"`
@@ -40,7 +40,6 @@ func (i *ISOsPrinter) Columns() [][]string {
 func (i *ISOsPrinter) Data() [][]string {
 	if len(i.ISOs) == 0 {
 		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
-
 	}
 
 	var data [][]string
@@ -66,7 +65,7 @@ func (i *ISOsPrinter) Paging() [][]string {
 
 // ======================================
 
-// ISOPrinter...
+// ISOPrinter ...
 type ISOPrinter struct {
 	ISO govultr.ISO `json:"iso"`
 }
@@ -114,7 +113,7 @@ func (i *ISOPrinter) Paging() [][]string {
 
 // ======================================
 
-// PublicISOsPrinter...
+// PublicISOsPrinter ...
 type PublicISOsPrinter struct {
 	ISOs []govultr.PublicISO `json:"public_isos"`
 	Meta *govultr.Meta       `json:"meta"`
@@ -139,7 +138,6 @@ func (i *PublicISOsPrinter) Columns() [][]string {
 func (i *PublicISOsPrinter) Data() [][]string {
 	if len(i.ISOs) == 0 {
 		return [][]string{0: {"---", "---", "---"}}
-
 	}
 
 	var data [][]string
