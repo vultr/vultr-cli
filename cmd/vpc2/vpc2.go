@@ -48,7 +48,7 @@ var (
 )
 
 // NewCmdVPC2 provides the CLI command for VPC2 functions
-func NewCmdVPC2(base *cli.Base) *cobra.Command {
+func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
@@ -316,7 +316,6 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command {
 			o.Base.Printer.Display(printer.Info("Nodes have been attached"), nil)
 
 			return nil
-
 		},
 	}
 
@@ -356,7 +355,6 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command {
 			o.Base.Printer.Display(printer.Info("Nodes have been detached"), nil)
 
 			return nil
-
 		},
 	}
 

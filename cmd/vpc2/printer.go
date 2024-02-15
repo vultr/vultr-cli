@@ -39,7 +39,6 @@ func (s *VPC2sPrinter) Columns() [][]string {
 func (s *VPC2sPrinter) Data() [][]string {
 	if len(s.VPC2s) == 0 {
 		return [][]string{0: {"---", "---", "---", "---", "---", "---"}}
-
 	}
 
 	var data [][]string
@@ -142,7 +141,6 @@ func (s *VPC2NodesPrinter) Columns() [][]string {
 func (s *VPC2NodesPrinter) Data() [][]string {
 	if len(s.Nodes) == 0 {
 		return [][]string{0: {"---", "---", "---", "---", "---", "---"}}
-
 	}
 
 	var data [][]string
