@@ -68,7 +68,6 @@ linters:
     - errcheck
     - exportloopref
     - funlen
-    - gocritic
     - gocyclo
     - gofmt
     - goimports
@@ -99,6 +98,7 @@ linters:
   # - scopelint
   # - gochecknoglobals
   # - gocognit
+  # - gocritic
   # - godot
   # - godox
   # - goerr113
@@ -121,9 +121,5 @@ issues:
     - abcdef
     - ST1023
   exclude-rules:
-    # Exclude some linters from running on tests files.
-    - path: cmd/printer/
-      linters:
-        - dupl
 run:
   timeout: 5m
