@@ -94,16 +94,9 @@ var (
 	`
 )
 
-type Options struct {
-	Base      *cli.Base
-	CreateReq *govultr.BlockStorageCreate
-	UpdateReq *govultr.BlockStorageUpdate
-	AttachReq *govultr.BlockStorageAttach
-	DetachReq *govultr.BlockStorageDetach
-}
-
-func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
-	o := &Options{Base: base}
+// NewCmdBlockStorage provides the command for block storage to the CLI
+func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
+	o := &options{Base: base}
 
 	cmd := &cobra.Command{
 		Use:     "block-storage",
@@ -128,7 +121,7 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 		Example: listExample,
 		Run: func(cmd *cobra.Command, args []string) {
 			o.Base.Options = utils.GetPaging(cmd)
-			bss, meta, err := o.List()
+			bss, meta, err := o.list()
 			if err != nil {
 				printer.Error(fmt.Errorf("error retrieving block storage list : %v", err))
 				os.Exit(1)
@@ -161,7 +154,7 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			bs, err := o.Get()
+			bs, err := o.get()
 			if err != nil {
 				printer.Error(fmt.Errorf("error retrieving block storage : %v", err))
 				os.Exit(1)
@@ -211,7 +204,7 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 				BlockType: blockType,
 			}
 
-			bs, err := o.Create()
+			bs, err := o.create()
 			if err != nil {
 				printer.Error(fmt.Errorf("error creating block storage : %v", err))
 				os.Exit(1)
@@ -258,7 +251,7 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := o.Delete(); err != nil {
+			if err := o.del(); err != nil {
 				printer.Error(fmt.Errorf("error deleting block storage : %v", err))
 				os.Exit(1)
 			}
@@ -298,7 +291,7 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 				Live:       govultr.BoolToBoolPtr(live),
 			}
 
-			if err := o.Attach(); err != nil {
+			if err := o.attach(); err != nil {
 				printer.Error(fmt.Errorf("error attaching block storage : %v", err))
 				os.Exit(1)
 			}
@@ -338,7 +331,7 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 				Live: govultr.BoolToBoolPtr(live),
 			}
 
-			if err := o.Detach(); err != nil {
+			if err := o.detach(); err != nil {
 				printer.Error(fmt.Errorf("error detaching block storage : %v", err))
 				os.Exit(1)
 			}
@@ -372,7 +365,7 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 				Label: label,
 			}
 
-			if err := o.Update(); err != nil {
+			if err := o.update(); err != nil {
 				printer.Error(fmt.Errorf("error updating block storage label : %v", err))
 				os.Exit(1)
 			}
@@ -411,7 +404,7 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 				SizeGB: size,
 			}
 
-			if err := o.Update(); err != nil {
+			if err := o.update(); err != nil {
 				printer.Error(fmt.Errorf("error resizing block storage : %v", err))
 				os.Exit(1)
 			}
@@ -440,40 +433,41 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command {
 	return cmd
 }
 
-// List ...
-func (o *Options) List() ([]govultr.BlockStorage, *govultr.Meta, error) {
+type options struct {
+	Base      *cli.Base
+	CreateReq *govultr.BlockStorageCreate
+	UpdateReq *govultr.BlockStorageUpdate
+	AttachReq *govultr.BlockStorageAttach
+	DetachReq *govultr.BlockStorageDetach
+}
+
+func (o *options) list() ([]govultr.BlockStorage, *govultr.Meta, error) {
 	bs, meta, _, err := o.Base.Client.BlockStorage.List(o.Base.Context, o.Base.Options)
 	return bs, meta, err
 }
 
-// Get ...
-func (o *Options) Get() (*govultr.BlockStorage, error) {
+func (o *options) get() (*govultr.BlockStorage, error) {
 	bs, _, err := o.Base.Client.BlockStorage.Get(o.Base.Context, o.Base.Args[0])
 	return bs, err
 }
 
-// Create ...
-func (o *Options) Create() (*govultr.BlockStorage, error) {
+func (o *options) create() (*govultr.BlockStorage, error) {
 	bs, _, err := o.Base.Client.BlockStorage.Create(o.Base.Context, o.CreateReq)
 	return bs, err
 }
 
-// Delete ...
-func (o *Options) Delete() error {
+func (o *options) del() error {
 	return o.Base.Client.BlockStorage.Delete(o.Base.Context, o.Base.Args[0])
 }
 
-// Update ...
-func (o *Options) Update() error {
+func (o *options) update() error {
 	return o.Base.Client.BlockStorage.Update(o.Base.Context, o.Base.Args[0], o.UpdateReq)
 }
 
-// Attach ...
-func (o *Options) Attach() error {
+func (o *options) attach() error {
 	return o.Base.Client.BlockStorage.Attach(o.Base.Context, o.Base.Args[0], o.AttachReq)
 }
 
-// Detach
-func (o *Options) Detach() error {
+func (o *options) detach() error {
 	return o.Base.Client.BlockStorage.Detach(o.Base.Context, o.Base.Args[0], o.DetachReq)
 }
