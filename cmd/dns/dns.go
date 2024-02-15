@@ -24,17 +24,9 @@ var (
 	domainExample = ``
 )
 
-type Options struct {
-	Base                *cli.Base
-	DomainCreateReq     *govultr.DomainReq
-	DomainDNSSECEnabled string
-	SOAUpdateReq        *govultr.Soa
-	RecordReq           *govultr.DomainRecordReq
-}
-
 // NewCmdDNS provides the CLI command functionality for DNS
 func NewCmdDNS(base *cli.Base) *cobra.Command {
-	o := &Options{Base: base}
+	o := &options{Base: base}
 
 	cmd := &cobra.Command{
 		Use:     "dns",
@@ -64,7 +56,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			o.Base.Options = utils.GetPaging(cmd)
 
-			dms, meta, err := o.DomainList()
+			dms, meta, err := o.domainList()
 			if err != nil {
 				printer.Error(fmt.Errorf("error retrieving domain list : %v", err))
 				os.Exit(1)
@@ -84,7 +76,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 		Short: "Get a domain",
 		Long:  ``,
 		Run: func(cmd *cobra.Command, args []string) {
-			dm, err := o.DomainGet()
+			dm, err := o.domainGet()
 			if err != nil {
 				printer.Error(fmt.Errorf("error retrieving domain : %v", err))
 				os.Exit(1)
@@ -119,7 +111,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 				IP:     ip,
 			}
 
-			dm, err := o.DomainCreate()
+			dm, err := o.domainCreate()
 			if err != nil {
 				printer.Error(fmt.Errorf("error creating dns domain : %v", err))
 				os.Exit(1)
@@ -149,7 +141,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := o.DomainDelete(); err != nil {
+			if err := o.domainDelete(); err != nil {
 				printer.Error(fmt.Errorf("error delete dns domain : %v", err))
 				os.Exit(1)
 			}
@@ -198,7 +190,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 				}
 			}
 
-			if err := o.DomainUpdate(); err != nil {
+			if err := o.domainUpdate(); err != nil {
 				printer.Error(fmt.Errorf("error toggling dnssec : %v", err))
 				os.Exit(1)
 			}
@@ -224,7 +216,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			info, err := o.DomainDNSSECGet()
+			info, err := o.domainDNSSECGet()
 			if err != nil {
 				printer.Error(fmt.Errorf("error getting domain dnssec info : %v", err))
 				os.Exit(1)
@@ -247,7 +239,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			info, err := o.DomainSOAGet()
+			info, err := o.domainSOAGet()
 			if err != nil {
 				printer.Error(fmt.Errorf("error getting domain soa info : %v", err))
 				os.Exit(1)
@@ -287,7 +279,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 				Email:     email,
 			}
 
-			if err := o.DomainSOAUpdate(); err != nil {
+			if err := o.domainSOAUpdate(); err != nil {
 				printer.Error(fmt.Errorf("error updating domain soa : %v", err))
 				os.Exit(1)
 			}
@@ -330,7 +322,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			o.Base.Options = utils.GetPaging(cmd)
 
-			recs, meta, err := o.RecordList()
+			recs, meta, err := o.recordList()
 			if err != nil {
 				printer.Error(fmt.Errorf("error retrieiving domain records : %v", err))
 				os.Exit(1)
@@ -356,7 +348,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			rec, err := o.RecordGet()
+			rec, err := o.recordGet()
 			if err != nil {
 				printer.Error(fmt.Errorf("error while getting domain record : %v", err))
 				os.Exit(1)
@@ -416,7 +408,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 				Priority: &priority,
 			}
 
-			rec, err := o.RecordCreate()
+			rec, err := o.recordCreate()
 			if err != nil {
 				printer.Error(fmt.Errorf("error creating domain record : %v", err))
 				os.Exit(1)
@@ -469,7 +461,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := o.RecordDelete(); err != nil {
+			if err := o.recordDelete(); err != nil {
 				printer.Error(fmt.Errorf("error deleting domain record : %v", err))
 				os.Exit(1)
 			}
@@ -531,7 +523,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 				o.RecordReq.Priority = govultr.IntToIntPtr(priority)
 			}
 
-			if err := o.RecordUpdate(); err != nil {
+			if err := o.recordUpdate(); err != nil {
 				printer.Error(fmt.Errorf("error updating domain record : %v", errPr))
 				os.Exit(1)
 			}
@@ -561,75 +553,83 @@ func NewCmdDNS(base *cli.Base) *cobra.Command {
 	return cmd
 }
 
-// DomainList ...
-func (o *Options) DomainList() ([]govultr.Domain, *govultr.Meta, error) {
+type options struct {
+	Base                *cli.Base
+	DomainCreateReq     *govultr.DomainReq
+	DomainDNSSECEnabled string
+	SOAUpdateReq        *govultr.Soa
+	RecordReq           *govultr.DomainRecordReq
+}
+
+// domainList ...
+func (o *options) domainList() ([]govultr.Domain, *govultr.Meta, error) {
 	dms, meta, _, err := o.Base.Client.Domain.List(o.Base.Context, o.Base.Options)
 	return dms, meta, err
 }
 
-// DomainGet ...
-func (o *Options) DomainGet() (*govultr.Domain, error) {
+// domainGet ...
+func (o *options) domainGet() (*govultr.Domain, error) {
 	dm, _, err := o.Base.Client.Domain.Get(o.Base.Context, o.Base.Args[0])
 	return dm, err
 }
 
-// DomainCreate ...
-func (o *Options) DomainCreate() (*govultr.Domain, error) {
+// domainCreate ...
+func (o *options) domainCreate() (*govultr.Domain, error) {
 	dm, _, err := o.Base.Client.Domain.Create(o.Base.Context, o.DomainCreateReq)
 	return dm, err
 }
 
-// DomainUpdate ...
-func (o *Options) DomainUpdate() error {
+// domainUpdate ...
+func (o *options) domainUpdate() error {
 	return o.Base.Client.Domain.Update(o.Base.Context, o.Base.Args[0], o.DomainDNSSECEnabled)
 }
 
-// DomainDelete ...
-func (o *Options) DomainDelete() error {
+// domainDelete ...
+func (o *options) domainDelete() error {
 	return o.Base.Client.Domain.Delete(o.Base.Context, o.Base.Args[0])
 }
 
-// DomainDNSSECGet ...
-func (o *Options) DomainDNSSECGet() ([]string, error) {
+// domainDNSSECGet ...
+func (o *options) domainDNSSECGet() ([]string, error) {
 	sec, _, err := o.Base.Client.Domain.GetDNSSec(o.Base.Context, o.Base.Args[0])
 	return sec, err
 }
 
-// DomainSOAGet ...
-func (o *Options) DomainSOAGet() (*govultr.Soa, error) {
+// domainSOAGet ...
+func (o *options) domainSOAGet() (*govultr.Soa, error) {
 	soa, _, err := o.Base.Client.Domain.GetSoa(o.Base.Context, o.Base.Args[0])
 	return soa, err
 }
 
-// DomainSOAUpdate ...
-func (o *Options) DomainSOAUpdate() error {
+// domainSOAUpdate ...
+func (o *options) domainSOAUpdate() error {
 	return o.Base.Client.Domain.UpdateSoa(o.Base.Context, o.Base.Args[0], o.SOAUpdateReq)
 }
 
-// RecordList ...
-func (o *Options) RecordList() ([]govultr.DomainRecord, *govultr.Meta, error) {
+// recordList ...
+func (o *options) recordList() ([]govultr.DomainRecord, *govultr.Meta, error) {
 	rec, meta, _, err := o.Base.Client.DomainRecord.List(o.Base.Context, o.Base.Args[0], o.Base.Options)
 	return rec, meta, err
 }
 
-// RecordGet ...
-func (o *Options) RecordGet() (*govultr.DomainRecord, error) {
+// recordGet ...
+func (o *options) recordGet() (*govultr.DomainRecord, error) {
 	rec, _, err := o.Base.Client.DomainRecord.Get(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
 	return rec, err
 }
 
-// RecordCreate ...
-func (o *Options) RecordCreate() (*govultr.DomainRecord, error) {
+// recordCreate ...
+func (o *options) recordCreate() (*govultr.DomainRecord, error) {
 	rec, _, err := o.Base.Client.DomainRecord.Create(o.Base.Context, o.Base.Args[0], o.RecordReq)
 	return rec, err
 }
 
-// RecordUpdate ...
-func (o *Options) RecordUpdate() error {
+// recordUpdate ...
+func (o *options) recordUpdate() error {
 	return o.Base.Client.DomainRecord.Update(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.RecordReq)
 }
 
-// RecordDelete ...
-func (o *Options) RecordDelete() error {
+// recordDelete ...
+func (o *options) recordDelete() error {
 	return o.Base.Client.DomainRecord.Delete(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
 }
