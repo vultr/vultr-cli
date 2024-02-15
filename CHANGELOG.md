@@ -4,7 +4,7 @@
 * [Complete refactor](https://github.com/vultr/vultr-cli/pull/402) of the CLI commands and project packages. All commands have been restructured and standardized with these goals in mind:
   * Move commands into separate packages
   * All output through a common interface.  Now supporting JSON and YAML on all commands using the `--output` flag.
-  * Auth only checks happen when appropriate to the API endpoint
+  * Auth checks only happen when appropriate to the API endpoint
   * Some generically useful stuff like printers for IPs or User Data have been moved out to their own packages
   * Base functionality should all be the same at this point, but there is room for improvement:
     * Common error formatting for API messages
