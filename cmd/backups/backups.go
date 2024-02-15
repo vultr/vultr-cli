@@ -20,8 +20,6 @@ var (
 	listExample    = ``
 	getLong        = ``
 	getExample     = ``
-	updateLong     = ``
-	updateExample  = ``
 )
 
 type BackupsOptionsInterface interface {
@@ -83,8 +81,10 @@ func NewCmdBackups(base *cli.Base) *cobra.Command {
 
 	// Get
 	get := &cobra.Command{
-		Use:   "get",
-		Short: "get a backup",
+		Use:     "get",
+		Short:   "get a backup",
+		Long:    getLong,
+		Example: getExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a backup ID")
