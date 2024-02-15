@@ -190,7 +190,6 @@ func (b *BillingInvoiceItemsPrinter) Columns() [][]string {
 		"UNIT PRICE",
 		"TOTAL",
 	}}
-
 }
 
 // Data ...
