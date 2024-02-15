@@ -38,8 +38,8 @@ func NewCmdApplications(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "apps",
-		Aliases: []string{"a", "application", "applications", "app"},
 		Short:   "display applications",
+		Aliases: []string{"a", "application", "applications", "app"},
 		Long:    appLong,
 		Example: appExample,
 	}
@@ -47,8 +47,8 @@ func NewCmdApplications(base *cli.Base) *cobra.Command {
 	// List
 	list := &cobra.Command{
 		Use:     "list",
-		Aliases: []string{"l"},
 		Short:   "list applications",
+		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,
 		RunE: func(cmd *cobra.Command, args []string) error {
