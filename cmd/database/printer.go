@@ -31,7 +31,7 @@ func (d *DBsPrinter) Columns() [][]string {
 }
 
 // Data ...
-func (d *DBsPrinter) Data() [][]string { //nolint:funlen
+func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 	if len(d.DBs) == 0 {
 		return [][]string{0: {"No databases"}}
 	}
@@ -269,7 +269,7 @@ func (d *DBPrinter) Columns() [][]string {
 }
 
 // Data ...
-func (d *DBPrinter) Data() [][]string { //nolint:funlen
+func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 	var data [][]string
 	data = append(data,
 		[]string{"ID", d.DB.ID},
@@ -630,7 +630,6 @@ func (u *UsagePrinter) Columns() [][]string {
 
 // Data ...
 func (u *UsagePrinter) Data() [][]string {
-
 	var data [][]string
 	data = append(data,
 		[]string{"DISK USAGE"},
@@ -953,7 +952,6 @@ func (a *AlertsPrinter) Data() [][]string {
 
 	var data [][]string
 	for i := range a.Alerts {
-
 		data = append(data,
 			[]string{"TIMESTAMP", a.Alerts[i].Timestamp},
 			[]string{"MESSAGE TYPE", a.Alerts[i].MessageType},

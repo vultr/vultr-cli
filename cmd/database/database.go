@@ -48,7 +48,7 @@ var (
 )
 
 // NewCmdDatabase provides the CLI command for database functions
-func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen
+func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
@@ -880,6 +880,62 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen
 
 	usage.AddCommand(
 		usageGet,
+	)
+
+	// Maintenance
+	maintenance := &cobra.Command{
+		Use:   "maintenance",
+		Short: "Commands to handle database maintenance updates",
+	}
+
+	// Maintenance List
+	maintenanceList := &cobra.Command{
+		Use:   "list <Database ID>",
+		Short: "List maintenance updates for a database",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			upds, err := o.listMaintUpdates()
+			if err != nil {
+				return fmt.Errorf("error retrieving database maintenance updates : %v", err)
+			}
+
+			data := &UpdatesPrinter{Updates: upds}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Maintenance Start
+	maintenanceStart := &cobra.Command{
+		Use:   "start <Database ID>",
+		Short: "Start database maintenance update",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			message, err := o.startMaintUpdate()
+			if err != nil {
+				return fmt.Errorf("error starting database maintenance update: %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info(message), nil)
+
+			return nil
+		},
+	}
+
+	maintenance.AddCommand(
+		maintenanceList,
+		maintenanceStart,
 	)
 
 	// Alert
@@ -2317,13 +2373,12 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen
 				Version: version,
 			}
 
-			vs, err := o.listVersions()
+			msg, err := o.upgradeVersion()
 			if err != nil {
-				return fmt.Errorf("error retrieving database versions : %v", err)
+				return fmt.Errorf("error starting database version upgrade : %v", err)
 			}
 
-			data := &VersionsPrinter{Versions: vs}
-			o.Base.Printer.Display(data, nil)
+			o.Base.Printer.Display(printer.Info(msg), nil)
 
 			return nil
 		},
@@ -2349,6 +2404,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen
 		user,
 		db,
 		usage,
+		maintenance,
 		plan,
 		alert,
 		migration,
@@ -2446,11 +2502,6 @@ func (o *options) listDBs() ([]govultr.DatabaseDB, *govultr.Meta, error) {
 
 func (o *options) createDB() (*govultr.DatabaseDB, error) {
 	db, _, err := o.Base.Client.Database.CreateDB(o.Base.Context, o.Base.Args[0], o.DBCreateReq)
-	return db, err
-}
-
-func (o *options) getDB() (*govultr.DatabaseDB, error) {
-	db, _, err := o.Base.Client.Database.GetDB(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
 	return db, err
 }
 
