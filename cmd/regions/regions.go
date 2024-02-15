@@ -1,15 +1,29 @@
-// Package regions provides the functionality for the CLI to access regions
+// Copyright © 2019 The Vultr-cli Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package regions
 
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v3"
-	"github.com/vultr/vultr-cli/v3/cmd/utils"
-	"github.com/vultr/vultr-cli/v3/pkg/cli"
+	"github.com/spf13/viper"
+	"github.com/vultr/govultr/v2"
+	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/vultr-cli/cmd/utils"
+	"github.com/vultr/vultr-cli/pkg/cli"
 )
 
 var (
@@ -44,101 +58,90 @@ var (
 	`
 )
 
+// Interface for regions
+type Interface interface {
+	Availability() (*govultr.PlanAvailability, error)
+	List() ([]govultr.Region, *govultr.Meta, error)
+	validate(cmd *cobra.Command, args []string)
+}
+
+// Options for regions
+type Options struct {
+	Base     *cli.Base
+	PlanType string
+}
+
+// NewRegionOptions returns Options struct
+func NewRegionOptions(base *cli.Base) *Options {
+	return &Options{Base: base}
+}
+
 // NewCmdRegion creates a cobra command for Regions
 func NewCmdRegion(base *cli.Base) *cobra.Command {
-	o := &options{Base: base}
+	o := NewRegionOptions(base)
 
 	cmd := &cobra.Command{
 		Use:     "regions",
-		Short:   "Get regions",
+		Short:   "get regions",
 		Aliases: []string{"r", "region"},
 		Long:    regionLong,
 		Example: regionExample,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			utils.SetOptions(o.Base, cmd, args)
-			return nil
-		},
 	}
 
 	list := &cobra.Command{
 		Use:     "list",
-		Short:   "List regions",
+		Short:   "list regions",
 		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		Run: func(cmd *cobra.Command, args []string) {
+			o.validate(cmd, args)
 			o.Base.Options = utils.GetPaging(cmd)
-
-			regions, meta, err := o.list()
-			if err != nil {
-				return fmt.Errorf("error retrieving region list : %v", err)
-			}
-
-			data := &RegionsPrinter{Regions: regions, Meta: meta}
+			regions, meta, err := o.List()
+			data := &printer.Regions{Regions: regions, Meta: meta}
 			o.Base.Printer.Display(data, err)
-
-			return nil
 		},
 	}
-	list.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
-	list.Flags().IntP(
-		"per-page",
-		"p",
-		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
-	)
+	list.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	list.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	availability := &cobra.Command{
-		Use:     "availability <Region ID>",
-		Short:   "List available plans in region",
+		Use:     "availability <regionID>",
+		Short:   "list available plans in region",
 		Aliases: []string{"a"},
 		Long:    availLong,
 		Example: availExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("please provide a region ID")
+				return errors.New("please provide a regionID")
 			}
 			return nil
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			avail, err := o.availability()
-			if err != nil {
-				return fmt.Errorf("error retrieving region availability : %v", err)
-			}
-
-			data := &RegionsAvailabilityPrinter{Plans: avail}
+		Run: func(cmd *cobra.Command, args []string) {
+			o.validate(cmd, args)
+			avail, err := o.Availability()
+			data := &printer.RegionsAvailability{AvailablePlans: avail}
 			o.Base.Printer.Display(data, err)
-
-			return nil
 		},
 	}
-	availability.Flags().StringP(
-		"type",
-		"t",
-		"",
-		`type of plans for which to include availability. Possible values: 
-'vc2', 'vdc, 'vhf', 'vbm'. Defaults to all Instances plans.`,
-	)
+	availability.Flags().StringP("type", "t", "", "type of plans for which to include availability. Possible values: 'vc2', 'vdc, 'vhf', 'vbm'. Defaults to all Instances plans.")
 
-	cmd.AddCommand(
-		list,
-		availability,
-	)
-
+	cmd.AddCommand(list, availability)
 	return cmd
 }
 
-type options struct {
-	Base     *cli.Base
-	PlanType string
+func (o *Options) validate(cmd *cobra.Command, args []string) {
+	o.Base.Args = args
+	o.PlanType, _ = cmd.Flags().GetString("type")
+	o.Base.Printer.Output = viper.GetString("output")
 }
 
-func (o *options) list() ([]govultr.Region, *govultr.Meta, error) {
-	list, meta, _, err := o.Base.Client.Region.List(context.Background(), o.Base.Options)
-	return list, meta, err
+// List all regions
+func (o *Options) List() ([]govultr.Region, *govultr.Meta, error) {
+	return o.Base.Client.Region.List(context.Background(), o.Base.Options)
 }
 
-func (o *options) availability() (*govultr.PlanAvailability, error) {
-	avail, _, err := o.Base.Client.Region.Availability(context.Background(), o.Base.Args[0], o.PlanType)
-	return avail, err
+// Availability returns all available plans for a given region
+func (o *Options) Availability() (*govultr.PlanAvailability, error) {
+	return o.Base.Client.Region.Availability(context.Background(), o.Base.Args[0], o.PlanType)
 }
