@@ -1,14 +1,28 @@
-// Package plans provides the functionality for the CLI to access plans
+// Copyright © 2019 The Vultr-cli Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package plans
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/vultr/govultr/v3"
-	"github.com/vultr/vultr-cli/v3/cmd/utils"
-	"github.com/vultr/vultr-cli/v3/pkg/cli"
+	"github.com/spf13/viper"
+	"github.com/vultr/govultr/v2"
+	"github.com/vultr/vultr-cli/cmd/printer"
+	"github.com/vultr/vultr-cli/cmd/utils"
+	"github.com/vultr/vultr-cli/pkg/cli"
 )
 
 var (
@@ -30,8 +44,8 @@ var (
 		vultr-cli p l
 	`
 
-	metalListLong    = `Get plans for bare-metal servers`
-	metalListExample = `
+	metalLong    = `List all available bare metal plans on Vultr.`
+	metalExample = `
 	# Full example
 	vultr-cli plans metal
 		
@@ -43,9 +57,27 @@ var (
 	`
 )
 
+// PlanOptionsInterface interface
+type PlanOptionsInterface interface {
+	validate(cmd *cobra.Command, args []string)
+	List() ([]govultr.Plan, *govultr.Meta, error)
+	MetalList() ([]govultr.BareMetalPlan, *govultr.Meta, error)
+}
+
+// PlanOptions struct specific for plans
+type PlanOptions struct {
+	Base     *cli.Base
+	PlanType string
+}
+
+// NewPlanOptions returns a PlanOptions struct
+func NewPlanOptions(Base *cli.Base) *PlanOptions {
+	return &PlanOptions{Base: Base}
+}
+
 // NewCmdPlan returns the cobra command for Plans
-func NewCmdPlan(base *cli.Base) *cobra.Command {
-	o := &options{Base: base}
+func NewCmdPlan(Base *cli.Base) *cobra.Command {
+	p := NewPlanOptions(Base)
 
 	cmd := &cobra.Command{
 		Use:     "plans",
@@ -53,101 +85,72 @@ func NewCmdPlan(base *cli.Base) *cobra.Command {
 		Aliases: []string{"p", "plan"},
 		Long:    planLong,
 		Example: planExample,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			utils.SetOptions(o.Base, cmd, args)
-			return nil
-		},
 	}
 
 	list := &cobra.Command{
 		Use:     "list",
-		Short:   "List all instance plans",
+		Short:   "list all instance plans",
 		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			o.Base.Options = utils.GetPaging(cmd)
-
-			planType, errTy := cmd.Flags().GetString("type")
-			if errTy != nil {
-				return fmt.Errorf("error parsing flag 'type' for plan list: %v", errTy)
-			}
-
-			o.PlanType = planType
-
-			plans, meta, err := o.list()
-			if err != nil {
-				return fmt.Errorf("error getting plans : %v", err)
-			}
-
-			data := &PlansPrinter{Plans: plans, Meta: meta}
-			o.Base.Printer.Display(data, err)
-
-			return nil
+		Run: func(cmd *cobra.Command, args []string) {
+			p.validate(cmd, args)
+			plans, meta, err := p.List()
+			data := &printer.Plans{Plan: plans, Meta: meta}
+			p.Base.Printer.Display(data, err)
 		},
 	}
 
 	list.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	list.Flags().IntP(
-		"per-page",
-		"p",
-		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
-	)
-	list.Flags().StringP(
-		"type",
-		"t",
-		"",
-		"(optional) The type of plans to return. Possible values: 'vc2', 'vdc', 'vhf', 'dedicated'. Defaults to all Instances plans.",
-	)
+	list.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
+	list.Flags().StringP("type", "t", "", "(optional) The type of plans to return. Possible values: 'vc2', 'vdc', 'vhf', 'dedicated'. Defaults to all Instances plans.")
 
 	metal := &cobra.Command{
 		Use:     "metal",
-		Short:   "List all bare metal plans",
+		Short:   "list all bare metal plans",
 		Aliases: []string{"m"},
-		Long:    metalListLong,
-		Example: metalListExample,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			o.Base.Options = utils.GetPaging(cmd)
-
-			m, meta, err := o.metalList()
-			if err != nil {
-				return fmt.Errorf("error getting bare metal plans : %v", err)
+		Long:    metalLong,
+		Example: metalExample,
+		Run: func(cmd *cobra.Command, args []string) {
+			p.validate(cmd, args)
+			m, meta, err := p.MetalList()
+			data := &printer.BaremetalPlans{
+				Plan: m,
+				Meta: meta,
 			}
-
-			data := &MetalPlansPrinter{Plans: m, Meta: meta}
-			o.Base.Printer.Display(data, err)
-
-			return nil
+			p.Base.Printer.Display(data, err)
 		},
 	}
 	metal.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
-	metal.Flags().IntP(
-		"per-page",
-		"p",
-		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
-	)
+	metal.Flags().IntP("per-page", "p", 100, "(optional) Number of items requested per page. Default is 100 and Max is 500.")
 
 	cmd.AddCommand(list, metal)
 	return cmd
 }
 
-type options struct {
-	Base     *cli.Base
-	PlanType string
+func (p *PlanOptions) validate(cmd *cobra.Command, args []string) {
+	p.Base.Args = args
+	p.Base.Options = utils.GetPaging(cmd)
+	p.PlanType, _ = cmd.Flags().GetString("type")
+	p.Base.Printer.Output = viper.GetString("output")
 }
 
-func (o *options) validate(cmd *cobra.Command, args []string) {
-	o.Base.Args = args
+// List retrieves all available instance plans
+func (p *PlanOptions) List() ([]govultr.Plan, *govultr.Meta, error) {
+	plans, meta, err := p.Base.Client.Plan.List(context.Background(), p.PlanType, p.Base.Options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return plans, meta, nil
 }
 
-func (o *options) list() ([]govultr.Plan, *govultr.Meta, error) {
-	plans, meta, _, err := o.Base.Client.Plan.List(context.Background(), o.PlanType, o.Base.Options)
-	return plans, meta, err
-}
+// MetalList retrieves all available bare metal plans
+func (p *PlanOptions) MetalList() ([]govultr.BareMetalPlan, *govultr.Meta, error) {
+	plans, meta, err := p.Base.Client.Plan.ListBareMetal(context.Background(), p.Base.Options)
+	if err != nil {
+		return nil, nil, err
+	}
 
-func (o *options) metalList() ([]govultr.BareMetalPlan, *govultr.Meta, error) {
-	plans, meta, _, err := o.Base.Client.Plan.ListBareMetal(context.Background(), o.Base.Options)
-	return plans, meta, err
+	return plans, meta, nil
 }

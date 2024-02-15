@@ -1,16 +1,35 @@
-// Package version provides functionality to display the CLI version
+// Copyright © 2019 The Vultr-cli Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package version
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
-	"github.com/vultr/vultr-cli/v3/pkg/cli"
+	"github.com/spf13/viper"
+	"github.com/vultr/vultr-cli/cmd/printer"
 )
 
-const (
-	Version string = "v2.21.0"
-)
+// Interface for version
+type Interface interface {
+	Get() string
+}
+
+// Options for version
+type Options struct {
+	Version string
+	Printer *printer.Output
+}
 
 var (
 	long = `Displays current version of the Vultr-CLI`
@@ -24,29 +43,30 @@ var (
 	`
 )
 
-// NewCmdVersion returns cobra command for version
-func NewCmdVersion(base *cli.Base) *cobra.Command {
-	o := &options{Base: base}
+// NewVersionOptions returns a VersionOptions struct
+func NewVersionOptions() *Options {
+	return &Options{Printer: &printer.Output{}}
+}
 
+// NewCmdVersion returns cobra command for version
+func NewCmdVersion() *cobra.Command {
+	v := NewVersionOptions()
 	cmd := &cobra.Command{
 		Use:     "version",
-		Short:   "Print the vultr-cli version",
 		Aliases: []string{"v"},
+		Short:   "vultr-cli version",
 		Long:    long,
 		Example: example,
 		Run: func(cmd *cobra.Command, args []string) {
-			o.Base.Printer.Display(&VersionPrinter{Version: o.get()}, nil)
+			v.Printer.Output = viper.GetString("output")
+			v.Printer.Display(&printer.Version{Version: v.Get()}, nil)
 		},
 	}
 
 	return cmd
 }
 
-type options struct {
-	Base    *cli.Base
-	Version string
-}
-
-func (o *options) get() string {
-	return fmt.Sprintf("Vultr-CLI %s", Version)
+// Get the version for vultr-cli
+func (v *Options) Get() string {
+	return "Vultr-cli v2.4.1"
 }

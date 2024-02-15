@@ -1,3 +1,7 @@
+before:
+  hooks:
+    - go mod download
+    - go generate ./...
 builds:
   -
     env:
@@ -5,8 +9,13 @@ builds:
 
     binary: vultr-cli
 
-    flags:
-      - -trimpath #removes all file system paths from the compiled executable
+    asmflags:
+      - -D mysymbol
+      - all=-trimpath={{.Env.GOPATH}}
+
+    gcflags:
+      - all=-trimpath={{.Env.GOPATH}}
+      - ./dontoptimizeme=-N
 
     goos:
       - linux
@@ -16,21 +25,15 @@ builds:
     goarch:
       - amd64
       - arm64
-      - arm
-
-    goarm:
-      - 6
-      - 7
 
 archives:
   -
-    name_template: >-
-      {{- .ProjectName }}_v
-      {{- .Version }}_
-      {{- if eq .Os "darwin" }}macOs
-      {{- else }}{{ .Os }}{{ end }}_
-      {{- if eq .Arch "arm" }}arm32-v{{ .Arm }}
-      {{- else }}{{ .Arch }}{{ end }}
+    replacements:
+      darwin: macOs
+      linux: linux
+      windows: windows
+      amd64: 64-bit
+      arm64: arm64-bit
 
     format: tar.gz
 
@@ -40,6 +43,7 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+
 
 checksum:
   name_template: "{{ .ProjectName }}_v{{ .Version }}_checksums.txt"
@@ -59,9 +63,10 @@ brews:
   -
     name: vultr-cli
 
-    repository:
+    tap:
       owner: vultr
       name: homebrew-vultr-cli
+
 
     url_template: "https://github.com/vultr/vultr-cli/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
 
@@ -73,6 +78,8 @@ brews:
 
     description: "Official command-line tool for Vultr services"
 
+    dependencies:
+      - go
     test: |
       output = shell_output("#{bin}/vultr-cli version 2>&1", 1)
       assert_match "Please export your VULTR API key as an environment variable or add `api-key` to your config file, eg:\nexport VULTR_API_KEY='<api_key_from_vultr_account>'\n", output
@@ -85,10 +92,7 @@ dockers:
   - dockerfile: Dockerfile.goreleaser
     image_templates:
       - "vultr/vultr-cli:release"
-      - "vultr/vultr-cli:latest"
       - "vultr/vultr-cli:{{ .Tag }}"
-    extra_files:
-      - scripts/entrypoint.sh
 
 release:
   github:
