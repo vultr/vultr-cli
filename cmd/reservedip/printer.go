@@ -7,7 +7,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
 )
 
-// ReservedIPsPrinter...
+// ReservedIPsPrinter ...
 type ReservedIPsPrinter struct {
 	IPs  []govultr.ReservedIP `json:"reserved_ips"`
 	Meta *govultr.Meta        `json:"meta"`
@@ -40,7 +40,6 @@ func (r *ReservedIPsPrinter) Columns() [][]string {
 func (r *ReservedIPsPrinter) Data() [][]string {
 	if len(r.IPs) == 0 {
 		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
-
 	}
 
 	var data [][]string
@@ -66,7 +65,7 @@ func (r *ReservedIPsPrinter) Paging() [][]string {
 
 // ======================================
 
-// ReservedIPPrinter...
+// ReservedIPPrinter ...
 type ReservedIPPrinter struct {
 	IP *govultr.ReservedIP `json:"reserved_ip"`
 }

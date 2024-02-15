@@ -94,7 +94,7 @@ var (
 )
 
 // NewCmdReservedIP provides the CLI command for reserved IP functions
-func NewCmdReservedIP(base *cli.Base) *cobra.Command {
+func NewCmdReservedIP(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
@@ -181,9 +181,9 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command {
 				return fmt.Errorf("error parsing flag 'region' for reserved-ip create : %v", errRe)
 			}
 
-			ipType, errIp := cmd.Flags().GetString("type")
-			if errIp != nil {
-				return fmt.Errorf("error parsing flag 'type' for reserved-ip create : %v", errIp)
+			ipType, errIP := cmd.Flags().GetString("type")
+			if errIP != nil {
+				return fmt.Errorf("error parsing flag 'type' for reserved-ip create : %v", errIP)
 			}
 
 			label, errLa := cmd.Flags().GetString("label")
@@ -331,9 +331,9 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command {
 		Long:    convertLong,
 		Example: convertExample,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ip, errIp := cmd.Flags().GetString("ip")
-			if errIp != nil {
-				return fmt.Errorf("error parsing flag 'ip' for reserved-ip convert : %v", errIp)
+			ip, errIP := cmd.Flags().GetString("ip")
+			if errIP != nil {
+				return fmt.Errorf("error parsing flag 'ip' for reserved-ip convert : %v", errIP)
 			}
 
 			label, errLa := cmd.Flags().GetString("label")
@@ -444,6 +444,6 @@ func (o *options) convert() (*govultr.ReservedIP, error) {
 	return ip, err
 }
 
-func (o *options) del() error {
+func (o *options) del() error { //nolint:unused
 	return o.Base.Client.ReservedIP.Delete(o.Base.Context, o.Base.Args[0])
 }
