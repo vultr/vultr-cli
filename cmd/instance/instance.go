@@ -89,7 +89,7 @@ var (
 )
 
 // NewCmdInstance ...
-func NewCmdInstance(base *cli.Base) *cobra.Command {
+func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
@@ -184,9 +184,9 @@ func NewCmdInstance(base *cli.Base) *cobra.Command {
 				return fmt.Errorf("error parsing flag 'os' for instance create : %v", errOs)
 			}
 
-			ipxe, errIp := cmd.Flags().GetString("ipxe")
-			if errIp != nil {
-				return fmt.Errorf("error parsing flag 'ipxe' for instance create : %v", errIp)
+			ipxe, errIP := cmd.Flags().GetString("ipxe")
+			if errIP != nil {
+				return fmt.Errorf("error parsing flag 'ipxe' for instance create : %v", errIP)
 			}
 
 			iso, errIs := cmd.Flags().GetString("iso")
@@ -204,9 +204,9 @@ func NewCmdInstance(base *cli.Base) *cobra.Command {
 				return fmt.Errorf("error parsing flag 'script' for instance create : %v", errSc)
 			}
 
-			ipv6, errIp := cmd.Flags().GetBool("ipv6")
-			if errIp != nil {
-				return fmt.Errorf("error parsing flag 'ipv6' for instance create : %v", errIp)
+			ipv6, errIv := cmd.Flags().GetBool("ipv6")
+			if errIv != nil {
+				return fmt.Errorf("error parsing flag 'ipv6' for instance create : %v", errIv)
 			}
 
 			vpcEnable, errVp := cmd.Flags().GetBool("vpc-enable")
@@ -259,9 +259,9 @@ func NewCmdInstance(base *cli.Base) *cobra.Command {
 				return fmt.Errorf("error parsing flag 'ddos' for instance create : %v", errDd)
 			}
 
-			ipv4, errIp := cmd.Flags().GetString("reserved-ipv4")
-			if errIp != nil {
-				return fmt.Errorf("error parsing flag 'reserved-ipv4' for instance create : %v", errIp)
+			ipv4, errIi := cmd.Flags().GetString("reserved-ipv4")
+			if errIi != nil {
+				return fmt.Errorf("error parsing flag 'reserved-ipv4' for instance create : %v", errIi)
 			}
 
 			host, errHo := cmd.Flags().GetString("host")
@@ -562,7 +562,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.start(); err != nil {
-				return fmt.Errorf("Error starting instance : %v", err)
+				return fmt.Errorf("error starting instance : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("Instance started"), nil)
@@ -584,7 +584,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.stop(); err != nil {
-				return fmt.Errorf("Error stopping instance : %v", err)
+				return fmt.Errorf("error stopping instance : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("Instance stopped"), nil)
@@ -606,7 +606,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.restart(); err != nil {
-				return fmt.Errorf("Error restarting instance : %v", err)
+				return fmt.Errorf("error restarting instance : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("Instance restarted"), nil)
@@ -705,7 +705,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			bk, err := o.backups()
 			if err != nil {
-				return fmt.Errorf("Error getting instance backups : %v", err)
+				return fmt.Errorf("error getting instance backups : %v", err)
 			}
 
 			data := &BackupPrinter{Backup: *bk}
@@ -755,7 +755,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command {
 			}
 
 			if err := o.backupCreate(); err != nil {
-				return fmt.Errorf("Error getting instance backups : %v", err)
+				return fmt.Errorf("error getting instance backups : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("Instance backup created"), nil)
@@ -1396,7 +1396,6 @@ func NewCmdInstance(base *cli.Base) *cobra.Command {
 			o.Base.Printer.Display(printer.Info("Firewall group assigned to instance"), nil)
 
 			return nil
-
 		},
 	}
 
