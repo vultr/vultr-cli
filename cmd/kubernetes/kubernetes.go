@@ -520,7 +520,7 @@ required in node pool. Use / between each new node pool.  E.g:
 		},
 	}
 
-	config.Flags().StringP("output-file", "o", "", "(optional) the file path to write kubeconfig to")
+	config.Flags().StringP("output-file", "", "", "(optional) the file path to write kubeconfig to")
 
 	// Versions
 	versions := &cobra.Command{
