@@ -61,7 +61,7 @@ func (f *FirewallGroupsPrinter) Data() [][]string {
 
 // Paging ...
 func (f *FirewallGroupsPrinter) Paging() [][]string {
-	return printer.NewPaging(f.Meta.Total, &f.Meta.Links.Next, &f.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(f.Meta).Compose()
 }
 
 // ======================================
@@ -169,7 +169,7 @@ func (f *FirewallRulesPrinter) Data() [][]string {
 
 // Paging ...
 func (f *FirewallRulesPrinter) Paging() [][]string {
-	return printer.NewPaging(f.Meta.Total, &f.Meta.Links.Next, &f.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(f.Meta).Compose()
 }
 
 // ======================================

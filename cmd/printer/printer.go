@@ -63,7 +63,7 @@ func (o *Output) Display(r ResourceOutput, err error) {
 	defer o.flush()
 
 	if err != nil {
-		//todo move this so it can follow the flow of the other printers and support json/yaml
+		// todo move this so it can follow the flow of the other printers and support json/yaml
 		Error(err)
 	}
 
@@ -113,21 +113,33 @@ type Paging struct {
 	CursorPrev string
 }
 
-// NewPaging validates and intializes the paging data
-func NewPaging(total int, next, prev *string) *Paging {
-	p := new(Paging)
+// NewPagingFromMeta validates and initializes the paging data, from a govultr.Meta struct.
+func NewPagingFromMeta(m *govultr.Meta) *Paging {
+	if m == nil {
+		// If no metadata, then no paging to show.
+		return nil
+	}
+	if m.Links == nil {
+		return NewPaging(m.Total, "", "")
+	}
+	return NewPaging(m.Total, m.Links.Next, m.Links.Prev)
+}
+
+// NewPaging validates and initializes the paging data.
+func NewPaging(total int, next, prev string) *Paging {
+	p := &Paging{
+		Total:      0,
+		CursorNext: emptyPlaceholder,
+		CursorPrev: emptyPlaceholder,
+	}
 	p.Total = total
 
-	if next != nil {
-		p.CursorNext = *next
-	} else {
-		p.CursorNext = emptyPlaceholder
+	if next != "" {
+		p.CursorNext = next
 	}
 
-	if prev != nil {
-		p.CursorPrev = *prev
-	} else {
-		p.CursorPrev = emptyPlaceholder
+	if prev != "" {
+		p.CursorPrev = prev
 	}
 
 	return p
@@ -135,6 +147,11 @@ func NewPaging(total int, next, prev *string) *Paging {
 
 // Compose returns the paging data for output
 func (p *Paging) Compose() [][]string {
+	if p == nil {
+		// If no paging information, don't show anything.
+		return nil
+	}
+
 	var display [][]string
 	display = append(display,
 		[]string{"======================================"},

@@ -54,7 +54,7 @@ func (s *ScriptsPrinter) Data() [][]string {
 
 // Paging ...
 func (s *ScriptsPrinter) Paging() [][]string {
-	return printer.NewPaging(s.Meta.Total, &s.Meta.Links.Next, &s.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(s.Meta).Compose()
 }
 
 // ======================================

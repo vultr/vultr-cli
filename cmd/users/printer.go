@@ -51,7 +51,7 @@ func (u *UsersPrinter) Data() [][]string {
 
 // Paging ...
 func (u *UsersPrinter) Paging() [][]string {
-	return printer.NewPaging(u.Meta.Total, &u.Meta.Links.Next, &u.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(u.Meta).Compose()
 }
 
 // ======================================

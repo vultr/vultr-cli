@@ -58,7 +58,7 @@ func (d *DNSRecordsPrinter) Data() [][]string {
 
 // Paging ...
 func (d *DNSRecordsPrinter) Paging() [][]string {
-	return printer.NewPaging(d.Meta.Total, &d.Meta.Links.Next, &d.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(d.Meta).Compose()
 }
 
 // ======================================
@@ -154,7 +154,7 @@ func (d *DNSDomainsPrinter) Data() [][]string {
 
 // Paging ...
 func (d *DNSDomainsPrinter) Paging() [][]string {
-	return printer.NewPaging(d.Meta.Total, &d.Meta.Links.Next, &d.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(d.Meta).Compose()
 }
 
 // ======================================

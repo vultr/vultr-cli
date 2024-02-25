@@ -60,7 +60,7 @@ func (r *ReservedIPsPrinter) Data() [][]string {
 
 // Paging ...
 func (r *ReservedIPsPrinter) Paging() [][]string {
-	return printer.NewPaging(r.Meta.Total, &r.Meta.Links.Next, &r.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(r.Meta).Compose()
 }
 
 // ======================================

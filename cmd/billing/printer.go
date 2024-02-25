@@ -60,7 +60,7 @@ func (b *BillingHistoryPrinter) Data() [][]string {
 
 // Paging ...
 func (b *BillingHistoryPrinter) Paging() [][]string {
-	return printer.NewPaging(b.Meta.Total, &b.Meta.Links.Next, &b.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(b.Meta).Compose()
 }
 
 // ======================================
@@ -113,7 +113,7 @@ func (b *BillingInvoicesPrinter) Data() [][]string {
 
 // Paging ...
 func (b *BillingInvoicesPrinter) Paging() [][]string {
-	return printer.NewPaging(b.Meta.Total, &b.Meta.Links.Next, &b.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(b.Meta).Compose()
 }
 
 // ======================================
@@ -217,5 +217,5 @@ func (b *BillingInvoiceItemsPrinter) Data() [][]string {
 
 // Paging ...
 func (b *BillingInvoiceItemsPrinter) Paging() [][]string {
-	return printer.NewPaging(b.Meta.Total, &b.Meta.Links.Next, &b.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(b.Meta).Compose()
 }

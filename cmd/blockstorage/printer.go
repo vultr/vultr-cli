@@ -67,7 +67,7 @@ func (b *BlockStoragesPrinter) Data() [][]string {
 
 // Paging ...
 func (b *BlockStoragesPrinter) Paging() [][]string {
-	return printer.NewPaging(b.Meta.Total, &b.Meta.Links.Next, &b.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(b.Meta).Compose()
 }
 
 // ======================================

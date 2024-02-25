@@ -56,5 +56,5 @@ func (o *OSPrinter) Data() [][]string {
 
 // Paging validates and forms the paging data for output
 func (o *OSPrinter) Paging() [][]string {
-	return printer.NewPaging(o.Meta.Total, &o.Meta.Links.Next, &o.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(o.Meta).Compose()
 }

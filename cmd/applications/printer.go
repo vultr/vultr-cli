@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/vultr/govultr/v3"
+
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
 )
 
@@ -62,5 +63,5 @@ func (a *ApplicationsPrinter) Data() [][]string {
 
 // Paging validates and forms the paging data for output
 func (a *ApplicationsPrinter) Paging() [][]string {
-	return printer.NewPaging(a.Meta.Total, &a.Meta.Links.Next, &a.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(a.Meta).Compose()
 }

@@ -51,7 +51,7 @@ func (i *IPv4sPrinter) Data() [][]string {
 
 // Paging ...
 func (i *IPv4sPrinter) Paging() [][]string {
-	return printer.NewPaging(i.Meta.Total, &i.Meta.Links.Next, &i.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(i.Meta).Compose()
 }
 
 // ======================================
@@ -99,5 +99,5 @@ func (i *IPv6sPrinter) Data() [][]string {
 
 // Paging ...
 func (i *IPv6sPrinter) Paging() [][]string {
-	return printer.NewPaging(i.Meta.Total, &i.Meta.Links.Next, &i.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(i.Meta).Compose()
 }

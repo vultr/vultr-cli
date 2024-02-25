@@ -122,7 +122,7 @@ func (l *LBsPrinter) Data() [][]string {
 
 // Paging ...
 func (l *LBsPrinter) Paging() [][]string {
-	return printer.NewPaging(l.Meta.Total, &l.Meta.Links.Next, &l.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(l.Meta).Compose()
 }
 
 // ======================================
@@ -295,7 +295,7 @@ func (l *LBsSummaryPrinter) Data() [][]string {
 
 // Paging ...
 func (l *LBsSummaryPrinter) Paging() [][]string {
-	return printer.NewPaging(l.Meta.Total, &l.Meta.Links.Next, &l.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(l.Meta).Compose()
 }
 
 // ======================================
@@ -349,7 +349,7 @@ func (l *LBRulesPrinter) Data() [][]string {
 
 // Paging ...
 func (l *LBRulesPrinter) Paging() [][]string {
-	return printer.NewPaging(l.Meta.Total, &l.Meta.Links.Next, &l.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(l.Meta).Compose()
 }
 
 // ======================================
@@ -445,7 +445,7 @@ func (f *FWRulesPrinter) Data() [][]string {
 
 // Paging ...
 func (f *FWRulesPrinter) Paging() [][]string {
-	return printer.NewPaging(f.Meta.Total, &f.Meta.Links.Next, &f.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(f.Meta).Compose()
 }
 
 // ======================================

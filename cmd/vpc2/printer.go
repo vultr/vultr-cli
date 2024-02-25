@@ -58,7 +58,7 @@ func (s *VPC2sPrinter) Data() [][]string {
 
 // Paging ...
 func (s *VPC2sPrinter) Paging() [][]string {
-	return printer.NewPaging(s.Meta.Total, &s.Meta.Links.Next, &s.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(s.Meta).Compose()
 }
 
 // ======================================
@@ -160,5 +160,5 @@ func (s *VPC2NodesPrinter) Data() [][]string {
 
 // Paging ...
 func (s *VPC2NodesPrinter) Paging() [][]string {
-	return printer.NewPaging(s.Meta.Total, &s.Meta.Links.Next, &s.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(s.Meta).Compose()
 }

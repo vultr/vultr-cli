@@ -49,7 +49,7 @@ func (b *BareMetalsPrinter) Data() [][]string {
 		data = append(data, []string{
 			b.BareMetals[i].ID,
 			b.BareMetals[i].MainIP,
-			b.BareMetals[i].Tag, //nolint: staticcheck
+			b.BareMetals[i].Tag, // nolint: staticcheck
 			strconv.Itoa(b.BareMetals[i].MacAddress),
 			b.BareMetals[i].Label,
 			b.BareMetals[i].Os,
@@ -67,7 +67,7 @@ func (b *BareMetalsPrinter) Data() [][]string {
 
 // Paging ...
 func (b *BareMetalsPrinter) Paging() [][]string {
-	return printer.NewPaging(b.Meta.Total, &b.Meta.Links.Next, &b.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(b.Meta).Compose()
 }
 
 // ======================================
@@ -111,7 +111,7 @@ func (b *BareMetalPrinter) Data() [][]string {
 	return [][]string{0: {
 		b.BareMetal.ID,
 		b.BareMetal.MainIP,
-		b.BareMetal.Tag, //nolint: staticcheck
+		b.BareMetal.Tag, // nolint: staticcheck
 		strconv.Itoa(b.BareMetal.MacAddress),
 		b.BareMetal.Label,
 		b.BareMetal.Os,

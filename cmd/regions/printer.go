@@ -2,6 +2,7 @@ package regions
 
 import (
 	"github.com/vultr/govultr/v3"
+
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
 )
 
@@ -57,7 +58,7 @@ func (r *RegionsPrinter) Data() [][]string {
 
 // Paging validates and forms the paging data for output
 func (r *RegionsPrinter) Paging() [][]string {
-	return printer.NewPaging(r.Meta.Total, &r.Meta.Links.Next, &r.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(r.Meta).Compose()
 }
 
 // ======================================
@@ -107,5 +108,5 @@ func (r *RegionsAvailabilityPrinter) Data() [][]string {
 
 // Paging validates and forms the paging data for output
 func (r *RegionsAvailabilityPrinter) Paging() [][]string {
-	return printer.NewPaging(r.Meta.Total, &r.Meta.Links.Next, &r.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(r.Meta).Compose()
 }
