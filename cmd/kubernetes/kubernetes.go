@@ -335,6 +335,11 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'high-avail' for kubernetes cluster create : %v", errHi)
 			}
 
+			fw, errFw := cmd.Flags().GetBool("enable-firewall")
+			if errHi != nil {
+				return fmt.Errorf("error parsing flag 'enable-firewall' for kubernetes cluster create : %v", errFw)
+			}
+
 			nps, errFm := formatNodePools(nodepools)
 			if errFm != nil {
 				return fmt.Errorf("error in node pool formating : %v", errFm)
@@ -346,6 +351,7 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				NodePools:       nps,
 				Version:         version,
 				HAControlPlanes: ha,
+				EnableFirewall:  fw,
 			}
 
 			k8, err := o.create()
@@ -383,6 +389,13 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		false,
 		`(optional, default false) whether or not the cluster should be deployed with multiple, 
 highly available, control planes`,
+	)
+
+	create.Flags().BoolP(
+		"enable-firewall",
+		"f",
+		false,
+		`(optional, default false) whether a firewall group should be created for the cluster`,
 	)
 
 	create.Flags().StringArrayP(
