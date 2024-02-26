@@ -128,11 +128,10 @@ func NewPagingFromMeta(m *govultr.Meta) *Paging {
 // NewPaging validates and initializes the paging data.
 func NewPaging(total int, next, prev string) *Paging {
 	p := &Paging{
-		Total:      0,
+		Total:      total,
 		CursorNext: emptyPlaceholder,
 		CursorPrev: emptyPlaceholder,
 	}
-	p.Total = total
 
 	if next != "" {
 		p.CursorNext = next
