@@ -1,13 +1,11 @@
 package plans
 
 import (
-	"encoding/json"
 	"strconv"
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
 	"github.com/vultr/vultr-cli/v3/cmd/utils"
-	"gopkg.in/yaml.v3"
 )
 
 // PlansPrinter represents the plans data from the API
@@ -18,21 +16,12 @@ type PlansPrinter struct {
 
 // JSON provides the JSON formatted byte data
 func (p *PlansPrinter) JSON() []byte {
-	js, err := json.MarshalIndent(p, "", "    ")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return js
+	return printer.MarshalObject(p, "json")
 }
 
 // YAML provides the YAML formatted byte data
 func (p *PlansPrinter) YAML() []byte {
-	yml, err := yaml.Marshal(p)
-	if err != nil {
-		panic(err.Error())
-	}
-	return yml
+	return printer.MarshalObject(p, "yaml")
 }
 
 // Columns provides the plan columns for the printer
@@ -85,6 +74,8 @@ func (p *PlansPrinter) Paging() [][]string {
 	return printer.NewPagingFromMeta(p.Meta).Compose()
 }
 
+// ======================================
+
 // MetalPlansPrinter represents the bare metal plans data from the API
 type MetalPlansPrinter struct {
 	Plans []govultr.BareMetalPlan `json:"plans_metal"`
@@ -93,21 +84,12 @@ type MetalPlansPrinter struct {
 
 // JSON provides the JSON formatted byte data
 func (m *MetalPlansPrinter) JSON() []byte {
-	js, err := json.MarshalIndent(m, "", "    ")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return js
+	return printer.MarshalObject(m, "json")
 }
 
 // YAML provides the YAML formatted byte data
 func (m *MetalPlansPrinter) YAML() []byte {
-	yml, err := yaml.Marshal(m)
-	if err != nil {
-		panic(err.Error())
-	}
-	return yml
+	return printer.MarshalObject(m, "yaml")
 }
 
 // Columns provides the plan columns for the printer

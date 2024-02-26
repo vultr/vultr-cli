@@ -68,7 +68,6 @@ func (r *RegionsPrinter) Paging() [][]string {
 // via the ResourceOutput interface
 type RegionsAvailabilityPrinter struct {
 	Plans *govultr.PlanAvailability `json:"available_plans"`
-	Meta  *govultr.Meta             `json:"meta"`
 }
 
 // JSON provides the JSON formatted byte data
@@ -108,5 +107,5 @@ func (r *RegionsAvailabilityPrinter) Data() [][]string {
 
 // Paging validates and forms the paging data for output
 func (r *RegionsAvailabilityPrinter) Paging() [][]string {
-	return printer.NewPagingFromMeta(r.Meta).Compose()
+	return nil
 }
