@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/vultr/govultr/v3"
+
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
 )
 
@@ -49,7 +50,7 @@ func (b *BareMetalsPrinter) Data() [][]string {
 		data = append(data, []string{
 			b.BareMetals[i].ID,
 			b.BareMetals[i].MainIP,
-			b.BareMetals[i].Tag, // nolint: staticcheck
+			b.BareMetals[i].Tag, //nolint: staticcheck
 			strconv.Itoa(b.BareMetals[i].MacAddress),
 			b.BareMetals[i].Label,
 			b.BareMetals[i].Os,
@@ -111,7 +112,7 @@ func (b *BareMetalPrinter) Data() [][]string {
 	return [][]string{0: {
 		b.BareMetal.ID,
 		b.BareMetal.MainIP,
-		b.BareMetal.Tag, // nolint: staticcheck
+		b.BareMetal.Tag, //nolint: staticcheck
 		strconv.Itoa(b.BareMetal.MacAddress),
 		b.BareMetal.Label,
 		b.BareMetal.Os,
