@@ -1,4 +1,24 @@
 # Change Log
+## [v3.0.1](https://github.com/vultr/vultr-cli/compare/v3.0.0...v3.0.1) (2024-02-27)
+### Enhancements
+* Kubernetes: add `enable-firewall` flag on create [PR 413](https://github.com/vultr/vultr-cli/pull/413)
+* All: consolidate pagination metadata nil pointer checks [PR 410](https://github.com/vultr/vultr-cli/pull/410)
+
+### Bug Fixes
+* Kubernetes: remove shorthand flag conflict with output [PR 406](https://github.com/vultr/vultr-cli/pull/406)
+* Regions: make printer consistent with returned data [PR 412](https://github.com/vultr/vultr-cli/pull/412)
+* Plans: make printer consistent with returned data [PR 412](https://github.com/vultr/vultr-cli/pull/412)
+
+### Dependencies
+* Bump github.com/vultr/govultr/v3 from 3.6.1 to 3.6.2 [PR 407](https://github.com/vultr/vultr-cli/pull/407)
+
+### Documentation
+* Update README to use v3 in `go get` command [PR 405](https://github.com/vultr/vultr-cli/pull/405)
+* Firewall: add correct usage for firewall rules [PR 414](https://github.com/vultr/vultr-cli/pull/414)
+
+### New Contributors
+* @PaulSonOfLars made their first contribution in [PR 410](https://github.com/vultr/vultr-cli/pull/410)
+
 ## [v3.0.0](https://github.com/vultr/vultr-cli/compare/v2.22.0...v3.0.0) (2024-02-15)
 ### Enhancements
 * [Complete refactor](https://github.com/vultr/vultr-cli/pull/402) of the CLI commands and project packages. All commands have been restructured and standardized with these goals in mind:
@@ -48,7 +68,7 @@
 * Bump govultr to v3.4.0 [PR 374](https://github.com/vultr/vultr-cli/pull/374)
 * Bump golang.org/x/oauth2 from 0.13.0 to 0.14.0 [PR 373](https://github.com/vultr/vultr-cli/pull/373)
 
-## [v2.20.0](https://github.com/vultr/vultr-cli/compare/v2.19.0...v2.20.0) 2023-11-01
+## [v2.20.0](https://github.com/vultr/vultr-cli/compare/v2.19.0...v2.20.0) (2023-11-01)
 ### Enhancements
 * Managed Database public/private hostnames, cleanup summarize view [PR 363](https://github.com/vultr/vultr-cli/pull/363)
 * Allow some commands to be run without authenticating against the API [PR 364](https://github.com/vultr/vultr-cli/pull/364)
