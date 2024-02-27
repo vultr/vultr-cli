@@ -64,7 +64,7 @@ func (o *ObjectStoragesPrinter) Data() [][]string {
 
 // Paging ...
 func (o *ObjectStoragesPrinter) Paging() [][]string {
-	return printer.NewPaging(o.Meta.Total, &o.Meta.Links.Next, &o.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(o.Meta).Compose()
 }
 
 // ======================================
@@ -168,7 +168,7 @@ func (o *ObjectStorageClustersPrinter) Data() [][]string {
 
 // Paging ...
 func (o *ObjectStorageClustersPrinter) Paging() [][]string {
-	return printer.NewPaging(o.Meta.Total, &o.Meta.Links.Next, &o.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(o.Meta).Compose()
 }
 
 // ======================================

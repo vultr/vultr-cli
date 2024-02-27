@@ -62,7 +62,7 @@ func (s *SnapshotsPrinter) Data() [][]string {
 
 // Paging ...
 func (s *SnapshotsPrinter) Paging() [][]string {
-	return printer.NewPaging(s.Meta.Total, &s.Meta.Links.Next, &s.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(s.Meta).Compose()
 }
 
 // ======================================

@@ -71,7 +71,7 @@ func (p *PlansPrinter) Data() [][]string {
 
 // Paging validates and forms the paging data for output
 func (p *PlansPrinter) Paging() [][]string {
-	return printer.NewPaging(p.Meta.Total, &p.Meta.Links.Next, &p.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(p.Meta).Compose()
 }
 
 // ======================================
@@ -139,5 +139,5 @@ func (m *MetalPlansPrinter) Data() [][]string {
 
 // Paging validates and forms the paging data for output
 func (m *MetalPlansPrinter) Paging() [][]string {
-	return printer.NewPaging(m.Meta.Total, &m.Meta.Links.Next, &m.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(m.Meta).Compose()
 }

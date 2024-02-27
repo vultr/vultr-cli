@@ -60,7 +60,7 @@ func (i *ISOsPrinter) Data() [][]string {
 
 // Paging ...
 func (i *ISOsPrinter) Paging() [][]string {
-	return printer.NewPaging(i.Meta.Total, &i.Meta.Links.Next, &i.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(i.Meta).Compose()
 }
 
 // ======================================
@@ -154,5 +154,5 @@ func (i *PublicISOsPrinter) Data() [][]string {
 
 // Paging ...
 func (i *PublicISOsPrinter) Paging() [][]string {
-	return printer.NewPaging(i.Meta.Total, &i.Meta.Links.Next, &i.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(i.Meta).Compose()
 }

@@ -67,7 +67,7 @@ func (i *InstancesPrinter) Data() [][]string {
 
 // Paging ...
 func (i *InstancesPrinter) Paging() [][]string {
-	return printer.NewPaging(i.Meta.Total, &i.Meta.Links.Next, &i.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(i.Meta).Compose()
 }
 
 // ======================================
@@ -509,5 +509,5 @@ func (v *VPC2sPrinter) Data() [][]string {
 
 // Paging ...
 func (v *VPC2sPrinter) Paging() [][]string {
-	return printer.NewPaging(v.Meta.Total, &v.Meta.Links.Next, &v.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(v.Meta).Compose()
 }

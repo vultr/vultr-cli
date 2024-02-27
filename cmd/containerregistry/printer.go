@@ -133,7 +133,7 @@ func (c *ContainerRegistriesPrinter) Data() [][]string {
 
 // Paging ...
 func (c *ContainerRegistriesPrinter) Paging() [][]string {
-	return printer.NewPaging(c.Meta.Total, &c.Meta.Links.Next, &c.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(c.Meta).Compose()
 }
 
 // ======================================
@@ -234,7 +234,7 @@ func (c *ContainerRegistryRegionsPrinter) Data() [][]string {
 
 // Paging ...
 func (c *ContainerRegistryRegionsPrinter) Paging() [][]string {
-	return printer.NewPaging(c.Meta.Total, &c.Meta.Links.Next, &c.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(c.Meta).Compose()
 }
 
 // ======================================
@@ -340,7 +340,7 @@ func (c *ContainerRegistryRepositoriesPrinter) Data() [][]string {
 
 // Paging ...
 func (c *ContainerRegistryRepositoriesPrinter) Paging() [][]string {
-	return printer.NewPaging(c.Meta.Total, &c.Meta.Links.Next, &c.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(c.Meta).Compose()
 }
 
 // ======================================

@@ -67,7 +67,7 @@ func (c *ClustersSummaryPrinter) Data() [][]string {
 
 // Paging ...
 func (c *ClustersSummaryPrinter) Paging() [][]string {
-	return printer.NewPaging(c.Meta.Total, &c.Meta.Links.Next, &c.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(c.Meta).Compose()
 }
 
 // ======================================
@@ -161,7 +161,7 @@ func (c *ClustersPrinter) Data() [][]string {
 
 // Paging ...
 func (c *ClustersPrinter) Paging() [][]string {
-	return printer.NewPaging(c.Meta.Total, &c.Meta.Links.Next, &c.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(c.Meta).Compose()
 }
 
 // ======================================
@@ -321,7 +321,7 @@ func (n *NodePoolsPrinter) Data() [][]string {
 
 // Paging ...
 func (n *NodePoolsPrinter) Paging() [][]string {
-	return printer.NewPaging(n.Meta.Total, &n.Meta.Links.Next, &n.Meta.Links.Prev).Compose()
+	return printer.NewPagingFromMeta(n.Meta).Compose()
 }
 
 // ======================================
