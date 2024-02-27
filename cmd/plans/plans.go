@@ -121,6 +121,7 @@ func NewCmdPlan(base *cli.Base) *cobra.Command {
 			return nil
 		},
 	}
+
 	metal.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	metal.Flags().IntP(
 		"per-page",

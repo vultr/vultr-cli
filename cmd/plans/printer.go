@@ -113,7 +113,7 @@ func (m *MetalPlansPrinter) Columns() [][]string {
 func (m *MetalPlansPrinter) Data() [][]string {
 	data := [][]string{}
 
-	if len(data) == 0 {
+	if len(m.Plans) == 0 {
 		data = append(data, []string{"---", "---", "---", "---", "---", "---", "---", "---", "---", "---", "---"})
 		return data
 	}
