@@ -245,7 +245,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	// Rule List
 	ruleList := &cobra.Command{
-		Use:     "list <firewall group ID>",
+		Use:     "list <Firewall Group ID>",
 		Short:   "List all firewall rules",
 		Aliases: []string{"l"},
 		Long:    ruleListLong,
@@ -304,7 +304,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	// Rule Create
 	ruleCreate := &cobra.Command{
-		Use:     "create",
+		Use:     "create <Firewall Group ID>",
 		Short:   "Create a firewall rule",
 		Aliases: []string{"c"},
 		Long:    ruleCreateLong,
