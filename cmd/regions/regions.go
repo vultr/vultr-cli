@@ -50,7 +50,7 @@ func NewCmdRegion(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "regions",
-		Short:   "Get regions",
+		Short:   "Display regions information",
 		Aliases: []string{"r", "region"},
 		Long:    regionLong,
 		Example: regionExample,
@@ -90,7 +90,7 @@ func NewCmdRegion(base *cli.Base) *cobra.Command {
 
 	availability := &cobra.Command{
 		Use:     "availability <Region ID>",
-		Short:   "List available plans in region",
+		Short:   "List available plans by region",
 		Aliases: []string{"a"},
 		Long:    availLong,
 		Example: availExample,

@@ -25,7 +25,7 @@ func NewCmdAccount(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "account",
-		Short:   "get account information",
+		Short:   "Display account information",
 		Long:    accountLong,
 		Example: accountExample,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {

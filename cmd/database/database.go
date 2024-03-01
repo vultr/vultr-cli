@@ -53,7 +53,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 	cmd := &cobra.Command{
 		Use:     "database",
-		Short:   "Access database commands",
+		Short:   "Commands to manage databases",
 		Long:    long,
 		Example: example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -650,7 +650,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// User ACL
 	userACL := &cobra.Command{
 		Use:   "acl",
-		Short: "commands to handle managed database user access control (Redis only)",
+		Short: "Commands to manage database user access control (Redis only)",
 	}
 
 	// User ACL Update
@@ -758,7 +758,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Logical Database
 	db := &cobra.Command{
 		Use:   "db",
-		Short: "Commands to handle database logical dbs",
+		Short: "Commands to handle database logical DBs",
 	}
 
 	// Logical DB List
@@ -787,7 +787,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Logical DB Create
 	dbCreate := &cobra.Command{
 		Use:   "create <Database ID>",
-		Short: "Create a logical database ",
+		Short: "Create a logical database",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("please provide a database ID")
@@ -825,7 +825,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Logical DB Delete
 	dbDel := &cobra.Command{
 		Use:   "delete <Database ID> <DB Name>",
-		Short: "Delete a logical database ",
+		Short: "Delete a logical database",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 2 {
 				return errors.New("please provide a database ID and a DB name")
@@ -1111,7 +1111,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Migration Detach
 	migrationDetach := &cobra.Command{
 		Use:   "detach <Database ID>",
-		Short: "Detach a migration from a database ",
+		Short: "Detach a migration from a database",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("please provide a database ID")
@@ -1249,7 +1249,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Backup Restore
 	backupRestore := &cobra.Command{
 		Use:   "restore <Database ID>",
-		Short: "Restore a database backup ",
+		Short: "Restore a database backup",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("please provide a database ID")

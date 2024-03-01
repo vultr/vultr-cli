@@ -69,7 +69,7 @@ func NewCmdVPC(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	cmd := &cobra.Command{
 		Use:     "vpc",
-		Short:   "Interact with VPCs",
+		Short:   "Commands to manage VPCs",
 		Long:    long,
 		Example: example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -229,7 +229,7 @@ func NewCmdVPC(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	del := &cobra.Command{
 		Use:     "delete <VPC ID>",
 		Aliases: []string{"destroy", "d"},
-		Short:   "delete a VPC",
+		Short:   "Delete a VPC",
 		Long:    deleteLong,
 		Example: deleteExample,
 		Args: func(cmd *cobra.Command, args []string) error {

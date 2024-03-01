@@ -36,7 +36,7 @@ func NewCmdMarketplace(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "marketplace",
-		Short:   "Commands to interact with marketplace functions",
+		Short:   "Display marketplace information",
 		Long:    long,
 		Example: example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {

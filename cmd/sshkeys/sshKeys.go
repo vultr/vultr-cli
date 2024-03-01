@@ -75,7 +75,7 @@ func NewCmdSSHKey(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	cmd := &cobra.Command{
 		Use:     "ssh-key",
-		Short:   "Commands to access SSH key functions",
+		Short:   "Commands to manage SSH keys",
 		Aliases: []string{"ssh", "ssh-keys", "sshkeys"},
 		Long:    sshLong,
 		Example: sshExample,

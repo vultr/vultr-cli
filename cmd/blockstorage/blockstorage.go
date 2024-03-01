@@ -101,7 +101,7 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	cmd := &cobra.Command{
 		Use:     "block-storage",
 		Aliases: []string{"bs"},
-		Short:   "block storage commands",
+		Short:   "Commands to manage block storage",
 		Long:    `block-storage is used to interact with the block-storage api`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			utils.SetOptions(o.Base, cmd, args)

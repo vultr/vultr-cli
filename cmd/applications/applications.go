@@ -38,7 +38,7 @@ func NewCmdApplications(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "apps",
-		Short:   "display applications",
+		Short:   "Display applications",
 		Aliases: []string{"a", "application", "applications", "app"},
 		Long:    appLong,
 		Example: appExample,
@@ -51,7 +51,7 @@ func NewCmdApplications(base *cli.Base) *cobra.Command {
 	// List
 	list := &cobra.Command{
 		Use:     "list",
-		Short:   "list applications",
+		Short:   "List available applications",
 		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,

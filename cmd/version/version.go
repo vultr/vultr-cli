@@ -30,7 +30,7 @@ func NewCmdVersion(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "version",
-		Short:   "Print the vultr-cli version",
+		Short:   "Display the vultr-cli version",
 		Aliases: []string{"v"},
 		Long:    long,
 		Example: example,

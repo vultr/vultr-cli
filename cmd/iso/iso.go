@@ -19,7 +19,7 @@ func NewCmdISO(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "iso",
-		Short: "iso is used to access iso commands",
+		Short: "Commands to manage ISOs",
 		Long:  ``,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			utils.SetOptions(o.Base, cmd, args)
@@ -33,7 +33,7 @@ func NewCmdISO(base *cli.Base) *cobra.Command {
 	// List
 	list := &cobra.Command{
 		Use:   "list",
-		Short: "list all private ISOs available",
+		Short: "List all private ISOs available",
 		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
@@ -61,7 +61,7 @@ func NewCmdISO(base *cli.Base) *cobra.Command {
 	// Get
 	get := &cobra.Command{
 		Use:   "get <ISO ID>",
-		Short: "get private ISO by ID",
+		Short: "Get a private ISO by ID",
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -85,7 +85,7 @@ func NewCmdISO(base *cli.Base) *cobra.Command {
 	// Create
 	create := &cobra.Command{
 		Use:   "create",
-		Short: "create ISO from url",
+		Short: "Create an ISO from url",
 		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			url, errUR := cmd.Flags().GetString("url")
@@ -116,7 +116,7 @@ func NewCmdISO(base *cli.Base) *cobra.Command {
 	// Delete
 	del := &cobra.Command{
 		Use:     "delete <ISO ID>",
-		Short:   "delete a private ISO",
+		Short:   "Delete a private ISO",
 		Aliases: []string{"destroy"},
 		Long:    ``,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -138,7 +138,7 @@ func NewCmdISO(base *cli.Base) *cobra.Command {
 	// Public ISOs
 	public := &cobra.Command{
 		Use:   "public",
-		Short: "list all public ISOs available",
+		Short: "List all public ISOs",
 		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)

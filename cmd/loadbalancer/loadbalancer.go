@@ -72,7 +72,7 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 	cmd := &cobra.Command{
 		Use:     "load-balancer",
-		Short:   "Load balancer commands",
+		Short:   "Commands to managed load balancers",
 		Long:    long,
 		Example: example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -399,7 +399,7 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Update
 	update := &cobra.Command{
 		Use:     "update <Load Balancer ID>",
-		Short:   "Updates a load balancer",
+		Short:   "Update a load balancer",
 		Aliases: []string{"u"},
 		Long:    updateLong,
 		Example: updateExample,
@@ -690,7 +690,7 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Forwarding Rules
 	forwarding := &cobra.Command{
 		Use:   "forwarding",
-		Short: "Access forwarding rules for a load balancer",
+		Short: "Commands to manage forwarding rules on a load balancer",
 	}
 
 	// List Forwarding Rules
@@ -856,7 +856,7 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Firewall
 	firewall := &cobra.Command{
 		Use:   "firewall",
-		Short: "Access firewall rules on a load balancer",
+		Short: "Commands to retrieve firewall rules on a load balancer",
 	}
 
 	// List Firewall Rules

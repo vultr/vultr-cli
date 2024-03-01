@@ -52,7 +52,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Domain List
 	domainList := &cobra.Command{
 		Use:   "list",
-		Short: "Get list of domains",
+		Short: "Get a list of domains",
 		Run: func(cmd *cobra.Command, args []string) {
 			o.Base.Options = utils.GetPaging(cmd)
 
@@ -158,7 +158,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Domain DNSSEC Update
 	domainDNSSEC := &cobra.Command{
 		Use:   "dnssec <Domain Name>",
-		Short: "enable/disable dnssec",
+		Short: "Enable or disable DNSSEC",
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -212,7 +212,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Domain DNSSEC Info
 	domainDNSSECInfo := &cobra.Command{
 		Use:   "dnssec-info <Domain Name>",
-		Short: "Get DNS SEC info",
+		Short: "Get DNSSEC info",
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -235,7 +235,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Domain SOA Info
 	domainSOAInfo := &cobra.Command{
 		Use:   "soa-info <Domain Name>",
-		Short: "Get DNS SOA info",
+		Short: "Get SOA info",
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -310,7 +310,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Record
 	record := &cobra.Command{
 		Use:   "record",
-		Short: "dns record",
+		Short: "Commands to mangage DNS records",
 	}
 
 	// Record List
@@ -372,7 +372,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Record Create
 	recordCreate := &cobra.Command{
 		Use:   "create <Domain Name>",
-		Short: "Create a dns record",
+		Short: "Create a DNS record",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a domain name")
@@ -462,7 +462,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Record Delete
 	recordDelete := &cobra.Command{
 		Use:     "delete <Domain Name> <Record ID>",
-		Short:   "Delete DNS record",
+		Short:   "Delete a DNS record",
 		Aliases: []string{"destroy"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 2 {

@@ -2,47 +2,47 @@
 
 The Vultr Command Line Interface
 
-```sh
+```
 vultr-cli is a command line interface for the Vultr API
 
 Usage:
   vultr-cli [command]
 
 Available Commands:
-  account            Retrieve information about your account
-  apps               Display all available applications
+  account            Display account information
+  apps               Display applications
   backups            Display backups
-  bare-metal         bare-metal is used to access bare metal server commands
+  bare-metal         Commands to manage bare metal servers
   billing            Display billing information
-  block-storage      block storage commands
+  block-storage      Commands to manage block storage
   completion         Generate the autocompletion script for the specified shell
-  container-registry commands to interact with container registries
-  database           Commands to interact with managed databases on vultr
-  dns                dns is used to access dns commands
-  firewall           firewall is used to access firewall commands
+  container-registry Commands to interact with container registries
+  database           Commands to manage databases
+  dns                Commands to control DNS records
+  firewall           Commands to manage firewalls
   help               Help about any command
-  instance           commands to interact with instances on vultr
-  iso                iso is used to access iso commands
-  kubernetes         kubernetes is used to access kubernetes commands
-  load-balancer      load balancer commands
-  marketplace        Commands to interact with Vultr Marketplace
-  object-storage     object storage commands
-  os                 os is used to access os commands
-  plans              get information about Vultr plans
-  regions            get regions
-  reserved-ip        reserved-ip lets you interact with reserved-ip
-  script             startup script commands
-  snapshot           snapshot commands
-  ssh-key            ssh-key commands
-  user               user commands
-  version            Display current version of Vultr-cli
-  vpc                Interact with VPCs
-  vpc2               Interact with VPC 2.0 networks
+  instance           Commands to interact with instances
+  iso                Commands to manage ISOs
+  kubernetes         Commands to manage kubernetes clusters
+  load-balancer      Commands to managed load balancers
+  marketplace        Display marketplace information
+  object-storage     Commands to manage object storage
+  os                 Display available operating systems
+  plans              Display available plan information
+  regions            Display regions information
+  reserved-ip        Commands to interact with reserved IPs
+  script             Commands to interact with startup scripts
+  snapshot           Commands to interact with snapshots
+  ssh-key            Commands to manage SSH keys
+  user               Commands to manage users
+  version            Display the vultr-cli version
+  vpc                Commands to manage VPCs
+  vpc2               Commands to manage VPC2 networks
 
 Flags:
-  --config string   config file (default is $HOME/.vultr-cli.yaml) (default "#HOME/.vultr-cli.yaml")
+      --config string   config file (default is $HOME/.vultr-cli.yaml) (default "/home/michael/.vultr-cli.yaml")
   -h, --help            help for vultr-cli
-  -t, --toggle          Help message for toggle
+  -o, --output string   output format [ text | json | yaml ] (default "text")
 
 Use "vultr-cli [command] --help" for more information about a command.
 ```
@@ -57,7 +57,7 @@ These are the options available to install `vultr-cli`:
   - Brew
   - OpenBSD (-current)
   - Snap (Coming soon)
-  - Chocolatey (Coming soon)
+  - Chocolatey
 4. Docker
 
 ### GitHub Release
