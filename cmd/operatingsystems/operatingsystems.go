@@ -38,7 +38,7 @@ func NewCmdOS(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "os",
-		Short:   "list available operating systems",
+		Short:   "Display available operating systems",
 		Aliases: []string{"o"},
 		Long:    long,
 		Example: example,
@@ -51,7 +51,7 @@ func NewCmdOS(base *cli.Base) *cobra.Command {
 	// List
 	list := &cobra.Command{
 		Use:     "list",
-		Short:   "list all available operating systems",
+		Short:   "List all operating systems",
 		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,

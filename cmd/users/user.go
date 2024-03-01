@@ -69,7 +69,7 @@ func NewCmdUser(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	cmd := &cobra.Command{
 		Use:     "user",
-		Short:   "User commands",
+		Short:   "Commands to manage users",
 		Aliases: []string{"users", "u"},
 		Long:    userLong,
 		Example: userExample,

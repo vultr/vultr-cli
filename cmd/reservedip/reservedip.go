@@ -326,7 +326,7 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// Convert
 	convert := &cobra.Command{
 		Use:     "convert ",
-		Short:   "Convert IP address to reserved IP",
+		Short:   "Convert IP address to a reserved IP",
 		Aliases: []string{"v"},
 		Long:    convertLong,
 		Example: convertExample,
@@ -368,7 +368,7 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// Delete
 	del := &cobra.Command{
 		Use:     "delete <Reserved IP ID>",
-		Short:   "delete a reserved ip",
+		Short:   "Delete a reserved ip",
 		Long:    deleteLong,
 		Example: deleteExample,
 		Aliases: []string{"destroy"},

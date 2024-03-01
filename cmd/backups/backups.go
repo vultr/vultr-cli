@@ -29,7 +29,7 @@ func NewCmdBackups(base *cli.Base) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "backups",
 		Aliases: []string{"backup", "b"},
-		Short:   "user commands",
+		Short:   "Display backups",
 		Long:    backupsLong,
 		Example: backupsExample,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -44,7 +44,7 @@ func NewCmdBackups(base *cli.Base) *cobra.Command {
 	// List
 	list := &cobra.Command{
 		Use:     "list",
-		Short:   "list all backups",
+		Short:   "List all backups",
 		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,
@@ -71,7 +71,7 @@ func NewCmdBackups(base *cli.Base) *cobra.Command {
 	// Get
 	get := &cobra.Command{
 		Use:     "get",
-		Short:   "get a backup",
+		Short:   "Get a backup",
 		Long:    getLong,
 		Example: getExample,
 		Args: func(cmd *cobra.Command, args []string) error {

@@ -19,7 +19,7 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	cmd := &cobra.Command{
 		Use:   "object-storage",
-		Short: "object storage commands",
+		Short: "Commands to manage object storage",
 		Long:  `object-storage is used to interact with object storages`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			utils.SetOptions(o.Base, cmd, args)
@@ -33,7 +33,7 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// List
 	list := &cobra.Command{
 		Use:   "list",
-		Short: "retrieves a list of active object storages",
+		Short: "Retrieve all active object storages",
 		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
@@ -61,7 +61,7 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// Get
 	get := &cobra.Command{
 		Use:   "get <Object Storage ID>",
-		Short: "retrieves a given object storage",
+		Short: "Retrieve a given object storage",
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -85,7 +85,7 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// Create
 	create := &cobra.Command{
 		Use:   "create",
-		Short: "create a new object storage",
+		Short: "Create a new object storage",
 		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clusterID, errCl := cmd.Flags().GetInt("cluster-id")
@@ -123,7 +123,7 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// Label
 	label := &cobra.Command{
 		Use:   "label <Object Storage ID>",
-		Short: "change the label for object storage subscription",
+		Short: "Change the label for object storage",
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -156,7 +156,7 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// Delete
 	del := &cobra.Command{
 		Use:     "delete <Object Storage ID>",
-		Short:   "delete specified object storage",
+		Short:   "Delete an object storage",
 		Aliases: []string{"destroy"},
 		Long:    ``,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -178,7 +178,7 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// Regenerate Keys
 	regenerateKeys := &cobra.Command{
 		Use:   "regenerate-keys <Object Storage ID>",
-		Short: "regenerate the S3 API keys for object storage",
+		Short: "Regenerate the S3 API keys for an object storage",
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -202,7 +202,7 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// List Clusters
 	listClusters := &cobra.Command{
 		Use:   "list-clusters",
-		Short: "retrieve a list of all available object storage clusters",
+		Short: "Retrieve a list of all available object storage clusters",
 		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)

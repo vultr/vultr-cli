@@ -53,7 +53,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	cmd := &cobra.Command{
 		Use:     "vpc2",
-		Short:   "Commands to interact with VPC2 on vultr",
+		Short:   "Commands to manage VPC2 networks",
 		Long:    long,
 		Example: example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -98,7 +98,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	get := &cobra.Command{
 		Use:     "get <VPC2 ID>",
 		Aliases: []string{"g"},
-		Short:   "Get info on a VPC2",
+		Short:   "Get info on a VPC2 network",
 		Long:    getLong,
 		Example: getExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -188,7 +188,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	update := &cobra.Command{
 		Use:     "update",
 		Aliases: []string{"u"},
-		Short:   "Update a VPC2",
+		Short:   "Update a VPC2 network",
 		Long:    updateLong,
 		Example: updateExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -225,7 +225,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	del := &cobra.Command{
 		Use:     "delete <VPC2 ID>",
 		Aliases: []string{"destroy", "d"},
-		Short:   "delete a VPC2",
+		Short:   "Delete a VPC2 network",
 		Long:    deleteLong,
 		Example: deleteExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -248,7 +248,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// Nodes
 	nodes := &cobra.Command{
 		Use:   "nodes",
-		Short: "Commands to handle nodes attached to a VPC2 network",
+		Short: "Commands to manage nodes attached to a VPC2 network",
 	}
 
 	// Nodes List

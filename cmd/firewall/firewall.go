@@ -72,7 +72,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	cmd := &cobra.Command{
 		Use:     "firewall",
-		Short:   "Access firewall commands",
+		Short:   "Commands to manage firewalls",
 		Aliases: []string{"fw"},
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			utils.SetOptions(o.Base, cmd, args)
@@ -120,7 +120,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// Group Get
 	groupGet := &cobra.Command{
 		Use:   "get <Firewall Group ID>",
-		Short: "Get firewall group",
+		Short: "Get a firewall group",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a firewall group ID")
@@ -142,7 +142,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// Group Create
 	groupCreate := &cobra.Command{
 		Use:     "create",
-		Short:   "create a firewall group",
+		Short:   "Create a firewall group",
 		Aliases: []string{"c"},
 		Run: func(cmd *cobra.Command, args []string) {
 			description, errDe := cmd.Flags().GetString("description")
@@ -171,7 +171,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// Group Update
 	groupUpdate := &cobra.Command{
 		Use:     "update <Firewall Group ID>",
-		Short:   "Update firewall group description",
+		Short:   "Update a firewall group description",
 		Aliases: []string{"u"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -281,7 +281,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	// Rule Get
 	ruleGet := &cobra.Command{
 		Use:     "get <Firewall Group ID> <Firewall Rule Number>",
-		Short:   "Get firewall rule",
+		Short:   "Get a firewall rule",
 		Long:    ruleGetLong,
 		Example: ruleGetExample,
 		Args: func(cmd *cobra.Command, args []string) error {

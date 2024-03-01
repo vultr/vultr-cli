@@ -81,7 +81,7 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "billing",
-		Short:   "display billing information",
+		Short:   "Display billing information",
 		Long:    long,
 		Example: example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -97,7 +97,7 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 	invoice := &cobra.Command{
 		Use:     "invoice",
 		Aliases: []string{"i"},
-		Short:   "display invoice information",
+		Short:   "Display invoice information",
 		Long:    invoicesLong,
 		Example: invoicesExample,
 	}
@@ -105,7 +105,7 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 	// Invoice List
 	invoicesList := &cobra.Command{
 		Use:     "list",
-		Short:   "list billing invoices",
+		Short:   "List billing invoices",
 		Aliases: []string{"l"},
 		Long:    invoiceListLong,
 		Example: invoiceListExample,
@@ -132,7 +132,7 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 	// Invoice Get
 	invoiceGet := &cobra.Command{
 		Use:     "get",
-		Short:   "get invoice",
+		Short:   "Get an invoice",
 		Aliases: []string{"g"},
 		Long:    invoiceGetLong,
 		Example: invoiceGetExample,
@@ -157,7 +157,7 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 	// Invoice Items List
 	invoiceItemsList := &cobra.Command{
 		Use:     "items <INVOICE_ID>",
-		Short:   "list invoice items",
+		Short:   "Get all invoice items",
 		Aliases: []string{"i"},
 		Long:    invoiceItemsListLong,
 		Example: invoiceItemsListExample,
@@ -205,7 +205,7 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 	history := &cobra.Command{
 		Use:     "history",
 		Aliases: []string{"h"},
-		Short:   "display billing history information",
+		Short:   "Display billing history information",
 		Long:    historyLong,
 		Example: historyExample,
 	}
@@ -213,7 +213,7 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 	// History List
 	historyList := &cobra.Command{
 		Use:     "list",
-		Short:   "list billing history",
+		Short:   "Show billing history",
 		Aliases: []string{"l"},
 		Long:    historyListLong,
 		Example: historyListExample,

@@ -94,7 +94,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 	cmd := &cobra.Command{
 		Use:     "instance",
-		Short:   "commands to interact with instances on vultr",
+		Short:   "Commands to interact with instances",
 		Long:    long,
 		Example: example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -474,7 +474,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// User Data
 	userData := &cobra.Command{
 		Use:   "user-data",
-		Short: "Commands to handle user data on an instance",
+		Short: "Commands to manage user data on an instance",
 	}
 
 	// User Data Get
@@ -505,7 +505,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// User Data Set
 	userDataSet := &cobra.Command{
 		Use:     "set <Instance ID>",
-		Short:   "Update user-data on an instance",
+		Short:   "Update user data on an instance",
 		Long:    userDataSetLong,
 		Example: userDataSetExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -833,7 +833,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Reinstall
 	reinstall := &cobra.Command{
 		Use:   "reinstall <Instance ID>",
-		Short: "reinstall an instance",
+		Short: "Reinstall an instance",
 		Long:  ``,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
@@ -1181,7 +1181,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// IPv6
 	ipv6 := &cobra.Command{
 		Use:   "ipv6",
-		Short: "IPv6 instance commands",
+		Short: "Display instance IPv6 info",
 	}
 
 	// IPv6 List

@@ -49,7 +49,7 @@ func NewCmdPlan(base *cli.Base) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "plans",
-		Short:   "get information about Vultr plans",
+		Short:   "Display available plan information",
 		Aliases: []string{"p", "plan"},
 		Long:    planLong,
 		Example: planExample,

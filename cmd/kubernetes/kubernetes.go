@@ -222,7 +222,7 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	cmd := &cobra.Command{
 		Use:     "kubernetes",
 		Aliases: []string{"k"},
-		Short:   "Access kubernetes cluster commands",
+		Short:   "Commands to manage kubernetes clusters",
 		Long:    long,
 		Example: example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -279,7 +279,7 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Get
 	get := &cobra.Command{
 		Use:     "get <Cluster ID>",
-		Short:   "Retrieves a kubernetes cluster",
+		Short:   "Retrieve a kubernetes cluster",
 		Long:    getLong,
 		Example: getExample,
 		Aliases: []string{"g"},
@@ -414,7 +414,7 @@ required in node pool. Use / between each new node pool.  E.g:
 	// Update
 	update := &cobra.Command{
 		Use:     "update <Cluster ID>",
-		Short:   "Updates a kubernetes cluster",
+		Short:   "Update a kubernetes cluster",
 		Aliases: []string{"u"},
 		Long:    updateLong,
 		Example: updateExample,
@@ -490,7 +490,7 @@ required in node pool. Use / between each new node pool.  E.g:
 	// Config
 	config := &cobra.Command{
 		Use:     "config <Cluster ID>",
-		Short:   "Get a kubernetes cluster's config",
+		Short:   "Get a kubernetes cluster config",
 		Long:    getConfigLong,
 		Example: getConfigExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -592,7 +592,7 @@ required in node pool. Use / between each new node pool.  E.g:
 	// Upgrade start
 	upgradeStart := &cobra.Command{
 		Use:     "start <clusterID>",
-		Short:   "Perform upgrade on a cluster",
+		Short:   "Perform an upgrade on a cluster",
 		Long:    upgradeLong,
 		Example: upgradeExample,
 		Aliases: []string{"s"},
@@ -800,7 +800,7 @@ required in node pool. Use / between each new node pool.  E.g:
 	// Node Pool Update
 	npUpdate := &cobra.Command{
 		Use:     "update <Cluster ID> <Node Pool ID>",
-		Short:   "Update a cluster's node pool",
+		Short:   "Update a cluster node pool",
 		Aliases: []string{"u"},
 		Long:    updateNPLong,
 		Example: updateNPExample,
@@ -910,7 +910,7 @@ required in node pool. Use / between each new node pool.  E.g:
 	// Node
 	node := &cobra.Command{
 		Use:     "node",
-		Short:   "delete/recycle instances in a cluster's node pool",
+		Short:   "Commands to manage node pool nodes",
 		Long:    nodeLong,
 		Example: nodeExample,
 	}

@@ -334,7 +334,7 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 	// Plans
 	plans := &cobra.Command{
 		Use:     "plans",
-		Short:   "List the plan names for container registry",
+		Short:   "List the plan names for a container registry",
 		Aliases: []string{"p"},
 		Long:    plansLong,
 		Example: plansExample,
@@ -354,7 +354,7 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 	// Regions
 	regions := &cobra.Command{
 		Use:     "regions",
-		Short:   "List the available regions for container registry",
+		Short:   "List the available regions for a container registry",
 		Aliases: []string{"i"},
 		Long:    regionsLong,
 		Example: regionsExample,

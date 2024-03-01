@@ -127,7 +127,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 	cmd := &cobra.Command{
 		Use:     "bare-metal",
-		Short:   "Bare metal server commands",
+		Short:   "Commands to manage bare metal servers",
 		Aliases: []string{"bm"},
 		Long:    long,
 		Example: example,
@@ -392,7 +392,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Application
 	application := &cobra.Command{
 		Use:     "app",
-		Short:   "app is used to access bare metal server application commands",
+		Short:   "Commands to modify applications on a bare metal server",
 		Aliases: []string{"a", "application"},
 		Long:    applicationLong,
 		Example: applicationExample,
@@ -448,7 +448,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Application List
 	applicationList := &cobra.Command{
 		Use:     "list <Bare Metal ID>",
-		Short:   "Available apps for a bare metal server",
+		Short:   "List available apps for a bare metal server",
 		Long:    applicationListLong,
 		Example: applicationListExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -473,7 +473,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Image
 	image := &cobra.Command{
 		Use:     "image",
-		Short:   "image is used to access bare metal server image commands",
+		Short:   "Commands to manage the image on a bare metal server",
 		Aliases: []string{"i"},
 		Long:    imageLong,
 		Example: imageExample,
@@ -531,7 +531,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// OS
 	operatingSystem := &cobra.Command{
 		Use:     "os",
-		Short:   "Server operating system commands",
+		Short:   "Commands to manage the operating system on a bare metal server",
 		Aliases: []string{"o"},
 		Long:    operatingSystemLong,
 		Example: operatingSystemExample,
@@ -540,7 +540,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// OS Change
 	operatingSystemChange := &cobra.Command{
 		Use:     "change <Bare Metal ID>",
-		Short:   "Change a bare metal server's image",
+		Short:   "Change a bare metal server's operating system",
 		Aliases: []string{"c"},
 		Long:    operatingSystemChangeLong,
 		Example: operatingSystemChangeExample,
@@ -586,7 +586,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Operating System List
 	operatingSystemList := &cobra.Command{
 		Use:     "list <Bare Metal ID>",
-		Short:   "Available operating systems for a bare metal server",
+		Short:   "List the available operating systems for a bare metal server",
 		Long:    operatingSystemListLong,
 		Example: operatingSystemListExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -693,7 +693,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// VNC URL
 	vnc := &cobra.Command{
 		Use:     "vnc <Bare Metal ID>",
-		Short:   "get a bare metal server's VNC url",
+		Short:   "Get a bare metal server's VNC url",
 		Long:    vncLong,
 		Example: vncExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -742,7 +742,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Tags
 	tags := &cobra.Command{
 		Use:     "tags <Bare Metal ID>",
-		Short:   "add or modify tags on the bare metal server.",
+		Short:   "Add or modify tags on the bare metal server",
 		Long:    tagsLong,
 		Example: tagsExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -800,7 +800,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// IPv6 Addresses
 	ipv6 := &cobra.Command{
 		Use:     "ipv6 <Bare Metal ID>",
-		Short:   "list the IPv6 information of a bare metal server.",
+		Short:   "Get the IPv6 information of a bare metal server",
 		Long:    ipv6Long,
 		Example: ipv6Example,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -824,7 +824,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// VPC2
 	vpc2 := &cobra.Command{
 		Use:   "vpc2",
-		Short: "commands to manage vpc 2.0 on bare metal servers",
+		Short: "Commands to manage VPC2s on bare metal servers",
 		Long:  vpc2Long,
 	}
 
