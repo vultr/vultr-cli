@@ -119,16 +119,17 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 			bss, meta, err := o.list()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving block storage list : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving block storage list : %v", err)
 			}
 
 			data := &BlockStoragesPrinter{BlockStorages: bss, Meta: meta}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -153,15 +154,16 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			bs, err := o.get()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving block storage : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving block storage : %v", err)
 			}
 
 			data := &BlockStoragePrinter{BlockStorage: bs}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -172,29 +174,25 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		Aliases: []string{"c"},
 		Long:    createLong,
 		Example: createExample,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			reg, errRg := cmd.Flags().GetString("region")
 			if errRg != nil {
-				printer.Error(fmt.Errorf("error parsing 'region' flag for block storage create : %v", errRg))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'region' flag for block storage create : %v", errRg)
 			}
 
 			size, errSz := cmd.Flags().GetInt("size")
 			if errSz != nil {
-				printer.Error(fmt.Errorf("error parsing 'size' flag for block storage create : %v", errSz))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'size' flag for block storage create : %v", errSz)
 			}
 
 			label, errLa := cmd.Flags().GetString("label")
 			if errLa != nil {
-				printer.Error(fmt.Errorf("error parsing 'label' flag for block storage create : %v", errLa))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'label' flag for block storage create : %v", errLa)
 			}
 
 			blockType, errBt := cmd.Flags().GetString("block-type")
 			if errBt != nil {
-				printer.Error(fmt.Errorf("error parsing 'block-type' flag for block storage create : %v", errBt))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'block-type' flag for block storage create : %v", errBt)
 			}
 
 			o.CreateReq = &govultr.BlockStorageCreate{
@@ -206,12 +204,13 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 			bs, err := o.create()
 			if err != nil {
-				printer.Error(fmt.Errorf("error creating block storage : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error creating block storage : %v", err)
 			}
 
 			data := &BlockStoragePrinter{BlockStorage: bs}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -250,13 +249,14 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.del(); err != nil {
-				printer.Error(fmt.Errorf("error deleting block storage : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error deleting block storage : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("block storage has been deleted"), nil)
+
+			return nil
 		},
 	}
 
@@ -273,17 +273,15 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			instance, errIe := cmd.Flags().GetString("instance")
 			if errIe != nil {
-				printer.Error(fmt.Errorf("error parsing 'instance' flag for block storage attach : %v", errIe))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'instance' flag for block storage attach : %v", errIe)
 			}
 
 			live, errLe := cmd.Flags().GetBool("live")
 			if errLe != nil {
-				printer.Error(fmt.Errorf("error parsing 'live' flag for block storage attach : %v", errLe))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'live' flag for block storage attach : %v", errLe)
 			}
 
 			o.AttachReq = &govultr.BlockStorageAttach{
@@ -292,11 +290,12 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 
 			if err := o.attach(); err != nil {
-				printer.Error(fmt.Errorf("error attaching block storage : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error attaching block storage : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("block storage has been attached"), nil)
+
+			return nil
 		},
 	}
 
@@ -320,11 +319,10 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			live, errLe := cmd.Flags().GetBool("live")
 			if errLe != nil {
-				printer.Error(fmt.Errorf("error parsing 'live' flag for block storage detach : %v", errLe))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'live' flag for block storage detach : %v", errLe)
 			}
 
 			o.DetachReq = &govultr.BlockStorageDetach{
@@ -332,11 +330,12 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 
 			if err := o.detach(); err != nil {
-				printer.Error(fmt.Errorf("error detaching block storage : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error detaching block storage : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("block storage has been detached"), nil)
+
+			return nil
 		},
 	}
 
@@ -354,11 +353,10 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			label, errLl := cmd.Flags().GetString("label")
 			if errLl != nil {
-				printer.Error(fmt.Errorf("error parsing 'label' flag for block storage : %v", errLl))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'label' flag for block storage : %v", errLl)
 			}
 
 			o.UpdateReq = &govultr.BlockStorageUpdate{
@@ -366,11 +364,12 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 
 			if err := o.update(); err != nil {
-				printer.Error(fmt.Errorf("error updating block storage label : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error updating block storage label : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("block storage label has been updated"), nil)
+
+			return nil
 		},
 	}
 
@@ -393,11 +392,10 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			size, errSz := cmd.Flags().GetInt("size")
 			if errSz != nil {
-				printer.Error(fmt.Errorf("error parsing 'size' flag for block storage resize : %v", errSz))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'size' flag for block storage resize : %v", errSz)
 			}
 
 			o.UpdateReq = &govultr.BlockStorageUpdate{
@@ -405,11 +403,12 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 
 			if err := o.update(); err != nil {
-				printer.Error(fmt.Errorf("error resizing block storage : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error resizing block storage : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("block storage has been resized"), nil)
+
+			return nil
 		},
 	}
 

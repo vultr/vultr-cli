@@ -95,17 +95,18 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		Use:     "list",
 		Short:   "List all firewall groups",
 		Aliases: []string{"l"},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 
 			groups, meta, err := o.listGroups()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving firewall group list : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving firewall group list : %v", err)
 			}
 
 			data := &FirewallGroupsPrinter{Groups: groups, Meta: meta}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -127,15 +128,16 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			group, err := o.getGroup()
 			if err != nil {
-				printer.Error(fmt.Errorf("error getting firewall group : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error getting firewall group : %v", err)
 			}
 
 			data := &FirewallGroupPrinter{Group: *group}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -144,11 +146,10 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		Use:     "create",
 		Short:   "Create a firewall group",
 		Aliases: []string{"c"},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			description, errDe := cmd.Flags().GetString("description")
 			if errDe != nil {
-				printer.Error(fmt.Errorf("error parsing 'description' flag for firewall group create: %v", errDe))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'description' flag for firewall group create: %v", errDe)
 			}
 
 			o.GroupReq = &govultr.FirewallGroupReq{
@@ -157,12 +158,13 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 			grp, err := o.createGroup()
 			if err != nil {
-				printer.Error(fmt.Errorf("error creating firewall group : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error creating firewall group : %v", err)
 			}
 
 			data := &FirewallGroupPrinter{Group: *grp}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -179,11 +181,10 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			description, errDe := cmd.Flags().GetString("description")
 			if errDe != nil {
-				printer.Error(fmt.Errorf("error parsing 'description' flag for firewall group update : %v", errDe))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'description' flag for firewall group update : %v", errDe)
 			}
 
 			o.GroupReq = &govultr.FirewallGroupReq{
@@ -191,17 +192,18 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 
 			if err := o.updateGroup(); err != nil {
-				printer.Error(fmt.Errorf("error updating firewall group : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error updating firewall group : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("firewall group has been updated"), nil)
+
+			return nil
 		},
 	}
 
 	groupUpdate.Flags().StringP("description", "d", "", "Description of firewall group.")
 	if err := groupUpdate.MarkFlagRequired("description"); err != nil {
-		printer.Error(fmt.Errorf("error marking firewall group 'description' flag required: %v", err))
+		fmt.Printf("error marking firewall group 'description' flag required: %v", err)
 		os.Exit(1)
 	}
 
@@ -216,13 +218,14 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.deleteGroup(); err != nil {
-				printer.Error(fmt.Errorf("error deleting firewall group : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error deleting firewall group : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("firewall group has been deleted"), nil)
+
+			return nil
 		},
 	}
 
@@ -256,17 +259,18 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 
 			rules, meta, err := o.listRules()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving firewall rule list : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving firewall rule list : %v", err)
 			}
 
 			data := &FirewallRulesPrinter{Rules: rules, Meta: meta}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -290,15 +294,16 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			rule, err := o.getRule()
 			if err != nil {
-				printer.Error(fmt.Errorf("error getting firewall rule : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error getting firewall rule : %v", err)
 			}
 
 			data := &FirewallRulePrinter{Rule: *rule}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -315,47 +320,40 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			protocol, errPr := cmd.Flags().GetString("protocol")
 			if errPr != nil {
-				printer.Error(fmt.Errorf("error parsing 'protocol' flag for firewall group create : %v", errPr))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'protocol' flag for firewall group create : %v", errPr)
 			}
 
 			subnet, errSu := cmd.Flags().GetString("subnet")
 			if errSu != nil {
-				printer.Error(fmt.Errorf("error parsing 'subnet' flag for firewall group create : %v", errSu))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'subnet' flag for firewall group create : %v", errSu)
 			}
 
 			ipType, errIP := cmd.Flags().GetString("ip-type")
 			if errIP != nil {
-				printer.Error(fmt.Errorf("error parsing 'ip-type' flag for firewall group create : %v", errIP))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'ip-type' flag for firewall group create : %v", errIP)
 			}
 
 			size, errSi := cmd.Flags().GetInt("size")
 			if errSi != nil {
-				printer.Error(fmt.Errorf("error parsing 'size' flag for firewall group create : %v", errSi))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'size' flag for firewall group create : %v", errSi)
 			}
 
 			source, errSo := cmd.Flags().GetString("source")
 			if errSo != nil {
-				printer.Error(fmt.Errorf("error parsing 'source' flag for firewall group create : %v", errSo))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'source' flag for firewall group create : %v", errSo)
 			}
 
 			port, errPo := cmd.Flags().GetString("port")
 			if errPo != nil {
-				printer.Error(fmt.Errorf("error parsing 'port' flag for firewall group create : %v", errPo))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'port' flag for firewall group create : %v", errPo)
 			}
 
 			notes, errNo := cmd.Flags().GetString("notes")
 			if errNo != nil {
-				printer.Error(fmt.Errorf("error parsing 'notes' flag for firewall group create : %v", errNo))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'notes' flag for firewall group create : %v", errNo)
 			}
 
 			o.RuleReq = &govultr.FirewallRuleReq{
@@ -374,8 +372,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 
 			if ipType == "" {
-				printer.Error(fmt.Errorf("a firewall rule requires an IP type. Pass an --ip-type value of v4 or v6"))
-				os.Exit(1)
+				return fmt.Errorf("a firewall rule requires an IP type. Pass an --ip-type value of v4 or v6")
 			}
 
 			if ipType != "" {
@@ -384,30 +381,31 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 			rule, err := o.createRule()
 			if err != nil {
-				printer.Error(fmt.Errorf("error creating firewall rule : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error creating firewall rule : %v", err)
 			}
 
 			data := &FirewallRulePrinter{Rule: *rule}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
 	ruleCreate.Flags().StringP("protocol", "p", "", "Protocol type. Possible values: 'icmp', 'tcp', 'udp', 'gre'.")
 	if err := ruleCreate.MarkFlagRequired("protocol"); err != nil {
-		printer.Error(fmt.Errorf("error marking firewall rule create 'protocol' flag required : %v", err))
+		fmt.Printf("error marking firewall rule create 'protocol' flag required : %v", err)
 		os.Exit(1)
 	}
 
 	ruleCreate.Flags().StringP("subnet", "s", "", "The IPv4 network in CIDR notation.")
 	if err := ruleCreate.MarkFlagRequired("subnet"); err != nil {
-		printer.Error(fmt.Errorf("error marking firewall rule create 'subnet' flag required : %v", err))
+		fmt.Printf("error marking firewall rule create 'subnet' flag required : %v", err)
 		os.Exit(1)
 	}
 
 	ruleCreate.Flags().IntP("size", "z", 0, "The number of bits for the netmask in CIDR notation.")
 	if err := ruleCreate.MarkFlagRequired("size"); err != nil {
-		printer.Error(fmt.Errorf("error marking firewall rule create 'size' flag required : %v", err))
+		fmt.Printf("error marking firewall rule create 'size' flag required : %v", err)
 		os.Exit(1)
 	}
 
@@ -420,7 +418,7 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	ruleCreate.Flags().StringP("ip-type", "t", "", "The type of IP rule - v4 or v6.")
 	if err := ruleCreate.MarkFlagRequired("ip-type"); err != nil {
-		printer.Error(fmt.Errorf("error marking firewall rule create 'ip-type' flag required : %v", err))
+		fmt.Printf("error marking firewall rule create 'ip-type' flag required : %v", err)
 		os.Exit(1)
 	}
 
@@ -446,13 +444,14 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.deleteRule(); err != nil {
-				printer.Error(fmt.Errorf("error deleting firewall rule : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error deleting firewall rule : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("firewall rule deleted"), nil)
+
+			return nil
 		},
 	}
 

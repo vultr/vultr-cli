@@ -4,12 +4,10 @@ package billing
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
-	"github.com/vultr/vultr-cli/v3/cmd/printer"
 	"github.com/vultr/vultr-cli/v3/cmd/utils"
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
@@ -109,15 +107,16 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 		Aliases: []string{"l"},
 		Long:    invoiceListLong,
 		Example: invoiceListExample,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 			invs, meta, err := o.listInvoices()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving billing invoice list : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving billing invoice list : %v", err)
 			}
 			data := &BillingInvoicesPrinter{Invoices: invs, Meta: meta}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 
@@ -142,15 +141,16 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			inv, err := o.get()
 			if err != nil {
-				printer.Error(fmt.Errorf("error getting invoice : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error getting invoice : %v", err)
 			}
 
 			data := &BillingInvoicePrinter{Invoice: *inv}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 
@@ -167,23 +167,23 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 			id, errConv := strconv.Atoi(args[0])
 			if errConv != nil {
-				printer.Error(fmt.Errorf("error converting invoice item id : %v", errConv))
-				os.Exit(1)
+				return fmt.Errorf("error converting invoice item id : %v", errConv)
 			}
 
 			o.InvoiceItemID = id
 
 			items, meta, err := o.listInvoiceItems()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving billing invoice item list : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving billing invoice item list : %v", err)
 			}
 			data := &BillingInvoiceItemsPrinter{InvoiceItems: items, Meta: meta}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 
@@ -217,15 +217,16 @@ func NewCmdBilling(base *cli.Base) *cobra.Command {
 		Aliases: []string{"l"},
 		Long:    historyListLong,
 		Example: historyListExample,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 			hs, meta, err := o.listHistory()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving billing history list : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving billing history list : %v", err)
 			}
 			data := &BillingHistoryPrinter{Billing: hs, Meta: meta}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 

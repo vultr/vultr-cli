@@ -53,17 +53,18 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	domainList := &cobra.Command{
 		Use:   "list",
 		Short: "Get a list of domains",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 
 			dms, meta, err := o.domainList()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving domain list : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving domain list : %v", err)
 			}
 
 			data := &DNSDomainsPrinter{Domains: dms, Meta: meta}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -80,15 +81,16 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		Use:   "get <Domain Name>",
 		Short: "Get a domain",
 		Long:  ``,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			dm, err := o.domainGet()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving domain : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving domain : %v", err)
 			}
 
 			data := &DNSDomainPrinter{Domain: *dm}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -98,17 +100,15 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		Short:   "Create a domain",
 		Long:    createLong,
 		Example: createExample,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			domain, errDo := cmd.Flags().GetString("domain")
 			if errDo != nil {
-				printer.Error(fmt.Errorf("error parsing 'domain' flag for domain create : %v", errDo))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'domain' flag for domain create : %v", errDo)
 			}
 
 			ip, errIP := cmd.Flags().GetString("ip")
 			if errIP != nil {
-				printer.Error(fmt.Errorf("error parsing 'ip' flag for domain create : %v", errIP))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'ip' flag for domain create : %v", errIP)
 			}
 
 			o.DomainCreateReq = &govultr.DomainReq{
@@ -118,18 +118,19 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			dm, err := o.domainCreate()
 			if err != nil {
-				printer.Error(fmt.Errorf("error creating dns domain : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error creating dns domain : %v", err)
 			}
 
 			data := &DNSDomainPrinter{Domain: *dm}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
 	domainCreate.Flags().StringP("domain", "d", "", "name of the domain")
 	if err := domainCreate.MarkFlagRequired("domain"); err != nil {
-		printer.Error(fmt.Errorf("error marking domain create 'domain' flag required: %v", err))
+		fmt.Printf("error marking domain create 'domain' flag required: %v", err)
 		os.Exit(1)
 	}
 	domainCreate.Flags().StringP("ip", "i", "", "instance ip you want to assign this domain to")
@@ -145,13 +146,14 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.domainDelete(); err != nil {
-				printer.Error(fmt.Errorf("error delete dns domain : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error delete dns domain : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("dns domain has been deleted"), nil)
+
+			return nil
 		},
 	}
 
@@ -166,17 +168,15 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			enabled, errEn := cmd.Flags().GetBool("enabled")
 			if errEn != nil {
-				printer.Error(fmt.Errorf("error parsing 'enabled' flag for dnssec : %v", errEn))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'enabled' flag for dnssec : %v", errEn)
 			}
 
 			disabled, errDi := cmd.Flags().GetBool("disabled")
 			if errEn != nil {
-				printer.Error(fmt.Errorf("error parsing 'disabled' flag for dnssec : %v", errDi))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'disabled' flag for dnssec : %v", errDi)
 			}
 
 			if cmd.Flags().Changed("enabled") {
@@ -196,11 +196,12 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			if err := o.domainUpdate(); err != nil {
-				printer.Error(fmt.Errorf("error toggling dnssec : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error toggling dnssec : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("dns domain DNSSEC has been updated"), nil)
+
+			return nil
 		},
 	}
 
@@ -220,15 +221,16 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			info, err := o.domainDNSSECGet()
 			if err != nil {
-				printer.Error(fmt.Errorf("error getting domain dnssec info : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error getting domain dnssec info : %v", err)
 			}
 
 			data := &DNSSECPrinter{SEC: info}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -243,15 +245,16 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			info, err := o.domainSOAGet()
 			if err != nil {
-				printer.Error(fmt.Errorf("error getting domain soa info : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error getting domain soa info : %v", err)
 			}
 
 			data := &DNSSOAPrinter{SOA: *info}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -266,17 +269,15 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			ns, errNs := cmd.Flags().GetString("ns-primary")
 			if errNs != nil {
-				printer.Error(fmt.Errorf("error parsing 'ns-primary' flag for domain soa : %v", errNs))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'ns-primary' flag for domain soa : %v", errNs)
 			}
 
 			email, errEm := cmd.Flags().GetString("email")
 			if errEm != nil {
-				printer.Error(fmt.Errorf("error parsing 'email' flag for domain soa : %v", errEm))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'email' flag for domain soa : %v", errEm)
 			}
 
 			o.SOAUpdateReq = &govultr.Soa{
@@ -285,11 +286,12 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			if err := o.domainSOAUpdate(); err != nil {
-				printer.Error(fmt.Errorf("error updating domain soa : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error updating domain soa : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("domain soa has been updated"), nil)
+
+			return nil
 		},
 	}
 
@@ -324,17 +326,18 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 
 			recs, meta, err := o.recordList()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieiving domain records : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieiving domain records : %v", err)
 			}
 
 			data := &DNSRecordsPrinter{Records: recs, Meta: meta}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -357,15 +360,16 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			rec, err := o.recordGet()
 			if err != nil {
-				printer.Error(fmt.Errorf("error while getting domain record : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error while getting domain record : %v", err)
 			}
 
 			data := &DNSRecordPrinter{Record: *rec}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -379,35 +383,30 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			rType, errTy := cmd.Flags().GetString("type")
 			if errTy != nil {
-				printer.Error(fmt.Errorf("error parsing 'type' flag for domain record create : %v", errTy))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'type' flag for domain record create : %v", errTy)
 			}
 
 			name, errNa := cmd.Flags().GetString("name")
 			if errNa != nil {
-				printer.Error(fmt.Errorf("error parsing 'name' flag for domain record create : %v", errNa))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'name' flag for domain record create : %v", errNa)
 			}
 
 			dt, errDa := cmd.Flags().GetString("data")
 			if errDa != nil {
-				printer.Error(fmt.Errorf("error parsing 'data' flag for domain record create : %v", errDa))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'data' flag for domain record create : %v", errDa)
 			}
 
 			ttl, errTt := cmd.Flags().GetInt("ttl")
 			if errTt != nil {
-				printer.Error(fmt.Errorf("error parsing 'ttl' flag for domain record create : %v", errTt))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'ttl' flag for domain record create : %v", errTt)
 			}
 
 			priority, errPr := cmd.Flags().GetInt("priority")
 			if errPr != nil {
-				printer.Error(fmt.Errorf("error parsing 'priority' flag for domain record create : %v", errPr))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'priority' flag for domain record create : %v", errPr)
 			}
 
 			o.RecordReq = &govultr.DomainRecordReq{
@@ -420,42 +419,43 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			rec, err := o.recordCreate()
 			if err != nil {
-				printer.Error(fmt.Errorf("error creating domain record : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error creating domain record : %v", err)
 			}
 
 			data := &DNSRecordPrinter{Record: *rec}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
 	recordCreate.Flags().StringP("type", "t", "", "type for the record")
 	if err := recordCreate.MarkFlagRequired("type"); err != nil {
-		printer.Error(fmt.Errorf("error marking dns record create 'type' flag required: %v", err))
+		fmt.Printf("error marking dns record create 'type' flag required: %v", err)
 		os.Exit(1)
 	}
 
 	recordCreate.Flags().StringP("name", "n", "", "name of the record")
 	if err := recordCreate.MarkFlagRequired("name"); err != nil {
-		printer.Error(fmt.Errorf("error marking dns record create 'name' flag required: %v", err))
+		fmt.Printf("error marking dns record create 'name' flag required: %v", err)
 		os.Exit(1)
 	}
 
 	recordCreate.Flags().StringP("data", "d", "", "data for the record")
 	if err := recordCreate.MarkFlagRequired("data"); err != nil {
-		printer.Error(fmt.Errorf("error marking dns record create 'data' flag required: %v", err))
+		fmt.Printf("error marking dns record create 'data' flag required: %v", err)
 		os.Exit(1)
 	}
 
 	recordCreate.Flags().IntP("ttl", "l", 0, "ttl for the record")
 	if err := recordCreate.MarkFlagRequired("ttl"); err != nil {
-		printer.Error(fmt.Errorf("error marking dns record create 'ttl' flag required: %v", err))
+		fmt.Printf("error marking dns record create 'ttl' flag required: %v", err)
 		os.Exit(1)
 	}
 
 	recordCreate.Flags().IntP("priority", "p", 0, "only required for MX and SRV")
 	if err := recordCreate.MarkFlagRequired("priority"); err != nil {
-		printer.Error(fmt.Errorf("error marking dns record create 'priority' flag required: %v", err))
+		fmt.Printf("error marking dns record create 'priority' flag required: %v", err)
 		os.Exit(1)
 	}
 
@@ -470,13 +470,14 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.recordDelete(); err != nil {
-				printer.Error(fmt.Errorf("error deleting domain record : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error deleting domain record : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("domain record has been deleted"), nil)
+
+			return nil
 		},
 	}
 
@@ -490,29 +491,25 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			name, errNa := cmd.Flags().GetString("name")
 			if errNa != nil {
-				printer.Error(fmt.Errorf("error parsing 'name' flag for domain record update : %v", errNa))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'name' flag for domain record update : %v", errNa)
 			}
 
 			dt, errDa := cmd.Flags().GetString("data")
 			if errDa != nil {
-				printer.Error(fmt.Errorf("error parsing 'data' flag for domain record update : %v", errDa))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'data' flag for domain record update : %v", errDa)
 			}
 
 			ttl, errTt := cmd.Flags().GetInt("ttl")
 			if errTt != nil {
-				printer.Error(fmt.Errorf("error parsing 'ttl' flag for domain record update : %v", errTt))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'ttl' flag for domain record update : %v", errTt)
 			}
 
 			priority, errPr := cmd.Flags().GetInt("priority")
 			if errPr != nil {
-				printer.Error(fmt.Errorf("error parsing 'priority' flag for domain record update : %v", errPr))
-				os.Exit(1)
+				return fmt.Errorf("error parsing 'priority' flag for domain record update : %v", errPr)
 			}
 
 			o.RecordReq = &govultr.DomainRecordReq{}
@@ -534,11 +531,12 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			if err := o.recordUpdate(); err != nil {
-				printer.Error(fmt.Errorf("error updating domain record : %v", errPr))
-				os.Exit(1)
+				return fmt.Errorf("error updating domain record : %v", errPr)
 			}
 
 			o.Base.Printer.Display(printer.Info("domain record has been updated"), nil)
+
+			return nil
 		},
 	}
 
