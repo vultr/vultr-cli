@@ -240,25 +240,25 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 
 	create.Flags().StringP("name", "n", "", "The name to use for the container registry")
 	if err := create.MarkFlagRequired("name"); err != nil {
-		printer.Error(fmt.Errorf("error marking container registry create 'name' flag required: %v", err))
+		fmt.Printf("error marking container registry create 'name' flag required: %v", err)
 		os.Exit(1)
 	}
 
 	create.Flags().StringP("region", "i", "", "The ID of the region in which to create the container registry")
 	if err := create.MarkFlagRequired("region"); err != nil {
-		printer.Error(fmt.Errorf("error marking container registry create 'region' flag required: %v", err))
+		fmt.Printf("error marking container registry create 'region' flag required: %v", err)
 		os.Exit(1)
 	}
 
 	create.Flags().BoolP("public", "p", false, "If the registry is publicly available. Should be true | false (default is false)")
 	if err := create.MarkFlagRequired("public"); err != nil {
-		printer.Error(fmt.Errorf("error marking container registry create 'public' flag required: %v", err))
+		fmt.Printf("error marking container registry create 'public' flag required: %v", err)
 		os.Exit(1)
 	}
 
 	create.Flags().StringP("plan", "l", "", "The type of plan to use for the container registry")
 	if err := create.MarkFlagRequired("plan"); err != nil {
-		printer.Error(fmt.Errorf("error marking container registry create 'plan' flag required: %v", err))
+		fmt.Printf("error marking container registry create 'plan' flag required: %v", err)
 		os.Exit(1)
 	}
 
@@ -442,7 +442,7 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 
 	repoGet.Flags().StringP("image-name", "i", "", "The name of the image/repo")
 	if err := repoGet.MarkFlagRequired("image-name"); err != nil {
-		printer.Error(fmt.Errorf("error marking get container registry repository 'image-name' flag required: %v", err))
+		fmt.Printf("error marking get container registry repository 'image-name' flag required: %v", err)
 		os.Exit(1)
 	}
 
@@ -487,13 +487,13 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 
 	repoUpdate.Flags().StringP("image-name", "i", "", "The name of the image/repo")
 	if err := repoUpdate.MarkFlagRequired("image-name"); err != nil {
-		printer.Error(fmt.Errorf("error marking update container registry repository 'image-name' flag required: %v", err))
+		fmt.Printf("error marking update container registry repository 'image-name' flag required: %v", err)
 		os.Exit(1)
 	}
 
 	repoUpdate.Flags().StringP("description", "d", "", "The description of the image/repo")
 	if err := repoUpdate.MarkFlagRequired("description"); err != nil {
-		printer.Error(fmt.Errorf("error marking update container registry repository 'description' flag required: %v", err))
+		fmt.Printf("error marking update container registry repository 'description' flag required: %v", err)
 		os.Exit(1)
 	}
 
@@ -530,7 +530,7 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 
 	repoDelete.Flags().StringP("image-name", "i", "", "The name of the image/repo")
 	if err := repoDelete.MarkFlagRequired("image-name"); err != nil {
-		printer.Error(fmt.Errorf("error marking delete container registry repository 'image-name' flag required: %v", err))
+		fmt.Printf("error marking delete container registry repository 'image-name' flag required: %v", err)
 		os.Exit(1)
 	}
 
