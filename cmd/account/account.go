@@ -4,6 +4,7 @@ package account
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
@@ -34,10 +35,15 @@ func NewCmdAccount(base *cli.Base) *cobra.Command {
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			account, err := o.get()
+			if err != nil {
+				return fmt.Errorf("error retrieving account information : %v", err)
+			}
 
-			o.Base.Printer.Display(&AccountPrinter{Account: account}, err)
+			o.Base.Printer.Display(&AccountPrinter{Account: account}, nil)
+
+			return nil
 		},
 	}
 

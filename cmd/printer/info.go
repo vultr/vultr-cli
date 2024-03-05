@@ -1,6 +1,6 @@
 package printer
 
-// Info intializes and returns a generic resource output struct
-func Info(msg string) *Generic {
-	return &Generic{Message: msg}
+// Info intializes and returns a Message resource output struct
+func Info(msg string) *Message {
+	return &Message{Message: msg}
 }

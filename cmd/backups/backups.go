@@ -4,11 +4,9 @@ package backups
 import (
 	"errors"
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
-	"github.com/vultr/vultr-cli/v3/cmd/printer"
 	"github.com/vultr/vultr-cli/v3/cmd/utils"
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
@@ -48,15 +46,16 @@ func NewCmdBackups(base *cli.Base) *cobra.Command {
 		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 			backups, meta, err := o.list()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving backups list : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving backups list : %v", err)
 			}
 			data := &BackupsPrinter{Backups: backups, Meta: meta}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 
@@ -80,14 +79,16 @@ func NewCmdBackups(base *cli.Base) *cobra.Command {
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			backup, err := o.get()
 			if err != nil {
-				panic(fmt.Errorf("error retrieving backup : %v", err))
+				return fmt.Errorf("error retrieving backup : %v", err)
 			}
 
 			data := &BackupPrinter{Backup: backup}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 

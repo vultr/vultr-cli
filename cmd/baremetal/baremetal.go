@@ -147,15 +147,16 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 			list, meta, err := o.list()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving bare metal list : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving bare metal list : %v", err)
 			}
 			data := &BareMetalsPrinter{BareMetals: list, Meta: meta}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 
@@ -180,14 +181,15 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			bm, err := o.get()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving bare metal : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving bare metal : %v", err)
 			}
 			data := &BareMetalPrinter{BareMetal: *bm}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 
@@ -198,16 +200,23 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		Aliases: []string{"c"},
 		Long:    createLong,
 		Example: createExample,
-		Run: func(cmd *cobra.Command, args []string) {
-			o.CreateReq = parseCreateFlags(cmd)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			req, errParse := parseCreateFlags(cmd)
+			if errParse != nil {
+				return fmt.Errorf("error parsing flags for bare metal create : %v", errParse)
+			}
+
+			o.CreateReq = req
+
 			bm, err := o.create()
 			if err != nil {
-				printer.Error(fmt.Errorf("error with bare metal create : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error with bare metal create : %v", err)
 			}
 
 			data := &BareMetalPrinter{BareMetal: *bm}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 
@@ -265,12 +274,12 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	create.Flags().BoolP("persistent_pxe", "x", false, "enable persistent_pxe | true or false")
 
 	if err := create.MarkFlagRequired("region"); err != nil {
-		printer.Error(fmt.Errorf("error marking bare metal create 'region' flag required: %v", err))
+		fmt.Printf("error marking bare metal create 'region' flag required: %v", err)
 		os.Exit(1)
 	}
 
 	if err := create.MarkFlagRequired("plan"); err != nil {
-		printer.Error(fmt.Errorf("error marking bare metal create 'plan' flag required: %v", err))
+		fmt.Printf("error marking bare metal create 'plan' flag required: %v", err)
 		os.Exit(1)
 	}
 
@@ -291,12 +300,13 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.del(); err != nil {
-				printer.Error(fmt.Errorf("error deleting bare metal : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error deleting bare metal : %v", err)
 			}
 			o.Base.Printer.Display(printer.Info("bare metal server has been deleted"), nil)
+
+			return nil
 		},
 	}
 
@@ -313,12 +323,13 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.halt(); err != nil {
-				printer.Error(fmt.Errorf("error halting bare metal : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error halting bare metal : %v", err)
 			}
 			o.Base.Printer.Display(printer.Info("bare metal server has been halted"), nil)
+
+			return nil
 		},
 	}
 
@@ -334,13 +345,14 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.start(); err != nil {
-				printer.Error(fmt.Errorf("error starting bare metal : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error starting bare metal : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("bare metal server has been started"), nil)
+
+			return nil
 		},
 	}
 
@@ -357,13 +369,14 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.reboot(); err != nil {
-				printer.Error(fmt.Errorf("error rebooting bare metal : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error rebooting bare metal : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("bare metal server has been rebooted"), nil)
+
+			return nil
 		},
 	}
 
@@ -379,13 +392,14 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.reinstall(); err != nil {
-				printer.Error(fmt.Errorf("error reinstalling bare metal : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error reinstalling bare metal : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("bare metal server has initiated reinstallation"), nil)
+
+			return nil
 		},
 	}
 
@@ -411,11 +425,10 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			appID, err := cmd.Flags().GetInt("app")
 			if err != nil {
-				printer.Error(fmt.Errorf("error parsing app flag for bare metal app ID change : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error parsing app flag for bare metal app ID change : %v", err)
 			}
 
 			o.UpdateReq = &govultr.BareMetalUpdate{
@@ -424,12 +437,13 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			bm, err := o.update()
 			if err != nil {
-				printer.Error(fmt.Errorf("error with bare metal update : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error with bare metal update : %v", err)
 			}
 
 			data := &BareMetalPrinter{BareMetal: *bm}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 
@@ -441,7 +455,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	)
 
 	if err := applicationChange.MarkFlagRequired("app"); err != nil {
-		printer.Error(fmt.Errorf("error marking bare metal 'app' flag required : %v", err))
+		fmt.Printf("error marking bare metal 'app' flag required : %v", err)
 		os.Exit(1)
 	}
 
@@ -457,14 +471,15 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			upgrades, err := o.getUpgrades()
 			if err != nil {
-				printer.Error(fmt.Errorf("error with bare metal get upgrades : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error with bare metal get upgrades : %v", err)
 			}
 			data := &applications.ApplicationsPrinter{Applications: upgrades.Applications}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 
@@ -492,11 +507,10 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			imageID, err := cmd.Flags().GetString("image")
 			if err != nil {
-				printer.Error(fmt.Errorf("error parsing image flag for bare metal image change : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error parsing image flag for bare metal image change : %v", err)
 			}
 
 			o.UpdateReq = &govultr.BareMetalUpdate{
@@ -505,12 +519,13 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			bm, err := o.update()
 			if err != nil {
-				printer.Error(fmt.Errorf("error with bare metal image update : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error with bare metal image update : %v", err)
 			}
 
 			data := &BareMetalPrinter{BareMetal: *bm}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 
@@ -522,7 +537,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	)
 
 	if err := imageChange.MarkFlagRequired("image"); err != nil {
-		printer.Error(fmt.Errorf("error marking bare metal 'image' flag required : %v", err))
+		fmt.Printf("error marking bare metal 'image' flag required : %v", err)
 		os.Exit(1)
 	}
 
@@ -550,11 +565,10 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			operatingSystemID, err := cmd.Flags().GetInt("os")
 			if err != nil {
-				printer.Error(fmt.Errorf("error parsing os flag for bare metal os change : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error parsing os flag for bare metal os change : %v", err)
 			}
 
 			o.UpdateReq = &govultr.BareMetalUpdate{
@@ -563,12 +577,13 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			bm, err := o.update()
 			if err != nil {
-				printer.Error(fmt.Errorf("error with bare metal os update : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error with bare metal os update : %v", err)
 			}
 
 			data := &BareMetalPrinter{BareMetal: *bm}
 			o.Base.Printer.Display(data, err)
+
+			return nil
 		},
 	}
 
@@ -579,7 +594,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"ID of the operating system that will be installed on the server",
 	)
 	if err := operatingSystemChange.MarkFlagRequired("os"); err != nil {
-		printer.Error(fmt.Errorf("error marking bare metal 'os' flag required : %v", err))
+		fmt.Printf("error marking bare metal 'os' flag required : %v", err)
 		os.Exit(1)
 	}
 
@@ -595,15 +610,16 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			upgrades, err := o.getUpgrades()
 			if err != nil {
-				printer.Error(fmt.Errorf("error with bare metal get upgrades : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error with bare metal get upgrades : %v", err)
 			}
 
 			data := &operatingsystems.OSPrinter{OperatingSystems: upgrades.OS}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -631,15 +647,16 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			ud, err := o.getUserData()
 			if err != nil {
-				printer.Error(fmt.Errorf("error with bare metal get user data : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error with bare metal get user data : %v", err)
 			}
 
 			data := &userdata.UserDataPrinter{UserData: *ud}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -655,17 +672,15 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			path, err := cmd.Flags().GetString("user-data")
 			if err != nil {
-				printer.Error(fmt.Errorf("error parsing user-data flag for bare metal user data set : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error parsing user-data flag for bare metal user data set : %v", err)
 			}
 
 			rawData, err := os.ReadFile(filepath.Clean(path))
 			if err != nil {
-				printer.Error(fmt.Errorf("error reading user-data : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error reading user-data : %v", err)
 			}
 
 			o.UpdateReq = &govultr.BareMetalUpdate{
@@ -674,17 +689,18 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			_, errUpdate := o.update()
 			if err != nil {
-				printer.Error(fmt.Errorf("error updating bare metal user-data : %v", errUpdate))
-				os.Exit(1)
+				return fmt.Errorf("error updating bare metal user-data : %v", errUpdate)
 			}
 
 			o.Base.Printer.Display(printer.Info("bare metal server user data has been set"), nil)
+
+			return nil
 		},
 	}
 
 	userDataSet.Flags().StringP("user-data", "d", "/dev/stdin", "file to read userdata from")
 	if err := userDataSet.MarkFlagRequired("user-data"); err != nil {
-		printer.Error(fmt.Errorf("error marking bare metal 'user-data' flag required: %v", err))
+		fmt.Printf("error marking bare metal 'user-data' flag required: %v", err)
 		os.Exit(1)
 	}
 
@@ -702,15 +718,16 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			vnc, err := o.getVNCURL()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving bare metal VNC URL : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving bare metal VNC URL : %v", err)
 			}
 
 			data := &BareMetalVNCPrinter{VNC: *vnc}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -727,15 +744,16 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			bw, err := o.getBandwidth()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving bare metal bandwidth usage : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving bare metal bandwidth usage : %v", err)
 			}
 
 			data := &BareMetalBandwidthPrinter{Bandwidth: *bw}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -751,7 +769,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			tags, _ := cmd.Flags().GetStringSlice("tags")
 			o.UpdateReq = &govultr.BareMetalUpdate{
 				Tags: tags,
@@ -759,17 +777,18 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			_, err := o.update()
 			if err != nil {
-				printer.Error(fmt.Errorf("error updating bare metal tags : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error updating bare metal tags : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("bare metal server tags have been updated"), nil)
+
+			return nil
 		},
 	}
 
 	tags.Flags().StringSliceP("tags", "t", []string{}, "A comma separated list of tags to apply to the server")
 	if err := tags.MarkFlagRequired("tags"); err != nil {
-		printer.Error(fmt.Errorf("error marking bare metal 'tags' flag required: %v", err))
+		fmt.Printf("error marking bare metal 'tags' flag required: %v", err)
 		os.Exit(1)
 	}
 
@@ -785,15 +804,16 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 			ipv4, meta, err := o.getIPv4Addresses()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving bare metal IPv4 information : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving bare metal IPv4 information : %v", err)
 			}
 			data := &ip.IPv4sPrinter{IPv4s: ipv4, Meta: meta}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -809,15 +829,16 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 			ipv6, meta, err := o.getIPv6Addresses()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving bare metal IPv6 information : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving bare metal IPv6 information : %v", err)
 			}
 			data := &ip.IPv6sPrinter{IPv6s: ipv6, Meta: meta}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -841,14 +862,15 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			vpc2s, err := o.vpc2NetworksList()
 			if err != nil {
-				printer.Error(fmt.Errorf("error retrieving bare metal vpc2 information : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error retrieving bare metal vpc2 information : %v", err)
 			}
 			data := &BareMetalVPC2sPrinter{VPC2s: vpc2s}
 			o.Base.Printer.Display(data, nil)
+
+			return nil
 		},
 	}
 
@@ -864,17 +886,15 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			vpcID, errID := cmd.Flags().GetString("vpc-id")
 			if errID != nil {
-				printer.Error(fmt.Errorf("error parsing vpc-id flag for bare metal VPC2 attach : %v", errID))
-				os.Exit(1)
+				return fmt.Errorf("error parsing vpc-id flag for bare metal VPC2 attach : %v", errID)
 			}
 
 			IPAddress, errIP := cmd.Flags().GetString("ip-address")
 			if errIP != nil {
-				printer.Error(fmt.Errorf("error parsing ip-address flag for bare metal VPC2 attach : %v", errIP))
-				os.Exit(1)
+				return fmt.Errorf("error parsing ip-address flag for bare metal VPC2 attach : %v", errIP)
 			}
 
 			o.VPC2Req = &govultr.AttachVPC2Req{
@@ -883,18 +903,19 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			if err := o.vpc2NetworksAttach(); err != nil {
-				printer.Error(fmt.Errorf("error attaching bare metal to VPC2 : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error attaching bare metal to VPC2 : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("bare metal server has been attached to VPC2 network"), nil)
+
+			return nil
 		},
 	}
 
 	vpc2Attach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC 2.0 network you wish to attach")
 	vpc2Attach.Flags().StringP("ip-address", "i", "", "the IP address to use for this server on the attached VPC 2.0 network")
 	if errVPC := vpc2Attach.MarkFlagRequired("vpc-id"); errVPC != nil {
-		printer.Error(fmt.Errorf("error marking bare metal 'vpc-id' flag required for attach : %v", errVPC))
+		fmt.Printf("error marking bare metal 'vpc-id' flag required for attach : %v", errVPC)
 		os.Exit(1)
 	}
 
@@ -910,26 +931,26 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			vpcID, errID := cmd.Flags().GetString("vpc-id")
 			if errID != nil {
-				printer.Error(fmt.Errorf("error parsing vpc-id flag for bare metal VPC2 detach : %v", errID))
-				os.Exit(1)
+				return fmt.Errorf("error parsing vpc-id flag for bare metal VPC2 detach : %v", errID)
 			}
 
 			o.VPC2ID = vpcID
 			if err := o.vpc2NetworksDetach(); err != nil {
-				printer.Error(fmt.Errorf("error detaching bare metal VPC2 : %v", err))
-				os.Exit(1)
+				return fmt.Errorf("error detaching bare metal VPC2 : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("bare metal server has been detached from VPC2 network"), nil)
+
+			return nil
 		},
 	}
 
 	vpc2Detach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC 2.0 network you wish to detach")
 	if errVPC2 := vpc2Detach.MarkFlagRequired("vpc-id"); errVPC2 != nil {
-		printer.Error(fmt.Errorf("error marking bare metal 'vpc-id' flag required for detach : %v", errVPC2))
+		fmt.Printf("error marking bare metal 'vpc-id' flag required for detach : %v", errVPC2)
 		os.Exit(1)
 	}
 
@@ -1053,101 +1074,85 @@ func (b *options) vpc2NetworksDetach() error {
 
 // ============================
 
-func parseCreateFlags(cmd *cobra.Command) *govultr.BareMetalCreate { //nolint:funlen,gocyclo
+func parseCreateFlags(cmd *cobra.Command) (*govultr.BareMetalCreate, error) { //nolint:funlen,gocyclo
 	region, err := cmd.Flags().GetString("region")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing region flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing region flag for bare metal create : %v", err)
 	}
 
 	plan, err := cmd.Flags().GetString("plan")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing plan flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing plan flag for bare metal create : %v", err)
 	}
 
 	osID, err := cmd.Flags().GetInt("os")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing os flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing os flag for bare metal create : %v", err)
 	}
 
 	script, err := cmd.Flags().GetString("script")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing script flag bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing script flag bare metal create : %v", err)
 	}
 
 	snapshot, err := cmd.Flags().GetString("snapshot")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing snapshot flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing snapshot flag for bare metal create : %v", err)
 	}
 
 	ipv6, err := cmd.Flags().GetString("ipv6")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing ipv6 flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing ipv6 flag for bare metal create : %v", err)
 	}
 
 	label, err := cmd.Flags().GetString("label")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing label flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing label flag for bare metal create : %v", err)
 	}
 
 	sshKeys, err := cmd.Flags().GetStringSlice("ssh")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing ssh flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing ssh flag for bare metal create : %v", err)
 	}
 
 	app, err := cmd.Flags().GetInt("app")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing app flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing app flag for bare metal create : %v", err)
 	}
 
 	userdata, err := cmd.Flags().GetString("userdata")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing userdata flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing userdata flag for bare metal create : %v", err)
 	}
 
 	notify, err := cmd.Flags().GetString("notify")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing notify flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing notify flag for bare metal create : %v", err)
 	}
 
 	hostname, err := cmd.Flags().GetString("hostname")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing hostname flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing hostname flag for bare metal create : %v", err)
 	}
 
 	tags, err := cmd.Flags().GetStringSlice("tags")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing tags flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing tags flag for bare metal create : %v", err)
 	}
 
 	ripv4, err := cmd.Flags().GetString("ripv4")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing ripv4 flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing ripv4 flag for bare metal create : %v", err)
 	}
 
 	pxe, err := cmd.Flags().GetBool("persistenterrpxe")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing persistenterrpxe flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing persistenterrpxe flag for bare metal create : %v", err)
 	}
 
 	image, err := cmd.Flags().GetString("image")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing image flag for bare metal create : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing image flag for bare metal create : %v", err)
 	}
 
 	options := &govultr.BareMetalCreate{
@@ -1177,44 +1182,38 @@ func parseCreateFlags(cmd *cobra.Command) *govultr.BareMetalCreate { //nolint:fu
 		options.EnableIPv6 = govultr.BoolToBoolPtr(true)
 	}
 
-	return options
+	return options, nil
 }
 
-func parseUpdateFlags(cmd *cobra.Command) *govultr.BareMetalUpdate { //nolint:unused
+func parseUpdateFlags(cmd *cobra.Command) (*govultr.BareMetalUpdate, error) { //nolint:unused
 	osID, err := cmd.Flags().GetInt("os")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing os flag for bare metal update : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing os flag for bare metal update : %v", err)
 	}
 
 	label, err := cmd.Flags().GetString("label")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing label flag for bare metal update : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing label flag for bare metal update : %v", err)
 	}
 
 	app, err := cmd.Flags().GetInt("app")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing app flag for bare metal update : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing app flag for bare metal update : %v", err)
 	}
 
 	userdata, err := cmd.Flags().GetString("userdata")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing userdata flag for bare metal update : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing userdata flag for bare metal update : %v", err)
 	}
 
 	tags, err := cmd.Flags().GetStringSlice("tags")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing tags flag for bare metal update : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing tags flag for bare metal update : %v", err)
 	}
 
 	image, err := cmd.Flags().GetString("image")
 	if err != nil {
-		printer.Error(fmt.Errorf("error parsing image flag for bare metal update : %v", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("error parsing image flag for bare metal update : %v", err)
 	}
 
 	options := &govultr.BareMetalUpdate{
@@ -1228,5 +1227,5 @@ func parseUpdateFlags(cmd *cobra.Command) *govultr.BareMetalUpdate { //nolint:un
 		options.UserData = base64.StdEncoding.EncodeToString([]byte(userdata))
 	}
 
-	return options
+	return options, nil
 }
