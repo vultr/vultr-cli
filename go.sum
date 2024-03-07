@@ -80,8 +80,8 @@ github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcU
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/subosito/gotenv v1.6.0 h1:9NlTDc1FTs4qu0DDq7AEtTPNw6SVm7uBMsUCUjABIf8=
 github.com/subosito/gotenv v1.6.0/go.mod h1:Dk4QP5c2W3ibzajGcXpNraDfq2IrhjMIvMSWPKKo0FU=
-github.com/vultr/govultr/v3 v3.6.3 h1:KYrF39nH+3xmAJ5Zx3nScoXK2I1GKQc74h4fhDEcq/0=
-github.com/vultr/govultr/v3 v3.6.3/go.mod h1:rt9v2x114jZmmLAE/h5N5jnxTmsK9ewwS2oQZ0UBQzM=
+github.com/vultr/govultr/v3 v3.6.4 h1:unvY9eXlBw667ECQZDbBDOIaWB8wkk6Bx+yB0IMKXJ4=
+github.com/vultr/govultr/v3 v3.6.4/go.mod h1:rt9v2x114jZmmLAE/h5N5jnxTmsK9ewwS2oQZ0UBQzM=
 go.uber.org/atomic v1.9.0 h1:ECmE8Bn/WFTYwEW/bpKD3M8VtR/zQVbavAoalC1PYyE=
 go.uber.org/atomic v1.9.0/go.mod h1:fEN4uk6kAWBTFdckzkM89CLk9XfWZrxpCo0nPH17wJc=
 go.uber.org/multierr v1.9.0 h1:7fIwc/ZtS0q++VgcfqFDxSBZVv/Xo49/SYnDFupUwlI=
