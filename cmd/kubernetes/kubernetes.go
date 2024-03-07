@@ -747,6 +747,11 @@ required in node pool. Use / between each new node pool.  E.g:
 				return fmt.Errorf("error parsing flag 'max-nodes' for kubernetes cluster node pool create : %v", errMa)
 			}
 
+			npLabels, errNl := cmd.Flags().GetStringToString("node-labels")
+			if errNl != nil {
+				return fmt.Errorf("error parsing flag 'node-labels' for kubernetes cluster node pool create : %v", errNl)
+			}
+
 			o.npCreateReq = &govultr.NodePoolReq{
 				NodeQuantity: quantity,
 				Label:        label,
@@ -755,6 +760,7 @@ required in node pool. Use / between each new node pool.  E.g:
 				AutoScaler:   govultr.BoolToBoolPtr(false),
 				MinNodes:     minNodes,
 				MaxNodes:     maxNodes,
+				Labels:       npLabels,
 			}
 
 			if autoscaler {
@@ -796,6 +802,7 @@ required in node pool. Use / between each new node pool.  E.g:
 	npCreate.Flags().BoolP("auto-scaler", "", false, "Enable the auto scaler with your cluster")
 	npCreate.Flags().IntP("min-nodes", "", 1, "Minimum nodes for auto scaler")
 	npCreate.Flags().IntP("max-nodes", "", 1, "Maximum nodes for auto scaler")
+	npCreate.Flags().StringToString("node-labels", nil, "A key=value comma separated string of labels to apply to the nodes in this nodepool")
 
 	// Node Pool Update
 	npUpdate := &cobra.Command{
@@ -836,6 +843,11 @@ required in node pool. Use / between each new node pool.  E.g:
 				return fmt.Errorf("error parsing flag 'max-nodes' for kubernetes cluster node pool update : %v", errMa)
 			}
 
+			npLabels, errNl := cmd.Flags().GetStringToString("node-labels")
+			if errNl != nil {
+				return fmt.Errorf("error parsing flag 'node-labels' for kubernetes cluster node pool update : %v", errNl)
+			}
+
 			o.npUpdateReq = &govultr.NodePoolReqUpdate{}
 
 			if cmd.Flags().Changed("quantity") {
@@ -856,6 +868,10 @@ required in node pool. Use / between each new node pool.  E.g:
 
 			if cmd.Flags().Changed("max-nodes") {
 				o.npUpdateReq.MaxNodes = maxNodes
+			}
+
+			if cmd.Flags().Changed("node-labels") {
+				o.npUpdateReq.Labels = npLabels
 			}
 
 			np, err := o.nodePoolUpdate()
@@ -880,8 +896,9 @@ required in node pool. Use / between each new node pool.  E.g:
 	npUpdate.Flags().BoolP("auto-scaler", "", false, "Enable the auto scaler with your cluster")
 	npUpdate.Flags().IntP("min-nodes", "", 1, "Minimum nodes for auto scaler")
 	npUpdate.Flags().IntP("max-nodes", "", 1, "Maximum nodes for auto scaler")
+	npUpdate.Flags().StringToString("node-labels", nil, "A key=value comma separated string of labels to apply to the nodes in this nodepool")
 
-	npUpdate.MarkFlagsOneRequired("quantity", "tag", "auto-scaler", "min-nodes", "max-nodes")
+	npUpdate.MarkFlagsOneRequired("quantity", "tag", "auto-scaler", "min-nodes", "max-nodes", "node-labels")
 
 	// Node Pool Delete
 	npDelete := &cobra.Command{
