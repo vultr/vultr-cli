@@ -27,11 +27,11 @@ var (
 	createLong    = `Create kubernetes cluster on your Vultr account`
 	createExample = `
 	# Full Example
-	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.29.1+1" \
+	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.29.2+1" \
 		--node-pools="quantity:3,plan:vc2-2c-4gb,label:my-nodepool,tag:my-tag"
 
 	# Shortened with alias commands
-	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.29.1+1" -n="quantity:3,plan:vc2-2c-4gb,label:my-nodepool,tag:my-tag"
+	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.29.2+1" -n="quantity:3,plan:vc2-2c-4gb,label:my-nodepool,tag:my-tag"
 	`
 
 	getLong    = `Get a single kubernetes cluster from your account`
@@ -61,7 +61,7 @@ var (
 	updateLong    = `Update a specific kubernetes cluster on your Vultr Account`
 	updateExample = `
 	# Full example
-	vultr-cli kubernetes update ffd31f18-5f77-454c-9065-212f942c3c35 --label="updated-label"
+	vultr-cli kubernetes update ffd31f18-5f77-454c-9065-212f942c3c35 --label="updated-label" 
 
 	# Shortened with alias commands
 	vultr-cli k u ffd31f18-5f77-454c-9065-212f942c3c35 -l="updated-label"
@@ -81,14 +81,14 @@ var (
 	getConfigLong    = `Returns a base64 encoded config of a specified kubernetes cluster on your Vultr Account`
 	getConfigExample = `
 	
-		# Full example
-		vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35
-		vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35 --output-file /your/path/
-	
-		# Shortened with alias commands
-		vultr-cli k config ffd31f18-5f77-454c-9065-212f942c3c35
-		vultr-cli k config  ffd31f18-5f77-454c-9065-212f942c3c35 -o /your/path/
-		`
+	# Full example
+	vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35
+	vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35 --output-file /your/path/
+
+	# Shortened with alias commands
+	vultr-cli k config ffd31f18-5f77-454c-9065-212f942c3c35
+	vultr-cli k config  ffd31f18-5f77-454c-9065-212f942c3c35 -o /your/path/
+	`
 
 	getVersionsLong    = `Returns a list of supported kubernetes versions you can deploy`
 	getVersionsExample = `
@@ -120,10 +120,10 @@ var (
 	upgradeLong    = `Initiate an upgrade of the kubernetes version on a given cluster`
 	upgradeExample = `
 	# Full example
-	vultr-cli kubernetes upgrades start d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 --version="v1.23.5+3"
+	vultr-cli kubernetes upgrades start d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 --version="v1.29.2+1"
 
 	# Shortened with alias commands
-	vultr-cli k e s d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 -v="v1.23.5+3"
+	vultr-cli k e s d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 -v="v1.29.2+1"
 	`
 
 	nodepoolLong    = `Get all available commands for Kubernetes node pools`
@@ -138,7 +138,8 @@ var (
 	createNPLong    = `Create node pool for your kubernetes cluster on your Vultr account`
 	createNPExample = `
 	# Full Example
-	vultr-cli kubernetes node-pool create ffd31f18-5f77-454c-9064-212f942c3c34 --label="nodepool" --quantity=3  --plan="vc2-1c-2gb"
+	vultr-cli kubernetes node-pool create ffd31f18-5f77-454c-9064-212f942c3c34 --label="nodepool" --quantity=3  \
+		--plan="vc2-1c-2gb" --node-labels="application=id-service,environment=development"
 
 	# Shortened with alias commands
 	vultr-cli k n c ffd31f18-5f77-454c-9064-212f942c3c34 -l="nodepool" -q=3  -p="vc2-1c-2gb"
@@ -167,7 +168,8 @@ var (
 	updateNPLong    = `Update a specific node pool in a kubernetes cluster on your Vultr Account`
 	updateNPExample = `
 	# Full example
-	vultr-cli kubernetes node-pool update ffd31f18-5f77-454c-9064-212f942c3c34 abd31f18-3f77-454c-9064-212f942c3c34 --quantity=4
+	vultr-cli kubernetes node-pool update ffd31f18-5f77-454c-9064-212f942c3c34 abd31f18-3f77-454c-9064-212f942c3c34 --quantity=4 \
+		--node-labels="application=id-service,environment=development"
 
 	# Shortened with alias commands
 	vultr-cli k n u ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 --q=4
@@ -802,7 +804,7 @@ required in node pool. Use / between each new node pool.  E.g:
 	npCreate.Flags().BoolP("auto-scaler", "", false, "Enable the auto scaler with your cluster")
 	npCreate.Flags().IntP("min-nodes", "", 1, "Minimum nodes for auto scaler")
 	npCreate.Flags().IntP("max-nodes", "", 1, "Maximum nodes for auto scaler")
-	npCreate.Flags().StringToString("node-labels", nil, "A key=value comma separated string of labels to apply to the nodes in this nodepool")
+	npCreate.Flags().StringToString("node-labels", nil, "A key=value comma separated string of labels to apply to the nodes in this node pool")
 
 	// Node Pool Update
 	npUpdate := &cobra.Command{
@@ -896,7 +898,7 @@ required in node pool. Use / between each new node pool.  E.g:
 	npUpdate.Flags().BoolP("auto-scaler", "", false, "Enable the auto scaler with your cluster")
 	npUpdate.Flags().IntP("min-nodes", "", 1, "Minimum nodes for auto scaler")
 	npUpdate.Flags().IntP("max-nodes", "", 1, "Maximum nodes for auto scaler")
-	npUpdate.Flags().StringToString("node-labels", nil, "A key=value comma separated string of labels to apply to the nodes in this nodepool")
+	npUpdate.Flags().StringToString("node-labels", nil, "A key=value comma separated string of labels to apply to the nodes in this node pool")
 
 	npUpdate.MarkFlagsOneRequired("quantity", "tag", "auto-scaler", "min-nodes", "max-nodes", "node-labels")
 
