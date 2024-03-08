@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/vultr/govultr/v3"
@@ -132,6 +133,9 @@ func (c *ClustersPrinter) Data() [][]string {
 				[]string{"AUTO SCALER", strconv.FormatBool(c.Clusters[i].NodePools[j].AutoScaler)},
 				[]string{"MIN NODES", strconv.Itoa(c.Clusters[i].NodePools[j].MinNodes)},
 				[]string{"MAX NODES", strconv.Itoa(c.Clusters[i].NodePools[j].MaxNodes)},
+			)
+
+			data = append(data,
 				[]string{" "},
 				[]string{"NODES"},
 			)
@@ -150,6 +154,14 @@ func (c *ClustersPrinter) Data() [][]string {
 						c.Clusters[i].NodePools[j].Nodes[k].Status,
 					},
 				)
+			}
+
+			if len(c.Clusters[i].NodePools[j].Labels) != 0 {
+				data = append(data, []string{" "}, []string{"NODE LABELS"})
+				for k := range c.Clusters[i].NodePools[j].Labels {
+					label := fmt.Sprintf("%s=%s", k, c.Clusters[i].NodePools[j].Labels[k])
+					data = append(data, []string{label})
+				}
 			}
 
 			data = append(data, []string{" "})
@@ -239,6 +251,14 @@ func (c *ClusterPrinter) Data() [][]string {
 			)
 		}
 
+		if len(c.Cluster.NodePools[i].Labels) != 0 {
+			data = append(data, []string{" "}, []string{"NODE LABELS"})
+			for k := range c.Cluster.NodePools[i].Labels {
+				label := fmt.Sprintf("%s=%s", k, c.Cluster.NodePools[i].Labels[k])
+				data = append(data, []string{label})
+			}
+		}
+
 		data = append(data, []string{" "})
 	}
 
@@ -314,6 +334,14 @@ func (n *NodePoolsPrinter) Data() [][]string {
 				},
 			)
 		}
+
+		if len(n.NodePools[i].Labels) != 0 {
+			data = append(data, []string{" "}, []string{"NODE LABELS"})
+			for k := range n.NodePools[i].Labels {
+				label := fmt.Sprintf("%s=%s", k, n.NodePools[i].Labels[k])
+				data = append(data, []string{label})
+			}
+		}
 	}
 
 	return data
@@ -379,6 +407,14 @@ func (n *NodePoolPrinter) Data() [][]string {
 				n.NodePool.Nodes[i].Status,
 			},
 		)
+	}
+
+	if len(n.NodePool.Labels) != 0 {
+		data = append(data, []string{" "}, []string{"NODE LABELS"})
+		for k := range n.NodePool.Labels {
+			label := fmt.Sprintf("%s=%s", k, n.NodePool.Labels[k])
+			data = append(data, []string{label})
+		}
 	}
 
 	return data
