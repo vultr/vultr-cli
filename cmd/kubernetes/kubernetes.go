@@ -1019,10 +1019,10 @@ func formatNodePools(nodePools []string) ([]govultr.NodePoolReq, error) {
 	for _, r := range npList {
 		nodeData := strings.Split(r, ",")
 
-		if len(nodeData) < 3 || len(nodeData) > 7 {
+		if len(nodeData) < 3 || len(nodeData) > 8 {
 			return nil, fmt.Errorf(
 				`unable to format node pool. each node pool must include label, quantity, and plan.
-				Optionally you can include tag, auto-scaler, min-nodes and max-nodes`,
+Optionally you can include tag, node-labels, auto-scaler, min-nodes and max-nodes`,
 			)
 		}
 
@@ -1063,6 +1063,8 @@ func formatNodeData(node []string) (*govultr.NodePoolReq, error) {
 			nodeData.Label = val
 		case field == "tag":
 			nodeData.Tag = val
+		case field == "node-labels":
+			nodeData.Labels = formatNodeLabels(val)
 		case field == "auto-scaler":
 			v, err := strconv.ParseBool(val)
 			if err != nil {
@@ -1085,6 +1087,19 @@ func formatNodeData(node []string) (*govultr.NodePoolReq, error) {
 	}
 
 	return nodeData, nil
+}
+
+// formatNodeLabels parses the node-labels option from the cluster create nodepool formatted string
+func formatNodeLabels(nl string) map[string]string {
+	data := make(map[string]string)
+	labels := strings.Split(nl, "|")
+
+	for i := range labels {
+		label := strings.Split(labels[i], "=")
+		data[label[0]] = label[1]
+	}
+
+	return data
 }
 
 type options struct {
