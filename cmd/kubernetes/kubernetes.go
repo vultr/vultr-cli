@@ -24,14 +24,33 @@ var (
 	vultr-cli kubernetes
 	`
 
-	createLong    = `Create kubernetes cluster on your Vultr account`
+	createLong = `Create kubernetes cluster on your Vultr account`
+	//nolint:lll
 	createExample = `
-	# Full Example
-	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.29.1+1" \
+	# Full example
+	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.29.2+1" \
 		--node-pools="quantity:3,plan:vc2-2c-4gb,label:my-nodepool,tag:my-tag"
 
 	# Shortened with alias commands
-	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.29.1+1" -n="quantity:3,plan:vc2-2c-4gb,label:my-nodepool,tag:my-tag"
+	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.29.2+1" -n="quantity:3,plan:vc2-2c-4gb,label:my-nodepool,tag:my-tag"
+
+	# Node pool options
+	The --node-pools option allows you to pass in options for any number of
+	node pools when creating a cluster. The options are passed in a delimited
+	string.  Different node pools are delimited by a slash (/). The options for
+	each node pool are delimited by a comma (,) and each option is defined by
+	colon (:).  If provided, the node pool options can also parse out the
+	node-labels params which are delimited by a pipe (|).
+
+	Available options are documented in the 'kubernetes node-pool create --help' 
+
+	For example:
+
+	Multiple node pools
+	--node-pools="quantity:1,plan:vc2-4c-8gb,label:main-node-pool/quantity:5,plan:vc2-2c-4gb,label:worker-pool,auto-scaler:true,min-nodes:5,max-nodes:10"
+
+	Using node labels 
+	--node-pools="quantity:5,plan:vc2-2c-4gb,label:worker-pool,auto-scaler:true,min-nodes:5,max-nodes:10,node-labels:application=identity-service|worker-size=small"
 	`
 
 	getLong    = `Get a single kubernetes cluster from your account`
@@ -61,7 +80,7 @@ var (
 	updateLong    = `Update a specific kubernetes cluster on your Vultr Account`
 	updateExample = `
 	# Full example
-	vultr-cli kubernetes update ffd31f18-5f77-454c-9065-212f942c3c35 --label="updated-label"
+	vultr-cli kubernetes update ffd31f18-5f77-454c-9065-212f942c3c35 --label="updated-label" 
 
 	# Shortened with alias commands
 	vultr-cli k u ffd31f18-5f77-454c-9065-212f942c3c35 -l="updated-label"
@@ -81,14 +100,14 @@ var (
 	getConfigLong    = `Returns a base64 encoded config of a specified kubernetes cluster on your Vultr Account`
 	getConfigExample = `
 	
-		# Full example
-		vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35
-		vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35 --output-file /your/path/
-	
-		# Shortened with alias commands
-		vultr-cli k config ffd31f18-5f77-454c-9065-212f942c3c35
-		vultr-cli k config  ffd31f18-5f77-454c-9065-212f942c3c35 -o /your/path/
-		`
+	# Full example
+	vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35
+	vultr-cli kubernetes config ffd31f18-5f77-454c-9065-212f942c3c35 --output-file /your/path/
+
+	# Shortened with alias commands
+	vultr-cli k config ffd31f18-5f77-454c-9065-212f942c3c35
+	vultr-cli k config  ffd31f18-5f77-454c-9065-212f942c3c35 -o /your/path/
+	`
 
 	getVersionsLong    = `Returns a list of supported kubernetes versions you can deploy`
 	getVersionsExample = `
@@ -120,10 +139,10 @@ var (
 	upgradeLong    = `Initiate an upgrade of the kubernetes version on a given cluster`
 	upgradeExample = `
 	# Full example
-	vultr-cli kubernetes upgrades start d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 --version="v1.23.5+3"
+	vultr-cli kubernetes upgrades start d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 --version="v1.29.2+1"
 
 	# Shortened with alias commands
-	vultr-cli k e s d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 -v="v1.23.5+3"
+	vultr-cli k e s d4908765-b82a-4e7d-83d9-c0bc4c6a36d0 -v="v1.29.2+1"
 	`
 
 	nodepoolLong    = `Get all available commands for Kubernetes node pools`
@@ -138,7 +157,8 @@ var (
 	createNPLong    = `Create node pool for your kubernetes cluster on your Vultr account`
 	createNPExample = `
 	# Full Example
-	vultr-cli kubernetes node-pool create ffd31f18-5f77-454c-9064-212f942c3c34 --label="nodepool" --quantity=3  --plan="vc2-1c-2gb"
+	vultr-cli kubernetes node-pool create ffd31f18-5f77-454c-9064-212f942c3c34 --label="nodepool" --quantity=3  \
+		--plan="vc2-1c-2gb" --node-labels="application=id-service,environment=development"
 
 	# Shortened with alias commands
 	vultr-cli k n c ffd31f18-5f77-454c-9064-212f942c3c34 -l="nodepool" -q=3  -p="vc2-1c-2gb"
@@ -167,7 +187,8 @@ var (
 	updateNPLong    = `Update a specific node pool in a kubernetes cluster on your Vultr Account`
 	updateNPExample = `
 	# Full example
-	vultr-cli kubernetes node-pool update ffd31f18-5f77-454c-9064-212f942c3c34 abd31f18-3f77-454c-9064-212f942c3c34 --quantity=4
+	vultr-cli kubernetes node-pool update ffd31f18-5f77-454c-9064-212f942c3c34 abd31f18-3f77-454c-9064-212f942c3c34 --quantity=4 \
+		--node-labels="application=id-service,environment=development"
 
 	# Shortened with alias commands
 	vultr-cli k n u ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 --q=4
@@ -747,6 +768,11 @@ required in node pool. Use / between each new node pool.  E.g:
 				return fmt.Errorf("error parsing flag 'max-nodes' for kubernetes cluster node pool create : %v", errMa)
 			}
 
+			npLabels, errNl := cmd.Flags().GetStringToString("node-labels")
+			if errNl != nil {
+				return fmt.Errorf("error parsing flag 'node-labels' for kubernetes cluster node pool create : %v", errNl)
+			}
+
 			o.npCreateReq = &govultr.NodePoolReq{
 				NodeQuantity: quantity,
 				Label:        label,
@@ -755,6 +781,7 @@ required in node pool. Use / between each new node pool.  E.g:
 				AutoScaler:   govultr.BoolToBoolPtr(false),
 				MinNodes:     minNodes,
 				MaxNodes:     maxNodes,
+				Labels:       npLabels,
 			}
 
 			if autoscaler {
@@ -796,6 +823,7 @@ required in node pool. Use / between each new node pool.  E.g:
 	npCreate.Flags().BoolP("auto-scaler", "", false, "Enable the auto scaler with your cluster")
 	npCreate.Flags().IntP("min-nodes", "", 1, "Minimum nodes for auto scaler")
 	npCreate.Flags().IntP("max-nodes", "", 1, "Maximum nodes for auto scaler")
+	npCreate.Flags().StringToString("node-labels", nil, "A key=value comma separated string of labels to apply to the nodes in this node pool")
 
 	// Node Pool Update
 	npUpdate := &cobra.Command{
@@ -836,6 +864,11 @@ required in node pool. Use / between each new node pool.  E.g:
 				return fmt.Errorf("error parsing flag 'max-nodes' for kubernetes cluster node pool update : %v", errMa)
 			}
 
+			npLabels, errNl := cmd.Flags().GetStringToString("node-labels")
+			if errNl != nil {
+				return fmt.Errorf("error parsing flag 'node-labels' for kubernetes cluster node pool update : %v", errNl)
+			}
+
 			o.npUpdateReq = &govultr.NodePoolReqUpdate{}
 
 			if cmd.Flags().Changed("quantity") {
@@ -856,6 +889,10 @@ required in node pool. Use / between each new node pool.  E.g:
 
 			if cmd.Flags().Changed("max-nodes") {
 				o.npUpdateReq.MaxNodes = maxNodes
+			}
+
+			if cmd.Flags().Changed("node-labels") {
+				o.npUpdateReq.Labels = npLabels
 			}
 
 			np, err := o.nodePoolUpdate()
@@ -880,8 +917,9 @@ required in node pool. Use / between each new node pool.  E.g:
 	npUpdate.Flags().BoolP("auto-scaler", "", false, "Enable the auto scaler with your cluster")
 	npUpdate.Flags().IntP("min-nodes", "", 1, "Minimum nodes for auto scaler")
 	npUpdate.Flags().IntP("max-nodes", "", 1, "Maximum nodes for auto scaler")
+	npUpdate.Flags().StringToString("node-labels", nil, "A key=value comma separated string of labels to apply to the nodes in this node pool")
 
-	npUpdate.MarkFlagsOneRequired("quantity", "tag", "auto-scaler", "min-nodes", "max-nodes")
+	npUpdate.MarkFlagsOneRequired("quantity", "tag", "auto-scaler", "min-nodes", "max-nodes", "node-labels")
 
 	// Node Pool Delete
 	npDelete := &cobra.Command{
@@ -1000,10 +1038,10 @@ func formatNodePools(nodePools []string) ([]govultr.NodePoolReq, error) {
 	for _, r := range npList {
 		nodeData := strings.Split(r, ",")
 
-		if len(nodeData) < 3 || len(nodeData) > 7 {
+		if len(nodeData) < 3 || len(nodeData) > 8 {
 			return nil, fmt.Errorf(
 				`unable to format node pool. each node pool must include label, quantity, and plan.
-				Optionally you can include tag, auto-scaler, min-nodes and max-nodes`,
+Optionally you can include tag, node-labels, auto-scaler, min-nodes and max-nodes`,
 			)
 		}
 
@@ -1019,7 +1057,7 @@ func formatNodePools(nodePools []string) ([]govultr.NodePoolReq, error) {
 }
 
 // formatNodeData loops over the parse strings for a node and returns the formatted struct
-func formatNodeData(node []string) (*govultr.NodePoolReq, error) {
+func formatNodeData(node []string) (*govultr.NodePoolReq, error) { //nolint:gocyclo
 	nodeData := &govultr.NodePoolReq{}
 	for _, f := range node {
 		nodeDataKeyVal := strings.Split(f, ":")
@@ -1044,6 +1082,8 @@ func formatNodeData(node []string) (*govultr.NodePoolReq, error) {
 			nodeData.Label = val
 		case field == "tag":
 			nodeData.Tag = val
+		case field == "node-labels":
+			nodeData.Labels = formatNodeLabels(val)
 		case field == "auto-scaler":
 			v, err := strconv.ParseBool(val)
 			if err != nil {
@@ -1066,6 +1106,19 @@ func formatNodeData(node []string) (*govultr.NodePoolReq, error) {
 	}
 
 	return nodeData, nil
+}
+
+// formatNodeLabels parses the node-labels option from the cluster create nodepool formatted string
+func formatNodeLabels(nl string) map[string]string {
+	data := make(map[string]string)
+	labels := strings.Split(nl, "|")
+
+	for i := range labels {
+		label := strings.Split(labels[i], "=")
+		data[label[0]] = label[1]
+	}
+
+	return data
 }
 
 type options struct {
