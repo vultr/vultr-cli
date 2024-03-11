@@ -26,13 +26,31 @@ var (
 
 	createLong    = `Create kubernetes cluster on your Vultr account`
 	createExample = `
-	# Full Example
+	# Full example
 	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.29.2+1" \
 		--node-pools="quantity:3,plan:vc2-2c-4gb,label:my-nodepool,tag:my-tag"
 
 	# Shortened with alias commands
 	vultr-cli k c -l="my-cluster" -r="ewr" -v="v1.29.2+1" -n="quantity:3,plan:vc2-2c-4gb,label:my-nodepool,tag:my-tag"
-	`
+
+	# Node pool options
+	The --node-pools option allows you to pass in options for any number of
+	node pools when creating a cluster. The options are passed in a delimited
+	string.  Different node pools are delimited by a slash (/). The options for
+	each node pool are delimited by a comma (,) and each option is defined by
+	colon (:).  If provided, the node pool options can also parse out the
+	node-labels params which are delimited by a pipe (|).
+
+	Available options are documented in the 'kubernetes node-pool create --help' 
+
+	For example:
+
+	Multiple node pools
+	--node-pools="quantity:1,plan:vc2-4c-8gb,label:main-node-pool/quantity:5,plan:vc2-2c-4gb,label:worker-pool,auto-scaler:true,min-nodes:5,max-nodes:10"
+
+	Using node labels 
+	--node-pools="quantity:5,plan:vc2-2c-4gb,label:worker-pool,auto-scaler:true,min-nodes:5,max-nodes:10,node-labels:application=identity-service|worker-size=small"
+	` //nolint:lll
 
 	getLong    = `Get a single kubernetes cluster from your account`
 	getExample = `
