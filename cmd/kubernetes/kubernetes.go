@@ -24,7 +24,8 @@ var (
 	vultr-cli kubernetes
 	`
 
-	createLong    = `Create kubernetes cluster on your Vultr account`
+	createLong = `Create kubernetes cluster on your Vultr account`
+	//nolint:lll
 	createExample = `
 	# Full example
 	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.29.2+1" \
@@ -50,7 +51,7 @@ var (
 
 	Using node labels 
 	--node-pools="quantity:5,plan:vc2-2c-4gb,label:worker-pool,auto-scaler:true,min-nodes:5,max-nodes:10,node-labels:application=identity-service|worker-size=small"
-	` //nolint:lll
+	`
 
 	getLong    = `Get a single kubernetes cluster from your account`
 	getExample = `
@@ -1056,7 +1057,7 @@ Optionally you can include tag, node-labels, auto-scaler, min-nodes and max-node
 }
 
 // formatNodeData loops over the parse strings for a node and returns the formatted struct
-func formatNodeData(node []string) (*govultr.NodePoolReq, error) {
+func formatNodeData(node []string) (*govultr.NodePoolReq, error) { //nolint:gocyclo
 	nodeData := &govultr.NodePoolReq{}
 	for _, f := range node {
 		nodeDataKeyVal := strings.Split(f, ":")
