@@ -422,5 +422,5 @@ func (o *options) detachNodes() error {
 }
 
 func (o *options) del() error {
-	return o.Base.Client.VPC.Delete(o.Base.Context, o.Base.Args[0])
+	return o.Base.Client.VPC2.Delete(o.Base.Context, o.Base.Args[0])
 }
