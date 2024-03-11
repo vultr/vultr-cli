@@ -40,7 +40,7 @@ Available Commands:
   vpc2               Commands to manage VPC2 networks
 
 Flags:
-      --config string   config file (default is $HOME/.vultr-cli.yaml) (default "/home/michael/.vultr-cli.yaml")
+      --config string   config file (default is $HOME/.vultr-cli.yaml)
   -h, --help            help for vultr-cli
   -o, --output string   output format [ text | json | yaml ] (default "text")
 
