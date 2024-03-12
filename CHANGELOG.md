@@ -1,4 +1,22 @@
 # Change Log
+## [v3.0.2](https://github.com/vultr/vultr-cli/compare/v3.0.1...v3.0.2) (2024-03-12)
+### Enhancements
+* Kubernetes: add node labels flag to node pool create and update [PR 422](https://github.com/vultr/vultr-cli/pull/422)
+
+### Bug Fixes
+* VPC2: fix incorrect govultr delete method [PR 426](https://github.com/vultr/vultr-cli/pull/426)
+* Plans: fix inadvertent short-circuiting bare metal printer [PR 416](https://github.com/vultr/vultr-cli/pull/416)
+* All: make cobra command run error return consistent [PR 419](https://github.com/vultr/vultr-cli/pull/419)
+
+### Documentation
+* Remove extraneous readme details [PR 425](https://github.com/vultr/vultr-cli/pull/425)
+* Tidy up help documentation [PR 418](https://github.com/vultr/vultr-cli/pull/418)
+
+### Dependencies
+* Update govultr from v3.6.3 to v3.6.4 [PR 421](https://github.com/vultr/vultr-cli/pull/421)
+* Update govultr from v3.6.2 to v3.6.3 [PR 417](https://github.com/vultr/vultr-cli/pull/417)
+* Bump golang.org/x/oauth2 from 0.17.0 to 0.18.0 [PR 420](https://github.com/vultr/vultr-cli/pull/420)
+
 ## [v3.0.1](https://github.com/vultr/vultr-cli/compare/v3.0.0...v3.0.1) (2024-02-27)
 ### Enhancements
 * Kubernetes: add `enable-firewall` flag on create [PR 413](https://github.com/vultr/vultr-cli/pull/413)
