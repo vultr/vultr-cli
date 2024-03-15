@@ -48,7 +48,7 @@ func (b *Base) configureClient(apiKey, userAgent string) {
 		b.Client = govultr.NewClient(nil)
 	} else {
 		config := &oauth2.Config{}
-		ts := config.TokenSource(context.Background(), &oauth2.Token{AccessToken: apiKey})
+		ts := config.TokenSource(context.Background(), &oauth2.Token{AccessToken: token})
 		b.Client = govultr.NewClient(oauth2.NewClient(context.Background(), ts))
 		b.HasAuth = true
 	}
