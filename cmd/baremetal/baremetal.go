@@ -1145,9 +1145,9 @@ func parseCreateFlags(cmd *cobra.Command) (*govultr.BareMetalCreate, error) { //
 		return nil, fmt.Errorf("error parsing ripv4 flag for bare metal create : %v", err)
 	}
 
-	pxe, err := cmd.Flags().GetBool("persistenterrpxe")
+	pxe, err := cmd.Flags().GetBool("persistent_pxe")
 	if err != nil {
-		return nil, fmt.Errorf("error parsing persistenterrpxe flag for bare metal create : %v", err)
+		return nil, fmt.Errorf("error parsing persistent_pxe flag for bare metal create : %v", err)
 	}
 
 	image, err := cmd.Flags().GetString("image")
