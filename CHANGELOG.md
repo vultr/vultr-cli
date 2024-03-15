@@ -1,4 +1,11 @@
 # Change Log
+## [v3.0.3](https://github.com/vultr/vultr-cli/compare/v3.0.2...v3.0.3) (2024-03-15) 
+### Bug Fixes
+* All: fix missing oauth token when a config file is used [PR 430](https://github.com/vultr/vultr-cli/pull/430)
+
+### Dependencies
+* Bump google.golang.org/protobuf from 1.31.0 to 1.33.0 [PR 428](https://github.com/vultr/vultr-cli/pull/428)
+
 ## [v3.0.2](https://github.com/vultr/vultr-cli/compare/v3.0.1...v3.0.2) (2024-03-12)
 ### Enhancements
 * Kubernetes: add node labels flag to node pool create and update [PR 422](https://github.com/vultr/vultr-cli/pull/422)
