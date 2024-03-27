@@ -65,10 +65,12 @@ func Execute() {
 }
 
 func init() {
+	configPath := configHome()
+
 	// init the config file with viper
 	initConfig()
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", configHome(), "config file (default is $HOME/.vultr-cli.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", configPath, "config file (default is $HOME/.vultr-cli.yaml)")
 	if err := viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config")); err != nil {
 		fmt.Printf("error binding root pflag 'config': %v\n", err)
 	}
@@ -115,7 +117,7 @@ func init() {
 	)
 }
 
-// initConfig reads in config file and ENV variables if set.
+// initConfig reads in config file to viper if it exists
 func initConfig() {
 	configPath := viper.GetString("config")
 
@@ -137,9 +139,10 @@ func initConfig() {
 }
 
 func configHome() string {
-	// check for a config file at ~/.config/vultr-cli.yaml
+	// check for a config file in the user config directory
 	configFolder, errConfig := os.UserConfigDir()
 	if errConfig != nil {
+		fmt.Printf("Unable to determine default user config directory : %v", errConfig)
 		os.Exit(1)
 	}
 
@@ -152,6 +155,7 @@ func configHome() string {
 	// check for a config file at ~/.vultr-cli.yaml
 	configFolder, errHome := os.UserHomeDir()
 	if errHome != nil {
+		fmt.Printf("Unable to check user config in home directory: %v", errHome)
 		os.Exit(1)
 	}
 
@@ -160,6 +164,7 @@ func configHome() string {
 		// if it doesn't exist, create one
 		f, err := os.Create(filepath.Clean(configFile))
 		if err != nil {
+			fmt.Printf("Unable to create default config file : %v", err)
 			os.Exit(1)
 		}
 
