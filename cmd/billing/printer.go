@@ -51,8 +51,8 @@ func (b *BillingHistoryPrinter) Data() [][]string {
 			b.Billing[i].Date,
 			b.Billing[i].Type,
 			b.Billing[i].Description,
-			strconv.FormatFloat(float64(b.Billing[i].Amount), 'f', utils.DecimalPrecision, 32),
-			strconv.FormatFloat(float64(b.Billing[i].Balance), 'f', utils.DecimalPrecision, 32),
+			strconv.FormatFloat(float64(b.Billing[i].Amount), 'f', utils.FloatPrecision, 32),
+			strconv.FormatFloat(float64(b.Billing[i].Balance), 'f', utils.FloatPrecision, 32),
 		})
 	}
 	return data
@@ -104,8 +104,8 @@ func (b *BillingInvoicesPrinter) Data() [][]string {
 			strconv.Itoa(b.Invoices[i].ID),
 			b.Invoices[i].Date,
 			b.Invoices[i].Description,
-			strconv.FormatFloat(float64(b.Invoices[i].Amount), 'f', utils.DecimalPrecision, 32),
-			strconv.FormatFloat(float64(b.Invoices[i].Balance), 'f', utils.DecimalPrecision, 32),
+			strconv.FormatFloat(float64(b.Invoices[i].Amount), 'f', utils.FloatPrecision, 32),
+			strconv.FormatFloat(float64(b.Invoices[i].Balance), 'f', utils.FloatPrecision, 32),
 		})
 	}
 	return data
@@ -150,8 +150,8 @@ func (b *BillingInvoicePrinter) Data() [][]string {
 		strconv.Itoa(b.Invoice.ID),
 		b.Invoice.Date,
 		b.Invoice.Description,
-		strconv.FormatFloat(float64(b.Invoice.Amount), 'f', utils.DecimalPrecision, 32),
-		strconv.FormatFloat(float64(b.Invoice.Balance), 'f', utils.DecimalPrecision, 32),
+		strconv.FormatFloat(float64(b.Invoice.Amount), 'f', utils.FloatPrecision, 32),
+		strconv.FormatFloat(float64(b.Invoice.Balance), 'f', utils.FloatPrecision, 32),
 	}}
 }
 
@@ -207,8 +207,8 @@ func (b *BillingInvoiceItemsPrinter) Data() [][]string {
 			b.InvoiceItems[i].EndDate,
 			strconv.Itoa(b.InvoiceItems[i].Units),
 			b.InvoiceItems[i].UnitType,
-			strconv.FormatFloat(float64(b.InvoiceItems[i].UnitPrice), 'f', utils.DecimalPrecision, 32),
-			strconv.FormatFloat(float64(b.InvoiceItems[i].Total), 'f', utils.DecimalPrecision, 32),
+			strconv.FormatFloat(float64(b.InvoiceItems[i].UnitPrice), 'f', utils.FloatPrecision, 32),
+			strconv.FormatFloat(float64(b.InvoiceItems[i].Total), 'f', utils.FloatPrecision, 32),
 		})
 	}
 

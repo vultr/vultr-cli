@@ -39,10 +39,10 @@ func (a *AccountPrinter) Columns() [][]string {
 // Data ...
 func (a *AccountPrinter) Data() [][]string {
 	return [][]string{0: {
-		strconv.FormatFloat(float64(a.Account.Balance), 'f', utils.DecimalPrecision, 32),
-		strconv.FormatFloat(float64(a.Account.PendingCharges), 'f', utils.DecimalPrecision, 32),
+		strconv.FormatFloat(float64(a.Account.Balance), 'f', utils.FloatPrecision, 32),
+		strconv.FormatFloat(float64(a.Account.PendingCharges), 'f', utils.FloatPrecision, 32),
 		a.Account.LastPaymentDate,
-		strconv.FormatFloat(float64(a.Account.LastPaymentAmount), 'f', utils.DecimalPrecision, 32),
+		strconv.FormatFloat(float64(a.Account.LastPaymentAmount), 'f', utils.FloatPrecision, 32),
 		a.Account.Name,
 		a.Account.Email,
 		printer.ArrayOfStringsToString(a.Account.ACL),
