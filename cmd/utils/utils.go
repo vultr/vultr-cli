@@ -11,10 +11,8 @@ import (
 
 const (
 	PerPageDefault int = 100
-	// TODO; replace
-	DecimalPrecision int = 4
-	FloatPrecision   int = 4
-	FloatBitDepth    int = 32
+	FloatPrecision int = 2
+	FloatBitDepth  int = 32
 )
 
 // SetOptions initializes values used in all CLI commands
