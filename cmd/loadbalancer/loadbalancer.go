@@ -625,7 +625,7 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		`(optional) if true, this will redirect HTTP traffic to HTTPS. You must have an HTTPS rule
 		and SSL certificate installed on the load balancer to enable this option.`,
 	)
-	update.Flags().StringP("proxy-protocol", "p", "", "(optional) if true, you must configure backend nodes to accept Proxy protocol.")
+	update.Flags().BoolP("proxy-protocol", "p", false, "(optional) if true, you must configure backend nodes to accept Proxy protocol.")
 	update.Flags().StringArrayP(
 		"forwarding-rules",
 		"f",
