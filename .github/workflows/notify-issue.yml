@@ -11,8 +11,8 @@ jobs:
     steps:
       - run: |
           echo "{\"text\":\"Vultr-CLI : New Issue https://github.com/vultr/vultr-cli/issues/${{ github.event.issue.number }} \"}" > mattermost.json
-      - uses: mattermost/action-mattermost-notify@master
-        env:
+      - uses: mattermost/action-mattermost-notify@2.0.0
+        with:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_USERNAME: ${{ secrets.MATTERMOST_USERNAME}}
           MATTERMOST_ICON: ${{ secrets.MATTERMOST_ICON }}
