@@ -673,12 +673,23 @@ required in node pool. Use / between each new node pool.  E.g:
 		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 
+			summarize, errSu := cmd.Flags().GetBool("summarize")
+			if errSu != nil {
+				return fmt.Errorf("error parsing flag 'summarize' for kubernetes node pool list : %v", errSu)
+			}
+
 			nps, meta, err := o.nodePools()
 			if err != nil {
 				return fmt.Errorf("error getting node pool list : %v", err)
 			}
 
-			data := &NodePoolsPrinter{NodePools: nps, Meta: meta}
+			var data printer.ResourceOutput
+			if summarize {
+				data = &NodePoolsSummaryPrinter{NodePools: nps, Meta: meta}
+			} else {
+				data = &NodePoolsPrinter{NodePools: nps, Meta: meta}
+			}
+
 			o.Base.Printer.Display(data, nil)
 
 			return nil
@@ -692,6 +703,7 @@ required in node pool. Use / between each new node pool.  E.g:
 		utils.PerPageDefault,
 		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
 	)
+	npList.Flags().BoolP("summarize", "", false, "(optional) Summarize the list output. One line per node pool.")
 
 	// Node Pool Get
 	npGet := &cobra.Command{

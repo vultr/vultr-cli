@@ -427,6 +427,65 @@ func (n *NodePoolPrinter) Paging() [][]string {
 
 // ======================================
 
+// NodePoolsSummaryPrinter ...
+type NodePoolsSummaryPrinter struct {
+	NodePools []govultr.NodePool `json:"node_pools"`
+	Meta      *govultr.Meta      `json:"meta"`
+}
+
+// JSON ...
+func (n *NodePoolsSummaryPrinter) JSON() []byte {
+	return printer.MarshalObject(n, "json")
+}
+
+// YAML ...
+func (n *NodePoolsSummaryPrinter) YAML() []byte {
+	return printer.MarshalObject(n, "yaml")
+}
+
+// Columns ...
+func (n *NodePoolsSummaryPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"PLAN",
+		"STATUS",
+		"NODE QUANTITY",
+		"AUTO SCALER",
+		"MIN NODES",
+		"MAX NODES",
+	}}
+}
+
+// Data ...
+func (n *NodePoolsSummaryPrinter) Data() [][]string {
+
+	if len(n.NodePools) == 0 {
+		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
+	}
+
+	var data [][]string
+	for i := range n.NodePools {
+		data = append(data, []string{
+			n.NodePools[i].ID,
+			n.NodePools[i].Plan,
+			n.NodePools[i].Status,
+			strconv.Itoa(n.NodePools[i].NodeQuantity),
+			strconv.FormatBool(n.NodePools[i].AutoScaler),
+			strconv.Itoa(n.NodePools[i].MinNodes),
+			strconv.Itoa(n.NodePools[i].MaxNodes),
+		})
+	}
+
+	return data
+}
+
+// Paging ...
+func (n *NodePoolsSummaryPrinter) Paging() [][]string {
+	return printer.NewPagingFromMeta(n.Meta).Compose()
+}
+
+// ======================================
+
 // VersionsPrinter ...
 type VersionsPrinter struct {
 	Versions []string `json:"versions"`
