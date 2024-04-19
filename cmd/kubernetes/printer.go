@@ -458,8 +458,8 @@ func (n *NodePoolsSummaryPrinter) Columns() [][]string {
 
 // Data ...
 func (n *NodePoolsSummaryPrinter) Data() [][]string {
-
 	if len(n.NodePools) == 0 {
+		// there should always be a node pool
 		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
 	}
 
