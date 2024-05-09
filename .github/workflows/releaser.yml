@@ -83,13 +83,9 @@ jobs:
     needs: ["goreleaser", "create-tag"]
     name: Release Notification
     steps:
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-      - run: |
-          echo "{\"text\":\"Vultr-CLI : Release https://github.com/${{ github.repository }}/releases/tag/${{ needs.create-tag.outputs.new_tag }} \"}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@2.0.0
         with:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_USERNAME: ${{ secrets.MATTERMOST_USERNAME}}
-          MATTERMOST_ICON: ${{ secrets.MATTERMOST_ICON }}
+          MATTERMOST_ICON_URL: ${{ secrets.MATTERMOST_ICON }}
+          TEXT: "${{ github.repository }} : Release https://github.com/${{ github.repository }}/releases/tag/${{ needs.create-tag.outputs.new_tag }}"
