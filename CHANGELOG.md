@@ -1,4 +1,26 @@
 # Change Log
+## What's Changed
+## [v3.1.0](https://github.com/vultr/vultr-cli/compare/v3.0.3...v3.1.0) (2024-05-17)
+### Bug Fixes
+* Bare Metal: fix mistyped persistent_pxe baremetal flag [PR 432](https://github.com/vultr/vultr-cli/pull/432)
+* All: fix error when a config file is not present [PR 434](https://github.com/vultr/vultr-cli/pull/434)
+* Load Balancer: set correct flag type on LB proxy protocol [PR 436](https://github.com/vultr/vultr-cli/pull/436)
+
+### Enhancements
+* All: unify float precision on all printers [PR 437](https://github.com/vultr/vultr-cli/pull/437)
+* Kubernetes: add node-pool list summarize flag [PR 442](https://github.com/vultr/vultr-cli/pull/442)
+
+### Automation
+* Update mattermost notify action [PR 441](https://github.com/vultr/vultr-cli/pull/441)
+* Make mattermost notifications generic [PR 445](https://github.com/vultr/vultr-cli/pull/445)
+
+### Dependencies 
+* Bump golang.org/x/oauth2 from 0.18.0 to 0.19.0 [PR 440](https://github.com/vultr/vultr-cli/pull/440)
+* Bump golang.org/x/oauth2 from 0.19.0 to 0.20.0 [PR 443](https://github.com/vultr/vultr-cli/pull/443)
+
+### New Contributors
+* @jasites made their first contribution in [PR 432](https://github.com/vultr/vultr-cli/pull/432)
+
 ## [v3.0.3](https://github.com/vultr/vultr-cli/compare/v3.0.2...v3.0.3) (2024-03-15) 
 ### Bug Fixes
 * All: fix missing oauth token when a config file is used [PR 430](https://github.com/vultr/vultr-cli/pull/430)
