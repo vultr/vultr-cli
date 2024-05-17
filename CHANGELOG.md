@@ -1,5 +1,4 @@
 # Change Log
-## What's Changed
 ## [v3.1.0](https://github.com/vultr/vultr-cli/compare/v3.0.3...v3.1.0) (2024-05-17)
 ### Bug Fixes
 * Bare Metal: fix mistyped persistent_pxe baremetal flag [PR 432](https://github.com/vultr/vultr-cli/pull/432)
