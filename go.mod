@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.19.0
-	github.com/vultr/govultr/v3 v3.7.0
+	github.com/vultr/govultr/v3 v3.8.1
 	golang.org/x/oauth2 v0.20.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -14,7 +14,7 @@ require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
-	github.com/hashicorp/go-retryablehttp v0.7.6 // indirect
+	github.com/hashicorp/go-retryablehttp v0.7.7 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
