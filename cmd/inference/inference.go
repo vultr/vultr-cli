@@ -37,7 +37,7 @@ var (
 )
 
 // NewCmdInference provides the CLI command for inference functions
-func NewCmdInference(base *cli.Base) *cobra.Command {
+func NewCmdInference(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{

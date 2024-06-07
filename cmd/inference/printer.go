@@ -52,7 +52,7 @@ func (inf *InferenceSubsPrinter) Data() [][]string {
 }
 
 // Paging ...
-func (d *InferenceSubsPrinter) Paging() [][]string {
+func (inf *InferenceSubsPrinter) Paging() [][]string {
 	return nil
 }
 
