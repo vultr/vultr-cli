@@ -18,6 +18,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/database"
 	"github.com/vultr/vultr-cli/v3/cmd/dns"
 	"github.com/vultr/vultr-cli/v3/cmd/firewall"
+	"github.com/vultr/vultr-cli/v3/cmd/inference"
 	"github.com/vultr/vultr-cli/v3/cmd/instance"
 	"github.com/vultr/vultr-cli/v3/cmd/iso"
 	"github.com/vultr/vultr-cli/v3/cmd/kubernetes"
@@ -97,6 +98,7 @@ func init() {
 		database.NewCmdDatabase(base),
 		dns.NewCmdDNS(base),
 		firewall.NewCmdFirewall(base),
+		inference.NewCmdInference(base),
 		iso.NewCmdISO(base),
 		kubernetes.NewCmdKubernetes(base),
 		loadbalancer.NewCmdLoadBalancer(base),
