@@ -21,6 +21,7 @@ Available Commands:
   dns                Commands to control DNS records
   firewall           Commands to manage firewalls
   help               Help about any command
+  inference          Commands to interact with serverless inference subscriptions
   instance           Commands to interact with instances
   iso                Commands to manage ISOs
   kubernetes         Commands to manage kubernetes clusters
