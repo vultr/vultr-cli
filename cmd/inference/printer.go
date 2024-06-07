@@ -33,7 +33,7 @@ func (inf *InferenceSubsPrinter) Columns() [][]string {
 }
 
 // Data ...
-func (inf *InferenceSubsPrinter) Data() [][]string { //nolint:funlen,gocyclo
+func (inf *InferenceSubsPrinter) Data() [][]string {
 	if len(inf.InferenceSubs) == 0 {
 		return [][]string{0: {"---", "---", "---", "---"}}
 	}
@@ -84,7 +84,7 @@ func (inf *InferenceSubPrinter) Columns() [][]string {
 }
 
 // Data ...
-func (inf *InferenceSubPrinter) Data() [][]string { //nolint:funlen,gocyclo
+func (inf *InferenceSubPrinter) Data() [][]string {
 	var data [][]string
 	data = append(data, []string{
 		inf.InferenceSub.ID,
@@ -97,7 +97,7 @@ func (inf *InferenceSubPrinter) Data() [][]string { //nolint:funlen,gocyclo
 }
 
 // Paging ...
-func (d *InferenceSubPrinter) Paging() [][]string {
+func (inf *InferenceSubPrinter) Paging() [][]string {
 	return nil
 }
 
