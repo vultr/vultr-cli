@@ -1145,7 +1145,7 @@ func parseCreateFlags(cmd *cobra.Command) (*govultr.BareMetalCreate, error) { //
 		return nil, fmt.Errorf("error parsing ripv4 flag for bare metal create : %v", err)
 	}
 
-	mdisk_mode, err := cmd.Flags().GetString("mdisk_mode")
+	mdiskMode, err := cmd.Flags().GetString("mdisk_mode")
 	if err != nil {
 		return nil, fmt.Errorf("error parsing mdisk_mode flag for bare metal create : %v", err)
 	}
@@ -1174,7 +1174,7 @@ func parseCreateFlags(cmd *cobra.Command) (*govultr.BareMetalCreate, error) { //
 		ReservedIPv4:    ripv4,
 		Region:          region,
 		PersistentPxe:   govultr.BoolToBoolPtr(pxe),
-		MdiskMode:       mdisk_mode,
+		MdiskMode:       mdiskMode,
 	}
 	if userdata != "" {
 		options.UserData = base64.StdEncoding.EncodeToString([]byte(userdata))
@@ -1222,7 +1222,7 @@ func parseUpdateFlags(cmd *cobra.Command) (*govultr.BareMetalUpdate, error) { //
 		return nil, fmt.Errorf("error parsing image flag for bare metal update : %v", err)
 	}
 
-	mdisk_mode, err := cmd.Flags().GetString("mdisk_mode")
+	mdiskMode, err := cmd.Flags().GetString("mdisk_mode")
 	if err != nil {
 		return nil, fmt.Errorf("error parsing image mdisk_mode for bare metal update : %v", err)
 	}
@@ -1233,7 +1233,7 @@ func parseUpdateFlags(cmd *cobra.Command) (*govultr.BareMetalUpdate, error) { //
 		ImageID:   image,
 		Label:     label,
 		Tags:      tags,
-		MdiskMode: mdisk_mode,
+		MdiskMode: mdiskMode,
 	}
 	if userdata != "" {
 		options.UserData = base64.StdEncoding.EncodeToString([]byte(userdata))
