@@ -1,4 +1,23 @@
 # Change Log
+## [3.2.0](https://github.com/vultr/vultr-cli/compare/v3.1.0...v3.2.0) (2024-06-11)
+### Enhancements
+* Inference: Add commands [PR 453](https://github.com/vultr/vultr-cli/pull/453)
+* Bare Metal: Add mdisk_mode flag on create command [PR 449](https://github.com/vultr/vultr-cli/pull/449)
+
+### Dependencies
+* Bump golang.org/x/oauth2 from 0.20.0 to 0.21.0 [PR 451](https://github.com/vultr/vultr-cli/pull/451)
+* Bump github.com/vultr/govultr/v3 from 3.6.4 to 3.7.0 [PR 448](https://github.com/vultr/vultr-cli/pull/448)
+* Bump github.com/spf13/viper from 1.18.2 to 1.19.0 [PR 450](https://github.com/vultr/vultr-cli/pull/450)
+* Update govultr from v2.7.0 to v2.8.1 [PR 452](https://github.com/vultr/vultr-cli/pull/452)
+
+### Automation
+* Linter updates and fixes [PR 457](https://github.com/vultr/vultr-cli/pull/457)
+* Update goreleaser config and action [PR 456](https://github.com/vultr/vultr-cli/pull/456)
+* Ignore linux binary [PR 455](https://github.com/vultr/vultr-cli/pull/455)
+
+### New Contributors
+* @fjoenichols made their first contribution in https://github.com/vultr/vultr-cli/pull/449
+
 ## [v3.1.0](https://github.com/vultr/vultr-cli/compare/v3.0.3...v3.1.0) (2024-05-17)
 ### Bug Fixes
 * Bare Metal: fix mistyped persistent_pxe baremetal flag [PR 432](https://github.com/vultr/vultr-cli/pull/432)
