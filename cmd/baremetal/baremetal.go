@@ -272,7 +272,13 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	create.Flags().StringSliceP("tags", "", []string{}, "(optional) A comma separated list of tags to assign to the server.")
 	create.Flags().StringP("ripv4", "v", "", "(optional) IP address of the floating IP to use as the main IP of this server.")
 	create.Flags().BoolP("persistent_pxe", "x", false, "enable persistent_pxe | true or false")
-	create.Flags().StringP("mdisk_mode", "", "", "(optional) The raid configuration to use when provisioning this server. Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.")
+	create.Flags().StringP(
+		"mdisk_mode",
+		"",
+		"",
+		`(optional) The raid configuration to use when provisioning this server. 
+Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
+	)
 	if err := create.MarkFlagRequired("region"); err != nil {
 		fmt.Printf("error marking bare metal create 'region' flag required: %v", err)
 		os.Exit(1)
