@@ -1,5 +1,6 @@
 ### Go ###
 # Binaries for programs and plugins
+vultr-cli
 *.exe
 *.exe~
 *.dll
