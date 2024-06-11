@@ -35,7 +35,8 @@ var (
 	vultr-cli firewall rule create --id=f04ae5aa-ff6a-4078-900d-78cc17dca2d5 --ip-type=v4 --protocol=tcp --size=24 \
 		--subnet=127.0.0.0 --port=30000
 
-	vultr-cli firewall rule create --id=f04ae5aa-ff6a-4078-900d-78cc17dca2d5 --ip-type=v4 --protocol=icmp --size=24 --subnet=127.0.0.0
+	vultr-cli firewall rule create --id=f04ae5aa-ff6a-4078-900d-78cc17dca2d5 --ip-type=v4 --protocol=icmp --size=24 \
+		--subnet=127.0.0.0
 
 	# Shortened example with aliases
 	vultr-cli fw r c -i=f04ae5aa-ff6a-4078-900d-78cc17dca2d5 -t=v4 -p=tcp -z=24 -s=127.0.0.0 -r=30000
@@ -115,7 +116,10 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// Group Get
@@ -279,7 +283,10 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// Rule Get
@@ -413,7 +420,8 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		"source",
 		"",
 		"",
-		"(optional) When empty, uses value from subnet and size. If \"cloudflare\", allows all Cloudflare IP space through firewall.",
+		`(optional) When empty, uses value from subnet and size. 
+If "cloudflare", allows all Cloudflare IP space through firewall.`,
 	)
 
 	ruleCreate.Flags().StringP("ip-type", "t", "", "The type of IP rule - v4 or v6.")
@@ -426,7 +434,8 @@ func NewCmdFirewall(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		"port",
 		"r",
 		"",
-		"(optional) TCP/UDP only. This field can be an integer value specifying a port or a colon separated port range.",
+		`(optional) TCP/UDP only. This field can be an integer value specifying 
+a port or a colon separated port range.`,
 	)
 
 	ruleCreate.Flags().StringP("notes", "n", "", "(optional) This field supports notes up to 255 characters.")

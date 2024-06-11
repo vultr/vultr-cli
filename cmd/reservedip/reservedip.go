@@ -53,7 +53,8 @@ var (
 	attachLong    = `Attach a reserved IP to an instance on your Vultr account`
 	attachExample = `
 	# Full example
-	vultr-cli reserved-ip attach 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5 --instance-id="2b9bf5fb-1644-4e0a-b706-1116ab64d783"
+	vultr-cli reserved-ip attach 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5 \
+		--instance-id="2b9bf5fb-1644-4e0a-b706-1116ab64d783"
 
 	# Shortened with alias commands
 	vultr-cli rip a 6a31648d-ebfa-4d43-9a00-9c9f0e5048f5 -i="2b9bf5fb-1644-4e0a-b706-1116ab64d783"
@@ -139,7 +140,10 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// Get

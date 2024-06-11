@@ -86,7 +86,8 @@ var (
 	repoUpdateLong    = `Update the details of registry's repository`
 	repoUpdateExample = `
 	# Full example
-	vultr-cli container-registry repository update 4dcdc52e-9c63-401e-8c5f-1582490fe09c --image-name="my-thing" --description="new description"
+	vultr-cli container-registry repository update 4dcdc52e-9c63-401e-8c5f-1582490fe09c --image-name="my-thing" 
+	--description="new description"
 
 	# Shortened example with aliases
 	vultr-cli cr r u 4dcdc52e-9c63-401e-8c5f-1582490fe09c -i="my-thing" -d="new description"
@@ -162,7 +163,10 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// Get
@@ -250,7 +254,12 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 		os.Exit(1)
 	}
 
-	create.Flags().BoolP("public", "p", false, "If the registry is publicly available. Should be true | false (default is false)")
+	create.Flags().BoolP(
+		"public",
+		"p",
+		false,
+		"If the registry is publicly available. Should be true | false (default is false)",
+	)
 	if err := create.MarkFlagRequired("public"); err != nil {
 		fmt.Printf("error marking container registry create 'public' flag required: %v", err)
 		os.Exit(1)
@@ -462,12 +471,18 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name, errIm := cmd.Flags().GetString("image-name")
 			if errIm != nil {
-				return fmt.Errorf("error parsing 'image-name' flag for container registry repository update : %v", errIm)
+				return fmt.Errorf(
+					"error parsing 'image-name' flag for container registry repository update : %v",
+					errIm,
+				)
 			}
 
 			description, errDe := cmd.Flags().GetString("description")
 			if errDe != nil {
-				return fmt.Errorf("error parsing 'description' flag for container registry repository update : %v", errDe)
+				return fmt.Errorf(
+					"error parsing 'description' flag for container registry repository update : %v",
+					errDe,
+				)
 			}
 
 			o.RepoName = name
@@ -513,7 +528,10 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name, errIm := cmd.Flags().GetString("image-name")
 			if errIm != nil {
-				return fmt.Errorf("error parsing 'image-name' flag for container registry repository delete : %v", errIm)
+				return fmt.Errorf(
+					"error parsing 'image-name' flag for container registry repository delete : %v",
+					errIm,
+				)
 			}
 
 			o.RepoName = name
@@ -560,7 +578,10 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 		RunE: func(cmd *cobra.Command, args []string) error {
 			expiry, errEx := cmd.Flags().GetInt("expiry-seconds")
 			if errEx != nil {
-				return fmt.Errorf("error parsing 'expiry-seconds' flag for container registry docker creds : %v", errEx)
+				return fmt.Errorf(
+					"error parsing 'expiry-seconds' flag for container registry docker creds : %v",
+					errEx,
+				)
 			}
 
 			access, errAc := cmd.Flags().GetBool("read-write")
@@ -662,7 +683,7 @@ func (o *options) regions() ([]govultr.ContainerRegistryRegion, *govultr.Meta, e
 }
 
 func (o *options) repositoryList() ([]govultr.ContainerRegistryRepo, *govultr.Meta, error) {
-	repos, meta, _, err := o.Base.Client.ContainerRegistry.ListRepositories(o.Base.Context, o.Base.Args[0], o.Base.Options)
+	repos, meta, _, err := o.Base.Client.ContainerRegistry.ListRepositories(o.Base.Context, o.Base.Args[0], o.Base.Options) //nolint:lll
 	return repos, meta, err
 }
 

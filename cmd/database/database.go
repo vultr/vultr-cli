@@ -35,7 +35,8 @@ var (
 
 	# Full example with custom MySQL settings
 	vultr-cli database create --database-engine="mysql" --database-engine-version="8" --region="ewr" \
-	    --plan="vultr-dbaas-startup-cc-1-55-2" --label="example-db" --mysql-slow-query-log="true" --mysql-long-query-time="2"
+	    --plan="vultr-dbaas-startup-cc-1-55-2" --label="example-db" --mysql-slow-query-log="true" \
+		--mysql-long-query-time="2"
 	`
 	updateLong    = `Updates a Managed Database with the supplied information`
 	updateExample = `
@@ -275,9 +276,21 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		[]string{},
 		"comma-separated list of trusted ip addresses for the new managed database",
 	)
-	create.Flags().StringSlice("mysql-sql-modes", []string{}, "comma-separated list of sql modes for the new managed database")
-	create.Flags().Bool("mysql-require-primary-key", true, "enable requiring primary keys for the new mysql managed database")
-	create.Flags().Bool("mysql-slow-query-log", false, "enable slow query logging for the new mysql managed database")
+	create.Flags().StringSlice(
+		"mysql-sql-modes",
+		[]string{},
+		"comma-separated list of sql modes for the new managed database",
+	)
+	create.Flags().Bool(
+		"mysql-require-primary-key",
+		true,
+		"enable requiring primary keys for the new mysql managed database",
+	)
+	create.Flags().Bool(
+		"mysql-slow-query-log",
+		false,
+		"enable slow query logging for the new mysql managed database",
+	)
 	create.Flags().Int(
 		"mysql-long-query-time",
 		0,
@@ -430,7 +443,11 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		[]string{},
 		"comma-separated list of sql modes for the managed database",
 	)
-	update.Flags().Bool("mysql-require-primary-key", true, "enable requiring primary keys for the mysql managed database")
+	update.Flags().Bool(
+		"mysql-require-primary-key",
+		true,
+		"enable requiring primary keys for the mysql managed database",
+	)
 	update.Flags().Bool("mysql-slow-query-log", false, "enable slow query logging for the mysql managed database")
 	update.Flags().String(
 		"mysql-long-query-time",
@@ -1686,22 +1703,34 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		RunE: func(cmd *cobra.Command, args []string) error {
 			autovacuumAnalyzeScaleFactor, errAu := cmd.Flags().GetFloat32("autovacuum-analyze-scale-factor")
 			if errAu != nil {
-				return fmt.Errorf("error parsing flag 'autovacuum-analyze-scale-factor' for advanced options update : %v", errAu)
+				return fmt.Errorf(
+					"error parsing flag 'autovacuum-analyze-scale-factor' for advanced options update : %v",
+					errAu,
+				)
 			}
 
 			autovacuumAnalyzeThreshold, errAt := cmd.Flags().GetInt("autovacuum-analyze-threshold")
 			if errAt != nil {
-				return fmt.Errorf("error parsing flag 'autovacuum-analyze-threshold' for advanced options update : %v", errAt)
+				return fmt.Errorf(
+					"error parsing flag 'autovacuum-analyze-threshold' for advanced options update : %v",
+					errAt,
+				)
 			}
 
 			autovacuumFreezeMaxAge, errAo := cmd.Flags().GetInt("autovacuum-freeze-max-age")
 			if errAo != nil {
-				return fmt.Errorf("error parsing flag 'autovacuum-freeze-max-age' for advanced options update : %v", errAo)
+				return fmt.Errorf(
+					"error parsing flag 'autovacuum-freeze-max-age' for advanced options update : %v",
+					errAo,
+				)
 			}
 
 			autovacuumMaxWorkers, errAv := cmd.Flags().GetInt("autovacuum-max-workers")
 			if errAv != nil {
-				return fmt.Errorf("error parsing flag 'autovacuum-max-workers' for advanced options update : %v", errAv)
+				return fmt.Errorf(
+					"error parsing flag 'autovacuum-max-workers' for advanced options update : %v",
+					errAv,
+				)
 			}
 
 			autovacuumNaptime, errAa := cmd.Flags().GetInt("autovacuum-naptime")
@@ -1711,22 +1740,34 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			autovacuumVacuumCostDelay, errAc := cmd.Flags().GetInt("autovacuum-vacuum-cost-delay")
 			if errAc != nil {
-				return fmt.Errorf("error parsing flag 'autovacuum-vacuum-cost-delay' for advanced options update : %v", errAc)
+				return fmt.Errorf(
+					"error parsing flag 'autovacuum-vacuum-cost-delay' for advanced options update : %v",
+					errAc,
+				)
 			}
 
 			autovacuumVacuumCostLimit, errAm := cmd.Flags().GetInt("autovacuum-vacuum-cost-limit")
 			if errAm != nil {
-				return fmt.Errorf("error parsing flag 'autovacuum-vacuum-cost-limit' for advanced options update : %v", errAm)
+				return fmt.Errorf(
+					"error parsing flag 'autovacuum-vacuum-cost-limit' for advanced options update : %v",
+					errAm,
+				)
 			}
 
 			autovacuumVacuumScaleFactor, errAb := cmd.Flags().GetFloat32("autovacuum-vacuum-scale-factor")
 			if errAb != nil {
-				return fmt.Errorf("error parsing flag 'autovacuum-vacuum-scale-factor' for advanced options update : %v", errAb)
+				return fmt.Errorf(
+					"error parsing flag 'autovacuum-vacuum-scale-factor' for advanced options update : %v",
+					errAb,
+				)
 			}
 
 			autovacuumVacuumThreshold, errAz := cmd.Flags().GetInt("autovacuum-vacuum-threshold")
 			if errAz != nil {
-				return fmt.Errorf("error parsing flag 'autovacuum-vacuum-threshold' for advanced options update : %v", errAz)
+				return fmt.Errorf(
+					"error parsing flag 'autovacuum-vacuum-threshold' for advanced options update : %v",
+					errAz,
+				)
 			}
 
 			bgwriterDelay, errBg := cmd.Flags().GetInt("bgwriter-delay")
@@ -1746,7 +1787,10 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			bgwriterLruMultiplier, errBi := cmd.Flags().GetFloat32("bgwriter-lru-multiplier")
 			if errBi != nil {
-				return fmt.Errorf("error parsing flag 'bgwriter-lru-multiplier' for advanced options update : %v", errBi)
+				return fmt.Errorf(
+					"error parsing flag 'bgwriter-lru-multiplier' for advanced options update : %v",
+					errBi,
+				)
 			}
 
 			deadlockTimeout, errDe := cmd.Flags().GetInt("deadlock-timeout")
@@ -1756,12 +1800,18 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			defaultToastCompression, errDf := cmd.Flags().GetString("default-toast-compression")
 			if errDf != nil {
-				return fmt.Errorf("error parsing flag 'default-toast-compression' for advanced options update : %v", errDf)
+				return fmt.Errorf(
+					"error parsing flag 'default-toast-compression' for advanced options update : %v",
+					errDf,
+				)
 			}
 
 			idleInTransactionSessionTimeout, errIl := cmd.Flags().GetInt("idle-in-transaction-session-timeout")
 			if errIl != nil {
-				return fmt.Errorf("error parsing flag 'idle-in-transaction-session-timeout' for advanced options update : %v", errIl)
+				return fmt.Errorf(
+					"error parsing flag 'idle-in-transaction-session-timeout' for advanced options update : %v",
+					errIl,
+				)
 			}
 
 			jit, errJi := cmd.Flags().GetBool("jit")
@@ -1771,7 +1821,10 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			logAutovacuumMinDuration, errLo := cmd.Flags().GetInt("log-autovacuum-min-duration")
 			if errLo != nil {
-				return fmt.Errorf("error parsing flag 'log-autovacuum-min-duration' for advanced options update : %v", errLo)
+				return fmt.Errorf(
+					"error parsing flag 'log-autovacuum-min-duration' for advanced options update : %v",
+					errLo,
+				)
 			}
 
 			logErrorVerbosity, errLg := cmd.Flags().GetString("log-error-verbosity")
@@ -1786,7 +1839,10 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			logMinDurationStatement, errLm := cmd.Flags().GetInt("log-min-duration-statement")
 			if errLm != nil {
-				return fmt.Errorf("error parsing flag 'log-min-duration-statement' for advanced options update : %v", errLm)
+				return fmt.Errorf(
+					"error parsing flag 'log-min-duration-statement' for advanced options update : %v",
+					errLm,
+				)
 			}
 
 			maxFilesPerProcess, errMa := cmd.Flags().GetInt("max-files-per-process")
@@ -1796,12 +1852,18 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			maxLocksPerTransaction, errMx := cmd.Flags().GetInt("max-locks-per-transaction")
 			if errMx != nil {
-				return fmt.Errorf("error parsing flag 'max-locks-per-transaction' for advanced options update : %v", errMx)
+				return fmt.Errorf(
+					"error parsing flag 'max-locks-per-transaction' for advanced options update : %v",
+					errMx,
+				)
 			}
 
 			maxLogicalReplicationWorkers, errMl := cmd.Flags().GetInt("max-logical-replication-workers")
 			if errMl != nil {
-				return fmt.Errorf("error parsing flag 'max-logical-replication-workers' for advanced options update : %v", errMl)
+				return fmt.Errorf(
+					"error parsing flag 'max-logical-replication-workers' for advanced options update : %v",
+					errMl,
+				)
 			}
 
 			maxParallelWorkers, errMo := cmd.Flags().GetInt("max-parallel-workers")
@@ -1811,17 +1873,26 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			maxParallelWorkersPerGather, errMp := cmd.Flags().GetInt("max-parallel-workers-per-gather")
 			if errMp != nil {
-				return fmt.Errorf("error parsing flag 'max-parallel-workers-per-gather' for advanced options update : %v", errMp)
+				return fmt.Errorf(
+					"error parsing flag 'max-parallel-workers-per-gather' for advanced options update : %v",
+					errMp,
+				)
 			}
 
 			maxPredLocksPerTransaction, errMr := cmd.Flags().GetInt("max-pred-locks-per-transaction")
 			if errMr != nil {
-				return fmt.Errorf("error parsing flag 'max-pred-locks-per-transaction' for advanced options update : %v", errMr)
+				return fmt.Errorf(
+					"error parsing flag 'max-pred-locks-per-transaction' for advanced options update : %v",
+					errMr,
+				)
 			}
 
 			maxPreparedTransactions, errMe := cmd.Flags().GetInt("max-prepared-transactions")
 			if errMe != nil {
-				return fmt.Errorf("error parsing flag 'max-prepared-transactions' for advanced options update : %v", errMe)
+				return fmt.Errorf(
+					"error parsing flag 'max-prepared-transactions' for advanced options update : %v",
+					errMe,
+				)
 			}
 
 			maxReplicationSlots, errMi := cmd.Flags().GetInt("max-replication-slots")
@@ -1836,12 +1907,18 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			maxStandbyArchiveDelay, errMv := cmd.Flags().GetInt("max-standby-archive-delay")
 			if errMv != nil {
-				return fmt.Errorf("error parsing flag 'max-standby-archive-delay' for advanced options update : %v", errMv)
+				return fmt.Errorf(
+					"error parsing flag 'max-standby-archive-delay' for advanced options update : %v",
+					errMv,
+				)
 			}
 
 			maxStandbyStreamingDelay, errMy := cmd.Flags().GetInt("max-standby-streaming-delay")
 			if errMy != nil {
-				return fmt.Errorf("error parsing flag 'max-standby-streaming-delay' for advanced options update : %v", errMy)
+				return fmt.Errorf(
+					"error parsing flag 'max-standby-streaming-delay' for advanced options update : %v",
+					errMy,
+				)
 			}
 
 			maxWalSenders, errMd := cmd.Flags().GetInt("max-wal-senders")
@@ -1856,7 +1933,10 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			pgPartmanBGWInterval, errPg := cmd.Flags().GetInt("pg-partman-bgw-interval")
 			if errPg != nil {
-				return fmt.Errorf("error parsing flag 'pg-partman-bgw-interval' for advanced options update : %v", errPg)
+				return fmt.Errorf(
+					"error parsing flag 'pg-partman-bgw-interval' for advanced options update : %v",
+					errPg,
+				)
 			}
 
 			pgPartmanBGWRole, errPp := cmd.Flags().GetString("pg-partman-bgw-role")
@@ -1866,7 +1946,10 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			pgStatStatementsTrack, errPs := cmd.Flags().GetString("pg-stat-statements-track")
 			if errPs != nil {
-				return fmt.Errorf("error parsing flag 'pg-stat-statements-track' for advanced options update : %v", errPs)
+				return fmt.Errorf(
+					"error parsing flag 'pg-stat-statements-track' for advanced options update : %v",
+					errPs,
+				)
 			}
 
 			tempFileLimit, errTe := cmd.Flags().GetInt("temp-file-limit")
@@ -1876,12 +1959,18 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			trackActivityQuerySize, errTr := cmd.Flags().GetInt("track-activity-query-size")
 			if errTr != nil {
-				return fmt.Errorf("error parsing flag 'track-activity-query-size' for advanced options update : %v", errTr)
+				return fmt.Errorf(
+					"error parsing flag 'track-activity-query-size' for advanced options update : %v",
+					errTr,
+				)
 			}
 
 			trackCommitTimestamp, errTa := cmd.Flags().GetString("track-commit-timestamp")
 			if errTa != nil {
-				return fmt.Errorf("error parsing flag 'track-commit-timestamp' for advanced options update : %v", errTa)
+				return fmt.Errorf(
+					"error parsing flag 'track-commit-timestamp' for advanced options update : %v",
+					errTa,
+				)
 			}
 
 			trackFunctions, errTc := cmd.Flags().GetString("track-functions")
@@ -2491,7 +2580,7 @@ func (o *options) delUser() error {
 }
 
 func (o *options) updateUserACL() (*govultr.DatabaseUser, error) {
-	user, _, err := o.Base.Client.Database.UpdateUserACL(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.UserUpdateACLReq)
+	user, _, err := o.Base.Client.Database.UpdateUserACL(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.UserUpdateACLReq) //nolint:lll
 	return user, err
 }
 
@@ -2567,7 +2656,7 @@ func (o *options) fork() (*govultr.Database, error) {
 	return db, err
 }
 
-func (o *options) listConnectionPools() (*govultr.DatabaseConnections, []govultr.DatabaseConnectionPool, *govultr.Meta, error) {
+func (o *options) listConnectionPools() (*govultr.DatabaseConnections, []govultr.DatabaseConnectionPool, *govultr.Meta, error) { //nolint:lll
 	cons, pool, meta, _, err := o.Base.Client.Database.ListConnectionPools(o.Base.Context, o.Base.Args[0])
 	return cons, pool, meta, err
 }
@@ -2578,12 +2667,12 @@ func (o *options) getConnectionPool() (*govultr.DatabaseConnectionPool, error) {
 }
 
 func (o *options) createConnectionPool() (*govultr.DatabaseConnectionPool, error) {
-	pool, _, err := o.Base.Client.Database.CreateConnectionPool(o.Base.Context, o.Base.Args[0], o.ConnectionPoolCreateReq)
+	pool, _, err := o.Base.Client.Database.CreateConnectionPool(o.Base.Context, o.Base.Args[0], o.ConnectionPoolCreateReq) //nolint:lll
 	return pool, err
 }
 
 func (o *options) updateConnectionPool() (*govultr.DatabaseConnectionPool, error) {
-	pool, _, err := o.Base.Client.Database.UpdateConnectionPool(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.ConnectionPoolUpdateReq)
+	pool, _, err := o.Base.Client.Database.UpdateConnectionPool(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.ConnectionPoolUpdateReq) //nolint:lll
 	return pool, err
 }
 
@@ -2597,7 +2686,7 @@ func (o *options) listAdvancedOptions() (*govultr.DatabaseAdvancedOptions, []gov
 }
 
 func (o *options) updateAdvancedOptions() (*govultr.DatabaseAdvancedOptions, []govultr.AvailableOption, error) {
-	cur, avail, _, err := o.Base.Client.Database.UpdateAdvancedOptions(o.Base.Context, o.Base.Args[0], o.AdvancedOptionsReq)
+	cur, avail, _, err := o.Base.Client.Database.UpdateAdvancedOptions(o.Base.Context, o.Base.Args[0], o.AdvancedOptionsReq) //nolint:lll
 	return cur, avail, err
 }
 

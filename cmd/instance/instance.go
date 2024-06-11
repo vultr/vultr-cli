@@ -133,7 +133,10 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// Get
@@ -357,7 +360,12 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	create.Flags().StringP("label", "l", "", "label you want to give this instance")
 	create.Flags().StringSliceP("ssh-keys", "s", []string{}, "ssh keys you want to assign to the instance")
 	create.Flags().BoolP("auto-backup", "b", false, "enable auto backups | true or false")
-	create.Flags().StringP("userdata", "u", "", "plain text userdata you want to give this instance which the CLI will base64 encode")
+	create.Flags().StringP(
+		"userdata",
+		"u",
+		"",
+		"plain text userdata you want to give this instance which the CLI will base64 encode",
+	)
 	create.Flags().BoolP("notify", "n", false, "notify when instance has been created | true or false")
 	create.Flags().BoolP("ddos", "d", false, "enable ddos protection | true or false")
 	create.Flags().StringP("reserved-ipv4", "", "", "ID of the floating IP to use as the main IP for this instance")
@@ -768,7 +776,8 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"type",
 		"t",
 		"",
-		"type string Backup cron type. Can be one of 'daily', 'weekly', 'monthly', 'daily_alt_even', or 'daily_alt_odd'.",
+		`type string Backup cron type. Can be one of 'daily', 'weekly', 'monthly', 
+'daily_alt_even', or 'daily_alt_odd'.`,
 	)
 	if err := backupCreate.MarkFlagRequired("type"); err != nil {
 		fmt.Printf("error marking instance backup create 'type' flag required: %v", err)
@@ -1115,7 +1124,10 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// IPv4 Create
@@ -1215,7 +1227,10 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	ipv6.AddCommand(
@@ -1382,7 +1397,10 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		RunE: func(cmd *cobra.Command, args []string) error {
 			fwgID, errID := cmd.Flags().GetString("firewall-group-id")
 			if errID != nil {
-				return fmt.Errorf("error parsing flag 'firewall-group-id' for instance firewall group assignment : %v", errID)
+				return fmt.Errorf(
+					"error parsing flag 'firewall-group-id' for instance firewall group assignment : %v",
+					errID,
+				)
 			}
 
 			o.UpdateReq = &govultr.InstanceUpdateReq{

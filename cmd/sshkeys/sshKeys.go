@@ -53,7 +53,8 @@ var (
 	updateLong    = `Update a specific SSH Key on your Vultr Account`
 	updateExample = `
 	# Full example
-	vultr-cli ssh-key update ffd31f18-5f77-454c-9065-212f942c3c35 --name="updated name" --key="ssh-rsa AAAAB3NzaC1yc...."
+	vultr-cli ssh-key update ffd31f18-5f77-454c-9065-212f942c3c35 --name="updated name" \
+		--key="ssh-rsa AAAAB3NzaC1yc...."
 
 	# Shortened with alias commands
 	vultr-cli ssh u ffd31f18-5f77-454c-9065-212f942c3c35 --name="updated name" --key="ssh-rsa AAAAB3NzaC1yc...."
@@ -114,7 +115,10 @@ func NewCmdSSHKey(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// Get

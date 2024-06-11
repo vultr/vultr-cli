@@ -24,8 +24,7 @@ var (
 	vultr-cli kubernetes
 	`
 
-	createLong = `Create kubernetes cluster on your Vultr account`
-	//nolint:lll
+	createLong    = `Create kubernetes cluster on your Vultr account`
 	createExample = `
 	# Full example
 	vultr-cli kubernetes create --label="my-cluster" --region="ewr" --version="v1.29.2+1" \
@@ -47,10 +46,12 @@ var (
 	For example:
 
 	Multiple node pools
-	--node-pools="quantity:1,plan:vc2-4c-8gb,label:main-node-pool/quantity:5,plan:vc2-2c-4gb,label:worker-pool,auto-scaler:true,min-nodes:5,max-nodes:10"
+	--node-pools="quantity:1,plan:vc2-4c-8gb,label:main-node-pool/quantity:5,plan:vc2-2c-4gb,label:worker-pool, \
+		auto-scaler:true,min-nodes:5,max-nodes:10"
 
 	Using node labels 
-	--node-pools="quantity:5,plan:vc2-2c-4gb,label:worker-pool,auto-scaler:true,min-nodes:5,max-nodes:10,node-labels:application=identity-service|worker-size=small"
+	--node-pools="quantity:5,plan:vc2-2c-4gb,label:worker-pool,auto-scaler:true,min-nodes:5,max-nodes:10, \
+		node-labels:application=identity-service|worker-size=small"
 	`
 
 	getLong    = `Get a single kubernetes cluster from your account`
@@ -187,8 +188,8 @@ var (
 	updateNPLong    = `Update a specific node pool in a kubernetes cluster on your Vultr Account`
 	updateNPExample = `
 	# Full example
-	vultr-cli kubernetes node-pool update ffd31f18-5f77-454c-9064-212f942c3c34 abd31f18-3f77-454c-9064-212f942c3c34 --quantity=4 \
-		--node-labels="application=id-service,environment=development"
+	vultr-cli kubernetes node-pool update ffd31f18-5f77-454c-9064-212f942c3c34 abd31f18-3f77-454c-9064-212f942c3c34 \
+		--quantity=4 --node-labels="application=id-service,environment=development"
 
 	# Shortened with alias commands
 	vultr-cli k n u ffd31f18-5f77-454c-9065-212f942c3c35 abd31f18-3f77-454c-9064-212f942c3c34 --q=4
@@ -293,7 +294,10 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 	list.Flags().BoolP("summarize", "", false, "(optional) Summarize the list output. One line per cluster.")
 
@@ -701,7 +705,10 @@ required in node pool. Use / between each new node pool.  E.g:
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 	npList.Flags().BoolP("summarize", "", false, "(optional) Summarize the list output. One line per node pool.")
 
@@ -767,7 +774,10 @@ required in node pool. Use / between each new node pool.  E.g:
 
 			autoscaler, errAu := cmd.Flags().GetBool("auto-scaler")
 			if errAu != nil {
-				return fmt.Errorf("error parsing flag 'auto-scaler' for kubernetes cluster node pool create : %v", errAu)
+				return fmt.Errorf(
+					"error parsing flag 'auto-scaler' for kubernetes cluster node pool create : %v",
+					errAu,
+				)
 			}
 
 			minNodes, errMi := cmd.Flags().GetInt("min-nodes")
@@ -782,7 +792,10 @@ required in node pool. Use / between each new node pool.  E.g:
 
 			npLabels, errNl := cmd.Flags().GetStringToString("node-labels")
 			if errNl != nil {
-				return fmt.Errorf("error parsing flag 'node-labels' for kubernetes cluster node pool create : %v", errNl)
+				return fmt.Errorf(
+					"error parsing flag 'node-labels' for kubernetes cluster node pool create : %v",
+					errNl,
+				)
 			}
 
 			o.npCreateReq = &govultr.NodePoolReq{
@@ -826,7 +839,12 @@ required in node pool. Use / between each new node pool.  E.g:
 		os.Exit(1)
 	}
 
-	npCreate.Flags().IntP("quantity", "q", 1, "Number of nodes in your node pool. Note that at least one node is required for a node pool.")
+	npCreate.Flags().IntP(
+		"quantity",
+		"q",
+		1,
+		"Number of nodes in your node pool. Note that at least one node is required for a node pool.",
+	)
 	if err := npCreate.MarkFlagRequired("quantity"); err != nil {
 		fmt.Printf("error marking kubernetes node-pool create 'quantity' flag required: %v\n", err)
 		os.Exit(1)
@@ -835,7 +853,11 @@ required in node pool. Use / between each new node pool.  E.g:
 	npCreate.Flags().BoolP("auto-scaler", "", false, "Enable the auto scaler with your cluster")
 	npCreate.Flags().IntP("min-nodes", "", 1, "Minimum nodes for auto scaler")
 	npCreate.Flags().IntP("max-nodes", "", 1, "Maximum nodes for auto scaler")
-	npCreate.Flags().StringToString("node-labels", nil, "A key=value comma separated string of labels to apply to the nodes in this node pool")
+	npCreate.Flags().StringToString(
+		"node-labels",
+		nil,
+		"A key=value comma separated string of labels to apply to the nodes in this node pool",
+	)
 
 	// Node Pool Update
 	npUpdate := &cobra.Command{
@@ -863,7 +885,10 @@ required in node pool. Use / between each new node pool.  E.g:
 
 			autoscaler, errAu := cmd.Flags().GetBool("auto-scaler")
 			if errAu != nil {
-				return fmt.Errorf("error parsing flag 'auto-scaler' for kubernetes cluster node pool update : %v", errAu)
+				return fmt.Errorf(
+					"error parsing flag 'auto-scaler' for kubernetes cluster node pool update : %v",
+					errAu,
+				)
 			}
 
 			minNodes, errMi := cmd.Flags().GetInt("min-nodes")
@@ -878,7 +903,10 @@ required in node pool. Use / between each new node pool.  E.g:
 
 			npLabels, errNl := cmd.Flags().GetStringToString("node-labels")
 			if errNl != nil {
-				return fmt.Errorf("error parsing flag 'node-labels' for kubernetes cluster node pool update : %v", errNl)
+				return fmt.Errorf(
+					"error parsing flag 'node-labels' for kubernetes cluster node pool update : %v",
+					errNl,
+				)
 			}
 
 			o.npUpdateReq = &govultr.NodePoolReqUpdate{}
@@ -929,7 +957,11 @@ required in node pool. Use / between each new node pool.  E.g:
 	npUpdate.Flags().BoolP("auto-scaler", "", false, "Enable the auto scaler with your cluster")
 	npUpdate.Flags().IntP("min-nodes", "", 1, "Minimum nodes for auto scaler")
 	npUpdate.Flags().IntP("max-nodes", "", 1, "Maximum nodes for auto scaler")
-	npUpdate.Flags().StringToString("node-labels", nil, "A key=value comma separated string of labels to apply to the nodes in this node pool")
+	npUpdate.Flags().StringToString(
+		"node-labels",
+		nil,
+		"A key=value comma separated string of labels to apply to the nodes in this node pool",
+	)
 
 	npUpdate.MarkFlagsOneRequired("quantity", "tag", "auto-scaler", "min-nodes", "max-nodes", "node-labels")
 
@@ -1204,7 +1236,7 @@ func (o *options) nodePoolCreate() (*govultr.NodePool, error) {
 }
 
 func (o *options) nodePoolUpdate() (*govultr.NodePool, error) {
-	np, _, err := o.Base.Client.Kubernetes.UpdateNodePool(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.npUpdateReq)
+	np, _, err := o.Base.Client.Kubernetes.UpdateNodePool(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.npUpdateReq) //nolint:lll
 	return np, err
 }
 
@@ -1213,9 +1245,9 @@ func (o *options) nodePoolDelete() error {
 }
 
 func (o *options) nodePoolNodeDelete() error {
-	return o.Base.Client.Kubernetes.DeleteNodePoolInstance(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
+	return o.Base.Client.Kubernetes.DeleteNodePoolInstance(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2]) //nolint:lll
 }
 
 func (o *options) nodePoolNodeRecycle() error {
-	return o.Base.Client.Kubernetes.RecycleNodePoolInstance(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
+	return o.Base.Client.Kubernetes.RecycleNodePoolInstance(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2]) //nolint:lll
 }
