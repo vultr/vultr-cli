@@ -23,7 +23,7 @@ linters-settings:
     min-complexity: 15
   goimports:
     local-prefixes: github.com/golangci/golangci-lint
-  gomnd:
+  mnd:
     # don't include the "operation" and "assign"
     checks:
       - argument
@@ -37,9 +37,7 @@ linters-settings:
       - '3'
     ignored-functions:
       - strings.SplitN
-
   govet:
-    check-shadowing: true
     settings:
       printf:
         funcs:
@@ -48,7 +46,7 @@ linters-settings:
           - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
           - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
   lll:
-    line-length: 140
+    line-length: 120
   misspell:
     locale: US
   nolintlint:
@@ -59,7 +57,6 @@ linters-settings:
     rules:
       - name: unexported-return
         disabled: true
-
 linters:
   disable-all: true
   enable:
@@ -71,7 +68,7 @@ linters:
     - gocyclo
     - gofmt
     - goimports
-    - gomnd
+    - mnd
     - goprintffuncname
     - gosec
     - gosimple
