@@ -54,7 +54,10 @@ func NewCmdScript(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// Get
@@ -120,7 +123,12 @@ func NewCmdScript(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	create.Flags().StringP("name", "n", "", "Name of the newly created startup script.")
 	create.Flags().StringP("script", "s", "", "Startup script contents.")
-	create.Flags().StringP("type", "t", "", "(Optional) Type of startup script. Possible values: 'boot', 'pxe'. Default is 'boot'.")
+	create.Flags().StringP(
+		"type",
+		"t",
+		"",
+		"(Optional) Type of startup script. Possible values: 'boot', 'pxe'. Default is 'boot'.",
+	)
 
 	if err := create.MarkFlagRequired("name"); err != nil {
 		fmt.Printf("error marking script create 'name' flag required: %v", err)
@@ -176,7 +184,12 @@ func NewCmdScript(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	update.Flags().StringP("name", "n", "", "Name of the startup script.")
 	update.Flags().StringP("script", "s", "", "Startup script contents.")
-	update.Flags().StringP("type", "t", "", "Type of startup script. Possible values: 'boot', 'pxe'. Default is 'boot'.")
+	update.Flags().StringP(
+		"type",
+		"t",
+		"",
+		"Type of startup script. Possible values: 'boot', 'pxe'. Default is 'boot'.",
+	)
 
 	if err := update.MarkFlagRequired("name"); err != nil {
 		fmt.Printf("error marking script update 'name' flag required: %v", err)

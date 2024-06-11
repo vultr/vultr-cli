@@ -122,7 +122,10 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 	list.Flags().BoolP("summarize", "", false, "(optional) Summarize the list output. One line per load balancer.")
 
@@ -337,7 +340,12 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		`(optional) if true, this will redirect HTTP traffic to HTTPS.
 		You must have an HTTPS rule and SSL certificate installed on the load balancer to enable this option.`,
 	)
-	create.Flags().BoolP("proxy-protocol", "p", false, "(optional) if true, you must configure backend nodes to accept Proxy protocol.")
+	create.Flags().BoolP(
+		"proxy-protocol",
+		"p",
+		false,
+		"(optional) if true, you must configure backend nodes to accept Proxy protocol.",
+	)
 	create.Flags().StringArrayP(
 		"forwarding-rules",
 		"f",
@@ -350,7 +358,8 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"vpc",
 		"v",
 		"",
-		"(optional) the VPC ID to attach to your load balancer. When not provided, load balancer defaults to public network.",
+		`(optional) the VPC ID to attach to your load balancer. 
+When not provided, load balancer defaults to public network.`,
 	)
 
 	create.Flags().StringArrayP(
@@ -362,23 +371,21 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	)
 
 	create.Flags().String("protocol", "http", "(optional) the protocol to use for health checks. | https, http, tcp")
-	create.Flags().Int("port", 80, "(optional) the port to use for health checks.") //nolint: gomnd
+	create.Flags().Int("port", 80, "(optional) the port to use for health checks.") //nolint:mnd
 	create.Flags().String("path", "/", "(optional) HTTP Path to check. only applies if protocol is HTTP or HTTPS.")
-	create.Flags().IntP("check-interval", "c", 15, "(optional) interval between health checks.")      //nolint: gomnd
-	create.Flags().IntP("response-timeout", "t", 15, "(optional) timeout before health check fails.") //nolint: gomnd
+	create.Flags().IntP("check-interval", "c", 15, "(optional) interval between health checks.")      //nolint:mnd
+	create.Flags().IntP("response-timeout", "t", 15, "(optional) timeout before health check fails.") //nolint:mnd
 
-	//nolint: gomnd
 	create.Flags().IntP(
 		"unhealthy-threshold",
 		"u",
-		15,
+		15, //nolint:mnd
 		"(optional) number times a check must fail before becoming unhealthy.",
 	)
 
-	//nolint: gomnd
 	create.Flags().Int(
 		"healthy-threshold",
-		15,
+		15, //nolint:mnd
 		"(optional) number times a check must succeed before returning to healthy status.",
 	)
 
@@ -625,7 +632,12 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		`(optional) if true, this will redirect HTTP traffic to HTTPS. You must have an HTTPS rule
 		and SSL certificate installed on the load balancer to enable this option.`,
 	)
-	update.Flags().BoolP("proxy-protocol", "p", false, "(optional) if true, you must configure backend nodes to accept Proxy protocol.")
+	update.Flags().BoolP(
+		"proxy-protocol",
+		"p",
+		false,
+		"(optional) if true, you must configure backend nodes to accept Proxy protocol.",
+	)
 	update.Flags().StringArrayP(
 		"forwarding-rules",
 		"f",
@@ -648,8 +660,17 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	update.Flags().String("path", "", "(optional) HTTP Path to check. only applies if protocol is HTTP or HTTPS.")
 	update.Flags().IntP("check-interval", "c", 0, "(optional) interval between health checks.")
 	update.Flags().IntP("response-timeout", "t", 0, "(optional) timeout before health check fails.")
-	update.Flags().IntP("unhealthy-threshold", "u", 0, "(optional) number times a check must fail before becoming unhealthy.")
-	update.Flags().Int("healthy-threshold", 0, "(optional) number times a check must succeed before returning to healthy status.")
+	update.Flags().IntP(
+		"unhealthy-threshold",
+		"u",
+		0,
+		"(optional) number times a check must fail before becoming unhealthy.",
+	)
+	update.Flags().Int(
+		"healthy-threshold",
+		0,
+		"(optional) number times a check must succeed before returning to healthy status.",
+	)
 
 	update.Flags().String("cookie-name", "", "(optional) the cookie name to make sticky.")
 
@@ -721,7 +742,10 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// Get Forwarding Rule
@@ -807,19 +831,31 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		os.Exit(1)
 	}
 
-	createForwardingRule.Flags().String("backend-protocol", "http", "the protocol destination on the backend server. | HTTP, HTTPS, TCP")
+	createForwardingRule.Flags().String(
+		"backend-protocol",
+		"http",
+		"the protocol destination on the backend server. | HTTP, HTTPS, TCP",
+	)
 	if err := createForwardingRule.MarkFlagRequired("backend-protocol"); err != nil {
 		fmt.Printf("error marking load-balancer rule create 'backend-protocol' flag required: %v", err)
 		os.Exit(1)
 	}
 
-	createForwardingRule.Flags().Int("frontend-port", 80, "the port number on the Load Balancer to forward to the backend.") //nolint: gomnd
+	createForwardingRule.Flags().Int(
+		"frontend-port",
+		80, //nolint:mnd
+		"the port number on the Load Balancer to forward to the backend.",
+	)
 	if err := createForwardingRule.MarkFlagRequired("frontend-port"); err != nil {
 		fmt.Printf("error marking load-balancer rule create 'frontend-port' flag required: %v", err)
 		os.Exit(1)
 	}
 
-	createForwardingRule.Flags().Int("backend-port", 80, "the port number destination on the backend server.") //nolint: gomnd
+	createForwardingRule.Flags().Int(
+		"backend-port",
+		80, //nolint:mnd
+		"the port number destination on the backend server.",
+	)
 	if err := createForwardingRule.MarkFlagRequired("backend-port"); err != nil {
 		fmt.Printf("error marking load-balancer rule create 'backend-port' flag required: %v", err)
 		os.Exit(1)
@@ -887,7 +923,10 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// Get Firewall Rule
@@ -1046,7 +1085,9 @@ func formatForwardingRules(rules []string) ([]govultr.ForwardingRule, error) {
 		fwRule := strings.Split(rulesList[i], ",")
 
 		if len(fwRule) != rulePartNum {
-			return nil, fmt.Errorf("unable to format forwarding rules. each rule must include frontend and backend ports and protocols")
+			return nil, fmt.Errorf(
+				"unable to format forwarding rules. each rule must include frontend and backend ports and protocols",
+			)
 		}
 
 		for j := range fwRule {

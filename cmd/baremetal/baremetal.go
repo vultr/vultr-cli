@@ -112,7 +112,8 @@ There is no going back from this call.`
 	ipv4Example = ``
 
 	ipv6Long = `
-List the IPv6 information of a bare metal server. IP information is only available for bare metal servers in the "active" state.
+List the IPv6 information of a bare metal server. 
+IP information is only available for bare metal servers in the "active" state.
 `
 	ipv6Example = ``
 
@@ -165,7 +166,10 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// Get
@@ -254,25 +258,53 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		0,
 		"(optional) ID of the application that will be installed on the server.",
 	)
-	create.Flags().StringP("image", "", "", "(optional) Image ID of the application that will be installed on the server.")
+	create.Flags().StringP(
+		"image",
+		"",
+		"",
+		"(optional) Image ID of the application that will be installed on the server.",
+	)
 	create.Flags().StringP(
 		"userdata",
 		"u",
 		"",
-		"(optional) A generic data store, which some provisioning tools and cloud operating systems use as a configuration file.",
+		`(optional) A generic data store, which some provisioning tools and cloud operating 
+systems use as a configuration file.`,
 	)
 	create.Flags().StringP(
 		"notify",
 		"n",
 		"",
-		"(optional) Whether an activation email will be sent when the server is ready. Possible values: 'yes', 'no'. Defaults to 'yes'.",
+		`(optional) Whether an activation email will be sent when the server is ready. Possible values: 'yes', 'no'. 
+Defaults to 'yes'.`,
 	)
 	create.Flags().StringP("hostname", "m", "", "(optional) The hostname to assign to the server.")
-	create.Flags().StringP("tag", "t", "", "Deprecated: use `tags` instead. (optional) The tag to assign to the server.")
-	create.Flags().StringSliceP("tags", "", []string{}, "(optional) A comma separated list of tags to assign to the server.")
-	create.Flags().StringP("ripv4", "v", "", "(optional) IP address of the floating IP to use as the main IP of this server.")
+	create.Flags().StringP(
+		"tag",
+		"t",
+		"",
+		"Deprecated: use `tags` instead. (optional) The tag to assign to the server.",
+	)
+	create.Flags().StringSliceP(
+		"tags",
+		"",
+		[]string{},
+		"(optional) A comma separated list of tags to assign to the server.",
+	)
+	create.Flags().StringP(
+		"ripv4",
+		"v",
+		"",
+		"(optional) IP address of the floating IP to use as the main IP of this server.",
+	)
 	create.Flags().BoolP("persistent_pxe", "x", false, "enable persistent_pxe | true or false")
-	create.Flags().StringP("mdisk_mode", "", "", "(optional) The raid configuration to use when provisioning this server. Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.")
+	create.Flags().StringP(
+		"mdisk_mode",
+		"",
+		"",
+		`(optional) The raid configuration to use when provisioning this server. 
+Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
+	)
 	if err := create.MarkFlagRequired("region"); err != nil {
 		fmt.Printf("error marking bare metal create 'region' flag required: %v", err)
 		os.Exit(1)
@@ -913,7 +945,12 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	}
 
 	vpc2Attach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC 2.0 network you wish to attach")
-	vpc2Attach.Flags().StringP("ip-address", "i", "", "the IP address to use for this server on the attached VPC 2.0 network")
+	vpc2Attach.Flags().StringP(
+		"ip-address",
+		"i",
+		"",
+		"the IP address to use for this server on the attached VPC 2.0 network",
+	)
 	if errVPC := vpc2Attach.MarkFlagRequired("vpc-id"); errVPC != nil {
 		fmt.Printf("error marking bare metal 'vpc-id' flag required for attach : %v", errVPC)
 		os.Exit(1)

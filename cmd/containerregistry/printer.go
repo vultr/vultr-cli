@@ -116,7 +116,11 @@ func (c *ContainerRegistriesPrinter) Data() [][]string {
 
 	var data [][]string
 	for i := range c.Registries {
-		usage := fmt.Sprintf("%vGB / %vGB", c.Registries[i].Storage.Used.GigaBytes, c.Registries[i].Storage.Allowed.GigaBytes)
+		usage := fmt.Sprintf(
+			"%vGB / %vGB",
+			c.Registries[i].Storage.Used.GigaBytes,
+			c.Registries[i].Storage.Allowed.GigaBytes,
+		)
 		data = append(data, []string{
 			c.Registries[i].ID,
 			c.Registries[i].Name,
@@ -171,7 +175,7 @@ func (c *ContainerRegistryPlansPrinter) Data() [][]string {
 
 		data = append(data, []string{
 			botVals.FieldByName("VanityName").String(),
-			fmt.Sprintf("%vGB", botVals.FieldByName("MaxStorageMB").Int()/1024), //nolint:gomnd
+			fmt.Sprintf("%vGB", botVals.FieldByName("MaxStorageMB").Int()/1024), //nolint:mnd
 			strconv.FormatInt(botVals.FieldByName("MonthlyPrice").Int(), 10),
 		})
 	}

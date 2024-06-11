@@ -85,7 +85,10 @@ func NewCmdRegion(base *cli.Base) *cobra.Command {
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	availability := &cobra.Command{

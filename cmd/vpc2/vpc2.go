@@ -24,7 +24,8 @@ var (
 	createLong    = `Create a new VPC 2.0 network with specified region, description, and network settings`
 	createExample = `
 	# Full example
-	vultr-cli vpc2 create --region="ewr" --description="example-vpc" --ip-type="v4" --ip-block="10.99.0.0" --prefix-length="24"
+	vultr-cli vpc2 create --region="ewr" --description="example-vpc" --ip-type="v4" --ip-block="10.99.0.0" \
+		--prefix-length="24"
 	`
 	updateLong    = `Updates a VPC 2.0 network with the supplied information`
 	updateExample = `
@@ -91,7 +92,10 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// Get
@@ -182,7 +186,12 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	create.Flags().StringP("description", "d", "", "description for the new VPC2 network")
 	create.Flags().StringP("ip-type", "", "", "IP type for the new VPC2 network")
 	create.Flags().StringP("ip-block", "", "", "subnet IP address for the new VPC2 network")
-	create.Flags().IntP("prefix-length", "", 0, "number of bits for the netmask in CIDR notation for the new VPC2 network")
+	create.Flags().IntP(
+		"prefix-length",
+		"",
+		0,
+		"number of bits for the netmask in CIDR notation for the new VPC2 network",
+	)
 
 	// Update
 	update := &cobra.Command{
@@ -283,7 +292,10 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// Nodes Attach
@@ -319,7 +331,12 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		},
 	}
 
-	nodesAttach.Flags().StringSliceP("nodes", "n", []string{}, "the instance IDs you wish to attach to the VPC2 network")
+	nodesAttach.Flags().StringSliceP(
+		"nodes",
+		"n",
+		[]string{},
+		"the instance IDs you wish to attach to the VPC2 network",
+	)
 	if err := nodesAttach.MarkFlagRequired("nodes"); err != nil {
 		fmt.Printf("error marking vpc2 nodes attach 'nodes' flag required: %v", err)
 		os.Exit(1)
@@ -358,7 +375,12 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		},
 	}
 
-	nodesDetach.Flags().StringSliceP("nodes", "n", []string{}, "the instance IDs you wish to attach to the VPC2 network")
+	nodesDetach.Flags().StringSliceP(
+		"nodes",
+		"n",
+		[]string{},
+		"the instance IDs you wish to attach to the VPC2 network",
+	)
 	if err := nodesDetach.MarkFlagRequired("nodes"); err != nil {
 		fmt.Printf("error marking vpc2 nodes detach 'nodes' flag required: %v", err)
 		os.Exit(1)

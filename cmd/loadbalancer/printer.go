@@ -50,7 +50,15 @@ func (l *LBsPrinter) Data() [][]string {
 
 			[]string{" "},
 			[]string{"HEALTH CHECKS"},
-			[]string{"PROTOCOL", "PORT", "PATH", "CHECK INTERVAL", "RESPONSE TIMEOUT", "UNHEALTHY THRESHOLD", "HEALTHY THRESHOLD"},
+			[]string{
+				"PROTOCOL",
+				"PORT",
+				"PATH",
+				"CHECK INTERVAL",
+				"RESPONSE TIMEOUT",
+				"UNHEALTHY THRESHOLD",
+				"HEALTHY THRESHOLD",
+			},
 			[]string{
 				l.LBs[i].HealthCheck.Protocol,
 				strconv.Itoa(l.LBs[i].HealthCheck.Port),
@@ -163,7 +171,15 @@ func (l *LBPrinter) Data() [][]string {
 
 		[]string{" "},
 		[]string{"HEALTH CHECKS"},
-		[]string{"PROTOCOL", "PORT", "PATH", "CHECK INTERVAL", "RESPONSE TIMEOUT", "UNHEALTHY THRESHOLD", "HEALTHY THRESHOLD"},
+		[]string{
+			"PROTOCOL",
+			"PORT",
+			"PATH",
+			"CHECK INTERVAL",
+			"RESPONSE TIMEOUT",
+			"UNHEALTHY THRESHOLD",
+			"HEALTHY THRESHOLD",
+		},
 		[]string{
 			l.LB.HealthCheck.Protocol,
 			strconv.Itoa(l.LB.HealthCheck.Port),

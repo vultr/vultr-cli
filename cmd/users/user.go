@@ -108,7 +108,10 @@ func NewCmdUser(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		"per-page",
 		"p",
 		utils.PerPageDefault,
-		fmt.Sprintf("(optional) Number of items requested per page. Default is %d and Max is 500.", utils.PerPageDefault),
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
 	)
 
 	// Get
@@ -217,7 +220,8 @@ func NewCmdUser(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		"l",
 		nil,
 		`User access control list in a comma separated list. Possible values:
-manage_users subscriptions_view subscriptions billing support provisioning dns abuse upgrade firewall alerts objstore loadbalancer`,
+manage_users subscriptions_view subscriptions billing support provisioning dns 
+abuse upgrade firewall alerts objstore loadbalancer`,
 	)
 
 	// Update
@@ -299,7 +303,8 @@ manage_users subscriptions_view subscriptions billing support provisioning dns a
 		"l",
 		nil,
 		`User access control list in a comma separated list. Possible values:
-manage_users subscriptions_view subscriptions billing support provisioning dns abuse upgrade firewall alerts objstore loadbalancer`,
+manage_users subscriptions_view subscriptions billing support provisioning dns 
+abuse upgrade firewall alerts objstore loadbalancer`,
 	)
 
 	update.MarkFlagsOneRequired(
