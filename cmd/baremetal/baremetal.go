@@ -272,7 +272,7 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	create.Flags().StringSliceP("tags", "", []string{}, "(optional) A comma separated list of tags to assign to the server.")
 	create.Flags().StringP("ripv4", "v", "", "(optional) IP address of the floating IP to use as the main IP of this server.")
 	create.Flags().BoolP("persistent_pxe", "x", false, "enable persistent_pxe | true or false")
-
+	create.Flags().StringP("mdisk_mode", "", "", "(optional) The raid configuration to use when provisioning this server. Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.")
 	if err := create.MarkFlagRequired("region"); err != nil {
 		fmt.Printf("error marking bare metal create 'region' flag required: %v", err)
 		os.Exit(1)
@@ -1145,6 +1145,11 @@ func parseCreateFlags(cmd *cobra.Command) (*govultr.BareMetalCreate, error) { //
 		return nil, fmt.Errorf("error parsing ripv4 flag for bare metal create : %v", err)
 	}
 
+	mdiskMode, err := cmd.Flags().GetString("mdisk_mode")
+	if err != nil {
+		return nil, fmt.Errorf("error parsing mdisk_mode flag for bare metal create : %v", err)
+	}
+
 	pxe, err := cmd.Flags().GetBool("persistent_pxe")
 	if err != nil {
 		return nil, fmt.Errorf("error parsing persistent_pxe flag for bare metal create : %v", err)
@@ -1169,6 +1174,7 @@ func parseCreateFlags(cmd *cobra.Command) (*govultr.BareMetalCreate, error) { //
 		ReservedIPv4:    ripv4,
 		Region:          region,
 		PersistentPxe:   govultr.BoolToBoolPtr(pxe),
+		MdiskMode:       mdiskMode,
 	}
 	if userdata != "" {
 		options.UserData = base64.StdEncoding.EncodeToString([]byte(userdata))
@@ -1216,12 +1222,18 @@ func parseUpdateFlags(cmd *cobra.Command) (*govultr.BareMetalUpdate, error) { //
 		return nil, fmt.Errorf("error parsing image flag for bare metal update : %v", err)
 	}
 
+	mdiskMode, err := cmd.Flags().GetString("mdisk_mode")
+	if err != nil {
+		return nil, fmt.Errorf("error parsing image mdisk_mode for bare metal update : %v", err)
+	}
+
 	options := &govultr.BareMetalUpdate{
-		AppID:   app,
-		OsID:    osID,
-		ImageID: image,
-		Label:   label,
-		Tags:    tags,
+		AppID:     app,
+		OsID:      osID,
+		ImageID:   image,
+		Label:     label,
+		Tags:      tags,
+		MdiskMode: mdiskMode,
 	}
 	if userdata != "" {
 		options.UserData = base64.StdEncoding.EncodeToString([]byte(userdata))
