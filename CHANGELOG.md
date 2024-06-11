@@ -16,7 +16,7 @@
 * Ignore linux binary [PR 455](https://github.com/vultr/vultr-cli/pull/455)
 
 ### New Contributors
-* @fjoenichols made their first contribution in https://github.com/vultr/vultr-cli/pull/449
+* @fjoenichols made their first contribution in [PR 449](https://github.com/vultr/vultr-cli/pull/449)
 
 ## [v3.1.0](https://github.com/vultr/vultr-cli/compare/v3.0.3...v3.1.0) (2024-05-17)
 ### Bug Fixes
