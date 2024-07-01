@@ -22,7 +22,7 @@ var (
 )
 
 // NewCmdCDN provides the CLI command for CDN functions
-func NewCmdCDN(base *cli.Base) *cobra.Command {
+func NewCmdCDN(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{

@@ -339,12 +339,12 @@ func (p *PushZoneFilePrinter) Columns() [][]string {
 // Data ...
 func (p *PushZoneFilePrinter) Data() [][]string {
 	return [][]string{
-		[]string{"NAME", p.File.Name},
-		[]string{"SIZE", strconv.Itoa(p.File.Size)},
-		[]string{"DATE MODIFIED", p.File.DateModified},
+		0: {"NAME", p.File.Name},
+		1: {"SIZE", strconv.Itoa(p.File.Size)},
+		2: {"DATE MODIFIED", p.File.DateModified},
 		// TODO: missing from govultr
-		// []string{"MIME", strconv.Itoa(p.File.MIME)},
-		// []string{"CONTENT", p.File.Content},
+		// {"MIME", strconv.Itoa(p.File.MIME)},
+		// {"CONTENT", p.File.Content},
 	}
 }
 
