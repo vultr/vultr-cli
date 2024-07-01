@@ -17,6 +17,7 @@ Available Commands:
   block-storage      Commands to manage block storage
   completion         Generate the autocompletion script for the specified shell
   container-registry Commands to interact with container registries
+  cdn                Commands to manage your CDN zones
   database           Commands to manage databases
   dns                Commands to control DNS records
   firewall           Commands to manage firewalls
