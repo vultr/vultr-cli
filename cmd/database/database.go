@@ -449,9 +449,9 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"enable requiring primary keys for the mysql managed database",
 	)
 	update.Flags().Bool("mysql-slow-query-log", false, "enable slow query logging for the mysql managed database")
-	update.Flags().String(
+	update.Flags().Int(
 		"mysql-long-query-time",
-		"",
+		0,
 		"long query time for the mysql managed database when slow query logging is enabled",
 	)
 	update.Flags().String("redis-eviction-policy", "", "eviction policy for the redis managed database")
