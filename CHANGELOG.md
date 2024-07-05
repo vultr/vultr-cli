@@ -1,4 +1,17 @@
 # Change Log
+## [3.3.0](https://github.com/vultr/vultr-cli/compare/v3.2.0...v3.2.1) (2024-07-05)
+### Enhancements
+* CDN: Add support for CDN functions [PR 462](https://github.com/vultr/vultr-cli/pull/462)
+
+### Bug Fixes
+* Change mysql long run flag to int [PR 465](https://github.com/vultr/vultr-cli/pull/465)
+
+### Documentation
+* Add CDN command to README [PR 463](https://github.com/vultr/vultr-cli/pull/463)
+
+### Dependencies
+* Update govultr from v3.8.1 to v3.9.0 [PR 461](https://github.com/vultr/vultr-cli/pull/461)
+
 ## [3.2.0](https://github.com/vultr/vultr-cli/compare/v3.1.0...v3.2.0) (2024-06-11)
 ### Enhancements
 * Inference: Add commands [PR 453](https://github.com/vultr/vultr-cli/pull/453)
