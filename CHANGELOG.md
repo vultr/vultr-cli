@@ -1,4 +1,11 @@
 # Change Log
+## [3.3.1](https://github.com/vultr/vultr-cli/compare/v3.3.0...v3.3.1) (2024-07-29)
+### Bug Fixes
+* Make dns record create priority and ttl flags opt [PR 468](https://github.com/vultr/vultr-cli/pull/468)
+
+### Dependencies
+* Bump github.com/spf13/cobra from 1.8.0 to 1.8.1 [PR 460](https://github.com/vultr/vultr-cli/pull/460)
+
 ## [3.3.0](https://github.com/vultr/vultr-cli/compare/v3.2.0...v3.2.1) (2024-07-05)
 ### Enhancements
 * CDN: Add support for CDN functions [PR 462](https://github.com/vultr/vultr-cli/pull/462)
