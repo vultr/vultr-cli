@@ -454,16 +454,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	}
 
 	recordCreate.Flags().IntP("ttl", "l", 0, "ttl for the record")
-	if err := recordCreate.MarkFlagRequired("ttl"); err != nil {
-		fmt.Printf("error marking dns record create 'ttl' flag required: %v", err)
-		os.Exit(1)
-	}
-
-	recordCreate.Flags().IntP("priority", "p", 0, "only required for MX and SRV")
-	if err := recordCreate.MarkFlagRequired("priority"); err != nil {
-		fmt.Printf("error marking dns record create 'priority' flag required: %v", err)
-		os.Exit(1)
-	}
+	recordCreate.Flags().IntP("priority", "p", -1, "only required for MX and SRV")
 
 	// Record Delete
 	recordDelete := &cobra.Command{
