@@ -1664,13 +1664,13 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Advanced Option
 	advancedOption := &cobra.Command{
 		Use:   "advanced-option",
-		Short: "Commands to handle PostgreSQL database advanced options",
+		Short: "Commands to handle managed database advanced options",
 	}
 
 	// Advanced Option List
 	advancedOptionList := &cobra.Command{
 		Use:   "list <Database ID>",
-		Short: "List all available and configured advanced options for a PostgreSQL database",
+		Short: "List all available and configured advanced options for a managed database",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("please provide a database ID")
@@ -1693,7 +1693,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Advanced Option Update
 	advancedOptionUpdate := &cobra.Command{
 		Use:   "update <Database ID>",
-		Short: "Update advanced options for a PostgreSQL managed database",
+		Short: "Update advanced options for a managed database",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("please provide a database ID")
@@ -1793,6 +1793,11 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				)
 			}
 
+			connectTimeout, errCn := cmd.Flags().GetInt("connect-timeout")
+			if errCn != nil {
+				return fmt.Errorf("error parsing flag 'connect-timeout' for advanced options update : %v", errCn)
+			}
+
 			deadlockTimeout, errDe := cmd.Flags().GetInt("deadlock-timeout")
 			if errDe != nil {
 				return fmt.Errorf("error parsing flag 'deadlock-timeout' for advanced options update : %v", errDe)
@@ -1806,12 +1811,87 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				)
 			}
 
+			groupConcatMaxLen, errGr := cmd.Flags().GetInt("group-concat-max-len")
+			if errGr != nil {
+				return fmt.Errorf("error parsing flag 'group-concat-max-len' for advanced options update : %v", errGr)
+			}
+
 			idleInTransactionSessionTimeout, errIl := cmd.Flags().GetInt("idle-in-transaction-session-timeout")
 			if errIl != nil {
 				return fmt.Errorf(
 					"error parsing flag 'idle-in-transaction-session-timeout' for advanced options update : %v",
 					errIl,
 				)
+			}
+
+			innoDBChangeBufferMaxSize, errIcb := cmd.Flags().GetInt("innodb-change-buffer-max-size")
+			if errIcb != nil {
+				return fmt.Errorf("error parsing flag 'innodb-change-buffer-max-size' for advanced options update : %v", errIcb)
+			}
+
+			innoDBFlushNeighbors, errIfn := cmd.Flags().GetInt("innodb-flush-neighbors")
+			if errIfn != nil {
+				return fmt.Errorf("error parsing flag 'innodb-flush-neighbors' for advanced options update : %v", errIfn)
+			}
+
+			innoDBFTMinTokenSize, errImts := cmd.Flags().GetInt("innodb-ft-min-token-size")
+			if errImts != nil {
+				return fmt.Errorf("error parsing flag 'innodb-ft-min-token-size' for advanced options update : %v", errImts)
+			}
+
+			innoDBFTServerStopwordTable, errIsst := cmd.Flags().GetString("innodb-ft-server-stopword-table")
+			if errIsst != nil {
+				return fmt.Errorf("error parsing flag 'innodb-ft-server-stopword-table' for advanced options update : %v", errIsst)
+			}
+
+			innoDBLockWaitTimeout, errIlwt := cmd.Flags().GetInt("innodb-lock-wait-timeout")
+			if errIlwt != nil {
+				return fmt.Errorf("error parsing flag 'innodb-lock-wait-timeout' for advanced options update : %v", errIlwt)
+			}
+
+			innoDBLogBufferSize, errIlbs := cmd.Flags().GetInt("innodb-log-buffer-size")
+			if errIlbs != nil {
+				return fmt.Errorf("error parsing flag 'innodb-log-buffer-size' for advanced options update : %v", errIlbs)
+			}
+
+			innoDBOnlineAlterLogMaxSize, errIoa := cmd.Flags().GetInt("innodb-online-alter-log-max-size")
+			if errIoa != nil {
+				return fmt.Errorf("error parsing flag 'innodb-online-alter-log-max-size' for advanced options update : %v", errIoa)
+			}
+
+			innoDBPrintAllDeadlocks, errIpad := cmd.Flags().GetBool("innodb-print-all-deadlocks")
+			if errIpad != nil {
+				return fmt.Errorf("error parsing flag 'innodb-print-all-deadlocks' for advanced options update : %v", errIpad)
+			}
+
+			innoDBReadIOThreads, errIrio := cmd.Flags().GetInt("innodb-read-io-threads")
+			if errIrio != nil {
+				return fmt.Errorf("error parsing flag 'innodb-read-io-threads' for advanced options update : %v", errIrio)
+			}
+
+			innoDBRollbackOnTimeout, errIrot := cmd.Flags().GetBool("innodb-rollback-on-timeout")
+			if errIrot != nil {
+				return fmt.Errorf("error parsing flag 'innodb-rollback-on-timeout' for advanced options update : %v", errIrot)
+			}
+
+			innoDBThreadConcurrency, errItc := cmd.Flags().GetInt("innodb-thread-concurrency")
+			if errItc != nil {
+				return fmt.Errorf("error parsing flag 'innodb-thread-concurrency' for advanced options update : %v", errItc)
+			}
+
+			innoDBWriteIOThreads, errIwio := cmd.Flags().GetInt("innodb-write-io-threads")
+			if errIwio != nil {
+				return fmt.Errorf("error parsing flag 'innodb-write-io-threads' for advanced options update : %v", errIwio)
+			}
+
+			interactiveTimeout, errIit := cmd.Flags().GetInt("interactive-timeout")
+			if errIit != nil {
+				return fmt.Errorf("error parsing flag 'interactive-timeout' for advanced options update : %v", errIit)
+			}
+
+			internalTmpMemStorageEngine, errItm := cmd.Flags().GetString("internal-tmp-mem-storage-engine")
+			if errItm != nil {
+				return fmt.Errorf("error parsing flag 'internal-tmp-mem-storage-engine' for advanced options update : %v", errItm)
 			}
 
 			jit, errJi := cmd.Flags().GetBool("jit")
@@ -1845,9 +1925,19 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				)
 			}
 
+			maxAllowedPacket, errMap := cmd.Flags().GetInt("max-allowed-packet")
+			if errMap != nil {
+				return fmt.Errorf("error parsing flag 'max-allowed-packet' for advanced options update : %v", errMap)
+			}
+
 			maxFilesPerProcess, errMa := cmd.Flags().GetInt("max-files-per-process")
 			if errMa != nil {
 				return fmt.Errorf("error parsing flag 'max-files-per-process' for advanced options update : %v", errMa)
+			}
+
+			maxHeapTableSize, errMht := cmd.Flags().GetInt("max-heap-table-size")
+			if errMht != nil {
+				return fmt.Errorf("error parsing flag 'max-heap-table-size' for advanced options update : %v", errMht)
 			}
 
 			maxLocksPerTransaction, errMx := cmd.Flags().GetInt("max-locks-per-transaction")
@@ -1931,6 +2021,21 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'max-worker-processes' for advanced options update : %v", errMs)
 			}
 
+			netBufferLength, errNbl := cmd.Flags().GetInt("net-buffer-length")
+			if errNbl != nil {
+				return fmt.Errorf("error parsing flag 'net-buffer-length' for advanced options update : %v", errNbl)
+			}
+
+			netReadTimeout, errNrt := cmd.Flags().GetInt("net-read-timeout")
+			if errNrt != nil {
+				return fmt.Errorf("error parsing flag 'net-read-timeout' for advanced options update : %v", errNrt)
+			}
+
+			netWriteTimeout, errNwt := cmd.Flags().GetInt("net-write-timeout")
+			if errNwt != nil {
+				return fmt.Errorf("error parsing flag 'net-write-timeout' for advanced options update : %v", errNwt)
+			}
+
 			pgPartmanBGWInterval, errPg := cmd.Flags().GetInt("pg-partman-bgw-interval")
 			if errPg != nil {
 				return fmt.Errorf(
@@ -1952,9 +2057,19 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				)
 			}
 
+			sortBufferSize, errSbs := cmd.Flags().GetInt("sort-buffer-size")
+			if errSbs != nil {
+				return fmt.Errorf("error parsing flag 'sort-buffer-size' for advanced options update : %v", errSbs)
+			}
+
 			tempFileLimit, errTe := cmd.Flags().GetInt("temp-file-limit")
 			if errTe != nil {
 				return fmt.Errorf("error parsing flag 'temp-file-limit' for advanced options update : %v", errTe)
+			}
+
+			tmpTableSize, errTts := cmd.Flags().GetInt("tmp-table-size")
+			if errTts != nil {
+				return fmt.Errorf("error parsing flag 'tmp-table-size' for advanced options update : %v", errTts)
 			}
 
 			trackActivityQuerySize, errTr := cmd.Flags().GetInt("track-activity-query-size")
@@ -1981,6 +2096,11 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			trackIOTiming, errTi := cmd.Flags().GetString("track-io-timing")
 			if errTi != nil {
 				return fmt.Errorf("error parsing flag 'track-io-timing' for advanced options update : %v", errTi)
+			}
+
+			waitTimeout, errWt := cmd.Flags().GetInt("wait-timeout")
+			if errWt != nil {
+				return fmt.Errorf("error parsing flag 'wait-timeout' for advanced options update : %v", errWt)
 			}
 
 			walSenderTimeout, errWa := cmd.Flags().GetInt("wal-sender-timeout")
@@ -2047,6 +2167,10 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				o.AdvancedOptionsReq.BGWRITERLRUMultiplier = bgwriterLruMultiplier
 			}
 
+			if cmd.Flags().Changed("connect-timeout") {
+				o.AdvancedOptionsReq.ConnectTimeout = connectTimeout
+			}
+
 			if cmd.Flags().Changed("deadlock-timeout") {
 				o.AdvancedOptionsReq.DeadlockTimeout = deadlockTimeout
 			}
@@ -2055,8 +2179,68 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				o.AdvancedOptionsReq.DefaultToastCompression = defaultToastCompression
 			}
 
+			if cmd.Flags().Changed("group-concat-max-len") {
+				o.AdvancedOptionsReq.GroupConcatMaxLen = groupConcatMaxLen
+			}
+
 			if cmd.Flags().Changed("idle-in-transaction-session-timeout") {
 				o.AdvancedOptionsReq.IdleInTransactionSessionTimeout = idleInTransactionSessionTimeout
+			}
+
+			if cmd.Flags().Changed("innodb-change-buffer-max-size") {
+				o.AdvancedOptionsReq.InnoDBChangeBufferMaxSize = innoDBChangeBufferMaxSize
+			}
+
+			if cmd.Flags().Changed("innodb-flush-neighbors") {
+				o.AdvancedOptionsReq.InnoDBFlushNeighbors = innoDBFlushNeighbors
+			}
+
+			if cmd.Flags().Changed("innodb-ft-min-token-size") {
+				o.AdvancedOptionsReq.InnoDBFTMinTokenSize = innoDBFTMinTokenSize
+			}
+
+			if cmd.Flags().Changed("innodb-ft-server-stopword-table") {
+				o.AdvancedOptionsReq.InnoDBFTServerStopwordTable = innoDBFTServerStopwordTable
+			}
+
+			if cmd.Flags().Changed("innodb-lock-wait-timeout") {
+				o.AdvancedOptionsReq.InnoDBLockWaitTimeout = innoDBLockWaitTimeout
+			}
+
+			iif cmd.Flags().Changed("innodb-log-buffer-size") {
+				o.AdvancedOptionsReq.InnoDBLogBufferSize = innoDBLogBufferSize
+			}
+
+			if cmd.Flags().Changed("innodb-online-alter-log-max-size") {
+				o.AdvancedOptionsReq.InnoDBOnlineAlterLogMaxSize = innoDBOnlineAlterLogMaxSize
+			}
+
+			if cmd.Flags().Changed("innodb-print-all-deadlocks") {
+				o.AdvancedOptionsReq.InnoDBPrintAllDeadlocks = innoDBPrintAllDeadlocks
+			}
+
+			if cmd.Flags().Changed("innodb-read-io-threads") {
+				o.AdvancedOptionsReq.InnoDBReadIOThreads = innoDBReadIOThreads
+			}
+
+			if cmd.Flags().Changed("innodb-rollback-on-timeout") {
+				o.AdvancedOptionsReq.InnoDBRollbackOnTimeout = innoDBRollbackOnTimeout
+			}
+
+			if cmd.Flags().Changed("innodb-thread-concurrency") {
+				o.AdvancedOptionsReq.InnoDBThreadConcurrency = innoDBThreadConcurrency
+			}
+
+			if cmd.Flags().Changed("innodb-write-io-threads") {
+				o.AdvancedOptionsReq.InnoDBWriteIOThreads = innoDBWriteIOThreads
+			}
+
+			if cmd.Flags().Changed("interactive-timeout") {
+				o.AdvancedOptionsReq.InteractiveTimeout = interactiveTimeout
+			}
+
+			if cmd.Flags().Changed("internal-tmp-mem-storage-engine") {
+				o.AdvancedOptionsReq.InternalTmpMemStorageEngine = internalTmpMemStorageEngine
 			}
 
 			if cmd.Flags().Changed("jit") {
@@ -2079,8 +2263,16 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				o.AdvancedOptionsReq.LogMinDurationStatement = logMinDurationStatement
 			}
 
+			if cmd.Flags().Changed("max-allowed-packet") {
+				o.AdvancedOptionsReq.MaxAllowedPacket = maxAllowedPacket
+			}
+
 			if cmd.Flags().Changed("max-files-per-process") {
 				o.AdvancedOptionsReq.MaxFilesPerProcess = maxFilesPerProcess
+			}
+
+			if cmd.Flags().Changed("max-heap-table-size") {
+				o.AdvancedOptionsReq.MaxHeapTableSize = maxHeapTableSize
 			}
 
 			if cmd.Flags().Changed("max-locks-per-transaction") {
@@ -2131,6 +2323,18 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				o.AdvancedOptionsReq.MaxWorkerProcesses = maxWorkerProcesses
 			}
 
+			if cmd.Flags().Changed("net-buffer-length") {
+				o.AdvancedOptionsReq.NetBufferLength = netBufferLength
+			}
+
+			if cmd.Flags().Changed("net-read-timeout") {
+				o.AdvancedOptionsReq.NetReadTimeout = netReadTimeout
+			}
+
+			if cmd.Flags().Changed("net-write-timeout") {
+				o.AdvancedOptionsReq.NetWriteTimeout = netWriteTimeout
+			}
+
 			if cmd.Flags().Changed("pg-partman-bgw-interval") {
 				o.AdvancedOptionsReq.PGPartmanBGWInterval = pgPartmanBGWInterval
 			}
@@ -2143,8 +2347,16 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				o.AdvancedOptionsReq.PGStateStatementsTrack = pgStatStatementsTrack
 			}
 
+			if cmd.Flags().Changed("sort-buffer-size") {
+				o.AdvancedOptionsReq.SortBufferSize = sortBufferSize
+			}
+
 			if cmd.Flags().Changed("temp-file-limit") {
 				o.AdvancedOptionsReq.TempFileLimit = tempFileLimit
+			}
+
+			if cmd.Flags().Changed("tmp-table-size") {
+				o.AdvancedOptionsReq.TmpTableSize = tmpTableSize
 			}
 
 			if cmd.Flags().Changed("track-activity-query-size") {
@@ -2161,6 +2373,10 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			if cmd.Flags().Changed("track-io-timing") {
 				o.AdvancedOptionsReq.TrackIOTiming = trackIOTiming
+			}
+
+			if cmd.Flags().Changed("wait-timeout") {
+				o.AdvancedOptionsReq.WaitTimeout = waitTimeout
 			}
 
 			if cmd.Flags().Changed("wal-sender-timeout") {
@@ -2253,6 +2469,11 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"set the managed postgresql configuration value for bgwriter_lru_multiplier",
 	)
 	advancedOptionUpdate.Flags().Int(
+		"connect-timeout",
+		0,
+		"set the managed mysql configuration value for connect_timeout",
+	)
+	advancedOptionUpdate.Flags().Int(
 		"deadlock-timeout",
 		0,
 		"set the managed postgresql configuration value for deadlock_timeout",
@@ -2263,9 +2484,84 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"set the managed postgresql configuration value for default_toast_compression",
 	)
 	advancedOptionUpdate.Flags().Int(
+		"group-concat-max-len",
+		0,
+		"set the managed mysql configuration value for group_concat_max_len",
+	)
+	advancedOptionUpdate.Flags().Int(
 		"idle-in-transaction-session-timeout",
 		0,
 		"set the managed postgresql configuration value for idle_in_transaction_session_timeout",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"innodb-change-buffer-max-size",
+		0,
+		"set the managed mysql configuration value for innodb_change_buffer_max_size",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"innodb-flush-neighbors",
+		0,
+		"set the managed mysql configuration value for innodb_flush_neighbors",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"innodb-ft-min-token-size",
+		0,
+		"set the managed mysql configuration value for innodb_ft_min_token_size",
+	)
+	advancedOptionUpdate.Flags().String(
+		"innodb-ft-server-stopword-table",
+		"",
+		"set the managed mysql configuration value for innodb_ft_server_stopword_table",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"innodb-lock-wait-timeout",
+		0,
+		"set the managed mysql configuration value for innodb_lock_wait_timeout",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"innodb-log-buffer-size",
+		0,
+		"set the managed mysql configuration value for innodb_log_buffer_size",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"innodb-online-alter-log-max-size",
+		0,
+		"set the managed mysql configuration value for innodb_online_alter_log_max_size",
+	)
+	advancedOptionUpdate.Flags().Bool(
+		"innodb-print-all-deadlocks",
+		false,
+		"set the managed mysql configuration value for innodb_print_all_deadlocks",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"innodb-read-io-threads",
+		0,
+		"set the managed mysql configuration value for innodb_read_io_threads",
+	)
+	advancedOptionUpdate.Flags().Bool(
+		"innodb-rollback-on-timeout",
+		false,
+		"set the managed mysql configuration value for innodb_rollback_on_timeout",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"innodb-thread-concurrency",
+		0,
+		"set the managed mysql configuration value for innodb_thread_concurrency",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"innodb-write-io-threads",
+		0,
+		"set the managed mysql configuration value for innodb_write_io_threads",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"interactive-timeout",
+		0,
+		"set the managed mysql configuration value for interactive_timeout",
+	)
+	advancedOptionUpdate.Flags().String(
+		"internal-tmp-mem-storage-engine",
+		"",
+		"set the managed mysql configuration value for internal_tmp_mem_storage_engine",
 	)
 	advancedOptionUpdate.Flags().Bool(
 		"jit",
@@ -2293,9 +2589,19 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"set the managed postgresql configuration value for log_min_duration_statement",
 	)
 	advancedOptionUpdate.Flags().Int(
+		"max-allowed-packet",
+		0,
+		"set the managed mysql configuration value for max_allowed_packet",
+	)
+	advancedOptionUpdate.Flags().Int(
 		"max-files-per-process",
 		0,
 		"set the managed postgresql configuration value for max_files_per_process",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"max-heap-table-size",
+		0,
+		"set the managed mysql configuration value for max_heap_table_size",
 	)
 	advancedOptionUpdate.Flags().Int(
 		"max-locks-per-transaction",
@@ -2358,6 +2664,21 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"set the managed postgresql configuration value for max_worker_processes",
 	)
 	advancedOptionUpdate.Flags().Int(
+		"net-buffer-length",
+		0,
+		"set the managed mysql configuration value for net_buffer_length",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"net-read-timeout",
+		0,
+		"set the managed mysql configuration value for net_read_timeout",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"net-write-timeout",
+		0,
+		"set the managed mysql configuration value for net_write_timeout",
+	)
+	advancedOptionUpdate.Flags().Int(
 		"pg-partman-bgw-interval",
 		0,
 		"set the managed postgresql configuration value for pg_partman_bgw.interval",
@@ -2373,9 +2694,19 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"set the managed postgresql configuration value for pg_stat_statements.track",
 	)
 	advancedOptionUpdate.Flags().Int(
+		"sort-buffer-size",
+		0,
+		"set the managed mysql configuration value for sort_buffer_size",
+	)
+	advancedOptionUpdate.Flags().Int(
 		"temp-file-limit",
 		0,
 		"set the managed postgresql configuration value for temp_file_limit",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"tmp-table-size",
+		0,
+		"set the managed mysql configuration value for tmp_table_size",
 	)
 	advancedOptionUpdate.Flags().Int(
 		"track-activity-query-size",
@@ -2396,6 +2727,11 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"track-io-timing",
 		"",
 		"set the managed postgresql configuration value for track_io_timing",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"wait-timeout",
+		0,
+		"set the managed mysql configuration value for wait_timeout",
 	)
 	advancedOptionUpdate.Flags().Int(
 		"wal-sender-timeout",
