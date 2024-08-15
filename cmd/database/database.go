@@ -2207,7 +2207,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				o.AdvancedOptionsReq.InnoDBLockWaitTimeout = innoDBLockWaitTimeout
 			}
 
-			iif cmd.Flags().Changed("innodb-log-buffer-size") {
+			if cmd.Flags().Changed("innodb-log-buffer-size") {
 				o.AdvancedOptionsReq.InnoDBLogBufferSize = innoDBLogBufferSize
 			}
 
@@ -2216,7 +2216,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			if cmd.Flags().Changed("innodb-print-all-deadlocks") {
-				o.AdvancedOptionsReq.InnoDBPrintAllDeadlocks = innoDBPrintAllDeadlocks
+				o.AdvancedOptionsReq.InnoDBPrintAllDeadlocks = nil
 			}
 
 			if cmd.Flags().Changed("innodb-read-io-threads") {
@@ -2224,7 +2224,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			if cmd.Flags().Changed("innodb-rollback-on-timeout") {
-				o.AdvancedOptionsReq.InnoDBRollbackOnTimeout = innoDBRollbackOnTimeout
+				o.AdvancedOptionsReq.InnoDBRollbackOnTimeout = nil
 			}
 
 			if cmd.Flags().Changed("innodb-thread-concurrency") {
@@ -2389,6 +2389,14 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			if cmd.Flags().Changed("jit") {
 				o.AdvancedOptionsReq.Jit = &jit
+			}
+
+			if cmd.Flags().Changed("innodb-print-all-deadlocks") {
+				o.AdvancedOptionsReq.InnoDBPrintAllDeadlocks = &innoDBPrintAllDeadlocks
+			}
+
+			if cmd.Flags().Changed("innodb-rollback-on-timeout") {
+				o.AdvancedOptionsReq.InnoDBRollbackOnTimeout = &innoDBRollbackOnTimeout
 			}
 
 			cur, avail, err := o.updateAdvancedOptions()
