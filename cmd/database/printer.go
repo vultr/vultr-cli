@@ -1226,9 +1226,19 @@ func (a *AdvancedOptionsPrinter) Data() [][]string {
 		v := reflect.ValueOf(*a.Configured)
 		for i := 0; i < v.NumField(); i++ {
 			if !v.Field(i).IsZero() {
-				if v.Field(i).Kind() == reflect.Pointer {
-					data = append(data, []string{v.Type().Field(i).Name, v.Field(i).Elem().Interface().(string)})
-				} else {
+				switch v.Field(i).Kind() {
+				case reflect.Pointer:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.FormatBool(v.Field(i).Elem().Interface().(bool))})
+				case reflect.Int:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.Itoa(v.Field(i).Interface().(int))})
+				case reflect.Float64:
+					data = append(data,
+						[]string{
+							v.Type().Field(i).Name,
+							strconv.FormatFloat(float64(v.Field(i).Interface().(float64)), 'f', utils.FloatPrecision, 32),
+						},
+					)
+				default:
 					data = append(data, []string{v.Type().Field(i).Name, v.Field(i).Interface().(string)})
 				}
 			}
