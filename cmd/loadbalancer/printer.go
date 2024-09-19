@@ -46,6 +46,7 @@ func (l *LBsPrinter) Data() [][]string {
 			[]string{"IPV4", l.LBs[i].IPV4},
 			[]string{"IPV6", l.LBs[i].IPV6},
 			[]string{"HAS SSL", strconv.FormatBool(*l.LBs[i].SSLInfo)},
+			[]string{"NODES", strconv.Itoa(l.LBs[i].Nodes)},
 			[]string{"INSTANCES", printer.ArrayOfStringsToString(l.LBs[i].Instances)},
 
 			[]string{" "},
@@ -167,6 +168,7 @@ func (l *LBPrinter) Data() [][]string {
 		[]string{"IPV4", l.LB.IPV4},
 		[]string{"IPV6", l.LB.IPV6},
 		[]string{"HAS SSL", strconv.FormatBool(*l.LB.SSLInfo)},
+		[]string{"NODES", strconv.Itoa(l.LB.Nodes)},
 		[]string{"INSTANCES", printer.ArrayOfStringsToString(l.LB.Instances)},
 
 		[]string{" "},
@@ -279,13 +281,14 @@ func (l *LBsSummaryPrinter) Columns() [][]string {
 		"INSTANCE#",
 		"FORWARD#",
 		"FIREWALL#",
+		"NODES#",
 	}}
 }
 
 // Data ...
 func (l *LBsSummaryPrinter) Data() [][]string {
 	if len(l.LBs) == 0 {
-		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
+		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---", "---"}}
 	}
 
 	var data [][]string
@@ -303,6 +306,7 @@ func (l *LBsSummaryPrinter) Data() [][]string {
 			strconv.Itoa(instanceCount),
 			strconv.Itoa(forwardRuleCount),
 			strconv.Itoa(firewallRuleCount),
+			strconv.Itoa(l.LBs[i].Nodes),
 		})
 	}
 

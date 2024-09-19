@@ -260,6 +260,11 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'instances' for load balancer create : %v", errIn)
 			}
 
+			nodes, errNo := cmd.Flags().GetInt("nodes")
+			if errNo != nil {
+				return fmt.Errorf("error parsing flag 'nodes' for load balancer create : %v", errNo)
+			}
+
 			o.CreateReq = &govultr.LoadBalancerReq{
 				Region:             region,
 				Label:              label,
@@ -267,6 +272,7 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				ProxyProtocol:      &proxyProtocol,
 				SSLRedirect:        &sslRedirect,
 				BalancingAlgorithm: algorithm,
+				Nodes:              nodes,
 				Instances:          instances,
 				HealthCheck: &govultr.HealthCheck{
 					Port:               port,
@@ -403,6 +409,13 @@ When not provided, load balancer defaults to public network.`,
 		"(optional) an array of instances IDs that you want attached to the load balancer.",
 	)
 
+	create.Flags().IntP(
+		"nodes",
+		"n",
+		1,
+		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
+	)
+
 	// Update
 	update := &cobra.Command{
 		Use:     "update <Load Balancer ID>",
@@ -512,6 +525,11 @@ When not provided, load balancer defaults to public network.`,
 				return fmt.Errorf("error parsing flag 'instances' for load balancer update : %v", errIn)
 			}
 
+			nodes, errNo := cmd.Flags().GetInt("nodes")
+			if errNo != nil {
+				return fmt.Errorf("error parsing flag 'nodes' for load balancer update : %v", errNo)
+			}
+
 			o.UpdateReq = &govultr.LoadBalancerReq{}
 
 			if len(rulesInForward) > 0 {
@@ -609,6 +627,10 @@ When not provided, load balancer defaults to public network.`,
 				o.UpdateReq.Instances = instances
 			}
 
+			if cmd.Flags().Changed("nodes") {
+				o.UpdateReq.Nodes = nodes
+			}
+
 			if err := o.update(); err != nil {
 				return fmt.Errorf("error updating load balancer : %v", err)
 			}
@@ -684,6 +706,13 @@ When not provided, load balancer defaults to public network.`,
 		"i",
 		[]string{},
 		"(optional) an array of instances IDs that you want attached to the load balancer.",
+	)
+
+	update.Flags().IntP(
+		"nodes",
+		"n",
+		1,
+		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
 
 	// Delete
