@@ -409,8 +409,9 @@ When not provided, load balancer defaults to public network.`,
 		"(optional) an array of instances IDs that you want attached to the load balancer.",
 	)
 
-	create.Flags().Int(
+	create.Flags().IntP(
 		"nodes",
+		"n",
 		1,
 		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
@@ -707,8 +708,9 @@ When not provided, load balancer defaults to public network.`,
 		"(optional) an array of instances IDs that you want attached to the load balancer.",
 	)
 
-	update.Flags().Int(
+	update.Flags().IntP(
 		"nodes",
+		"n",
 		1,
 		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
