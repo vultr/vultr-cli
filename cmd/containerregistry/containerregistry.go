@@ -258,7 +258,7 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 		"public",
 		"p",
 		false,
-		"If the registry is publicly available. Should be true | false (default is false)",
+		"make the registry publicly available | true or false",
 	)
 	if err := create.MarkFlagRequired("public"); err != nil {
 		fmt.Printf("error marking container registry create 'public' flag required: %v", err)
