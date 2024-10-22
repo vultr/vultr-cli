@@ -45,7 +45,7 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 			[]string{"PLAN DISK", strconv.Itoa(d.DBs[i].PlanDisk)},
 			[]string{"PLAN RAM", strconv.Itoa(d.DBs[i].PlanRAM)},
 			[]string{"PLAN VCPUS", strconv.Itoa(d.DBs[i].PlanVCPUs)},
-			[]string{"PLAN REPLICAS", strconv.Itoa(d.DBs[i].PlanReplicas)},
+			[]string{"PLAN REPLICAS", strconv.Itoa(*d.DBs[i].PlanReplicas)},
 			[]string{"REGION", d.DBs[i].Region},
 			[]string{"DATABASE ENGINE", d.DBs[i].DatabaseEngine},
 			[]string{"DATABASE ENGINE VERSION", d.DBs[i].DatabaseEngineVersion},
@@ -145,7 +145,7 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 					[]string{"PLAN DISK", strconv.Itoa(d.DBs[i].ReadReplicas[j].PlanDisk)},
 					[]string{"PLAN RAM", strconv.Itoa(d.DBs[i].ReadReplicas[j].PlanRAM)},
 					[]string{"PLAN VCPUS", strconv.Itoa(d.DBs[i].ReadReplicas[j].PlanVCPUs)},
-					[]string{"PLAN REPLICAS", strconv.Itoa(d.DBs[i].ReadReplicas[j].PlanReplicas)},
+					[]string{"PLAN REPLICAS", strconv.Itoa(*d.DBs[i].ReadReplicas[j].PlanReplicas)},
 					[]string{"REGION", d.DBs[i].ReadReplicas[j].Region},
 					[]string{"DATABASE ENGINE", d.DBs[i].ReadReplicas[j].DatabaseEngine},
 					[]string{"DATABASE ENGINE VERSION", d.DBs[i].ReadReplicas[j].DatabaseEngineVersion},
@@ -278,7 +278,7 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 		[]string{"PLAN DISK", strconv.Itoa(d.DB.PlanDisk)},
 		[]string{"PLAN RAM", strconv.Itoa(d.DB.PlanRAM)},
 		[]string{"PLAN VCPUS", strconv.Itoa(d.DB.PlanVCPUs)},
-		[]string{"PLAN REPLICAS", strconv.Itoa(d.DB.PlanReplicas)},
+		[]string{"PLAN REPLICAS", strconv.Itoa(*d.DB.PlanReplicas)},
 		[]string{"REGION", d.DB.Region},
 		[]string{"DATABASE ENGINE", d.DB.DatabaseEngine},
 		[]string{"DATABASE ENGINE VERSION", d.DB.DatabaseEngineVersion},
@@ -378,7 +378,7 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 				[]string{"PLAN DISK", strconv.Itoa(d.DB.ReadReplicas[i].PlanDisk)},
 				[]string{"PLAN RAM", strconv.Itoa(d.DB.ReadReplicas[i].PlanRAM)},
 				[]string{"PLAN VCPUS", strconv.Itoa(d.DB.ReadReplicas[i].PlanVCPUs)},
-				[]string{"PLAN REPLICAS", strconv.Itoa(d.DB.ReadReplicas[i].PlanReplicas)},
+				[]string{"PLAN REPLICAS", strconv.Itoa(*d.DB.ReadReplicas[i].PlanReplicas)},
 				[]string{"REGION", d.DB.ReadReplicas[i].Region},
 				[]string{"DATABASE ENGINE", d.DB.ReadReplicas[i].DatabaseEngine},
 				[]string{"DATABASE ENGINE VERSION", d.DB.ReadReplicas[i].DatabaseEngineVersion},
@@ -1264,8 +1264,8 @@ func (a *AdvancedOptionsPrinter) Data() [][]string {
 
 		if a.Available[i].Type == "int" || a.Available[i].Type == "float" {
 			data = append(data,
-				[]string{"MIN VALUE", strconv.Itoa(*a.Available[i].MinValue)},
-				[]string{"MAX VALUE", strconv.Itoa(*a.Available[i].MaxValue)},
+				[]string{"MIN VALUE", strconv.FormatFloat(float64(*a.Available[i].MinValue), 'f', utils.FloatPrecision, 32)},
+				[]string{"MAX VALUE", strconv.FormatFloat(float64(*a.Available[i].MaxValue), 'f', utils.FloatPrecision, 32)},
 			)
 		}
 
