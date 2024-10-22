@@ -63,7 +63,6 @@ linters:
     - dogsled
     - dupl
     - errcheck
-    - exportloopref
     - funlen
     - gocyclo
     - gofmt
