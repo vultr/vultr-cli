@@ -181,14 +181,14 @@ Some guides:
 
 <pre>
 <h4>Bash:</h4>
-  $ source <(yourprogram completion bash)
+  $ source <(vultr-cli completion bash)
 
   <b>To load completions for each session, execute once:</b>
   <b>Linux:</b>
-  $ yourprogram completion bash > /etc/bash_completion.d/yourprogram
+  $ vultr-cli completion bash > /etc/bash_completion.d/vultr-cli
 
   <b>macOS:</b>
-  $ yourprogram completion bash > /usr/local/etc/bash_completion.d/yourprogram
+  $ vultr-cli completion bash > /usr/local/etc/bash_completion.d/vultr-cli
 
 <h4>Zsh:</h4>
   <b>If shell completion is not already enabled in your environment,
@@ -197,21 +197,21 @@ Some guides:
   $ echo "autoload -U compinit; compinit" >> ~/.zshrc
 
   <b>To load completions for each session, execute once:</b>
-  $ yourprogram completion zsh > "${fpath[1]}/_yourprogram"
+  $ vultr-cli completion zsh > "${fpath[1]}/_vultr-cli"
 
   You will need to start a new shell for this setup to take effect.
 
 <h4>fish:</h4>
-  $ yourprogram completion fish | source
+  $ vultr-cli completion fish | source
 
   <b>To load completions for each session, execute once:</b>
-  $ yourprogram completion fish > ~/.config/fish/completions/yourprogram.fish
+  $ vultr-cli completion fish > ~/.config/fish/completions/vultr-cli.fish
 
 <h4>PowerShell:</h4>
-  PS> yourprogram completion powershell | Out-String | Invoke-Expression
+  PS> vultr-cli completion powershell | Out-String | Invoke-Expression
 
   <b>To load completions for every new session, run:</b>
-  PS> yourprogram completion powershell > yourprogram.ps1
+  PS> vultr-cli completion powershell > vultr-cli.ps1
   <b>and source this file from your PowerShell profile.</b>
 </pre>
 
