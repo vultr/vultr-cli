@@ -133,10 +133,10 @@ func NewCmdCDN(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				Label:        label,
 				OriginScheme: scheme,
 				OriginDomain: domain,
-				CORS:         cors,
-				GZIP:         gzip,
-				BlockAI:      blai,
-				BlockBadBots: blbb,
+				CORS:         govultr.BoolToBoolPtr(cors),
+				GZIP:         govultr.BoolToBoolPtr(gzip),
+				BlockAI:      govultr.BoolToBoolPtr(blai),
+				BlockBadBots: govultr.BoolToBoolPtr(blbb),
 			}
 
 			pullZone, err := o.pullCreate()
@@ -218,19 +218,19 @@ func NewCmdCDN(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			if cmd.Flags().Changed("cors") {
-				o.ZoneReq.CORS = cors
+				o.ZoneReq.CORS = govultr.BoolToBoolPtr(cors)
 			}
 
 			if cmd.Flags().Changed("gzip") {
-				o.ZoneReq.GZIP = gzip
+				o.ZoneReq.GZIP = govultr.BoolToBoolPtr(gzip)
 			}
 
 			if cmd.Flags().Changed("block-ai") {
-				o.ZoneReq.BlockAI = blai
+				o.ZoneReq.BlockAI = govultr.BoolToBoolPtr(blai)
 			}
 
 			if cmd.Flags().Changed("block-bad-bots") {
-				o.ZoneReq.BlockBadBots = blbb
+				o.ZoneReq.BlockBadBots = govultr.BoolToBoolPtr(blbb)
 			}
 
 			pullZone, err := o.pullUpdate()
@@ -386,10 +386,10 @@ func NewCmdCDN(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			o.ZoneReq = &govultr.CDNZoneReq{
 				Label:        label,
-				CORS:         cors,
-				GZIP:         gzip,
-				BlockAI:      blai,
-				BlockBadBots: blbb,
+				CORS:         govultr.BoolToBoolPtr(cors),
+				GZIP:         govultr.BoolToBoolPtr(gzip),
+				BlockAI:      govultr.BoolToBoolPtr(blai),
+				BlockBadBots: govultr.BoolToBoolPtr(blbb),
 			}
 
 			pushZone, err := o.pushCreate()
@@ -464,19 +464,19 @@ func NewCmdCDN(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			if cmd.Flags().Changed("cors") {
-				o.ZoneReq.CORS = cors
+				o.ZoneReq.CORS = govultr.BoolToBoolPtr(cors)
 			}
 
 			if cmd.Flags().Changed("gzip") {
-				o.ZoneReq.GZIP = gzip
+				o.ZoneReq.GZIP = govultr.BoolToBoolPtr(gzip)
 			}
 
 			if cmd.Flags().Changed("block-ai") {
-				o.ZoneReq.BlockAI = blai
+				o.ZoneReq.BlockAI = govultr.BoolToBoolPtr(blai)
 			}
 
 			if cmd.Flags().Changed("block-bad-bots") {
-				o.ZoneReq.BlockBadBots = blbb
+				o.ZoneReq.BlockBadBots = govultr.BoolToBoolPtr(blbb)
 			}
 
 			if cmd.Flags().Changed("regions") {
