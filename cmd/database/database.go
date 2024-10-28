@@ -578,10 +578,16 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'encryption' for database user create : %v", errEn)
 			}
 
+			permission, errPe := cmd.Flags().GetString("permission")
+			if errPe != nil {
+				return fmt.Errorf("error parsing flag 'permission' for database user create : %v", errEn)
+			}
+
 			o.UserCreateReq = &govultr.DatabaseUserCreateReq{
 				Username:   username,
 				Password:   password,
 				Encryption: encryption,
+				Permission: permission,
 			}
 
 			us, err := o.createUser()
@@ -595,6 +601,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			return nil
 		},
 	}
+
 	userCreate.Flags().StringP("username", "u", "", "username for the new manaaged database user")
 	userCreate.Flags().StringP(
 		"password",
@@ -603,6 +610,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"password for the new manaaged database user (omit or leave empty to generate a random secure password)",
 	)
 	userCreate.Flags().StringP("encryption", "e", "", "encryption type for the new managed database user (MySQL only)")
+	userCreate.Flags().StringP("permission", "", "", "permission level for the new managed database user (Kafka only)")
 
 	// User Update
 	userUpdate := &cobra.Command{
@@ -617,7 +625,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		RunE: func(cmd *cobra.Command, args []string) error {
 			password, errPa := cmd.Flags().GetString("password")
 			if errPa != nil {
-				return fmt.Errorf("error parsing flag 'password' for database user create : %v", errPa)
+				return fmt.Errorf("error parsing flag 'password' for database user update : %v", errPa)
 			}
 
 			o.UserUpdateReq = &govultr.DatabaseUserUpdateReq{
@@ -640,7 +648,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"password",
 		"p",
 		"",
-		"password for the new manaaged database user (omit or leave empty to generate a random secure password)",
+		"password for the manaaged database user (omit or leave empty to generate a random secure password)",
 	)
 
 	// User Delete
@@ -683,22 +691,27 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		RunE: func(cmd *cobra.Command, args []string) error {
 			categories, errCa := cmd.Flags().GetStringSlice("redis-acl-categories")
 			if errCa != nil {
-				return fmt.Errorf("error parsing flag 'redis-acl-categories' for database user create : %v", errCa)
+				return fmt.Errorf("error parsing flag 'redis-acl-categories' for database user ACL update : %v", errCa)
 			}
 
 			channels, errCh := cmd.Flags().GetStringSlice("redis-acl-channels")
 			if errCh != nil {
-				return fmt.Errorf("error parsing flag 'redis-acl-channels' for database user create : %v", errCh)
+				return fmt.Errorf("error parsing flag 'redis-acl-channels' for database user ACL update : %v", errCh)
 			}
 
 			commands, errCo := cmd.Flags().GetStringSlice("redis-acl-commands")
 			if errCo != nil {
-				return fmt.Errorf("error parsing flag 'redis-acl-commands' for database user create : %v", errCo)
+				return fmt.Errorf("error parsing flag 'redis-acl-commands' for database user ACL update : %v", errCo)
 			}
 
 			keys, errKe := cmd.Flags().GetStringSlice("redis-acl-keys")
 			if errKe != nil {
-				return fmt.Errorf("error parsing flag 'redis-acl-keys' for database user create : %v", errKe)
+				return fmt.Errorf("error parsing flag 'redis-acl-keys' for database user ACL update : %v", errKe)
+			}
+
+			permission, errPe := cmd.Flags().GetString("permission")
+			if errPe != nil {
+				return fmt.Errorf("error parsing flag 'permission' for database user ACL update : %v", errKe)
 			}
 
 			o.UserUpdateACLReq = &govultr.DatabaseUserACLReq{}
@@ -717,6 +730,10 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			if cmd.Flags().Changed("redis-acl-keys") {
 				o.UserUpdateACLReq.RedisACLKeys = &keys
+			}
+
+			if cmd.Flags().Changed("permission") {
+				o.UserUpdateACLReq.Permission = permission
 			}
 
 			us, err := o.updateUserACL()
@@ -751,12 +768,14 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		[]string{},
 		"list of key access rules",
 	)
+	userACLUpdate.Flags().String("permission", "", "the kafka permission level")
 
 	userACLUpdate.MarkFlagsOneRequired(
 		"redis-acl-categories",
 		"redis-acl-channels",
 		"redis-acl-commands",
 		"redis-acl-keys",
+		"permission",
 	)
 
 	userACL.AddCommand(
@@ -864,6 +883,334 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		dbList,
 		dbCreate,
 		dbDel,
+	)
+
+	// Topic
+	topic := &cobra.Command{
+		Use:   "topic",
+		Short: "Commands to handle database topics",
+	}
+
+	// Topic List
+	topicList := &cobra.Command{
+		Use:   "list <Database ID>",
+		Short: "List database topics",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			to, meta, err := o.listTopics()
+			if err != nil {
+				return fmt.Errorf("error retrieving database topics : %v", err)
+			}
+
+			data := &TopicsPrinter{Topics: to, Meta: meta}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Topic Get
+	topicGet := &cobra.Command{
+		Use:   "get <Database ID> <Topic Name>",
+		Short: "Get a database topic",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a topic name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			to, err := o.getTopic()
+			if err != nil {
+				return fmt.Errorf("error retrieving database topic : %v", err)
+			}
+
+			data := &TopicPrinter{Topic: to}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Topic Create
+	topicCreate := &cobra.Command{
+		Use:   "create <Database ID>",
+		Short: "Create a database topic",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			name, errNa := cmd.Flags().GetString("name")
+			if errNa != nil {
+				return fmt.Errorf("error parsing flag 'name' for database topic create : %v", errNa)
+			}
+
+			partitions, errPa := cmd.Flags().GetInt("partitions")
+			if errPa != nil {
+				return fmt.Errorf("error parsing flag 'partitions' for database topic create : %v", errPa)
+			}
+
+			replication, errRe := cmd.Flags().GetInt("replication")
+			if errRe != nil {
+				return fmt.Errorf("error parsing flag 'replication' for database topic create : %v", errRe)
+			}
+
+			retentionHours, errReH := cmd.Flags().GetInt("retention-hours")
+			if errReH != nil {
+				return fmt.Errorf("error parsing flag 'retention-hours' for database topic create : %v", errReH)
+			}
+
+			retentionBytes, errReB := cmd.Flags().GetInt("retention-bytes")
+			if errReB != nil {
+				return fmt.Errorf("error parsing flag 'retention-bytes' for database topic create : %v", errReB)
+			}
+
+			o.TopicCreateReq = &govultr.DatabaseTopicCreateReq{
+				Name:           name,
+				Partitions:     partitions,
+				Replication:    replication,
+				RetentionHours: retentionHours,
+				RetentionBytes: retentionBytes,
+			}
+
+			to, err := o.createTopic()
+			if err != nil {
+				return fmt.Errorf("error creating database topic : %v", err)
+			}
+
+			data := &TopicPrinter{Topic: to}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	topicCreate.Flags().StringP("name", "n", "", "name for the new manaaged database topic")
+	topicCreate.Flags().IntP("partitions", "p", 0, "partitions for the new managed database topic")
+	topicCreate.Flags().IntP("replication", "r", 0, "replication factor for the new managed database topic")
+	topicCreate.Flags().IntP("retention-hours", "", 0, "retention hours for the new managed database topic")
+	topicCreate.Flags().IntP("retention-bytes", "", 0, "retention bytes for the new managed database topic")
+
+	// Topic Update
+	topicUpdate := &cobra.Command{
+		Use:   "update <Database ID> <Topic Name>",
+		Short: "Update a database topic",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a topic name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			partitions, errPa := cmd.Flags().GetInt("partitions")
+			if errPa != nil {
+				return fmt.Errorf("error parsing flag 'partitions' for database topic create : %v", errPa)
+			}
+
+			replication, errPa := cmd.Flags().GetInt("replication")
+			if errPa != nil {
+				return fmt.Errorf("error parsing flag 'replication' for database topic create : %v", errPa)
+			}
+
+			retentionHours, errPa := cmd.Flags().GetInt("retention-hours")
+			if errPa != nil {
+				return fmt.Errorf("error parsing flag 'retention-hours' for database topic create : %v", errPa)
+			}
+
+			retentionBytes, errPa := cmd.Flags().GetInt("retention-bytes")
+			if errPa != nil {
+				return fmt.Errorf("error parsing flag 'retention-bytes' for database topic create : %v", errPa)
+			}
+
+			o.TopicUpdateReq = &govultr.DatabaseTopicUpdateReq{
+				Partitions:     partitions,
+				Replication:    replication,
+				RetentionHours: retentionHours,
+				RetentionBytes: retentionBytes,
+			}
+
+			to, err := o.updateTopic()
+			if err != nil {
+				return fmt.Errorf("error updating database topic : %v", err)
+			}
+
+			data := &TopicPrinter{Topic: to}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	topicUpdate.Flags().IntP("partitions", "p", 0, "partitions for the managed database topic")
+	topicUpdate.Flags().IntP("replication", "r", 0, "replication factor for the managed database topic")
+	topicUpdate.Flags().IntP("retention-hours", "", 0, "retention hours for the managed database topic")
+	topicUpdate.Flags().IntP("retention-bytes", "", 0, "retention bytes for the managed database topic")
+
+	// Topic Delete
+	topicDelete := &cobra.Command{
+		Use:   "delete <Database ID> <Topic Name>",
+		Short: "Delete a database topic",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a topic name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.delTopic(); err != nil {
+				return fmt.Errorf("error deleting database topic : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("Topic deleted"), nil)
+
+			return nil
+		},
+	}
+
+	topic.AddCommand(
+		topicList,
+		topicGet,
+		topicCreate,
+		topicUpdate,
+		topicDelete,
+	)
+
+	// Quota
+	quota := &cobra.Command{
+		Use:   "quota",
+		Short: "Commands to handle database quotas",
+	}
+
+	// Quota List
+	quotaList := &cobra.Command{
+		Use:   "list <Database ID>",
+		Short: "List database quotas",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			q, meta, err := o.listQuotas()
+			if err != nil {
+				return fmt.Errorf("error retrieving database quotas : %v", err)
+			}
+
+			data := &QuotasPrinter{Quotas: q, Meta: meta}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Quota Get
+	quotaGet := &cobra.Command{
+		Use:   "get <Database ID> <Client ID> <User Name>",
+		Short: "Get a database quota",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 3 {
+				return errors.New("please provide a database ID, client ID, and user name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			q, err := o.getQuota()
+			if err != nil {
+				return fmt.Errorf("error retrieving database quota : %v", err)
+			}
+
+			data := &QuotaPrinter{Quota: q}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Quota Create
+	quotaCreate := &cobra.Command{
+		Use:   "create <Database ID>",
+		Short: "Create a database quota",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientID, errC := cmd.Flags().GetString("client-id")
+			if errC != nil {
+				return fmt.Errorf("error parsing flag 'client-id' for database quota create : %v", errC)
+			}
+
+			consumerByteRate, errCBR := cmd.Flags().GetInt("consumer-byte-rate")
+			if errCBR != nil {
+				return fmt.Errorf("error parsing flag 'consumer-byte-rate' for database quota create : %v", errCBR)
+			}
+
+			producerByteRate, errPBR := cmd.Flags().GetInt("producer-byte-rate")
+			if errPBR != nil {
+				return fmt.Errorf("error parsing flag 'producer-byte-rate' for database quota create : %v", errPBR)
+			}
+
+			requestPercentage, errRP := cmd.Flags().GetInt("request-percentage")
+			if errRP != nil {
+				return fmt.Errorf("error parsing flag 'request-percentage' for database quota create : %v", errRP)
+			}
+
+			user, errU := cmd.Flags().GetString("user")
+			if errU != nil {
+				return fmt.Errorf("error parsing flag 'user' for database quota create : %v", errU)
+			}
+
+			o.QuotaCreateReq = &govultr.DatabaseQuotaCreateReq{
+				ClientID:          clientID,
+				ConsumerByteRate:  consumerByteRate,
+				ProducerByteRate:  producerByteRate,
+				RequestPercentage: requestPercentage,
+				User:              user,
+			}
+
+			q, err := o.createQuota()
+			if err != nil {
+				return fmt.Errorf("error creating database quota : %v", err)
+			}
+
+			data := &QuotaPrinter{Quota: q}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	quotaCreate.Flags().StringP("client-id", "", "", "client ID for the new manaaged database quota")
+	quotaCreate.Flags().IntP("consumer-byte-rate", "", 0, "consumer byte rate for the new managed database quota")
+	quotaCreate.Flags().IntP("producer-byte-rate", "", 0, "producer byte rate factor for the new managed database quota")
+	quotaCreate.Flags().IntP("request-percentage", "", 0, "CPU request percentage for the new managed database quota")
+	quotaCreate.Flags().StringP("user", "", "", "user for the new managed database quota")
+
+	// Quota Delete
+	quotaDelete := &cobra.Command{
+		Use:   "delete <Database ID> <Client ID> <User Name>",
+		Short: "Delete a database quota",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 3 {
+				return errors.New("please provide a database ID, client ID, and user name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.delQuota(); err != nil {
+				return fmt.Errorf("error deleting database quota : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("Quota deleted"), nil)
+
+			return nil
+		},
+	}
+
+	quota.AddCommand(
+		quotaList,
+		quotaGet,
+		quotaCreate,
+		quotaDelete,
 	)
 
 	// Usage
@@ -2836,6 +3183,8 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		del,
 		user,
 		db,
+		topic,
+		quota,
 		usage,
 		maintenance,
 		plan,
@@ -2859,6 +3208,9 @@ type options struct {
 	UserUpdateReq           *govultr.DatabaseUserUpdateReq
 	UserUpdateACLReq        *govultr.DatabaseUserACLReq
 	DBCreateReq             *govultr.DatabaseDBCreateReq
+	TopicCreateReq          *govultr.DatabaseTopicCreateReq
+	TopicUpdateReq          *govultr.DatabaseTopicUpdateReq
+	QuotaCreateReq          *govultr.DatabaseQuotaCreateReq
 	AlertsReq               *govultr.DatabaseListAlertsReq
 	MigrationReq            *govultr.DatabaseMigrationStartReq
 	ReadReplicaCreateReq    *govultr.DatabaseAddReplicaReq
@@ -2940,6 +3292,49 @@ func (o *options) createDB() (*govultr.DatabaseDB, error) {
 
 func (o *options) delDB() error {
 	return o.Base.Client.Database.DeleteDB(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+}
+
+func (o *options) listTopics() ([]govultr.DatabaseTopic, *govultr.Meta, error) {
+	topics, meta, _, err := o.Base.Client.Database.ListTopics(o.Base.Context, o.Base.Args[0])
+	return topics, meta, err
+}
+
+func (o *options) getTopic() (*govultr.DatabaseTopic, error) {
+	topic, _, err := o.Base.Client.Database.GetTopic(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return topic, err
+}
+
+func (o *options) createTopic() (*govultr.DatabaseTopic, error) {
+	topic, _, err := o.Base.Client.Database.CreateTopic(o.Base.Context, o.Base.Args[0], o.TopicCreateReq)
+	return topic, err
+}
+
+func (o *options) updateTopic() (*govultr.DatabaseTopic, error) {
+	topic, _, err := o.Base.Client.Database.UpdateTopic(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.TopicUpdateReq)
+	return topic, err
+}
+
+func (o *options) delTopic() error {
+	return o.Base.Client.Database.DeleteTopic(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+}
+
+func (o *options) listQuotas() ([]govultr.DatabaseQuota, *govultr.Meta, error) {
+	quotas, meta, _, err := o.Base.Client.Database.ListQuotas(o.Base.Context, o.Base.Args[0])
+	return quotas, meta, err
+}
+
+func (o *options) getQuota() (*govultr.DatabaseQuota, error) {
+	quota, _, err := o.Base.Client.Database.GetQuota(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
+	return quota, err
+}
+
+func (o *options) createQuota() (*govultr.DatabaseQuota, error) {
+	quota, _, err := o.Base.Client.Database.CreateQuota(o.Base.Context, o.Base.Args[0], o.QuotaCreateReq)
+	return quota, err
+}
+
+func (o *options) delQuota() error {
+	return o.Base.Client.Database.DeleteQuota(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
 }
 
 func (o *options) getUsage() (*govultr.DatabaseUsage, error) {

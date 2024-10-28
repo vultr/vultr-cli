@@ -45,7 +45,15 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 			[]string{"PLAN DISK", strconv.Itoa(d.DBs[i].PlanDisk)},
 			[]string{"PLAN RAM", strconv.Itoa(d.DBs[i].PlanRAM)},
 			[]string{"PLAN VCPUS", strconv.Itoa(d.DBs[i].PlanVCPUs)},
-			[]string{"PLAN REPLICAS", strconv.Itoa(*d.DBs[i].PlanReplicas)},
+		)
+
+		if d.DBs[i].DatabaseEngine == "kafka" {
+			data = append(data, []string{"PLAN BROKERS", strconv.Itoa(d.DBs[i].PlanBrokers)})
+		} else {
+			data = append(data, []string{"PLAN REPLICAS", strconv.Itoa(*d.DBs[i].PlanReplicas)})
+		}
+
+		data = append(data,
 			[]string{"REGION", d.DBs[i].Region},
 			[]string{"DATABASE ENGINE", d.DBs[i].DatabaseEngine},
 			[]string{"DATABASE ENGINE VERSION", d.DBs[i].DatabaseEngineVersion},
@@ -82,10 +90,25 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 			data = append(data, []string{"PUBLIC HOST", d.DBs[i].PublicHost})
 		}
 
+		data = append(data, []string{"PORT", d.DBs[i].Port})
+
+		if d.DBs[i].DatabaseEngine == "kafka" {
+			data = append(data, []string{"SASL PORT", d.DBs[i].SASLPort})
+		}
+
 		data = append(data,
 			[]string{"USER", d.DBs[i].User},
 			[]string{"PASSWORD", d.DBs[i].Password},
-			[]string{"PORT", d.DBs[i].Port},
+		)
+
+		if d.DBs[i].DatabaseEngine == "kafka" {
+			data = append(data,
+				[]string{"ACCESS KEY", d.DBs[i].AccessKey},
+				[]string{"ACCESS CERT", d.DBs[i].AccessCert},
+			)
+		}
+
+		data = append(data,
 			[]string{"MAINTENANCE DOW", d.DBs[i].MaintenanceDOW},
 			[]string{"MAINTENANCE TIME", d.DBs[i].MaintenanceTime},
 			[]string{"LATEST BACKUP", d.DBs[i].LatestBackup},
@@ -184,9 +207,9 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 				}
 
 				data = append(data,
+					[]string{"PORT", d.DBs[i].ReadReplicas[j].Port},
 					[]string{"USER", d.DBs[i].ReadReplicas[j].User},
 					[]string{"PASSWORD", d.DBs[i].ReadReplicas[j].Password},
-					[]string{"PORT", d.DBs[i].ReadReplicas[j].Port},
 					[]string{"MAINTENANCE DOW", d.DBs[i].ReadReplicas[j].MaintenanceDOW},
 					[]string{"MAINTENANCE TIME", d.DBs[i].ReadReplicas[j].MaintenanceTime},
 					[]string{"LATEST BACKUP", d.DBs[i].ReadReplicas[j].LatestBackup},
@@ -278,7 +301,15 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 		[]string{"PLAN DISK", strconv.Itoa(d.DB.PlanDisk)},
 		[]string{"PLAN RAM", strconv.Itoa(d.DB.PlanRAM)},
 		[]string{"PLAN VCPUS", strconv.Itoa(d.DB.PlanVCPUs)},
-		[]string{"PLAN REPLICAS", strconv.Itoa(*d.DB.PlanReplicas)},
+	)
+
+	if d.DB.DatabaseEngine == "kafka" {
+		data = append(data, []string{"PLAN BROKERS", strconv.Itoa(d.DB.PlanBrokers)})
+	} else {
+		data = append(data, []string{"PLAN REPLICAS", strconv.Itoa(*d.DB.PlanReplicas)})
+	}
+
+	data = append(data,
 		[]string{"REGION", d.DB.Region},
 		[]string{"DATABASE ENGINE", d.DB.DatabaseEngine},
 		[]string{"DATABASE ENGINE VERSION", d.DB.DatabaseEngineVersion},
@@ -315,10 +346,25 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 		data = append(data, []string{"PUBLIC HOST", d.DB.PublicHost})
 	}
 
+	data = append(data, []string{"PORT", d.DB.Port})
+
+	if d.DB.DatabaseEngine == "kafka" {
+		data = append(data, []string{"SASL PORT", d.DB.SASLPort})
+	}
+
 	data = append(data,
 		[]string{"USER", d.DB.User},
 		[]string{"PASSWORD", d.DB.Password},
-		[]string{"PORT", d.DB.Port},
+	)
+
+	if d.DB.DatabaseEngine == "kafka" {
+		data = append(data,
+			[]string{"ACCESS KEY", d.DB.AccessKey},
+			[]string{"ACCESS CERT", d.DB.AccessCert},
+		)
+	}
+
+	data = append(data,
 		[]string{"MAINTENANCE DOW", d.DB.MaintenanceDOW},
 		[]string{"MAINTENANCE TIME", d.DB.MaintenanceTime},
 		[]string{"LATEST BACKUP", d.DB.LatestBackup},
@@ -739,6 +785,18 @@ func (u *UsersPrinter) Data() [][]string {
 			)
 		}
 
+		if u.Users[i].Permission != "" {
+			data = append(data, []string{"PERMISSION", u.Users[i].Permission})
+		}
+
+		if u.Users[i].AccessKey != "" {
+			data = append(data, []string{"ACCESS KEY", u.Users[i].AccessKey})
+		}
+
+		if u.Users[i].AccessCert != "" {
+			data = append(data, []string{"ACCESS CERT", u.Users[i].AccessCert})
+		}
+
 		data = append(data, []string{"---------------------------"})
 	}
 
@@ -793,6 +851,18 @@ func (u *UserPrinter) Data() [][]string {
 			[]string{"REDIS ACL COMMANDS", printer.ArrayOfStringsToString(u.User.AccessControl.RedisACLCommands)},
 			[]string{"REDIS ACL KEYS", printer.ArrayOfStringsToString(u.User.AccessControl.RedisACLKeys)},
 		)
+	}
+
+	if u.User.Permission != "" {
+		data = append(data, []string{"PERMISSION", u.User.Permission})
+	}
+
+	if u.User.AccessKey != "" {
+		data = append(data, []string{"ACCESS KEY", u.User.AccessKey})
+	}
+
+	if u.User.AccessCert != "" {
+		data = append(data, []string{"ACCESS CERT", u.User.AccessCert})
 	}
 
 	return data
@@ -879,6 +949,190 @@ func (l *LogicalDBPrinter) Data() [][]string {
 
 // Paging ...
 func (l *LogicalDBPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// TopicsPrinter ...
+type TopicsPrinter struct {
+	Topics []govultr.DatabaseTopic `json:"topics"`
+	Meta   *govultr.Meta           `json:"meta"`
+}
+
+// JSON ...
+func (t *TopicsPrinter) JSON() []byte {
+	return printer.MarshalObject(t, "json")
+}
+
+// YAML ...
+func (t *TopicsPrinter) YAML() []byte {
+	return printer.MarshalObject(t, "yaml")
+}
+
+// Columns ...
+func (t *TopicsPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (t *TopicsPrinter) Data() [][]string {
+	if len(t.Topics) == 0 {
+		return [][]string{0: {"No database topics"}}
+	}
+
+	var data [][]string
+	for i := range t.Topics {
+		data = append(data,
+			[]string{"NAME", t.Topics[i].Name},
+			[]string{"PARTITIONS", strconv.Itoa(t.Topics[i].Partitions)},
+			[]string{"REPLICATION", strconv.Itoa(t.Topics[i].Replication)},
+			[]string{"RETENTION HOURS", strconv.Itoa(t.Topics[i].RetentionHours)},
+			[]string{"RETENTION BYTES", strconv.Itoa(t.Topics[i].RetentionBytes)},
+		)
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (t *TopicsPrinter) Paging() [][]string {
+	paging := &printer.Total{Total: t.Meta.Total}
+	return paging.Compose()
+}
+
+// ======================================
+
+// TopicPrinter ...
+type TopicPrinter struct {
+	Topic *govultr.DatabaseTopic `json:"topic"`
+}
+
+// JSON ...
+func (t *TopicPrinter) JSON() []byte {
+	return printer.MarshalObject(t, "json")
+}
+
+// YAML ...
+func (t *TopicPrinter) YAML() []byte {
+	return printer.MarshalObject(t, "yaml")
+}
+
+// Columns ...
+func (t *TopicPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (t *TopicPrinter) Data() [][]string {
+	var data [][]string
+	data = append(data,
+		[]string{"NAME", t.Topic.Name},
+		[]string{"PARTITIONS", strconv.Itoa(t.Topic.Partitions)},
+		[]string{"REPLICATION", strconv.Itoa(t.Topic.Replication)},
+		[]string{"RETENTION HOURS", strconv.Itoa(t.Topic.RetentionHours)},
+		[]string{"RETENTION BYTES", strconv.Itoa(t.Topic.RetentionBytes)},
+	)
+
+	return data
+}
+
+// Paging ...
+func (t *TopicPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// QuotasPrinter ...
+type QuotasPrinter struct {
+	Quotas []govultr.DatabaseQuota `json:"quotas"`
+	Meta   *govultr.Meta           `json:"meta"`
+}
+
+// JSON ...
+func (q *QuotasPrinter) JSON() []byte {
+	return printer.MarshalObject(q, "json")
+}
+
+// YAML ...
+func (q *QuotasPrinter) YAML() []byte {
+	return printer.MarshalObject(q, "yaml")
+}
+
+// Columns ...
+func (q *QuotasPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (q *QuotasPrinter) Data() [][]string {
+	if len(q.Quotas) == 0 {
+		return [][]string{0: {"No database quotas"}}
+	}
+
+	var data [][]string
+	for i := range q.Quotas {
+		data = append(data,
+			[]string{"CLIENT ID", q.Quotas[i].ClientID},
+			[]string{"CONSUMER BYTE RATE", strconv.Itoa(q.Quotas[i].ConsumerByteRate)},
+			[]string{"PRODUCER BYTE RATE", strconv.Itoa(q.Quotas[i].ProducerByteRate)},
+			[]string{"REQUEST PERCENTAGE", strconv.Itoa(q.Quotas[i].RequestPercentage)},
+			[]string{"USER", q.Quotas[i].User},
+		)
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (q *QuotasPrinter) Paging() [][]string {
+	paging := &printer.Total{Total: q.Meta.Total}
+	return paging.Compose()
+}
+
+// ======================================
+
+// QuotaPrinter ...
+type QuotaPrinter struct {
+	Quota *govultr.DatabaseQuota `json:"quota"`
+}
+
+// JSON ...
+func (q *QuotaPrinter) JSON() []byte {
+	return printer.MarshalObject(q, "json")
+}
+
+// YAML ...
+func (q *QuotaPrinter) YAML() []byte {
+	return printer.MarshalObject(q, "yaml")
+}
+
+// Columns ...
+func (q *QuotaPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (q *QuotaPrinter) Data() [][]string {
+	var data [][]string
+	data = append(data,
+		[]string{"CLIENT ID", q.Quota.ClientID},
+		[]string{"CONSUMER BYTE RATE", strconv.Itoa(q.Quota.ConsumerByteRate)},
+		[]string{"PRODUCER BYTE RATE", strconv.Itoa(q.Quota.ProducerByteRate)},
+		[]string{"REQUEST PERCENTAGE", strconv.Itoa(q.Quota.RequestPercentage)},
+		[]string{"USER", q.Quota.User},
+	)
+
+	return data
+}
+
+// Paging ...
+func (q *QuotaPrinter) Paging() [][]string {
 	return nil
 }
 
