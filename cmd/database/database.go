@@ -3084,7 +3084,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			if cmd.Flags().Changed("log-index-size-max-bytes") {
-				o.AdvancedOptionsReq.LogindexSizeMaxBytes = logIndexSizeMaxBytes
+				o.AdvancedOptionsReq.LogIndexSizeMaxBytes = logIndexSizeMaxBytes
 			}
 
 			if cmd.Flags().Changed("log-local-retention-ms") {
@@ -3152,7 +3152,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			if cmd.Flags().Changed("default-replication-factor") {
-				o.AdvancedOptionsReq.DefaultReplicationRefactor = defaultReplicationFactor
+				o.AdvancedOptionsReq.DefaultReplicationFactor = defaultReplicationFactor
 			}
 
 			if cmd.Flags().Changed("replica-fetch-max-bytes") {
@@ -3180,7 +3180,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			if cmd.Flags().Changed("sasl-oauthbearer-jwks-endpoint-url") {
-				o.AdvancedOptionsReq.SASLOauthbearerJwksEndpointURL = saslOauthbearerJWKSEndpointURL
+				o.AdvancedOptionsReq.SASLOauthbearerJWKSEndpointURL = saslOauthbearerJWKSEndpointURL
 			}
 
 			if cmd.Flags().Changed("sasl-oauthbearer-sub-claim-name") {
