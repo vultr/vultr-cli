@@ -17,7 +17,7 @@
 * Update autocompletion instructions [PR 477](https://github.com/vultr/vultr-cli/pull/477)
 * Add github CODEOWNERS file [PR 484](https://github.com/vultr/vultr-cli/pull/484)
 * Fix instructions to install vultr-cli via Go [PR 475](https://github.com/vultr/vultr-cli/pull/475)
-* Container registry: Clarify public flag options [PR 479](https://github.com/vultr/vultr-cli/pull/479)
+* Container Registry: Clarify public flag options [PR 479](https://github.com/vultr/vultr-cli/pull/479)
 
 ### Automation
 * Remove deprecated exportloopref linter [PR 482](https://github.com/vultr/vultr-cli/pull/482)
