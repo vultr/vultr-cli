@@ -2,7 +2,7 @@
 ## [3.4.0](https://github.com/vultr/vultr-cli/compare/v3.3.1...v3.4.0) (2024-10-31)
 ### Enhancements
 * Database: Add MySQL advanced config [PR 472](https://github.com/vultr/vultr-cli/pull/472)
-* Loadbalancer: Add nodes flag and printer display [PR 474](https://github.com/vultr/vultr-cli/pull/474)
+* Load Balancer: Add nodes flag and printer display [PR 474](https://github.com/vultr/vultr-cli/pull/474)
 * Database: Add support for Kafka [PR 487](https://github.com/vultr/vultr-cli/pull/487)
 
 ### Dependencies
