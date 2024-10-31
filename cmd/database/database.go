@@ -237,13 +237,13 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
-	create.Flags().StringP("database-engine", "e", "", "database engine for the new manaaged database")
+	create.Flags().StringP("database-engine", "e", "", "database engine for the new managed database")
 	if err := create.MarkFlagRequired("database-engine"); err != nil {
 		fmt.Printf("error marking database create 'database-engine' flag required: %v", err)
 		os.Exit(1)
 	}
 
-	create.Flags().StringP("database-engine-version", "v", "", "database engine version for the new manaaged database")
+	create.Flags().StringP("database-engine-version", "v", "", "database engine version for the new managed database")
 	if err := create.MarkFlagRequired("database-engine-version"); err != nil {
 		fmt.Printf("error marking database create 'database-engine-version' flag required: %v", err)
 		os.Exit(1)
@@ -602,12 +602,12 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
-	userCreate.Flags().StringP("username", "u", "", "username for the new manaaged database user")
+	userCreate.Flags().StringP("username", "u", "", "username for the new managed database user")
 	userCreate.Flags().StringP(
 		"password",
 		"p",
 		"",
-		"password for the new manaaged database user (omit or leave empty to generate a random secure password)",
+		"password for the new managed database user (omit or leave empty to generate a random secure password)",
 	)
 	userCreate.Flags().StringP("encryption", "e", "", "encryption type for the new managed database user (MySQL only)")
 	userCreate.Flags().StringP("permission", "", "", "permission level for the new managed database user (Kafka only)")
@@ -648,7 +648,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"password",
 		"p",
 		"",
-		"password for the manaaged database user (omit or leave empty to generate a random secure password)",
+		"password for the managed database user (omit or leave empty to generate a random secure password)",
 	)
 
 	// User Delete
@@ -852,7 +852,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
-	dbCreate.Flags().StringP("name", "n", "", "name of the new logical database within the manaaged database")
+	dbCreate.Flags().StringP("name", "n", "", "name of the new logical database within the managed database")
 	if err := dbCreate.MarkFlagRequired("name"); err != nil {
 		fmt.Printf("error marking logical database create 'name' flag required: %v", err)
 		os.Exit(1)
@@ -987,7 +987,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
-	topicCreate.Flags().StringP("name", "n", "", "name for the new manaaged database topic")
+	topicCreate.Flags().StringP("name", "n", "", "name for the new managed database topic")
 	topicCreate.Flags().IntP("partitions", "p", 0, "partitions for the new managed database topic")
 	topicCreate.Flags().IntP("replication", "r", 0, "replication factor for the new managed database topic")
 	topicCreate.Flags().IntP("retention-hours", "", 0, "retention hours for the new managed database topic")
@@ -1179,7 +1179,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
-	quotaCreate.Flags().StringP("client-id", "", "", "client ID for the new manaaged database quota")
+	quotaCreate.Flags().StringP("client-id", "", "", "client ID for the new managed database quota")
 	quotaCreate.Flags().IntP("consumer-byte-rate", "", 0, "consumer byte rate for the new managed database quota")
 	quotaCreate.Flags().IntP("producer-byte-rate", "", 0, "producer byte rate factor for the new managed database quota")
 	quotaCreate.Flags().IntP("request-percentage", "", 0, "CPU request percentage for the new managed database quota")
@@ -1344,7 +1344,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"period",
 		"p",
 		"",
-		"period (day, week, month, year) for viewing service alerts for a manaaged database",
+		"period (day, week, month, year) for viewing service alerts for a managed database",
 	)
 	if err := alertList.MarkFlagRequired("period"); err != nil {
 		fmt.Printf("error marking alert list 'period' flag required: %v", err)
@@ -1452,25 +1452,25 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
-	migrationStart.Flags().String("host", "", "source host for the manaaged database migration")
-	migrationStart.Flags().Int("port", 0, "source port for the manaaged database migration")
+	migrationStart.Flags().String("host", "", "source host for the managed database migration")
+	migrationStart.Flags().Int("port", 0, "source port for the managed database migration")
 	migrationStart.Flags().String(
 		"username",
 		"",
-		"source username for the manaaged database migration (uses `default` for Redis if omitted)",
+		"source username for the managed database migration (uses `default` for Redis if omitted)",
 	)
-	migrationStart.Flags().String("password", "", "source password for the manaaged database migration")
+	migrationStart.Flags().String("password", "", "source password for the managed database migration")
 	migrationStart.Flags().String(
 		"database",
 		"",
-		"source database for the manaaged database migration (MySQL/PostgreSQL only)",
+		"source database for the managed database migration (MySQL/PostgreSQL only)",
 	)
 	migrationStart.Flags().String(
 		"ignored-dbs",
 		"",
-		"comma-separated list of ignored databases for the manaaged database migration (MySQL/PostgreSQL only)",
+		"comma-separated list of ignored databases for the managed database migration (MySQL/PostgreSQL only)",
 	)
-	migrationStart.Flags().Bool("ssl", true, "source ssl requirement for the manaaged database migration")
+	migrationStart.Flags().Bool("ssl", true, "source ssl requirement for the managed database migration")
 
 	// Migration Detach
 	migrationDetach := &cobra.Command{
@@ -3856,7 +3856,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
-	versionUpgrade.Flags().StringP("version", "v", "", "version of the manaaged database to upgrade to")
+	versionUpgrade.Flags().StringP("version", "v", "", "version of the managed database to upgrade to")
 	if err := versionUpgrade.MarkFlagRequired("version"); err != nil {
 		fmt.Printf("error marking version upgrade 'version' flag required: %v", err)
 		os.Exit(1)
