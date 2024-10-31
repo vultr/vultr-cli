@@ -1,4 +1,31 @@
 # Change Log
+## [3.4.0](https://github.com/vultr/vultr-cli/compare/v3.3.1...v3.4.0) (2024-10-31)
+### Enhancements
+* Database: Add MySQL advanced config [PR 472](https://github.com/vultr/vultr-cli/pull/472)
+* Loadbalancer: Add nodes flag and printer display [PR 474](https://github.com/vultr/vultr-cli/pull/474)
+* Database: Add support for Kafka [PR 487](https://github.com/vultr/vultr-cli/pull/487)
+
+### Dependencies
+* Bump golang.org/x/oauth2 from 0.21.0 to 0.22.0 [PR 470](https://github.com/vultr/vultr-cli/pull/470)
+* Bump golang.org/x/oauth2 from 0.22.0 to 0.23.0 [PR 473](https://github.com/vultr/vultr-cli/pull/473)
+* Update govultr from v3.9.0 to v3.9.1 [PR 471](https://github.com/vultr/vultr-cli/pull/471)
+* Update govultr from v3.9.1 to v3.11.0 [PR 481](https://github.com/vultr/vultr-cli/pull/481)
+* Update govultr from v3.11.0 to v3.11.1 [PR 485](https://github.com/vultr/vultr-cli/pull/485)
+* Update govultr from v3.11.1 to v3.11.2 [PR 486](https://github.com/vultr/vultr-cli/pull/486)
+
+### Documentation
+* Update autocompletion instructions [PR 477](https://github.com/vultr/vultr-cli/pull/477)
+* Add github CODEOWNERS file [PR 484](https://github.com/vultr/vultr-cli/pull/484)
+* Fix instructions to install vultr-cli via Go [PR 475](https://github.com/vultr/vultr-cli/pull/475)
+* Container registry: Clarify public flag options [PR 479](https://github.com/vultr/vultr-cli/pull/479)
+
+### Clean up
+* Remove deprecated exportloopref linter [PR 482](https://github.com/vultr/vultr-cli/pull/482)
+
+### New Contributors
+* @zikalino made their first contribution in [PR 475](https://github.com/vultr/vultr-cli/pull/475)
+* @cjones-vultr made their first contribution in [PR 477](https://github.com/vultr/vultr-cli/pull/477)
+
 ## [3.3.1](https://github.com/vultr/vultr-cli/compare/v3.3.0...v3.3.1) (2024-07-29)
 ### Bug Fixes
 * DNS: Make record create priority and ttl flags optional [PR 468](https://github.com/vultr/vultr-cli/pull/468)
