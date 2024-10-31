@@ -19,7 +19,7 @@
 * Fix instructions to install vultr-cli via Go [PR 475](https://github.com/vultr/vultr-cli/pull/475)
 * Container registry: Clarify public flag options [PR 479](https://github.com/vultr/vultr-cli/pull/479)
 
-### Clean up
+### Automation
 * Remove deprecated exportloopref linter [PR 482](https://github.com/vultr/vultr-cli/pull/482)
 
 ### New Contributors
