@@ -237,13 +237,13 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
-	create.Flags().StringP("database-engine", "e", "", "database engine for the new manaaged database")
+	create.Flags().StringP("database-engine", "e", "", "database engine for the new managed database")
 	if err := create.MarkFlagRequired("database-engine"); err != nil {
 		fmt.Printf("error marking database create 'database-engine' flag required: %v", err)
 		os.Exit(1)
 	}
 
-	create.Flags().StringP("database-engine-version", "v", "", "database engine version for the new manaaged database")
+	create.Flags().StringP("database-engine-version", "v", "", "database engine version for the new managed database")
 	if err := create.MarkFlagRequired("database-engine-version"); err != nil {
 		fmt.Printf("error marking database create 'database-engine-version' flag required: %v", err)
 		os.Exit(1)
@@ -578,10 +578,16 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'encryption' for database user create : %v", errEn)
 			}
 
+			permission, errPe := cmd.Flags().GetString("permission")
+			if errPe != nil {
+				return fmt.Errorf("error parsing flag 'permission' for database user create : %v", errEn)
+			}
+
 			o.UserCreateReq = &govultr.DatabaseUserCreateReq{
 				Username:   username,
 				Password:   password,
 				Encryption: encryption,
+				Permission: permission,
 			}
 
 			us, err := o.createUser()
@@ -595,14 +601,16 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			return nil
 		},
 	}
-	userCreate.Flags().StringP("username", "u", "", "username for the new manaaged database user")
+
+	userCreate.Flags().StringP("username", "u", "", "username for the new managed database user")
 	userCreate.Flags().StringP(
 		"password",
 		"p",
 		"",
-		"password for the new manaaged database user (omit or leave empty to generate a random secure password)",
+		"password for the new managed database user (omit or leave empty to generate a random secure password)",
 	)
 	userCreate.Flags().StringP("encryption", "e", "", "encryption type for the new managed database user (MySQL only)")
+	userCreate.Flags().StringP("permission", "", "", "permission level for the new managed database user (Kafka only)")
 
 	// User Update
 	userUpdate := &cobra.Command{
@@ -617,7 +625,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		RunE: func(cmd *cobra.Command, args []string) error {
 			password, errPa := cmd.Flags().GetString("password")
 			if errPa != nil {
-				return fmt.Errorf("error parsing flag 'password' for database user create : %v", errPa)
+				return fmt.Errorf("error parsing flag 'password' for database user update : %v", errPa)
 			}
 
 			o.UserUpdateReq = &govultr.DatabaseUserUpdateReq{
@@ -640,7 +648,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"password",
 		"p",
 		"",
-		"password for the new manaaged database user (omit or leave empty to generate a random secure password)",
+		"password for the managed database user (omit or leave empty to generate a random secure password)",
 	)
 
 	// User Delete
@@ -683,22 +691,27 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		RunE: func(cmd *cobra.Command, args []string) error {
 			categories, errCa := cmd.Flags().GetStringSlice("redis-acl-categories")
 			if errCa != nil {
-				return fmt.Errorf("error parsing flag 'redis-acl-categories' for database user create : %v", errCa)
+				return fmt.Errorf("error parsing flag 'redis-acl-categories' for database user ACL update : %v", errCa)
 			}
 
 			channels, errCh := cmd.Flags().GetStringSlice("redis-acl-channels")
 			if errCh != nil {
-				return fmt.Errorf("error parsing flag 'redis-acl-channels' for database user create : %v", errCh)
+				return fmt.Errorf("error parsing flag 'redis-acl-channels' for database user ACL update : %v", errCh)
 			}
 
 			commands, errCo := cmd.Flags().GetStringSlice("redis-acl-commands")
 			if errCo != nil {
-				return fmt.Errorf("error parsing flag 'redis-acl-commands' for database user create : %v", errCo)
+				return fmt.Errorf("error parsing flag 'redis-acl-commands' for database user ACL update : %v", errCo)
 			}
 
 			keys, errKe := cmd.Flags().GetStringSlice("redis-acl-keys")
 			if errKe != nil {
-				return fmt.Errorf("error parsing flag 'redis-acl-keys' for database user create : %v", errKe)
+				return fmt.Errorf("error parsing flag 'redis-acl-keys' for database user ACL update : %v", errKe)
+			}
+
+			permission, errPe := cmd.Flags().GetString("permission")
+			if errPe != nil {
+				return fmt.Errorf("error parsing flag 'permission' for database user ACL update : %v", errKe)
 			}
 
 			o.UserUpdateACLReq = &govultr.DatabaseUserACLReq{}
@@ -717,6 +730,10 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			if cmd.Flags().Changed("redis-acl-keys") {
 				o.UserUpdateACLReq.RedisACLKeys = &keys
+			}
+
+			if cmd.Flags().Changed("permission") {
+				o.UserUpdateACLReq.Permission = permission
 			}
 
 			us, err := o.updateUserACL()
@@ -751,12 +768,14 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		[]string{},
 		"list of key access rules",
 	)
+	userACLUpdate.Flags().String("permission", "", "the kafka permission level")
 
 	userACLUpdate.MarkFlagsOneRequired(
 		"redis-acl-categories",
 		"redis-acl-channels",
 		"redis-acl-commands",
 		"redis-acl-keys",
+		"permission",
 	)
 
 	userACL.AddCommand(
@@ -833,7 +852,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
-	dbCreate.Flags().StringP("name", "n", "", "name of the new logical database within the manaaged database")
+	dbCreate.Flags().StringP("name", "n", "", "name of the new logical database within the managed database")
 	if err := dbCreate.MarkFlagRequired("name"); err != nil {
 		fmt.Printf("error marking logical database create 'name' flag required: %v", err)
 		os.Exit(1)
@@ -864,6 +883,334 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		dbList,
 		dbCreate,
 		dbDel,
+	)
+
+	// Topic
+	topic := &cobra.Command{
+		Use:   "topic",
+		Short: "Commands to handle database topics",
+	}
+
+	// Topic List
+	topicList := &cobra.Command{
+		Use:   "list <Database ID>",
+		Short: "List database topics",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			to, meta, err := o.listTopics()
+			if err != nil {
+				return fmt.Errorf("error retrieving database topics : %v", err)
+			}
+
+			data := &TopicsPrinter{Topics: to, Meta: meta}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Topic Get
+	topicGet := &cobra.Command{
+		Use:   "get <Database ID> <Topic Name>",
+		Short: "Get a database topic",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a topic name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			to, err := o.getTopic()
+			if err != nil {
+				return fmt.Errorf("error retrieving database topic : %v", err)
+			}
+
+			data := &TopicPrinter{Topic: to}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Topic Create
+	topicCreate := &cobra.Command{
+		Use:   "create <Database ID>",
+		Short: "Create a database topic",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			name, errNa := cmd.Flags().GetString("name")
+			if errNa != nil {
+				return fmt.Errorf("error parsing flag 'name' for database topic create : %v", errNa)
+			}
+
+			partitions, errPa := cmd.Flags().GetInt("partitions")
+			if errPa != nil {
+				return fmt.Errorf("error parsing flag 'partitions' for database topic create : %v", errPa)
+			}
+
+			replication, errRe := cmd.Flags().GetInt("replication")
+			if errRe != nil {
+				return fmt.Errorf("error parsing flag 'replication' for database topic create : %v", errRe)
+			}
+
+			retentionHours, errReH := cmd.Flags().GetInt("retention-hours")
+			if errReH != nil {
+				return fmt.Errorf("error parsing flag 'retention-hours' for database topic create : %v", errReH)
+			}
+
+			retentionBytes, errReB := cmd.Flags().GetInt("retention-bytes")
+			if errReB != nil {
+				return fmt.Errorf("error parsing flag 'retention-bytes' for database topic create : %v", errReB)
+			}
+
+			o.TopicCreateReq = &govultr.DatabaseTopicCreateReq{
+				Name:           name,
+				Partitions:     partitions,
+				Replication:    replication,
+				RetentionHours: retentionHours,
+				RetentionBytes: retentionBytes,
+			}
+
+			to, err := o.createTopic()
+			if err != nil {
+				return fmt.Errorf("error creating database topic : %v", err)
+			}
+
+			data := &TopicPrinter{Topic: to}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	topicCreate.Flags().StringP("name", "n", "", "name for the new managed database topic")
+	topicCreate.Flags().IntP("partitions", "p", 0, "partitions for the new managed database topic")
+	topicCreate.Flags().IntP("replication", "r", 0, "replication factor for the new managed database topic")
+	topicCreate.Flags().IntP("retention-hours", "", 0, "retention hours for the new managed database topic")
+	topicCreate.Flags().IntP("retention-bytes", "", 0, "retention bytes for the new managed database topic")
+
+	// Topic Update
+	topicUpdate := &cobra.Command{
+		Use:   "update <Database ID> <Topic Name>",
+		Short: "Update a database topic",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a topic name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			partitions, errPa := cmd.Flags().GetInt("partitions")
+			if errPa != nil {
+				return fmt.Errorf("error parsing flag 'partitions' for database topic create : %v", errPa)
+			}
+
+			replication, errPa := cmd.Flags().GetInt("replication")
+			if errPa != nil {
+				return fmt.Errorf("error parsing flag 'replication' for database topic create : %v", errPa)
+			}
+
+			retentionHours, errPa := cmd.Flags().GetInt("retention-hours")
+			if errPa != nil {
+				return fmt.Errorf("error parsing flag 'retention-hours' for database topic create : %v", errPa)
+			}
+
+			retentionBytes, errPa := cmd.Flags().GetInt("retention-bytes")
+			if errPa != nil {
+				return fmt.Errorf("error parsing flag 'retention-bytes' for database topic create : %v", errPa)
+			}
+
+			o.TopicUpdateReq = &govultr.DatabaseTopicUpdateReq{
+				Partitions:     partitions,
+				Replication:    replication,
+				RetentionHours: retentionHours,
+				RetentionBytes: retentionBytes,
+			}
+
+			to, err := o.updateTopic()
+			if err != nil {
+				return fmt.Errorf("error updating database topic : %v", err)
+			}
+
+			data := &TopicPrinter{Topic: to}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	topicUpdate.Flags().IntP("partitions", "p", 0, "partitions for the managed database topic")
+	topicUpdate.Flags().IntP("replication", "r", 0, "replication factor for the managed database topic")
+	topicUpdate.Flags().IntP("retention-hours", "", 0, "retention hours for the managed database topic")
+	topicUpdate.Flags().IntP("retention-bytes", "", 0, "retention bytes for the managed database topic")
+
+	// Topic Delete
+	topicDelete := &cobra.Command{
+		Use:   "delete <Database ID> <Topic Name>",
+		Short: "Delete a database topic",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a topic name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.delTopic(); err != nil {
+				return fmt.Errorf("error deleting database topic : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("Topic deleted"), nil)
+
+			return nil
+		},
+	}
+
+	topic.AddCommand(
+		topicList,
+		topicGet,
+		topicCreate,
+		topicUpdate,
+		topicDelete,
+	)
+
+	// Quota
+	quota := &cobra.Command{
+		Use:   "quota",
+		Short: "Commands to handle database quotas",
+	}
+
+	// Quota List
+	quotaList := &cobra.Command{
+		Use:   "list <Database ID>",
+		Short: "List database quotas",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			q, meta, err := o.listQuotas()
+			if err != nil {
+				return fmt.Errorf("error retrieving database quotas : %v", err)
+			}
+
+			data := &QuotasPrinter{Quotas: q, Meta: meta}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Quota Get
+	quotaGet := &cobra.Command{
+		Use:   "get <Database ID> <Client ID> <User Name>",
+		Short: "Get a database quota",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 3 {
+				return errors.New("please provide a database ID, client ID, and user name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			q, err := o.getQuota()
+			if err != nil {
+				return fmt.Errorf("error retrieving database quota : %v", err)
+			}
+
+			data := &QuotaPrinter{Quota: q}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Quota Create
+	quotaCreate := &cobra.Command{
+		Use:   "create <Database ID>",
+		Short: "Create a database quota",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientID, errC := cmd.Flags().GetString("client-id")
+			if errC != nil {
+				return fmt.Errorf("error parsing flag 'client-id' for database quota create : %v", errC)
+			}
+
+			consumerByteRate, errCBR := cmd.Flags().GetInt("consumer-byte-rate")
+			if errCBR != nil {
+				return fmt.Errorf("error parsing flag 'consumer-byte-rate' for database quota create : %v", errCBR)
+			}
+
+			producerByteRate, errPBR := cmd.Flags().GetInt("producer-byte-rate")
+			if errPBR != nil {
+				return fmt.Errorf("error parsing flag 'producer-byte-rate' for database quota create : %v", errPBR)
+			}
+
+			requestPercentage, errRP := cmd.Flags().GetInt("request-percentage")
+			if errRP != nil {
+				return fmt.Errorf("error parsing flag 'request-percentage' for database quota create : %v", errRP)
+			}
+
+			user, errU := cmd.Flags().GetString("user")
+			if errU != nil {
+				return fmt.Errorf("error parsing flag 'user' for database quota create : %v", errU)
+			}
+
+			o.QuotaCreateReq = &govultr.DatabaseQuotaCreateReq{
+				ClientID:          clientID,
+				ConsumerByteRate:  consumerByteRate,
+				ProducerByteRate:  producerByteRate,
+				RequestPercentage: requestPercentage,
+				User:              user,
+			}
+
+			q, err := o.createQuota()
+			if err != nil {
+				return fmt.Errorf("error creating database quota : %v", err)
+			}
+
+			data := &QuotaPrinter{Quota: q}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	quotaCreate.Flags().StringP("client-id", "", "", "client ID for the new managed database quota")
+	quotaCreate.Flags().IntP("consumer-byte-rate", "", 0, "consumer byte rate for the new managed database quota")
+	quotaCreate.Flags().IntP("producer-byte-rate", "", 0, "producer byte rate factor for the new managed database quota")
+	quotaCreate.Flags().IntP("request-percentage", "", 0, "CPU request percentage for the new managed database quota")
+	quotaCreate.Flags().StringP("user", "", "", "user for the new managed database quota")
+
+	// Quota Delete
+	quotaDelete := &cobra.Command{
+		Use:   "delete <Database ID> <Client ID> <User Name>",
+		Short: "Delete a database quota",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 3 {
+				return errors.New("please provide a database ID, client ID, and user name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.delQuota(); err != nil {
+				return fmt.Errorf("error deleting database quota : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("Quota deleted"), nil)
+
+			return nil
+		},
+	}
+
+	quota.AddCommand(
+		quotaList,
+		quotaGet,
+		quotaCreate,
+		quotaDelete,
 	)
 
 	// Usage
@@ -997,7 +1344,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"period",
 		"p",
 		"",
-		"period (day, week, month, year) for viewing service alerts for a manaaged database",
+		"period (day, week, month, year) for viewing service alerts for a managed database",
 	)
 	if err := alertList.MarkFlagRequired("period"); err != nil {
 		fmt.Printf("error marking alert list 'period' flag required: %v", err)
@@ -1105,25 +1452,25 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
-	migrationStart.Flags().String("host", "", "source host for the manaaged database migration")
-	migrationStart.Flags().Int("port", 0, "source port for the manaaged database migration")
+	migrationStart.Flags().String("host", "", "source host for the managed database migration")
+	migrationStart.Flags().Int("port", 0, "source port for the managed database migration")
 	migrationStart.Flags().String(
 		"username",
 		"",
-		"source username for the manaaged database migration (uses `default` for Redis if omitted)",
+		"source username for the managed database migration (uses `default` for Redis if omitted)",
 	)
-	migrationStart.Flags().String("password", "", "source password for the manaaged database migration")
+	migrationStart.Flags().String("password", "", "source password for the managed database migration")
 	migrationStart.Flags().String(
 		"database",
 		"",
-		"source database for the manaaged database migration (MySQL/PostgreSQL only)",
+		"source database for the managed database migration (MySQL/PostgreSQL only)",
 	)
 	migrationStart.Flags().String(
 		"ignored-dbs",
 		"",
-		"comma-separated list of ignored databases for the manaaged database migration (MySQL/PostgreSQL only)",
+		"comma-separated list of ignored databases for the managed database migration (MySQL/PostgreSQL only)",
 	)
-	migrationStart.Flags().Bool("ssl", true, "source ssl requirement for the manaaged database migration")
+	migrationStart.Flags().Bool("ssl", true, "source ssl requirement for the managed database migration")
 
 	// Migration Detach
 	migrationDetach := &cobra.Command{
@@ -1701,6 +2048,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			// MySQL and PostgreSQL flags
 			autovacuumAnalyzeScaleFactor, errAu := cmd.Flags().GetFloat32("autovacuum-analyze-scale-factor")
 			if errAu != nil {
 				return fmt.Errorf(
@@ -2113,7 +2461,277 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'wal-writer-delay' for advanced options update : %v", errWl)
 			}
 
+			// Kafka flags
+
+			compressionType, errCoT := cmd.Flags().GetString("compression-type")
+			if errCoT != nil {
+				return fmt.Errorf("error parsing flag 'compression-type' for advanced options update : %v", errCoT)
+			}
+
+			groupInitialRebalanceDelayMS, errGIRD := cmd.Flags().GetInt("group-initial-rebalance-delay-ms")
+			if errGIRD != nil {
+				return fmt.Errorf("error parsing flag 'group-initial-rebalance-delay-ms' for advanced options update : %v", errGIRD)
+			}
+
+			groupMinSessionTimeoutMS, errGMiST := cmd.Flags().GetInt("group-min-session-timeout-ms")
+			if errGMiST != nil {
+				return fmt.Errorf("error parsing flag 'group-min-session-timeout-ms' for advanced options update : %v", errGMiST)
+			}
+
+			groupMaxSessionTimeoutMS, errGMaST := cmd.Flags().GetInt("group-max-session-timeout-ms")
+			if errGMaST != nil {
+				return fmt.Errorf("error parsing flag 'group-max-session-timeout-ms' for advanced options update : %v", errGMaST)
+			}
+
+			connectionsMaxIdleMS, errCMI := cmd.Flags().GetInt("connections-max-idle-ms")
+			if errCMI != nil {
+				return fmt.Errorf("error parsing flag 'connections-max-idle-ms' for advanced options update : %v", errCMI)
+			}
+
+			maxIncrementalFetchSessionCacheSlots, errMIFSCS := cmd.Flags().GetInt("max-incremental-fetch-session-cache-slots")
+			if errMIFSCS != nil {
+				return fmt.Errorf(
+					"error parsing flag 'max-incremental-fetch-session-cache-slots' for advanced options update : %v",
+					errMIFSCS,
+				)
+			}
+
+			messageMaxBytes, errMMB := cmd.Flags().GetInt("message-max-bytes")
+			if errMMB != nil {
+				return fmt.Errorf("error parsing flag 'message-max-bytes' for advanced options update : %v", errMMB)
+			}
+
+			offsetsRetentionMinutes, errORM := cmd.Flags().GetInt("offsets-retention-minutes")
+			if errORM != nil {
+				return fmt.Errorf("error parsing flag 'offsets-retention-minutes' for advanced options update : %v", errORM)
+			}
+
+			logCleanerDeleteRetentionMS, errLCDR := cmd.Flags().GetInt("log-cleaner-delete-retention-ms")
+			if errLCDR != nil {
+				return fmt.Errorf("error parsing flag 'log-cleaner-delete-retention-ms' for advanced options update : %v", errLCDR)
+			}
+
+			logCleanerMinCleanableRatio, errLCMCR := cmd.Flags().GetFloat32("log-cleaner-min-cleanable-ratio")
+			if errLCMCR != nil {
+				return fmt.Errorf("error parsing flag 'log-cleaner-min-cleanable-ratio' for advanced options update : %v", errLCMCR)
+			}
+
+			logCleanerMaxCompactionLagMS, errLCMaCL := cmd.Flags().GetInt("log-cleaner-max-compaction-lag-ms")
+			if errLCMaCL != nil {
+				return fmt.Errorf(
+					"error parsing flag 'log-cleaner-max-compaction-lag-ms' for advanced options update : %v",
+					errLCMaCL,
+				)
+			}
+
+			logCleanerMinCompactionLagMS, errLCMiCL := cmd.Flags().GetInt("log-cleaner-min-compaction-lag-ms")
+			if errLCMiCL != nil {
+				return fmt.Errorf(
+					"error parsing flag 'log-cleaner-min-compaction-lag-ms' for advanced options update : %v",
+					errLCMiCL,
+				)
+			}
+
+			logCleanupPolicy, errLCP := cmd.Flags().GetString("log-cleanup-policy")
+			if errLCP != nil {
+				return fmt.Errorf("error parsing flag 'log-cleanup-policy' for advanced options update : %v", errLCP)
+			}
+
+			logFlushIntervalMessages, errLFIM := cmd.Flags().GetInt("log-flush-interval-messages")
+			if errLFIM != nil {
+				return fmt.Errorf("error parsing flag 'log-flush-interval-messages' for advanced options update : %v", errLFIM)
+			}
+
+			logFlushIntervalMS, errLFI := cmd.Flags().GetInt("log-flush-interval-ms")
+			if errLFI != nil {
+				return fmt.Errorf("error parsing flag 'log-flush-interval-ms' for advanced options update : %v", errLFI)
+			}
+
+			logIndexIntervalBytes, errLIIB := cmd.Flags().GetInt("log-index-interval-bytes")
+			if errLIIB != nil {
+				return fmt.Errorf("error parsing flag 'log-index-interval-bytes' for advanced options update : %v", errLIIB)
+			}
+
+			logIndexSizeMaxBytes, errLISMB := cmd.Flags().GetInt("log-index-size-max-bytes")
+			if errLISMB != nil {
+				return fmt.Errorf("error parsing flag 'log-index-size-max-bytes' for advanced options update : %v", errLISMB)
+			}
+
+			logLocalRetentionMS, errLLR := cmd.Flags().GetInt("log-local-retention-ms")
+			if errLLR != nil {
+				return fmt.Errorf("error parsing flag 'log-local-retention-ms' for advanced options update : %v", errLLR)
+			}
+
+			logLocalRetentionBytes, errLLRB := cmd.Flags().GetInt("log-local-retention-bytes")
+			if errLLRB != nil {
+				return fmt.Errorf("error parsing flag 'log-local-retention-bytes' for advanced options update : %v", errLLRB)
+			}
+
+			logMessageDownconversionEnable, errLMDE := cmd.Flags().GetBool("log-message-downconversion-enable")
+			if errLMDE != nil {
+				return fmt.Errorf(
+					"error parsing flag 'log-message-downconversion-enable' for advanced options update : %v",
+					errLMDE,
+				)
+			}
+
+			logMessageTimestampType, errLMTT := cmd.Flags().GetString("log-message-timestamp-type")
+			if errLMTT != nil {
+				return fmt.Errorf("error parsing flag 'log-message-timestamp-type' for advanced options update : %v", errLMTT)
+			}
+
+			logMessageTimestampDifferenceMaxMS, errLMTDM := cmd.Flags().GetInt("log-message-timestamp-difference-max-ms")
+			if errLMTDM != nil {
+				return fmt.Errorf(
+					"error parsing flag 'log-message-timestamp-difference-max-ms' for advanced options update : %v",
+					errLMTDM,
+				)
+			}
+
+			logPreallocate, errLP := cmd.Flags().GetBool("log-preallocate")
+			if errLP != nil {
+				return fmt.Errorf("error parsing flag 'log-preallocate' for advanced options update : %v", errLP)
+			}
+
+			logRetentionBytes, errLRB := cmd.Flags().GetInt("log-retention-bytes")
+			if errLRB != nil {
+				return fmt.Errorf("error parsing flag 'log-retention-bytes' for advanced options update : %v", errLRB)
+			}
+
+			logRetentionHours, errLRH := cmd.Flags().GetInt("log-retention-hours")
+			if errLRH != nil {
+				return fmt.Errorf("error parsing flag 'log-retention-hours' for advanced options update : %v", errLRH)
+			}
+
+			logRetentionMS, errLR := cmd.Flags().GetInt("log-retention-ms")
+			if errLR != nil {
+				return fmt.Errorf("error parsing flag 'log-retention-ms' for advanced options update : %v", errLR)
+			}
+
+			logRollJitterMS, errLRJ := cmd.Flags().GetInt("log-roll-jitter-ms")
+			if errLRJ != nil {
+				return fmt.Errorf("error parsing flag 'log-roll-jitter-ms' for advanced options update : %v", errLRJ)
+			}
+
+			logRollMS, errLRMS := cmd.Flags().GetInt("log-roll-ms")
+			if errLRMS != nil {
+				return fmt.Errorf("error parsing flag 'log-roll-ms' for advanced options update : %v", errLRMS)
+			}
+
+			logSegmentBytes, errLSB := cmd.Flags().GetInt("log-segment-bytes")
+			if errLSB != nil {
+				return fmt.Errorf("error parsing flag 'log-segment-bytes' for advanced options update : %v", errLSB)
+			}
+
+			logSegmentDeleteDelayMS, errLSDD := cmd.Flags().GetInt("log-segment-delete-delay-ms")
+			if errLSDD != nil {
+				return fmt.Errorf("error parsing flag 'log-segment-delete-delay-ms' for advanced options update : %v", errLSDD)
+			}
+
+			autoCreateTopicsEnable, errACTE := cmd.Flags().GetBool("auto-create-topics-enable")
+			if errACTE != nil {
+				return fmt.Errorf("error parsing flag 'auto-create-topics-enable' for advanced options update : %v", errACTE)
+			}
+
+			minInsyncReplicas, errMIR := cmd.Flags().GetInt("min-insync-replicas")
+			if errMIR != nil {
+				return fmt.Errorf("error parsing flag 'min-insync-replicas' for advanced options update : %v", errMIR)
+			}
+
+			numPartitions, errNP := cmd.Flags().GetInt("num-partitions")
+			if errNP != nil {
+				return fmt.Errorf("error parsing flag 'num-partitions' for advanced options update : %v", errNP)
+			}
+
+			defaultReplicationFactor, errDRF := cmd.Flags().GetInt("default-replication-factor")
+			if errDRF != nil {
+				return fmt.Errorf("error parsing flag 'default-replication-factor' for advanced options update : %v", errDRF)
+			}
+
+			replicaFetchMaxBytes, errRFMB := cmd.Flags().GetInt("replica-fetch-max-bytes")
+			if errRFMB != nil {
+				return fmt.Errorf("error parsing flag 'replica-fetch-max-bytes' for advanced options update : %v", errRFMB)
+			}
+
+			replicaFetchResponseMaxBytes, errRFRMB := cmd.Flags().GetInt("replica-fetch-response-max-bytes")
+			if errRFRMB != nil {
+				return fmt.Errorf(
+					"error parsing flag 'replica-fetch-response-max-bytes' for advanced options update : %v",
+					errRFRMB,
+				)
+			}
+
+			maxConnectionsPerIP, errMCPIP := cmd.Flags().GetInt("max-connections-per-ip")
+			if errMCPIP != nil {
+				return fmt.Errorf("error parsing flag 'max-connections-per-ip' for advanced options update : %v", errMCPIP)
+			}
+
+			producerPurgatoryPurgeIntervalRequests, errPPPIR := cmd.Flags().GetInt("producer-purgatory-purge-interval-requests")
+			if errPPPIR != nil {
+				return fmt.Errorf(
+					"error parsing flag 'producer-purgatory-purge-interval-requests' for advanced options update : %v",
+					errPPPIR,
+				)
+			}
+
+			saslOauthbearerExpectedAudience, errSOEA := cmd.Flags().GetString("sasl-oauthbearer-expected-audience")
+			if errSOEA != nil {
+				return fmt.Errorf(
+					"error parsing flag 'sasl-oauthbearer-expected-audience' for advanced options update : %v",
+					errSOEA,
+				)
+			}
+
+			saslOauthbearerExpectedIssuer, errSOEI := cmd.Flags().GetString("sasl-oauthbearer-expected-issuer")
+			if errSOEI != nil {
+				return fmt.Errorf("error parsing flag 'sasl-oauthbearer-expected-issuer' for advanced options update : %v", errSOEI)
+			}
+
+			saslOauthbearerJWKSEndpointURL, errSOJEU := cmd.Flags().GetString("sasl-oauthbearer-jwks-endpoint-url")
+			if errSOJEU != nil {
+				return fmt.Errorf(
+					"error parsing flag 'sasl-oauthbearer-jwks-endpoint-url' for advanced options update : %v",
+					errSOJEU,
+				)
+			}
+
+			saslOauthbearerSubClaimName, errSOSCN := cmd.Flags().GetString("sasl-oauthbearer-sub-claim-name")
+			if errSOSCN != nil {
+				return fmt.Errorf("error parsing flag 'sasl-oauthbearer-sub-claim-name' for advanced options update : %v", errSOSCN)
+			}
+
+			socketRequestMaxBytes, errSRMB := cmd.Flags().GetInt("socket-request-max-bytes")
+			if errSRMB != nil {
+				return fmt.Errorf("error parsing flag 'socket-request-max-bytes' for advanced options update : %v", errSRMB)
+			}
+
+			transactionStateLogSegmentBytes, errTSLSB := cmd.Flags().GetInt("transaction-state-log-segment-bytes")
+			if errTSLSB != nil {
+				return fmt.Errorf(
+					"error parsing flag 'transaction-state-log-segment-bytes' for advanced options update : %v",
+					errTSLSB,
+				)
+			}
+
+			transactionRemoveExpiredTransactionCleanupIntervalMS, errTRETCI := cmd.Flags().GetInt("transaction-remove-expired-transaction-cleanup-interval-ms") //nolint:lll
+			if errTRETCI != nil {
+				return fmt.Errorf(
+					"error parsing flag 'transaction-remove-expired-transaction-cleanup-interval-ms' for advanced options update : %v",
+					errTRETCI,
+				)
+			}
+
+			transactionPartitionVerificationEnable, errTPVE := cmd.Flags().GetBool("transaction-partition-verification-enable")
+			if errTPVE != nil {
+				return fmt.Errorf(
+					"error parsing flag 'transaction-partition-verification-enable' for advanced options update : %v",
+					errTPVE,
+				)
+			}
+
 			o.AdvancedOptionsReq = &govultr.DatabaseAdvancedOptions{}
+
+			// MySQL and PostgreSQL flags
 
 			if cmd.Flags().Changed("autovacuum-analyze-scale-factor") {
 				o.AdvancedOptionsReq.AutovacuumAnalyzeScaleFactor = autovacuumAnalyzeScaleFactor
@@ -2399,6 +3017,192 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				o.AdvancedOptionsReq.InnoDBRollbackOnTimeout = &innoDBRollbackOnTimeout
 			}
 
+			// Kafka flags
+
+			if cmd.Flags().Changed("compression-type") {
+				o.AdvancedOptionsReq.CompressionType = compressionType
+			}
+
+			if cmd.Flags().Changed("group-initial-rebalance-delay-ms") {
+				o.AdvancedOptionsReq.GroupInitialRebalanceDelayMS = groupInitialRebalanceDelayMS
+			}
+
+			if cmd.Flags().Changed("group-min-session-timeout-ms") {
+				o.AdvancedOptionsReq.GroupMinSessinTimeoutMS = groupMinSessionTimeoutMS
+			}
+
+			if cmd.Flags().Changed("group-max-session-timeout-ms") {
+				o.AdvancedOptionsReq.GroupMaxSessionTimeoutMS = groupMaxSessionTimeoutMS
+			}
+
+			if cmd.Flags().Changed("connections-max-idle-ms") {
+				o.AdvancedOptionsReq.ConnectionsMaxIdleMS = connectionsMaxIdleMS
+			}
+
+			if cmd.Flags().Changed("max-incremental-fetch-session-cache-slots") {
+				o.AdvancedOptionsReq.MaxIncrementalFetchSessionCacheSlots = maxIncrementalFetchSessionCacheSlots
+			}
+
+			if cmd.Flags().Changed("message-max-bytes") {
+				o.AdvancedOptionsReq.MessageMaxBytes = messageMaxBytes
+			}
+
+			if cmd.Flags().Changed("offsets-retention-minutes") {
+				o.AdvancedOptionsReq.OffsetsRetentionMinutes = offsetsRetentionMinutes
+			}
+
+			if cmd.Flags().Changed("log-cleaner-delete-retention-ms") {
+				o.AdvancedOptionsReq.LogCleanerDeleteRetentionMS = logCleanerDeleteRetentionMS
+			}
+
+			if cmd.Flags().Changed("log-cleaner-min-cleanable-ratio") {
+				o.AdvancedOptionsReq.LogCleanerMinCleanableRatio = logCleanerMinCleanableRatio
+			}
+
+			if cmd.Flags().Changed("log-cleaner-max-compaction-lag-ms") {
+				o.AdvancedOptionsReq.LogCleanerMaxCompactionLagMS = logCleanerMaxCompactionLagMS
+			}
+
+			if cmd.Flags().Changed("log-cleaner-min-compaction-lag-ms") {
+				o.AdvancedOptionsReq.LogCleanerMinCompactionLagMS = logCleanerMinCompactionLagMS
+			}
+
+			if cmd.Flags().Changed("log-cleanup-policy") {
+				o.AdvancedOptionsReq.LogCleanupPolicy = logCleanupPolicy
+			}
+
+			if cmd.Flags().Changed("log-flush-interval-messages") {
+				o.AdvancedOptionsReq.LogFlushIntervalMessages = logFlushIntervalMessages
+			}
+
+			if cmd.Flags().Changed("log-flush-interval-ms") {
+				o.AdvancedOptionsReq.LogFlushIntervalMS = logFlushIntervalMS
+			}
+
+			if cmd.Flags().Changed("log-index-interval-bytes") {
+				o.AdvancedOptionsReq.LogIndexIntervalBytes = logIndexIntervalBytes
+			}
+
+			if cmd.Flags().Changed("log-index-size-max-bytes") {
+				o.AdvancedOptionsReq.LogIndexSizeMaxBytes = logIndexSizeMaxBytes
+			}
+
+			if cmd.Flags().Changed("log-local-retention-ms") {
+				o.AdvancedOptionsReq.LogLocalRetentionMS = logLocalRetentionMS
+			}
+
+			if cmd.Flags().Changed("log-local-retention-bytes") {
+				o.AdvancedOptionsReq.LogLocalRetentionBytes = logLocalRetentionBytes
+			}
+
+			if cmd.Flags().Changed("log-message-downconversion-enable") {
+				o.AdvancedOptionsReq.LogMessageDownconversionEnable = &logMessageDownconversionEnable
+			}
+
+			if cmd.Flags().Changed("log-message-timestamp-type") {
+				o.AdvancedOptionsReq.LogMessageTimestampType = logMessageTimestampType
+			}
+
+			if cmd.Flags().Changed("log-message-timestamp-difference-max-ms") {
+				o.AdvancedOptionsReq.LogMessageTimestampDifferenceMaxMS = logMessageTimestampDifferenceMaxMS
+			}
+
+			if cmd.Flags().Changed("log-preallocate") {
+				o.AdvancedOptionsReq.LogPreallocate = &logPreallocate
+			}
+
+			if cmd.Flags().Changed("log-retention-bytes") {
+				o.AdvancedOptionsReq.LogRetentionBytes = logRetentionBytes
+			}
+
+			if cmd.Flags().Changed("log-retention-hours") {
+				o.AdvancedOptionsReq.LogRetentionHours = logRetentionHours
+			}
+
+			if cmd.Flags().Changed("log-retention-ms") {
+				o.AdvancedOptionsReq.LogRetentionMS = logRetentionMS
+			}
+
+			if cmd.Flags().Changed("log-roll-jitter-ms") {
+				o.AdvancedOptionsReq.LogRollJitterMS = logRollJitterMS
+			}
+
+			if cmd.Flags().Changed("log-roll-ms") {
+				o.AdvancedOptionsReq.LogRollMS = logRollMS
+			}
+
+			if cmd.Flags().Changed("log-segment-bytes") {
+				o.AdvancedOptionsReq.LogSegmentBytes = logSegmentBytes
+			}
+
+			if cmd.Flags().Changed("log-segment-delete-delay-ms") {
+				o.AdvancedOptionsReq.LogSegmentDeleteDelayMS = logSegmentDeleteDelayMS
+			}
+
+			if cmd.Flags().Changed("auto-create-topics-enable") {
+				o.AdvancedOptionsReq.AutoCreateTopicsEnable = &autoCreateTopicsEnable
+			}
+
+			if cmd.Flags().Changed("min-insync-replicas") {
+				o.AdvancedOptionsReq.MinInsyncReplicas = minInsyncReplicas
+			}
+
+			if cmd.Flags().Changed("num-partitions") {
+				o.AdvancedOptionsReq.NumPartitions = numPartitions
+			}
+
+			if cmd.Flags().Changed("default-replication-factor") {
+				o.AdvancedOptionsReq.DefaultReplicationFactor = defaultReplicationFactor
+			}
+
+			if cmd.Flags().Changed("replica-fetch-max-bytes") {
+				o.AdvancedOptionsReq.ReplicaFetchMaxBytes = replicaFetchMaxBytes
+			}
+
+			if cmd.Flags().Changed("replica-fetch-response-max-bytes") {
+				o.AdvancedOptionsReq.ReplicaFetchResponseMaxBytes = replicaFetchResponseMaxBytes
+			}
+
+			if cmd.Flags().Changed("max-connections-per-ip") {
+				o.AdvancedOptionsReq.MaxConnectionsPerIP = maxConnectionsPerIP
+			}
+
+			if cmd.Flags().Changed("producer-purgatory-purge-interval-requests") {
+				o.AdvancedOptionsReq.ProducerPurgatoryPurgeIntervalRequests = producerPurgatoryPurgeIntervalRequests
+			}
+
+			if cmd.Flags().Changed("sasl-oauthbearer-expected-audience") {
+				o.AdvancedOptionsReq.SASLOauthbearerExpectedAudience = saslOauthbearerExpectedAudience
+			}
+
+			if cmd.Flags().Changed("sasl-oauthbearer-expected-issuer") {
+				o.AdvancedOptionsReq.SASLOauthbearerExpectedIssuer = saslOauthbearerExpectedIssuer
+			}
+
+			if cmd.Flags().Changed("sasl-oauthbearer-jwks-endpoint-url") {
+				o.AdvancedOptionsReq.SASLOauthbearerJWKSEndpointURL = saslOauthbearerJWKSEndpointURL
+			}
+
+			if cmd.Flags().Changed("sasl-oauthbearer-sub-claim-name") {
+				o.AdvancedOptionsReq.SASLOauthbearerSubClaimName = saslOauthbearerSubClaimName
+			}
+
+			if cmd.Flags().Changed("socket-request-max-bytes") {
+				o.AdvancedOptionsReq.SocketRequestMaxBytes = socketRequestMaxBytes
+			}
+
+			if cmd.Flags().Changed("transaction-state-log-segment-bytes") {
+				o.AdvancedOptionsReq.TransactionStateLogSegmentBytes = transactionStateLogSegmentBytes
+			}
+
+			if cmd.Flags().Changed("transaction-remove-expired-transaction-cleanup-interval-ms") {
+				o.AdvancedOptionsReq.TransactionRemoveExpiredTransactionCleanupIntervalMS = transactionRemoveExpiredTransactionCleanupIntervalMS //nolint:lll
+			}
+
+			if cmd.Flags().Changed("transaction-partition-verification-enable") {
+				o.AdvancedOptionsReq.TransactionPartitionVerificationEnable = &transactionPartitionVerificationEnable
+			}
+
 			cur, avail, err := o.updateAdvancedOptions()
 			if err != nil {
 				return fmt.Errorf("error updating database advanced options : %v", err)
@@ -2410,6 +3214,8 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			return nil
 		},
 	}
+
+	// MySQL and PostgreSQL flags
 
 	advancedOptionUpdate.Flags().Float32(
 		"autovacuum-analyze-scale-factor",
@@ -2752,6 +3558,239 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"set the managed postgresql configuration value for wal_writer_delay",
 	)
 
+	// Kafka flags
+
+	advancedOptionUpdate.Flags().String(
+		"compression-type",
+		"",
+		"set the managed kafka configuration value for compression_type",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"group-initial-rebalance-delay-ms",
+		0,
+		"set the managed kafka configuration value for group_initial_rebalance_delay_ms",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"group-min-session-timeout-ms",
+		0,
+		"set the managed kafka configuration value for group_min_session_timeout_ms",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"group-max-session-timeout-ms",
+		0,
+		"set the managed kafka configuration value for group_max_session_timeout_ms",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"connections-max-idle-ms",
+		0,
+		"set the managed kafka configuration value for connections_max_idle_ms",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"max-incremental-fetch-session-cache-slots",
+		0,
+		"set the managed kafka configuration value for max_incremental_fetch_session_cache_slots",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"message-max-bytes",
+		0,
+		"set the managed kafka configuration value for message_max_bytes",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"offsets-retention-minutes",
+		0,
+		"set the managed kafka configuration value for offsets_retention_minutes",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-cleaner-delete-retention-ms",
+		0,
+		"set the managed kafka configuration value for log_cleaner_delete_retention_ms",
+	)
+	advancedOptionUpdate.Flags().Float32(
+		"log-cleaner-min-cleanable-ratio",
+		0,
+		"set the managed kafka configuration value for log_cleaner_min_cleanable_ratio",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-cleaner-max-compaction-lag-ms",
+		0,
+		"set the managed kafka configuration value for log_cleaner_max_compaction_lag_ms",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-cleaner-min-compaction-lag-ms",
+		0,
+		"set the managed kafka configuration value for log_cleaner_min_compaction_lag_ms",
+	)
+	advancedOptionUpdate.Flags().String(
+		"log-cleanup-policy",
+		"",
+		"set the managed kafka configuration value for log_cleanup_policy",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-flush-interval-messages",
+		0,
+		"set the managed kafka configuration value for log_flush_interval_messages",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-flush-interval-ms",
+		0,
+		"set the managed kafka configuration value for log_flush_interval_ms",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-index-interval-bytes",
+		0,
+		"set the managed kafka configuration value for log_index_interval_bytes",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-index-size-max-bytes",
+		0,
+		"set the managed kafka configuration value for log_index_size_max_bytes",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-local-retention-ms",
+		0,
+		"set the managed kafka configuration value for log_local_retention_ms",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-local-retention-bytes",
+		0,
+		"set the managed kafka configuration value for log_local_retention_bytes",
+	)
+	advancedOptionUpdate.Flags().Bool(
+		"log-message-downconversion-enable",
+		false,
+		"set the managed kafka configuration value for log_message_downconversion_enable",
+	)
+	advancedOptionUpdate.Flags().String(
+		"log-message-timestamp-type",
+		"",
+		"set the managed kafka configuration value for log_message_timestamp_type",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-message-timestamp-difference-max-ms",
+		0,
+		"set the managed kafka configuration value for log_message_timestamp_difference_max_ms",
+	)
+	advancedOptionUpdate.Flags().Bool(
+		"log-preallocate",
+		false,
+		"set the managed kafka configuration value for log_preallocate",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-retention-bytes",
+		0,
+		"set the managed kafka configuration value for log_retention_bytes",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-retention-hours",
+		0,
+		"set the managed kafka configuration value for log_retention_hours",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-retention-ms",
+		0,
+		"set the managed kafka configuration value for log_retention_ms",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-roll-jitter-ms",
+		0,
+		"set the managed kafka configuration value for log_roll_jitter_ms",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-roll-ms",
+		0,
+		"set the managed kafka configuration value for log_roll_ms",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-segment-bytes",
+		0,
+		"set the managed kafka configuration value for log_segment_bytes",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"log-segment-delete-delay-ms",
+		0,
+		"set the managed kafka configuration value for log_segment_delete_delay_ms",
+	)
+	advancedOptionUpdate.Flags().Bool(
+		"auto-create-topics-enable",
+		false,
+		"set the managed kafka configuration value for auto_create_topics_enable",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"min-insync-replicas",
+		0,
+		"set the managed kafka configuration value for min_insync_replicas",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"num-partitions",
+		0,
+		"set the managed kafka configuration value for num_partitions",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"default-replication-factor",
+		0,
+		"set the managed kafka configuration value for default_replication_factor",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"replica-fetch-max-bytes",
+		0,
+		"set the managed kafka configuration value for replica_fetch_max_bytes",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"replica-fetch-response-max-bytes",
+		0,
+		"set the managed kafka configuration value for replica_fetch_response_max_bytes",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"max-connections-per-ip",
+		0,
+		"set the managed kafka configuration value for max_connections_per_ip",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"producer-purgatory-purge-interval-requests",
+		0,
+		"set the managed kafka configuration value for producer_purgatory_purge_interval_requests",
+	)
+	advancedOptionUpdate.Flags().String(
+		"sasl-oauthbearer-expected-audience",
+		"",
+		"set the managed kafka configuration value for sasl_oauthbearer_expected_audience",
+	)
+	advancedOptionUpdate.Flags().String(
+		"sasl-oauthbearer-expected-issuer",
+		"",
+		"set the managed kafka configuration value for sasl_oauthbearer_expected_issuer",
+	)
+	advancedOptionUpdate.Flags().String(
+		"sasl-oauthbearer-jwks-endpoint-url",
+		"",
+		"set the managed kafka configuration value for sasl_oauthbearer_jwks_endpoint_url",
+	)
+	advancedOptionUpdate.Flags().String(
+		"sasl-oauthbearer-sub-claim-name",
+		"",
+		"set the managed kafka configuration value for sasl_oauthbearer_sub_claim_name",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"socket-request-max-bytes",
+		0,
+		"set the managed kafka configuration value for socket_request_max_bytes",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"transaction-state-log-segment-bytes",
+		0,
+		"set the managed kafka configuration value for transaction_state_log_segment_bytes",
+	)
+	advancedOptionUpdate.Flags().Int(
+		"transaction-remove-expired-transaction-cleanup-interval-ms",
+		0,
+		"set the managed kafka configuration value for transaction_remove_expired_transaction_cleanup_interval_ms",
+	)
+	advancedOptionUpdate.Flags().Bool(
+		"transaction-partition-verification-enable",
+		false,
+		"set the managed kafka configuration value for transaction_partition_verification_enable",
+	)
+
 	advancedOption.AddCommand(
 		advancedOptionList,
 		advancedOptionUpdate,
@@ -2817,7 +3856,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
-	versionUpgrade.Flags().StringP("version", "v", "", "version of the manaaged database to upgrade to")
+	versionUpgrade.Flags().StringP("version", "v", "", "version of the managed database to upgrade to")
 	if err := versionUpgrade.MarkFlagRequired("version"); err != nil {
 		fmt.Printf("error marking version upgrade 'version' flag required: %v", err)
 		os.Exit(1)
@@ -2836,6 +3875,8 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		del,
 		user,
 		db,
+		topic,
+		quota,
 		usage,
 		maintenance,
 		plan,
@@ -2859,6 +3900,9 @@ type options struct {
 	UserUpdateReq           *govultr.DatabaseUserUpdateReq
 	UserUpdateACLReq        *govultr.DatabaseUserACLReq
 	DBCreateReq             *govultr.DatabaseDBCreateReq
+	TopicCreateReq          *govultr.DatabaseTopicCreateReq
+	TopicUpdateReq          *govultr.DatabaseTopicUpdateReq
+	QuotaCreateReq          *govultr.DatabaseQuotaCreateReq
 	AlertsReq               *govultr.DatabaseListAlertsReq
 	MigrationReq            *govultr.DatabaseMigrationStartReq
 	ReadReplicaCreateReq    *govultr.DatabaseAddReplicaReq
@@ -2940,6 +3984,49 @@ func (o *options) createDB() (*govultr.DatabaseDB, error) {
 
 func (o *options) delDB() error {
 	return o.Base.Client.Database.DeleteDB(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+}
+
+func (o *options) listTopics() ([]govultr.DatabaseTopic, *govultr.Meta, error) {
+	topics, meta, _, err := o.Base.Client.Database.ListTopics(o.Base.Context, o.Base.Args[0])
+	return topics, meta, err
+}
+
+func (o *options) getTopic() (*govultr.DatabaseTopic, error) {
+	topic, _, err := o.Base.Client.Database.GetTopic(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return topic, err
+}
+
+func (o *options) createTopic() (*govultr.DatabaseTopic, error) {
+	topic, _, err := o.Base.Client.Database.CreateTopic(o.Base.Context, o.Base.Args[0], o.TopicCreateReq)
+	return topic, err
+}
+
+func (o *options) updateTopic() (*govultr.DatabaseTopic, error) {
+	topic, _, err := o.Base.Client.Database.UpdateTopic(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.TopicUpdateReq)
+	return topic, err
+}
+
+func (o *options) delTopic() error {
+	return o.Base.Client.Database.DeleteTopic(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+}
+
+func (o *options) listQuotas() ([]govultr.DatabaseQuota, *govultr.Meta, error) {
+	quotas, meta, _, err := o.Base.Client.Database.ListQuotas(o.Base.Context, o.Base.Args[0])
+	return quotas, meta, err
+}
+
+func (o *options) getQuota() (*govultr.DatabaseQuota, error) {
+	quota, _, err := o.Base.Client.Database.GetQuota(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
+	return quota, err
+}
+
+func (o *options) createQuota() (*govultr.DatabaseQuota, error) {
+	quota, _, err := o.Base.Client.Database.CreateQuota(o.Base.Context, o.Base.Args[0], o.QuotaCreateReq)
+	return quota, err
+}
+
+func (o *options) delQuota() error {
+	return o.Base.Client.Database.DeleteQuota(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
 }
 
 func (o *options) getUsage() (*govultr.DatabaseUsage, error) {
