@@ -202,9 +202,9 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'mysql-long-query-time' for database create : %v", errMt)
 			}
 
-			redisEvictionPolicy, errEe := cmd.Flags().GetString("redis-eviction-policy")
+			evictionPolicy, errEe := cmd.Flags().GetString("eviction-policy")
 			if errEe != nil {
-				return fmt.Errorf("error parsing flag 'redis-eviction-policy' for database create : %v", errEe)
+				return fmt.Errorf("error parsing flag 'eviction-policy' for database create : %v", errEe)
 			}
 
 			o.CreateReq = &govultr.DatabaseCreateReq{
@@ -222,7 +222,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				MySQLRequirePrimaryKey: &mysqlRequirePrimaryKey,
 				MySQLSlowQueryLog:      &mySQLSlowQueryLog,
 				MySQLLongQueryTime:     mySQLLongQueryTime,
-				RedisEvictionPolicy:    redisEvictionPolicy,
+				EvictionPolicy:         evictionPolicy,
 			}
 
 			db, err := o.create()
@@ -296,7 +296,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		0,
 		"long query time for the new mysql managed database when slow query logging is enabled",
 	)
-	create.Flags().String("redis-eviction-policy", "", "eviction policy for the new redis managed database")
+	create.Flags().String("eviction-policy", "", "eviction policy for the new caching managed database")
 
 	// Update
 	update := &cobra.Command{
@@ -362,9 +362,9 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'mysql-long-query-time' for database update : %v", errMt)
 			}
 
-			redisEvictionPolicy, errEe := cmd.Flags().GetString("redis-eviction-policy")
+			evictionPolicy, errEe := cmd.Flags().GetString("eviction-policy")
 			if errEe != nil {
-				return fmt.Errorf("error parsing flag 'redis-eviction-policy' for database update : %v", errEe)
+				return fmt.Errorf("error parsing flag 'eviction-policy' for database update : %v", errEe)
 			}
 
 			o.UpdateReq = &govultr.DatabaseUpdateReq{}
@@ -409,8 +409,8 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				o.UpdateReq.MySQLLongQueryTime = mySQLLongQueryTime
 			}
 
-			if cmd.Flags().Changed("redis-eviction-policy") {
-				o.UpdateReq.RedisEvictionPolicy = redisEvictionPolicy
+			if cmd.Flags().Changed("eviction-policy") {
+				o.UpdateReq.EvictionPolicy = evictionPolicy
 			}
 
 			db, err := o.update()
@@ -454,7 +454,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		0,
 		"long query time for the mysql managed database when slow query logging is enabled",
 	)
-	update.Flags().String("redis-eviction-policy", "", "eviction policy for the redis managed database")
+	update.Flags().String("eviction-policy", "", "eviction policy for the caching managed database")
 
 	// Delete
 	del := &cobra.Command{
@@ -675,7 +675,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// User ACL
 	userACL := &cobra.Command{
 		Use:   "acl",
-		Short: "Commands to manage database user access control (Redis only)",
+		Short: "Commands to manage database user access control (Caching only)",
 	}
 
 	// User ACL Update
@@ -689,24 +689,24 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			categories, errCa := cmd.Flags().GetStringSlice("redis-acl-categories")
+			categories, errCa := cmd.Flags().GetStringSlice("acl-categories")
 			if errCa != nil {
-				return fmt.Errorf("error parsing flag 'redis-acl-categories' for database user ACL update : %v", errCa)
+				return fmt.Errorf("error parsing flag 'acl-categories' for database user ACL update : %v", errCa)
 			}
 
-			channels, errCh := cmd.Flags().GetStringSlice("redis-acl-channels")
+			channels, errCh := cmd.Flags().GetStringSlice("acl-channels")
 			if errCh != nil {
-				return fmt.Errorf("error parsing flag 'redis-acl-channels' for database user ACL update : %v", errCh)
+				return fmt.Errorf("error parsing flag 'acl-channels' for database user ACL update : %v", errCh)
 			}
 
-			commands, errCo := cmd.Flags().GetStringSlice("redis-acl-commands")
+			commands, errCo := cmd.Flags().GetStringSlice("acl-commands")
 			if errCo != nil {
-				return fmt.Errorf("error parsing flag 'redis-acl-commands' for database user ACL update : %v", errCo)
+				return fmt.Errorf("error parsing flag 'acl-commands' for database user ACL update : %v", errCo)
 			}
 
-			keys, errKe := cmd.Flags().GetStringSlice("redis-acl-keys")
+			keys, errKe := cmd.Flags().GetStringSlice("acl-keys")
 			if errKe != nil {
-				return fmt.Errorf("error parsing flag 'redis-acl-keys' for database user ACL update : %v", errKe)
+				return fmt.Errorf("error parsing flag 'acl-keys' for database user ACL update : %v", errKe)
 			}
 
 			permission, errPe := cmd.Flags().GetString("permission")
@@ -716,20 +716,20 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			o.UserUpdateACLReq = &govultr.DatabaseUserACLReq{}
 
-			if cmd.Flags().Changed("redis-acl-categories") {
-				o.UserUpdateACLReq.RedisACLCategories = &categories
+			if cmd.Flags().Changed("acl-categories") {
+				o.UserUpdateACLReq.ACLCategories = &categories
 			}
 
-			if cmd.Flags().Changed("redis-acl-channels") {
-				o.UserUpdateACLReq.RedisACLChannels = &channels
+			if cmd.Flags().Changed("acl-channels") {
+				o.UserUpdateACLReq.ACLChannels = &channels
 			}
 
-			if cmd.Flags().Changed("redis-acl-commands") {
-				o.UserUpdateACLReq.RedisACLCommands = &commands
+			if cmd.Flags().Changed("acl-commands") {
+				o.UserUpdateACLReq.ACLCommands = &commands
 			}
 
-			if cmd.Flags().Changed("redis-acl-keys") {
-				o.UserUpdateACLReq.RedisACLKeys = &keys
+			if cmd.Flags().Changed("acl-keys") {
+				o.UserUpdateACLReq.ACLKeys = &keys
 			}
 
 			if cmd.Flags().Changed("permission") {
@@ -749,32 +749,32 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	}
 
 	userACLUpdate.Flags().StringSlice(
-		"redis-acl-categories",
+		"acl-categories",
 		[]string{},
 		"list of rules for command categories",
 	)
 	userACLUpdate.Flags().StringSlice(
-		"redis-acl-channels",
+		"acl-channels",
 		[]string{},
 		"list of publish/subscribe channel patterns",
 	)
 	userACLUpdate.Flags().StringSlice(
-		"redis-acl-commands",
+		"acl-commands",
 		[]string{},
 		"list of rules for individual commands",
 	)
 	userACLUpdate.Flags().StringSlice(
-		"redis-acl-keys",
+		"acl-keys",
 		[]string{},
 		"list of key access rules",
 	)
 	userACLUpdate.Flags().String("permission", "", "the kafka permission level")
 
 	userACLUpdate.MarkFlagsOneRequired(
-		"redis-acl-categories",
-		"redis-acl-channels",
-		"redis-acl-commands",
-		"redis-acl-keys",
+		"acl-categories",
+		"acl-channels",
+		"acl-commands",
+		"acl-keys",
 		"permission",
 	)
 
@@ -1457,7 +1457,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	migrationStart.Flags().String(
 		"username",
 		"",
-		"source username for the managed database migration (uses `default` for Redis if omitted)",
+		"source username for the managed database migration (uses `default` for caching databases if omitted)",
 	)
 	migrationStart.Flags().String("password", "", "source password for the managed database migration")
 	migrationStart.Flags().String(

@@ -148,8 +148,8 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 			data = append(data, []string{" "})
 		}
 
-		if d.DBs[i].DatabaseEngine == "redis" {
-			data = append(data, []string{"REDIS EVICTION POLICY", d.DBs[i].RedisEvictionPolicy})
+		if d.DBs[i].DatabaseEngine == "redis" || d.DBs[i].DatabaseEngine == "valkey" {
+			data = append(data, []string{"EVICTION POLICY", d.DBs[i].EvictionPolicy})
 		}
 
 		data = append(data, []string{"CLUSTER TIME ZONE", d.DBs[i].ClusterTimeZone})
@@ -249,8 +249,8 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 					data = append(data, []string{" "})
 				}
 
-				if d.DBs[i].ReadReplicas[j].DatabaseEngine == "redis" {
-					data = append(data, []string{"REDIS EVICTION POLICY", d.DBs[i].ReadReplicas[j].RedisEvictionPolicy})
+				if d.DBs[i].ReadReplicas[j].DatabaseEngine == "redis" || d.DBs[i].ReadReplicas[j].DatabaseEngine == "valkey" {
+					data = append(data, []string{"EVICTION POLICY", d.DBs[i].ReadReplicas[j].EvictionPolicy})
 				}
 
 				data = append(data, []string{"CLUSTER TIME ZONE", d.DBs[i].ReadReplicas[j].ClusterTimeZone})
@@ -404,8 +404,8 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 		data = append(data, []string{" "})
 	}
 
-	if d.DB.DatabaseEngine == "redis" {
-		data = append(data, []string{"REDIS EVICTION POLICY", d.DB.RedisEvictionPolicy})
+	if d.DB.DatabaseEngine == "redis" || d.DB.DatabaseEngine == "valkey" {
+		data = append(data, []string{"EVICTION POLICY", d.DB.EvictionPolicy})
 	}
 
 	data = append(data, []string{"CLUSTER TIME ZONE", d.DB.ClusterTimeZone})
@@ -505,8 +505,8 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 				data = append(data, []string{" "})
 			}
 
-			if d.DB.ReadReplicas[i].DatabaseEngine == "redis" {
-				data = append(data, []string{"REDIS EVICTION POLICY", d.DB.ReadReplicas[i].RedisEvictionPolicy})
+			if d.DB.ReadReplicas[i].DatabaseEngine == "redis" || d.DB.ReadReplicas[i].DatabaseEngine == "valkey" {
+				data = append(data, []string{"EVICTION POLICY", d.DB.ReadReplicas[i].EvictionPolicy})
 			}
 
 			data = append(data, []string{"CLUSTER TIME ZONE", d.DB.ReadReplicas[i].ClusterTimeZone})
@@ -778,10 +778,10 @@ func (u *UsersPrinter) Data() [][]string {
 		if u.Users[i].AccessControl != nil {
 			data = append(data,
 				[]string{"ACCESS CONTROL"},
-				[]string{"REDIS ACL CATEGORIES", printer.ArrayOfStringsToString(u.Users[i].AccessControl.RedisACLCategories)},
-				[]string{"REDIS ACL CHANNELS", printer.ArrayOfStringsToString(u.Users[i].AccessControl.RedisACLChannels)},
-				[]string{"REDIS ACL COMMANDS", printer.ArrayOfStringsToString(u.Users[i].AccessControl.RedisACLCommands)},
-				[]string{"REDIS ACL KEYS", printer.ArrayOfStringsToString(u.Users[i].AccessControl.RedisACLKeys)},
+				[]string{"ACL CATEGORIES", printer.ArrayOfStringsToString(u.Users[i].AccessControl.ACLCategories)},
+				[]string{"ACL CHANNELS", printer.ArrayOfStringsToString(u.Users[i].AccessControl.ACLChannels)},
+				[]string{"ACL COMMANDS", printer.ArrayOfStringsToString(u.Users[i].AccessControl.ACLCommands)},
+				[]string{"ACL KEYS", printer.ArrayOfStringsToString(u.Users[i].AccessControl.ACLKeys)},
 			)
 		}
 
@@ -846,10 +846,10 @@ func (u *UserPrinter) Data() [][]string {
 	if u.User.AccessControl != nil {
 		data = append(data,
 			[]string{"ACCESS CONTROL"},
-			[]string{"REDIS ACL CATEGORIES", printer.ArrayOfStringsToString(u.User.AccessControl.RedisACLCategories)},
-			[]string{"REDIS ACL CHANNELS", printer.ArrayOfStringsToString(u.User.AccessControl.RedisACLChannels)},
-			[]string{"REDIS ACL COMMANDS", printer.ArrayOfStringsToString(u.User.AccessControl.RedisACLCommands)},
-			[]string{"REDIS ACL KEYS", printer.ArrayOfStringsToString(u.User.AccessControl.RedisACLKeys)},
+			[]string{"ACL CATEGORIES", printer.ArrayOfStringsToString(u.User.AccessControl.ACLCategories)},
+			[]string{"ACL CHANNELS", printer.ArrayOfStringsToString(u.User.AccessControl.ACLChannels)},
+			[]string{"ACL COMMANDS", printer.ArrayOfStringsToString(u.User.AccessControl.ACLCommands)},
+			[]string{"ACL KEYS", printer.ArrayOfStringsToString(u.User.AccessControl.ACLKeys)},
 		)
 	}
 
