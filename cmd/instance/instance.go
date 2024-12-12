@@ -364,7 +364,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"userdata",
 		"u",
 		"",
-		"plain text userdata you want to give this instance which the CLI will base64 encode",
+		"plain text userdata you want to give this instance",
 	)
 	create.Flags().BoolP("notify", "n", false, "notify when instance has been created | true or false")
 	create.Flags().BoolP("ddos", "d", false, "enable ddos protection | true or false")
