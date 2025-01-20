@@ -624,18 +624,7 @@ func (p *PlansPrinter) Data() [][]string {
 			[]string{"SUPPORTED ENGINES"},
 			[]string{"MYSQL", strconv.FormatBool(*p.Plans[i].SupportedEngines.MySQL)},
 			[]string{"PG", strconv.FormatBool(*p.Plans[i].SupportedEngines.PG)},
-			[]string{"REDIS", strconv.FormatBool(*p.Plans[i].SupportedEngines.Redis)},
 		)
-
-		if !*p.Plans[i].SupportedEngines.Redis {
-			data = append(data,
-				[]string{" "},
-				[]string{"MAX CONNECTIONS"},
-				[]string{"MYSQL", strconv.Itoa(p.Plans[i].MaxConnections.MySQL)},
-				[]string{"PG", strconv.Itoa(p.Plans[i].MaxConnections.PG)},
-				[]string{" "},
-			)
-		}
 
 		data = append(data,
 			[]string{"LOCATIONS", printer.ArrayOfStringsToString(p.Plans[i].Locations)},
