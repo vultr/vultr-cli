@@ -305,11 +305,11 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			o.CreateReq = &govultr.LoadBalancerReq{
-				Region:        region,
-				Label:         label,
-				VPC:           &vpc,
-				ProxyProtocol: &proxyProtocol,
-				SSLRedirect:   &sslRedirect,
+				Region:             region,
+				Label:              label,
+				VPC:                &vpc,
+				ProxyProtocol:      &proxyProtocol,
+				SSLRedirect:        &sslRedirect,
 				GlobalRegions:      globalRegions,
 				HTTP2:              &http2,
 				HTTP3:              &http3,
@@ -448,9 +448,9 @@ When not provided, load balancer defaults to public network.`,
 	create.Flags().String("private-key", "", "(optional) the private key component for a ssl certificate.")
 	create.Flags().String("certificate", "", "(optional) the SSL certificate.")
 	create.Flags().String("certificate-chain", "", "(optional) the certificate chain for a ssl certificate.")
-	create.Flags().String("private-key-b64","","(optional) Base64-encoded private key for SSL",)
-	create.Flags().String("certificate-b64","","(optional) Base64-encoded certificate for SSL",)
-	create.Flags().String("certificate-chain-b64","","(optional) Base64-encoded certificate chain for SSL",)
+	create.Flags().String("private-key-b64", "", "(optional) Base64-encoded private key for SSL")
+	create.Flags().String("certificate-b64", "", "(optional) Base64-encoded certificate for SSL")
+	create.Flags().String("certificate-chain-b64", "", "(optional) Base64-encoded certificate chain for SSL")
 
 	create.Flags().StringP("label", "l", "", "(optional) the label for your load balancer.")
 	create.Flags().StringSliceP(
