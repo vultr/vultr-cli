@@ -148,7 +148,7 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 			data = append(data, []string{" "})
 		}
 
-		if d.DBs[i].DatabaseEngine == "redis" || d.DBs[i].DatabaseEngine == "valkey" {
+		if d.DBs[i].DatabaseEngine == "valkey" {
 			data = append(data, []string{"EVICTION POLICY", d.DBs[i].EvictionPolicy})
 		}
 
@@ -249,7 +249,7 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 					data = append(data, []string{" "})
 				}
 
-				if d.DBs[i].ReadReplicas[j].DatabaseEngine == "redis" || d.DBs[i].ReadReplicas[j].DatabaseEngine == "valkey" {
+				if d.DBs[i].ReadReplicas[j].DatabaseEngine == "valkey" {
 					data = append(data, []string{"EVICTION POLICY", d.DBs[i].ReadReplicas[j].EvictionPolicy})
 				}
 
@@ -404,7 +404,7 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 		data = append(data, []string{" "})
 	}
 
-	if d.DB.DatabaseEngine == "redis" || d.DB.DatabaseEngine == "valkey" {
+	if d.DB.DatabaseEngine == "valkey" {
 		data = append(data, []string{"EVICTION POLICY", d.DB.EvictionPolicy})
 	}
 
@@ -505,7 +505,7 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 				data = append(data, []string{" "})
 			}
 
-			if d.DB.ReadReplicas[i].DatabaseEngine == "redis" || d.DB.ReadReplicas[i].DatabaseEngine == "valkey" {
+			if d.DB.ReadReplicas[i].DatabaseEngine == "valkey" {
 				data = append(data, []string{"EVICTION POLICY", d.DB.ReadReplicas[i].EvictionPolicy})
 			}
 
@@ -614,17 +614,40 @@ func (p *PlansPrinter) Data() [][]string {
 			[]string{"ID", p.Plans[i].ID},
 			[]string{"NUMBER OF NODES", strconv.Itoa(p.Plans[i].NumberOfNodes)},
 			[]string{"TYPE", p.Plans[i].Type},
-			[]string{"VCPU COUNT", strconv.Itoa(p.Plans[i].VCPUCount)},
-			[]string{"RAM", strconv.Itoa(p.Plans[i].RAM)},
-			[]string{"DISK", strconv.Itoa(p.Plans[i].Disk)},
+		)
+
+		if !*p.Plans[i].SupportedEngines.Kafka {
+			data = append(data,
+				[]string{"VCPU COUNT", strconv.Itoa(p.Plans[i].VCPUCount)},
+				[]string{"RAM", strconv.Itoa(p.Plans[i].RAM)},
+			)
+		}
+
+		if !*p.Plans[i].SupportedEngines.Valkey {
+			data = append(data,
+				[]string{"DISK", strconv.Itoa(p.Plans[i].Disk)},
+			)
+		}
+
+		data = append(data,
 			[]string{"MONTHLY COST", strconv.Itoa(p.Plans[i].MonthlyCost)},
-
 			[]string{" "},
-
 			[]string{"SUPPORTED ENGINES"},
 			[]string{"MYSQL", strconv.FormatBool(*p.Plans[i].SupportedEngines.MySQL)},
 			[]string{"PG", strconv.FormatBool(*p.Plans[i].SupportedEngines.PG)},
+			[]string{"VALKEY", strconv.FormatBool(*p.Plans[i].SupportedEngines.Valkey)},
+			[]string{"KAFKA", strconv.FormatBool(*p.Plans[i].SupportedEngines.Kafka)},
+			[]string{" "},
 		)
+
+		if *p.Plans[i].SupportedEngines.MySQL || *p.Plans[i].SupportedEngines.PG {
+			data = append(data,
+				[]string{"MAX CONNECTIONS"},
+				[]string{"MYSQL", strconv.Itoa(p.Plans[i].MaxConnections.MySQL)},
+				[]string{"PG", strconv.Itoa(p.Plans[i].MaxConnections.PG)},
+				[]string{" "},
+			)
+		}
 
 		data = append(data,
 			[]string{"LOCATIONS", printer.ArrayOfStringsToString(p.Plans[i].Locations)},
