@@ -601,6 +601,12 @@ required in node pool. Use / between each new node pool.  E.g:
 		Long:    getUpgradesLong,
 		Example: getUpgradesExample,
 		Aliases: []string{"l"},
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a clusterID")
+			}
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			upgrades, err := o.upgrades()
 			if err != nil {
@@ -621,6 +627,12 @@ required in node pool. Use / between each new node pool.  E.g:
 		Long:    upgradeLong,
 		Example: upgradeExample,
 		Aliases: []string{"s"},
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a clusterID")
+			}
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			version, errVe := cmd.Flags().GetString("version")
 			if errVe != nil {
