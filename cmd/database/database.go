@@ -516,6 +516,12 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	userList := &cobra.Command{
 		Use:   "list <Database ID>",
 		Short: "List database users",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			us, meta, err := o.listUsers()
 			if err != nil {
@@ -895,6 +901,12 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	topicList := &cobra.Command{
 		Use:   "list <Database ID>",
 		Short: "List database topics",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			to, meta, err := o.listTopics()
 			if err != nil {
@@ -1087,6 +1099,12 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	quotaList := &cobra.Command{
 		Use:   "list <Database ID>",
 		Short: "List database quotas",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			q, meta, err := o.listQuotas()
 			if err != nil {
