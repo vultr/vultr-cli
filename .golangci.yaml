@@ -116,6 +116,5 @@ issues:
   exclude:
     - abcdef
     - ST1023
-  exclude-rules:
 run:
   timeout: 5m
