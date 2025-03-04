@@ -30,6 +30,7 @@ func NewCmdAccount(base *cli.Base) *cobra.Command {
 		Long:    accountLong,
 		Example: accountExample,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			utils.SetOptions(o.Base, cmd, args)
 			if !o.Base.HasAuth {
 				return errors.New(utils.APIKeyError)
 			}
