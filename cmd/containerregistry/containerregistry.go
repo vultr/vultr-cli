@@ -575,6 +575,12 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 		Aliases: []string{"d"},
 		Long:    credentialsDockerLong,
 		Example: credentialsDockerExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a container registry ID")
+			}
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			expiry, errEx := cmd.Flags().GetInt("expiry-seconds")
 			if errEx != nil {
