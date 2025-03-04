@@ -11,7 +11,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: "1.24"
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
@@ -24,7 +24,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: "1.24"
       - name: Run fmt
         run: |
           gofmt_files=$(gofmt -l cmd)
