@@ -1,8 +1,6 @@
 module github.com/vultr/vultr-cli/v3
 
-go 1.23
-
-toolchain go1.23.1
+go 1.24
 
 require (
 	github.com/spf13/cobra v1.8.1
