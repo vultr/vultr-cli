@@ -283,3 +283,60 @@ func (o *ObjectStorageTiersPrinter) Data() [][]string {
 func (o *ObjectStorageTiersPrinter) Paging() [][]string {
 	return nil
 }
+
+// ======================================
+
+// ObjectStorageClusterTiersPrinter ...
+type ObjectStorageClusterTiersPrinter struct {
+	ClusterTiers []govultr.ObjectStorageTier `json:"cluster_tiers"`
+}
+
+// JSON ...
+func (o *ObjectStorageClusterTiersPrinter) JSON() []byte {
+	return printer.MarshalObject(o, "json")
+}
+
+// YAML ...
+func (o *ObjectStorageClusterTiersPrinter) YAML() []byte {
+	return printer.MarshalObject(o, "yaml")
+}
+
+// Columns ...
+func (o *ObjectStorageClusterTiersPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"NAME",
+		"PRICE",
+		"PRICE BANDWIDTH GB",
+		"PRICE DISK GB",
+		"RATE LIMIT BYTES/SEC",
+		"RATE LIMIT OPS/SEC",
+	}}
+}
+
+// Data ...
+func (o *ObjectStorageClusterTiersPrinter) Data() [][]string {
+	if len(o.ClusterTiers) == 0 {
+		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---", "---", "---", "---"}}
+	}
+
+	var data [][]string
+	for i := range o.ClusterTiers {
+		data = append(data, []string{
+			strconv.Itoa(o.ClusterTiers[i].ID),
+			o.ClusterTiers[i].Name,
+			strconv.FormatFloat(float64(o.ClusterTiers[i].Price), 'f', 2, 32),
+			strconv.FormatFloat(float64(o.ClusterTiers[i].PriceBandwidthGB), 'f', 2, 32),
+			strconv.FormatFloat(float64(o.ClusterTiers[i].PriceDiskGB), 'f', 3, 32),
+			strconv.Itoa(o.ClusterTiers[i].RateLimitBytesSec),
+			strconv.Itoa(o.ClusterTiers[i].RateLimitOpsSec),
+		})
+	}
+
+	return data
+}
+
+// Paging ...
+func (o *ObjectStorageClusterTiersPrinter) Paging() [][]string {
+	return nil
+}
