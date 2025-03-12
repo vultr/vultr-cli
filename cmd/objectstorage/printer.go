@@ -233,14 +233,11 @@ func (o *ObjectStorageTiersPrinter) Columns() [][]string {
 	return [][]string{0: {
 		"ID",
 		"NAME",
-		"DESCRIPTION",
 		"PRICE",
 		"PRICE BANDWIDTH GB",
 		"PRICE DISK GB",
 		"RATE LIMIT BYTES/SEC",
 		"RATE LIMIT OPS/SEC",
-		"DEFAULT",
-		"SLUG",
 	}}
 }
 
@@ -255,14 +252,11 @@ func (o *ObjectStorageTiersPrinter) Data() [][]string {
 		data = append(data, []string{
 			strconv.Itoa(o.Tiers[i].ID),
 			o.Tiers[i].Name,
-			o.Tiers[i].Description,
 			strconv.FormatFloat(float64(o.Tiers[i].Price), 'f', 2, 32),
 			strconv.FormatFloat(float64(o.Tiers[i].PriceBandwidthGB), 'f', 2, 32),
 			strconv.FormatFloat(float64(o.Tiers[i].PriceDiskGB), 'f', 2, 32),
 			strconv.Itoa(o.Tiers[i].RateLimitBytesSec),
 			strconv.Itoa(o.Tiers[i].RateLimitOpsSec),
-			o.Tiers[i].Default,
-			o.Tiers[i].Slug,
 		})
 	}
 
@@ -296,14 +290,11 @@ func (o *ObjectStorageClusterTiersPrinter) Columns() [][]string {
 	return [][]string{0: {
 		"ID",
 		"NAME",
-		"DESCRIPTION",
 		"PRICE",
 		"PRICE BANDWIDTH GB",
 		"PRICE DISK GB",
 		"RATE LIMIT BYTES/SEC",
 		"RATE LIMIT OPS/SEC",
-		"DEFAULT",
-		"SLUG",
 	}}
 }
 
@@ -318,14 +309,11 @@ func (o *ObjectStorageClusterTiersPrinter) Data() [][]string {
 		data = append(data, []string{
 			strconv.Itoa(o.ClusterTiers[i].ID),
 			o.ClusterTiers[i].Name,
-			o.ClusterTiers[i].Description,
 			strconv.FormatFloat(float64(o.ClusterTiers[i].Price), 'f', 2, 32),
 			strconv.FormatFloat(float64(o.ClusterTiers[i].PriceBandwidthGB), 'f', 2, 32),
 			strconv.FormatFloat(float64(o.ClusterTiers[i].PriceDiskGB), 'f', 3, 32),
 			strconv.Itoa(o.ClusterTiers[i].RateLimitBytesSec),
 			strconv.Itoa(o.ClusterTiers[i].RateLimitOpsSec),
-			o.ClusterTiers[i].Default,
-			o.ClusterTiers[i].Slug,
 		})
 	}
 
