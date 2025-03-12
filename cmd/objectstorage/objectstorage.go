@@ -120,6 +120,7 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	create.Flags().StringP("label", "l", "", "label you want your object storage to have")
 	create.Flags().IntP("cluster-id", "i", 0, "ID of the cluster in which to create the object storage")
+	create.Flags().IntP("tier-id", "t", 1, "Tier ID used to create the object storage tiers")
 	if err := create.MarkFlagRequired("cluster-id"); err != nil {
 		printer.Error(fmt.Errorf("error marking object storage create 'cluster-id' flag required : %v", err))
 		os.Exit(1)
