@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
@@ -101,8 +102,14 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 				return fmt.Errorf("error parsing flag 'label' for object storage create : %v", errLa)
 			}
 
+			tierID, errTID := cmd.Flags().GetInt("tier-id")
+			if errTID != nil {
+				return fmt.Errorf("error parsing flag 'tier-id' for object storage create : %v", errTID)
+			}
+
 			o.ClusterID = clusterID
 			o.Label = label
+			o.TierID = tierID
 
 			os, err := o.create()
 			if err != nil {
@@ -118,6 +125,7 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	create.Flags().StringP("label", "l", "", "label you want your object storage to have")
 	create.Flags().IntP("cluster-id", "i", 0, "ID of the cluster in which to create the object storage")
+	create.Flags().IntP("tier-id", "t", 1, "Tier ID used to create the object storage tiers")
 	if err := create.MarkFlagRequired("cluster-id"); err != nil {
 		printer.Error(fmt.Errorf("error marking object storage create 'cluster-id' flag required : %v", err))
 		os.Exit(1)
@@ -222,6 +230,56 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		},
 	}
 
+// List Cluster Tiers
+listClusterTiers := &cobra.Command{
+    Use:   "list-cluster-tiers [clusterID]",
+    Short: "Retrieve a list of all available object storage tiers on a specific cluster",
+    Long:  ``,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("please provide a Cluster ID")
+		}
+		return nil
+	},
+    RunE: func(cmd *cobra.Command, args []string) error {
+        clusterID, err := strconv.Atoi(args[0])
+        if err != nil {
+            return fmt.Errorf("invalid clusterID: %v", err)
+        }
+
+        o.Base.Options = utils.GetPaging(cmd)
+
+        clusterTiers, err := o.listClusterTiers(clusterID)
+        if err != nil {
+            return fmt.Errorf("error retrieving object storage cluster tier list: %v", err)
+        }
+
+        data := &ObjectStorageClusterTiersPrinter{ClusterTiers: clusterTiers}
+        o.Base.Printer.Display(data, nil)
+
+        return nil
+    },
+}
+	// List Tiers
+	listTiers := &cobra.Command{
+		Use:   "list-tiers",
+		Short: "Retrieve a list of all available object storage tiers",
+		Long:  ``,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			o.Base.Options = utils.GetPaging(cmd)
+
+			tiers, err := o.listTiers()
+			if err != nil {
+				return fmt.Errorf("error retrieving object storage tier list : %v", err)
+			}
+
+			data := &ObjectStorageTiersPrinter{Tiers: tiers}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
 	cmd.AddCommand(
 		list,
 		get,
@@ -230,6 +288,8 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		del,
 		regenerateKeys,
 		listClusters,
+		listClusterTiers,
+		listTiers,
 	)
 
 	return cmd
@@ -238,6 +298,7 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 type options struct {
 	Base      *cli.Base
 	ClusterID int
+	TierID    int
 	Label     string
 }
 
@@ -252,12 +313,21 @@ func (o *options) get() (*govultr.ObjectStorage, error) {
 }
 
 func (o *options) create() (*govultr.ObjectStorage, error) {
-	os, _, err := o.Base.Client.ObjectStorage.Create(o.Base.Context, o.ClusterID, o.Label)
+	OSreq := &govultr.ObjectStorageReq{
+		ClusterID: o.ClusterID,
+		TierID:    o.TierID,
+		Label:     o.Label,
+	}
+	os, _, err := o.Base.Client.ObjectStorage.Create(o.Base.Context, OSreq)
 	return os, err
 }
 
 func (o *options) update() error {
-	return o.Base.Client.ObjectStorage.Update(o.Base.Context, o.Base.Args[0], o.Label)
+	OSreq := &govultr.ObjectStorageReq{
+		Label: o.Label,
+	}
+
+	return o.Base.Client.ObjectStorage.Update(o.Base.Context, o.Base.Args[0], OSreq)
 }
 
 func (o *options) del() error {
@@ -267,6 +337,16 @@ func (o *options) del() error {
 func (o *options) listClusters() ([]govultr.ObjectStorageCluster, *govultr.Meta, error) {
 	clusters, meta, _, err := o.Base.Client.ObjectStorage.ListCluster(o.Base.Context, o.Base.Options)
 	return clusters, meta, err
+}
+
+func (o *options) listTiers() ([]govultr.ObjectStorageTier, error) {
+	tiers, _, err := o.Base.Client.ObjectStorage.ListTiers(o.Base.Context)
+	return tiers, err
+}
+
+func (o *options) listClusterTiers(clusterID int) ([]govultr.ObjectStorageTier, error) {
+    clusterTiers, _, err := o.Base.Client.ObjectStorage.ListClusterTiers(o.Base.Context, clusterID)
+    return clusterTiers, err
 }
 
 func (o *options) regenerateKeys() (*govultr.S3Keys, error) {
