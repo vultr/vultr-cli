@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
@@ -230,36 +229,6 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		},
 	}
 
-	// List Cluster Tiers
-	listClusterTiers := &cobra.Command{
-		Use:   "list-cluster-tiers [clusterID]",
-		Short: "Retrieve a list of all available object storage tiers on a specific cluster",
-		Long:  ``,
-		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("please provide a Cluster ID")
-			}
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clusterID, err := strconv.Atoi(args[0])
-			if err != nil {
-				return fmt.Errorf("invalid clusterID: %v", err)
-			}
-
-			o.Base.Options = utils.GetPaging(cmd)
-
-			clusterTiers, err := o.listClusterTiers(clusterID)
-			if err != nil {
-				return fmt.Errorf("error retrieving object storage cluster tier list: %v", err)
-			}
-
-			data := &ObjectStorageClusterTiersPrinter{ClusterTiers: clusterTiers}
-			o.Base.Printer.Display(data, nil)
-
-			return nil
-		},
-	}
 	// List Tiers
 	listTiers := &cobra.Command{
 		Use:   "list-tiers",
@@ -288,7 +257,6 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		del,
 		regenerateKeys,
 		listClusters,
-		listClusterTiers,
 		listTiers,
 	)
 
@@ -342,11 +310,6 @@ func (o *options) listClusters() ([]govultr.ObjectStorageCluster, *govultr.Meta,
 func (o *options) listTiers() ([]govultr.ObjectStorageTier, error) {
 	tiers, _, err := o.Base.Client.ObjectStorage.ListTiers(o.Base.Context)
 	return tiers, err
-}
-
-func (o *options) listClusterTiers(clusterID int) ([]govultr.ObjectStorageTier, error) {
-	clusterTiers, _, err := o.Base.Client.ObjectStorage.ListClusterTiers(o.Base.Context, clusterID)
-	return clusterTiers, err
 }
 
 func (o *options) regenerateKeys() (*govultr.S3Keys, error) {
