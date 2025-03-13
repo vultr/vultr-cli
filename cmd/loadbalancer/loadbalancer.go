@@ -180,9 +180,39 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'ssl-redirect' for load balancer create : %v", errSs)
 			}
 
+			domainZone, errDz := cmd.Flags().GetString("auto-ssl-domain-zone")
+			if errDz != nil {
+				return fmt.Errorf("error parsing flag 'auto-ssl-domain-zone' for load balancer create: %v", errDz)
+			}
+
+			domainSub, errDs := cmd.Flags().GetString("auto-ssl-sub-domain")
+			if errDs != nil {
+				return fmt.Errorf("error parsing flag 'auto-ssl-sub-domain' for load balancer create: %v", errDs)
+			}
+
+			globalRegions, errGr := cmd.Flags().GetStringArray("global-regions")
+			if errGr != nil {
+				return fmt.Errorf("error parsing flag 'global-regions for load balancer create': %v", errGr)
+			}
+
+			http2, errH2 := cmd.Flags().GetBool("http2")
+			if errH2 != nil {
+				return fmt.Errorf("error parsing flag 'http2' for load balancer create : %v", errH2)
+			}
+
+			http3, errH3 := cmd.Flags().GetBool("http3")
+			if errH3 != nil {
+				return fmt.Errorf("error parsing flag 'http3' for load balancer create : %v", errH3)
+			}
+
 			proxyProtocol, errPr := cmd.Flags().GetBool("proxy-protocol")
 			if errPr != nil {
 				return fmt.Errorf("error parsing flag 'proxy-protocol' for load balancer create : %v", errPr)
+			}
+
+			timeout, errT := cmd.Flags().GetInt("timeout")
+			if errT != nil {
+				return fmt.Errorf("error parsing flag 'timeout' for load balancer create : %v", errT)
 			}
 
 			cookieName, errCo := cmd.Flags().GetString("cookie-name")
@@ -254,6 +284,20 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			if errCr != nil {
 				return fmt.Errorf("error parsing flag 'certificate-chain' for load balancer create : %v", errCr)
 			}
+			privateKeyB64, errPiB64 := cmd.Flags().GetString("private-key-b64")
+			if errPiB64 != nil {
+				return fmt.Errorf("error parsing flag 'private-key-b64' for load balancer create : %v", errPiB64)
+			}
+
+			certificateB64, errCeB64 := cmd.Flags().GetString("certificate-b64")
+			if errCeB64 != nil {
+				return fmt.Errorf("error parsing flag 'certificate-b64' for load balancer create : %v", errCeB64)
+			}
+
+			certificateChainB64, errCrB64 := cmd.Flags().GetString("certificate-chain-b64")
+			if errCrB64 != nil {
+				return fmt.Errorf("error parsing flag 'certificate-chain-b64' for load balancer create : %v", errCrB64)
+			}
 
 			instances, errIn := cmd.Flags().GetStringSlice("instances")
 			if errIn != nil {
@@ -270,10 +314,14 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				Label:              label,
 				VPC:                &vpc,
 				ProxyProtocol:      &proxyProtocol,
+				Timeout:            timeout,
+				HTTP2:              &http2,
+				HTTP3:              &http3,
 				SSLRedirect:        &sslRedirect,
 				BalancingAlgorithm: algorithm,
 				Nodes:              nodes,
 				Instances:          instances,
+				GlobalRegions:      globalRegions,
 				HealthCheck: &govultr.HealthCheck{
 					Port:               port,
 					Protocol:           protocol,
@@ -284,12 +332,55 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 					HealthyThreshold:   healthyThreshold,
 				},
 				SSL: &govultr.SSL{
-					PrivateKey:  privateKey,
-					Certificate: certificate,
-					Chain:       certificateChain,
+					PrivateKey:     privateKey,
+					Certificate:    certificate,
+					Chain:          certificateChain,
+					PrivateKeyB64:  privateKeyB64,
+					CertificateB64: certificateB64,
+					ChainB64:       certificateChainB64,
 				},
 			}
 
+			if len(globalRegions) > 0 {
+				regions, errGr := formatGlobalRegions(globalRegions)
+				if errGr != nil {
+					return fmt.Errorf("error creating load balancer: %v", errGr)
+				}
+
+				if len(regions) > 0 {
+					o.CreateReq.GlobalRegions = regions
+				}
+			}
+
+			if domainSub != "" && domainZone == "" {
+				return fmt.Errorf("domain-zone is required when specifying '--auto-ssl-sub-domain'")
+			} else if domainZone != "" {
+				o.CreateReq.AutoSSL = &govultr.AutoSSL{
+					DomainZone: domainZone,
+					DomainSub:  domainSub,
+				}
+			}
+
+			if http3 && !http2 {
+				return fmt.Errorf("HTTP3 requires HTTP2 to be enabled")
+			}
+			if http2 || http3 {
+				hasHTTPSForwarding := false
+				formattedRules, err := formatForwardingRules(rulesInForward)
+				if err != nil {
+					return fmt.Errorf("error parsing forwarding rules: %v", err)
+				}
+				for _, rule := range formattedRules {
+					if rule.FrontendProtocol == "https" && rule.BackendProtocol == "https" {
+						hasHTTPSForwarding = true
+						break
+					}
+				}
+
+				if !hasHTTPSForwarding {
+					return fmt.Errorf("You must have an HTTPS->HTTPS forwarding rule to enable HTTP2")
+				}
+			}
 			if cmd.Flags().Changed("cookie-name") {
 				o.CreateReq.StickySessions = &govultr.StickySessions{CookieName: cookieName}
 			}
@@ -332,7 +423,6 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		fmt.Printf("error marking load-balancer create 'region' flag required: %v", err)
 		os.Exit(1)
 	}
-
 	create.Flags().StringP(
 		"balancing-algorithm",
 		"b",
@@ -351,6 +441,11 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"p",
 		false,
 		"(optional) if true, you must configure backend nodes to accept Proxy protocol.",
+	)
+	create.Flags().Int(
+		"timeout",
+		600,
+		"(optional) The maximum time allowed for the connection to remain inactive before timing out in seconds.",
 	)
 	create.Flags().StringArrayP(
 		"forwarding-rules",
@@ -400,6 +495,9 @@ When not provided, load balancer defaults to public network.`,
 	create.Flags().String("private-key", "", "(optional) the private key component for a ssl certificate.")
 	create.Flags().String("certificate", "", "(optional) the SSL certificate.")
 	create.Flags().String("certificate-chain", "", "(optional) the certificate chain for a ssl certificate.")
+	create.Flags().String("private-key-b64", "", "(optional) Base64-encoded private key for SSL.")
+	create.Flags().String("certificate-b64", "", "(optional) Base64-encoded certificate for SSL.")
+	create.Flags().String("certificate-chain-b64", "", "(optional) Base64-encoded certificate chain for SSL.")
 
 	create.Flags().StringP("label", "l", "", "(optional) the label for your load balancer.")
 	create.Flags().StringSliceP(
@@ -415,6 +513,11 @@ When not provided, load balancer defaults to public network.`,
 		1,
 		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
+	create.Flags().StringArray("global-regions", []string{}, "(optional) Deploy the load balancer across multiple global regions.")
+	create.Flags().Bool("http2", false, "(optional) Enable HTTP2 traffic. You must have an HTTPS forwarding rule combo (HTTPS -> HTTPS) to enable this option.")
+	create.Flags().Bool("http3", false, "(optional) Enable HTTP3/QUIC traffic. You must have HTTP2 enabled.")
+	create.Flags().String("auto-ssl-domain-zone", "", "(optional) The domain zone for AutoSSL. E.g: example.com")
+	create.Flags().String("auto-ssl-sub-domain", "", "(optional) The subdomain to append to the domain zone.")
 
 	// Update
 	update := &cobra.Command{
@@ -444,10 +547,39 @@ When not provided, load balancer defaults to public network.`,
 			if errSs != nil {
 				return fmt.Errorf("error parsing flag 'ssl-redirect' for load balancer update : %v", errSs)
 			}
+			domainZone, errDz := cmd.Flags().GetString("auto-ssl-domain-zone")
+			if errDz != nil {
+				return fmt.Errorf("error parsing flag 'auto-ssl-domain-zone' for load balancer create: %v", errDz)
+			}
+
+			domainSub, errDs := cmd.Flags().GetString("auto-ssl-sub-domain")
+			if errDs != nil {
+				return fmt.Errorf("error parsing flag 'auto-ssl-sub-domain' for load balancer create: %v", errDs)
+			}
+
+			globalRegions, errGr := cmd.Flags().GetStringArray("global-regions")
+			if errGr != nil {
+				return fmt.Errorf("error parsing flag 'global-regions': %v", errGr)
+			}
+
+			http2, errH2 := cmd.Flags().GetBool("http2")
+			if errH2 != nil {
+				return fmt.Errorf("error parsing flag 'http2' for load balancer create : %v", errH2)
+			}
+
+			http3, errH3 := cmd.Flags().GetBool("http3")
+			if errH3 != nil {
+				return fmt.Errorf("error parsing flag 'http3' for load balancer create : %v", errH3)
+			}
 
 			proxyProtocol, errPr := cmd.Flags().GetBool("proxy-protocol")
 			if errPr != nil {
 				return fmt.Errorf("error parsing flag 'proxy-protocol' for load balancer update : %v", errPr)
+			}
+
+			timeout, errT := cmd.Flags().GetInt("timeout")
+			if errT != nil {
+				return fmt.Errorf("error parsing flag 'timeout' for load balancer create : %v", errT)
 			}
 
 			cookieName, errCo := cmd.Flags().GetString("cookie-name")
@@ -520,6 +652,21 @@ When not provided, load balancer defaults to public network.`,
 				return fmt.Errorf("error parsing flag 'certificate-chain' for load balancer update : %v", errCr)
 			}
 
+			privateKeyB64, errPiB64 := cmd.Flags().GetString("private-key-b64")
+			if errPiB64 != nil {
+				return fmt.Errorf("error parsing flag 'private-key-b64' for load balancer update : %v", errPiB64)
+			}
+
+			certificateB64, errCeB64 := cmd.Flags().GetString("certificate-b64")
+			if errCeB64 != nil {
+				return fmt.Errorf("error parsing flag 'certificate-b64' for load balancer update : %v", errCeB64)
+			}
+
+			certificateChainB64, errCrB64 := cmd.Flags().GetString("certificate-chain-b64")
+			if errCrB64 != nil {
+				return fmt.Errorf("error parsing flag 'certificate-chain-b64' for load balancer update : %v", errCrB64)
+			}
+
 			instances, errIn := cmd.Flags().GetStringSlice("instances")
 			if errIn != nil {
 				return fmt.Errorf("error parsing flag 'instances' for load balancer update : %v", errIn)
@@ -588,11 +735,14 @@ When not provided, load balancer defaults to public network.`,
 			}
 
 			// SSL
-			if privateKey != "" && certificate != "" {
+			if (privateKey != "" && certificate != "") || (privateKeyB64 != "" && certificateB64 != "") {
 				o.UpdateReq.SSL = &govultr.SSL{
-					PrivateKey:  privateKey,
-					Certificate: certificate,
-					Chain:       certificateChain,
+					PrivateKey:     privateKey,
+					Certificate:    certificate,
+					Chain:          certificateChain,
+					PrivateKeyB64:  privateKeyB64,
+					CertificateB64: certificateB64,
+					ChainB64:       certificateChainB64,
 				}
 			}
 
@@ -607,6 +757,29 @@ When not provided, load balancer defaults to public network.`,
 
 			if cmd.Flags().Changed("proxy-protocol") {
 				o.UpdateReq.ProxyProtocol = &proxyProtocol
+			}
+
+			if cmd.Flags().Changed("timeout") {
+				o.UpdateReq.Timeout = timeout
+			}
+			if cmd.Flags().Changed("http2") {
+				o.UpdateReq.HTTP2 = &http2
+			}
+
+			if cmd.Flags().Changed("http3") {
+				o.UpdateReq.HTTP3 = &http3
+			}
+
+			if cmd.Flags().Changed("global-regions") {
+				o.UpdateReq.GlobalRegions = globalRegions
+			}
+
+			if cmd.Flags().Changed("auto-ssl-domain-zone") {
+				o.UpdateReq.AutoSSL.DomainZone = domainZone
+			}
+
+			if cmd.Flags().Changed("auto-ssl-sub-domain") {
+				o.UpdateReq.AutoSSL.DomainSub = domainSub
 			}
 
 			if cmd.Flags().Changed("ssl-redirect") {
@@ -660,6 +833,11 @@ When not provided, load balancer defaults to public network.`,
 		false,
 		"(optional) if true, you must configure backend nodes to accept Proxy protocol.",
 	)
+	update.Flags().Int(
+		"timeout",
+		600,
+		"(optional) The maximum time allowed for the connection to remain inactive before timing out in seconds.",
+	)
 	update.Flags().StringArrayP(
 		"forwarding-rules",
 		"f",
@@ -699,6 +877,9 @@ When not provided, load balancer defaults to public network.`,
 	update.Flags().String("private-key", "", "(optional) the private key component for a ssl certificate.")
 	update.Flags().String("certificate", "", "(optional) the SSL certificate.")
 	update.Flags().String("certificate-chain", "", "(optional) the certificate chain for a ssl certificate.")
+	update.Flags().String("private-key-b64", "", "(optional) the private key base64 encoded component for a ssl certificate.")
+	update.Flags().String("certificate-b64", "", "(optional) the SSL certificate base64 encoded.")
+	update.Flags().String("certificate-chain-b64", "", "(optional) the certificate chain base64 encoded. for a ssl certificate.")
 
 	update.Flags().StringP("label", "l", "", "(optional) the label for your load balancer.")
 	update.Flags().StringSliceP(
@@ -714,6 +895,11 @@ When not provided, load balancer defaults to public network.`,
 		1,
 		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
+	update.Flags().StringArray("global-regions", []string{}, "(optional) Deploy the load balancer across multiple global regions.")
+	update.Flags().Bool("http2", false, "(optional) Enable HTTP2 traffic. You must have an HTTPS forwarding rule combo (HTTPS -> HTTPS) to enable this option.")
+	update.Flags().Bool("http3", false, "(optional) Enable HTTP3/QUIC traffic. You must have HTTP2 enabled.")
+	update.Flags().String("auto-ssl-domain-zone", "", "(optional) The domain zone for AutoSSL. E.g: example.com")
+	update.Flags().String("auto-ssl-sub-domain", "", "(optional) The subdomain to append to the domain zone.")
 
 	// Delete
 	del := &cobra.Command{
@@ -736,6 +922,59 @@ When not provided, load balancer defaults to public network.`,
 			return nil
 		},
 	}
+
+	// SSL
+	ssl := &cobra.Command{
+		Use:   "ssl",
+		Short: "Commands to manage SSL on a load balancer",
+	}
+
+	// Remove Load Balancer SSL
+	deleteSSL := &cobra.Command{
+		Use:   "delete-ssl <Load Balancer ID>",
+		Short: "Delete a Load Balancer SSL configuration",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a load balancer ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.deleteSSL(); err != nil {
+				return fmt.Errorf("error deleting SSL configuration: %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("SSL configuration has been deleted"), nil)
+
+			return nil
+		},
+	}
+
+	// Remove Load Balancer Auto SSL
+	deleteAutoSSL := &cobra.Command{
+		Use:   "disable-auto-ssl <Load Balancer ID>",
+		Short: "Disable a Load Balancer Auto SSL. This will not remove an ssl certificate from the load balancer.",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a load balancer ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.deleteAutoSSL(); err != nil {
+				return fmt.Errorf("error deleting AutoSSL configuration: %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("AutoSSL configuration has been deleted"), nil)
+
+			return nil
+		},
+	}
+
+	ssl.AddCommand(
+		deleteAutoSSL,
+		deleteSSL,
+	)
 
 	// Forwarding Rules
 	forwarding := &cobra.Command{
@@ -994,6 +1233,7 @@ When not provided, load balancer defaults to public network.`,
 		del,
 		forwarding,
 		firewall,
+		ssl,
 	)
 
 	return cmd
@@ -1027,6 +1267,14 @@ func (o *options) update() error {
 
 func (o *options) del() error {
 	return o.Base.Client.LoadBalancer.Delete(o.Base.Context, o.Base.Args[0])
+}
+
+func (o *options) deleteSSL() error {
+	return o.Base.Client.LoadBalancer.DeleteSSL(o.Base.Context, o.Base.Args[0])
+}
+
+func (o *options) deleteAutoSSL() error {
+	return o.Base.Client.LoadBalancer.DeleteAutoSSL(o.Base.Context, o.Base.Args[0])
 }
 
 func (o *options) listForwardingRules() ([]govultr.ForwardingRule, *govultr.Meta, error) {
@@ -1153,4 +1401,17 @@ func formatForwardingRules(rules []string) ([]govultr.ForwardingRule, error) {
 	}
 
 	return formattedList, nil
+}
+
+func formatGlobalRegions(globalRegions []string) ([]string, error) {
+	if len(globalRegions) == 0 {
+		return nil, fmt.Errorf("--global-regions flag requires a value")
+	}
+
+	var parsedRegions []string
+	for _, region := range globalRegions {
+		parsedRegions = append(parsedRegions, strings.Split(region, ",")...)
+	}
+
+	return parsedRegions, nil
 }
