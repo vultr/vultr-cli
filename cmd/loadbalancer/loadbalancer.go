@@ -378,7 +378,7 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				}
 
 				if !hasHTTPSForwarding {
-					return fmt.Errorf("You must have an HTTPS->HTTPS forwarding rule to enable HTTP2")
+					return fmt.Errorf("you must have an HTTPS->HTTPS forwarding rule to enable HTTP2")
 				}
 			}
 			if cmd.Flags().Changed("cookie-name") {
@@ -444,7 +444,7 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	)
 	create.Flags().Int(
 		"timeout",
-		600,
+		600, //nolint:mnd
 		"(optional) The maximum time allowed for the connection to remain inactive before timing out in seconds.",
 	)
 	create.Flags().StringArrayP(
@@ -513,8 +513,8 @@ When not provided, load balancer defaults to public network.`,
 		1,
 		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
-	create.Flags().StringArray("global-regions", []string{}, "(optional) Deploy the load balancer across multiple global regions.")
-	create.Flags().Bool("http2", false, "(optional) Enable HTTP2 traffic. You must have an HTTPS forwarding rule combo (HTTPS -> HTTPS) to enable this option.")
+	create.Flags().StringArray("global-regions", []string{}, "(optional) Deploy the load balancer across multiple global regions.")                              //nolint:lll
+	create.Flags().Bool("http2", false, "(optional) Enable HTTP2 traffic. You must have an HTTPS forwarding rule combo (HTTPS -> HTTPS) to enable this option.") //nolint:lll
 	create.Flags().Bool("http3", false, "(optional) Enable HTTP3/QUIC traffic. You must have HTTP2 enabled.")
 	create.Flags().String("auto-ssl-domain-zone", "", "(optional) The domain zone for AutoSSL. E.g: example.com")
 	create.Flags().String("auto-ssl-sub-domain", "", "(optional) The subdomain to append to the domain zone.")
@@ -835,7 +835,7 @@ When not provided, load balancer defaults to public network.`,
 	)
 	update.Flags().Int(
 		"timeout",
-		600,
+		600, //nolint:mnd
 		"(optional) The maximum time allowed for the connection to remain inactive before timing out in seconds.",
 	)
 	update.Flags().StringArrayP(
@@ -877,9 +877,9 @@ When not provided, load balancer defaults to public network.`,
 	update.Flags().String("private-key", "", "(optional) the private key component for a ssl certificate.")
 	update.Flags().String("certificate", "", "(optional) the SSL certificate.")
 	update.Flags().String("certificate-chain", "", "(optional) the certificate chain for a ssl certificate.")
-	update.Flags().String("private-key-b64", "", "(optional) the private key base64 encoded component for a ssl certificate.")
+	update.Flags().String("private-key-b64", "", "(optional) the private key base64 encoded component for a ssl certificate.") //nolint:lll
 	update.Flags().String("certificate-b64", "", "(optional) the SSL certificate base64 encoded.")
-	update.Flags().String("certificate-chain-b64", "", "(optional) the certificate chain base64 encoded. for a ssl certificate.")
+	update.Flags().String("certificate-chain-b64", "", "(optional) the certificate chain base64 encoded. for a ssl certificate.") //nolint:lll
 
 	update.Flags().StringP("label", "l", "", "(optional) the label for your load balancer.")
 	update.Flags().StringSliceP(
@@ -895,8 +895,8 @@ When not provided, load balancer defaults to public network.`,
 		1,
 		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
-	update.Flags().StringArray("global-regions", []string{}, "(optional) Deploy the load balancer across multiple global regions.")
-	update.Flags().Bool("http2", false, "(optional) Enable HTTP2 traffic. You must have an HTTPS forwarding rule combo (HTTPS -> HTTPS) to enable this option.")
+	update.Flags().StringArray("global-regions", []string{}, "(optional) Deploy the load balancer across multiple global regions.")                              //nolint:lll
+	update.Flags().Bool("http2", false, "(optional) Enable HTTP2 traffic. You must have an HTTPS forwarding rule combo (HTTPS -> HTTPS) to enable this option.") //nolint:lll
 	update.Flags().Bool("http3", false, "(optional) Enable HTTP3/QUIC traffic. You must have HTTP2 enabled.")
 	update.Flags().String("auto-ssl-domain-zone", "", "(optional) The domain zone for AutoSSL. E.g: example.com")
 	update.Flags().String("auto-ssl-sub-domain", "", "(optional) The subdomain to append to the domain zone.")
