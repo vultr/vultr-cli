@@ -2,6 +2,7 @@ package objectstorage
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
@@ -239,17 +240,25 @@ func (o *ObjectStorageTiersPrinter) Columns() [][]string {
 		"PRICE DISK",
 		"RATELIMIT OPS",
 		"RATELIMIT BYTES",
+		"AVAILBLE REGIONS",
 	}}
 }
 
 // Data ...
 func (o *ObjectStorageTiersPrinter) Data() [][]string {
 	if len(o.Tiers) == 0 {
-		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
+		return [][]string{{
+			"---", "---", "---", "---", "---",
+		}}
 	}
 
 	var data [][]string
-	for i := range o.Tiers {
+	for _, tier := range o.Tiers {
+		var locations []string
+		for _, clusterID := range tier.Locations {
+			locations = append(locations, clusterID.Region)
+		}
+
 		data = append(data, []string{
 			strconv.Itoa(o.Tiers[i].ID),
 			o.Tiers[i].Slug,
@@ -281,62 +290,5 @@ func (o *ObjectStorageTiersPrinter) Data() [][]string {
 
 // Paging ...
 func (o *ObjectStorageTiersPrinter) Paging() [][]string {
-	return nil
-}
-
-// ======================================
-
-// ObjectStorageClusterTiersPrinter ...
-type ObjectStorageClusterTiersPrinter struct {
-	ClusterTiers []govultr.ObjectStorageTier `json:"cluster_tiers"`
-}
-
-// JSON ...
-func (o *ObjectStorageClusterTiersPrinter) JSON() []byte {
-	return printer.MarshalObject(o, "json")
-}
-
-// YAML ...
-func (o *ObjectStorageClusterTiersPrinter) YAML() []byte {
-	return printer.MarshalObject(o, "yaml")
-}
-
-// Columns ...
-func (o *ObjectStorageClusterTiersPrinter) Columns() [][]string {
-	return [][]string{0: {
-		"ID",
-		"NAME",
-		"PRICE",
-		"PRICE BANDWIDTH GB",
-		"PRICE DISK GB",
-		"RATE LIMIT BYTES/SEC",
-		"RATE LIMIT OPS/SEC",
-	}}
-}
-
-// Data ...
-func (o *ObjectStorageClusterTiersPrinter) Data() [][]string {
-	if len(o.ClusterTiers) == 0 {
-		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---", "---", "---", "---"}}
-	}
-
-	var data [][]string
-	for i := range o.ClusterTiers {
-		data = append(data, []string{
-			strconv.Itoa(o.ClusterTiers[i].ID),
-			o.ClusterTiers[i].Name,
-			strconv.FormatFloat(float64(o.ClusterTiers[i].Price), 'f', 2, 32),
-			strconv.FormatFloat(float64(o.ClusterTiers[i].PriceBandwidthGB), 'f', 2, 32),
-			strconv.FormatFloat(float64(o.ClusterTiers[i].PriceDiskGB), 'f', 3, 32),
-			strconv.Itoa(o.ClusterTiers[i].RateLimitBytesSec),
-			strconv.Itoa(o.ClusterTiers[i].RateLimitOpsSec),
-		})
-	}
-
-	return data
-}
-
-// Paging ...
-func (o *ObjectStorageClusterTiersPrinter) Paging() [][]string {
 	return nil
 }
