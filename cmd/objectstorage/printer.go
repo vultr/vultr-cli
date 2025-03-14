@@ -2,6 +2,7 @@ package objectstorage
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
@@ -208,5 +209,71 @@ func (o *ObjectStorageKeysPrinter) Data() [][]string {
 
 // Paging ...
 func (o *ObjectStorageKeysPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// ObjectStorageTiersPrinter ...
+type ObjectStorageTiersPrinter struct {
+	Tiers []govultr.ObjectStorageTier `json:"tiers"`
+}
+
+// JSON ...
+func (o *ObjectStorageTiersPrinter) JSON() []byte {
+	return printer.MarshalObject(o, "json")
+}
+
+// YAML ...
+func (o *ObjectStorageTiersPrinter) YAML() []byte {
+	return printer.MarshalObject(o, "yaml")
+}
+
+// Columns ...
+func (o *ObjectStorageTiersPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"NAME",
+		"PRICE",
+		"PRICE BANDWIDTH GB",
+		"PRICE DISK GB",
+		"RATE LIMIT BYTES/SEC",
+		"RATE LIMIT OPS/SEC",
+		"AVAILABLE REGIONS",
+	}}
+}
+
+// Data ...
+func (o *ObjectStorageTiersPrinter) Data() [][]string {
+	if len(o.Tiers) == 0 {
+		return [][]string{{
+			"---", "---", "---", "---", "---", "---", "---", "---",
+		}}
+	}
+
+	var data [][]string
+	for _, tier := range o.Tiers {
+		var locations []string
+		for _, clusterID := range tier.Locations {
+			locations = append(locations, clusterID.Region)
+		}
+
+		data = append(data, []string{
+			strconv.Itoa(tier.ID),
+			tier.Name,
+			strconv.FormatFloat(float64(tier.Price), 'f', 2, 32),
+			strconv.FormatFloat(float64(tier.PriceBandwidthGB), 'f', 2, 32),
+			strconv.FormatFloat(float64(tier.PriceDiskGB), 'f', 2, 32),
+			strconv.Itoa(tier.RateLimitBytesSec),
+			strconv.Itoa(tier.RateLimitOpsSec),
+			strings.Join(locations, ", "),
+		})
+	}
+
+	return data
+}
+
+// Paging ...
+func (o *ObjectStorageTiersPrinter) Paging() [][]string {
 	return nil
 }
