@@ -239,7 +239,7 @@ func (o *ObjectStorageTiersPrinter) Columns() [][]string {
 		"PRICE DISK GB",
 		"RATE LIMIT BYTES/SEC",
 		"RATE LIMIT OPS/SEC",
-		"AVAILBLE REGIONS",
+		"AVAILABLE REGIONS",
 	}}
 }
 
