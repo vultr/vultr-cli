@@ -1777,16 +1777,16 @@ func (o *options) vpcDetach() error {
 }
 
 func (o *options) vpc2s() ([]govultr.VPC2Info, *govultr.Meta, error) {
-	vpc2s, meta, _, err := o.Base.Client.Instance.ListVPC2Info(o.Base.Context, o.Base.Args[0], o.Base.Options)
+	vpc2s, meta, _, err := o.Base.Client.Instance.ListVPC2Info(o.Base.Context, o.Base.Args[0], o.Base.Options) //nolint:staticcheck,lll
 	return vpc2s, meta, err
 }
 
 func (o *options) vpc2Attach() error {
-	return o.Base.Client.Instance.AttachVPC2(o.Base.Context, o.Base.Args[0], o.VPC2Req)
+	return o.Base.Client.Instance.AttachVPC2(o.Base.Context, o.Base.Args[0], o.VPC2Req) //nolint:staticcheck
 }
 
 func (o *options) vpc2Detach() error {
-	return o.Base.Client.Instance.DetachVPC2(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return o.Base.Client.Instance.DetachVPC2(o.Base.Context, o.Base.Args[0], o.Base.Args[1]) //nolint:staticcheck
 }
 
 func (o *options) bandwidth() (*govultr.Bandwidth, error) {

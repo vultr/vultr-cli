@@ -412,37 +412,37 @@ type options struct {
 }
 
 func (o *options) list() ([]govultr.VPC2, *govultr.Meta, error) {
-	vpc2s, meta, _, err := o.Base.Client.VPC2.List(o.Base.Context, o.Base.Options)
+	vpc2s, meta, _, err := o.Base.Client.VPC2.List(o.Base.Context, o.Base.Options) //nolint:staticcheck
 	return vpc2s, meta, err
 }
 
 func (o *options) get() (*govultr.VPC2, error) {
-	vpc2, _, err := o.Base.Client.VPC2.Get(o.Base.Context, o.Base.Args[0])
+	vpc2, _, err := o.Base.Client.VPC2.Get(o.Base.Context, o.Base.Args[0]) //nolint:staticcheck
 	return vpc2, err
 }
 
 func (o *options) create() (*govultr.VPC2, error) {
-	vpc2, _, err := o.Base.Client.VPC2.Create(o.Base.Context, o.CreateReq)
+	vpc2, _, err := o.Base.Client.VPC2.Create(o.Base.Context, o.CreateReq) //nolint:staticcheck
 	return vpc2, err
 }
 
 func (o *options) update() error {
-	return o.Base.Client.VPC2.Update(o.Base.Context, o.Base.Args[0], o.Description)
+	return o.Base.Client.VPC2.Update(o.Base.Context, o.Base.Args[0], o.Description) //nolint:staticcheck
 }
 
 func (o *options) listNodes() ([]govultr.VPC2Node, *govultr.Meta, error) {
-	nodes, meta, _, err := o.Base.Client.VPC2.ListNodes(o.Base.Context, o.Base.Args[0], o.Base.Options)
+	nodes, meta, _, err := o.Base.Client.VPC2.ListNodes(o.Base.Context, o.Base.Args[0], o.Base.Options) //nolint:staticcheck,lll
 	return nodes, meta, err
 }
 
 func (o *options) attachNodes() error {
-	return o.Base.Client.VPC2.Attach(o.Base.Context, o.Base.Args[0], o.AttachDetachReq)
+	return o.Base.Client.VPC2.Attach(o.Base.Context, o.Base.Args[0], o.AttachDetachReq) //nolint:staticcheck
 }
 
 func (o *options) detachNodes() error {
-	return o.Base.Client.VPC2.Detach(o.Base.Context, o.Base.Args[0], o.AttachDetachReq)
+	return o.Base.Client.VPC2.Detach(o.Base.Context, o.Base.Args[0], o.AttachDetachReq) //nolint:staticcheck
 }
 
 func (o *options) del() error {
-	return o.Base.Client.VPC2.Delete(o.Base.Context, o.Base.Args[0])
+	return o.Base.Client.VPC2.Delete(o.Base.Context, o.Base.Args[0]) //nolint:staticcheck
 }
