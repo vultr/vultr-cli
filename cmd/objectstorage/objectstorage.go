@@ -101,8 +101,10 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 				return fmt.Errorf("error parsing flag 'label' for object storage create : %v", errLa)
 			}
 
-			o.ClusterID = clusterID
-			o.Label = label
+			o.ObjectStorageReq = &govultr.ObjectStorageReq{
+				ClusterID: clusterID,
+				Label:     label,
+			}
 
 			os, err := o.create()
 			if err != nil {
@@ -140,7 +142,9 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 				return fmt.Errorf("error parsing flag 'label' for object storage label : %v", errLa)
 			}
 
-			o.Label = label
+			o.ObjectStorageReq = &govultr.ObjectStorageReq{
+				Label: label,
+			}
 			if err := o.update(); err != nil {
 				return fmt.Errorf("error updating object storage label : %v", err)
 			}
@@ -236,9 +240,8 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 }
 
 type options struct {
-	Base      *cli.Base
-	ClusterID int
-	Label     string
+	Base             *cli.Base
+	ObjectStorageReq *govultr.ObjectStorageReq
 }
 
 func (o *options) list() ([]govultr.ObjectStorage, *govultr.Meta, error) {
@@ -252,12 +255,12 @@ func (o *options) get() (*govultr.ObjectStorage, error) {
 }
 
 func (o *options) create() (*govultr.ObjectStorage, error) {
-	os, _, err := o.Base.Client.ObjectStorage.Create(o.Base.Context, o.ClusterID, o.Label)
+	os, _, err := o.Base.Client.ObjectStorage.Create(o.Base.Context, o.ObjectStorageReq)
 	return os, err
 }
 
 func (o *options) update() error {
-	return o.Base.Client.ObjectStorage.Update(o.Base.Context, o.Base.Args[0], o.Label)
+	return o.Base.Client.ObjectStorage.Update(o.Base.Context, o.Base.Args[0], o.ObjectStorageReq)
 }
 
 func (o *options) del() error {

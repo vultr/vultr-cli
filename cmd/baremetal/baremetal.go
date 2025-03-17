@@ -1097,16 +1097,16 @@ func (b *options) getIPv6Addresses() ([]govultr.IPv6, *govultr.Meta, error) {
 }
 
 func (b *options) vpc2NetworksList() ([]govultr.VPC2Info, error) {
-	vpc2s, _, err := b.Base.Client.BareMetalServer.ListVPC2Info(b.Base.Context, b.Base.Args[0])
+	vpc2s, _, err := b.Base.Client.BareMetalServer.ListVPC2Info(b.Base.Context, b.Base.Args[0]) //nolint:staticcheck
 	return vpc2s, err
 }
 
 func (b *options) vpc2NetworksAttach() error {
-	return b.Base.Client.BareMetalServer.AttachVPC2(b.Base.Context, b.Base.Args[0], b.VPC2Req)
+	return b.Base.Client.BareMetalServer.AttachVPC2(b.Base.Context, b.Base.Args[0], b.VPC2Req) //nolint:staticcheck
 }
 
 func (b *options) vpc2NetworksDetach() error {
-	return b.Base.Client.BareMetalServer.DetachVPC2(b.Base.Context, b.Base.Args[0], b.VPC2ID)
+	return b.Base.Client.BareMetalServer.DetachVPC2(b.Base.Context, b.Base.Args[0], b.VPC2ID) //nolint:staticcheck
 }
 
 // ============================
