@@ -361,7 +361,7 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			fw, errFw := cmd.Flags().GetBool("enable-firewall")
-			if errHi != nil {
+			if errFw != nil {
 				return fmt.Errorf("error parsing flag 'enable-firewall' for kubernetes cluster create : %v", errFw)
 			}
 
