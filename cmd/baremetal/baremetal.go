@@ -876,9 +876,10 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 
 	// VPC2
 	vpc2 := &cobra.Command{
-		Use:   "vpc2",
-		Short: "Commands to manage VPC2s on bare metal servers",
-		Long:  vpc2Long,
+		Use:        "vpc2",
+		Short:      "Commands to manage VPC2s on bare metal servers",
+		Long:       vpc2Long,
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	// VPC2 List
@@ -904,6 +905,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	// VPC2 Attach
@@ -942,6 +944,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	vpc2Attach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC 2.0 network you wish to attach")
@@ -983,6 +986,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	vpc2Detach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC 2.0 network you wish to detach")

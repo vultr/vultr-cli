@@ -1487,8 +1487,9 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 	// VPC2
 	vpc2 := &cobra.Command{
-		Use:   "vpc2",
-		Short: "Commands to handle vpc2s on an instance",
+		Use:        "vpc2",
+		Short:      "Commands to handle vpc2s on an instance",
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	// VPC List
@@ -1515,6 +1516,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	// VPC2 Attach
@@ -1548,6 +1550,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	vpc2Attach.Flags().StringP(
@@ -1578,6 +1581,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	vpc2.AddCommand(

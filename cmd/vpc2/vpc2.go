@@ -64,6 +64,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			}
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	// List
@@ -85,6 +86,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	list.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
@@ -122,6 +124,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	// Create
@@ -175,6 +178,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	create.Flags().StringP("region", "r", "", "The ID of the region in which to create the VPC2")
@@ -222,6 +226,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	update.Flags().StringP("description", "d", "", "The description of the VPC2")
@@ -252,6 +257,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	// Nodes
@@ -285,6 +291,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	nodesList.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
@@ -329,6 +336,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	nodesAttach.Flags().StringSliceP(
@@ -373,6 +381,7 @@ func NewCmdVPC2(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	nodesDetach.Flags().StringSliceP(
