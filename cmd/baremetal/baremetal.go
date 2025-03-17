@@ -720,7 +720,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 			}
 
 			_, errUpdate := o.update()
-			if err != nil {
+			if errUpdate != nil {
 				return fmt.Errorf("error updating bare metal user-data : %v", errUpdate)
 			}
 
