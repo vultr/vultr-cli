@@ -520,7 +520,7 @@ required in node pool. Use / between each new node pool.  E.g:
 		Example: getConfigExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("please provide a clusterID")
+				return errors.New("please provide a cluster ID")
 			}
 			return nil
 		},
@@ -603,7 +603,7 @@ required in node pool. Use / between each new node pool.  E.g:
 		Aliases: []string{"l"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("please provide a clusterID")
+				return errors.New("please provide a cluster ID")
 			}
 			return nil
 		},
@@ -629,7 +629,7 @@ required in node pool. Use / between each new node pool.  E.g:
 		Aliases: []string{"s"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("please provide a clusterID")
+				return errors.New("please provide a cluster ID")
 			}
 			return nil
 		},
