@@ -827,9 +827,13 @@ When not provided, load balancer defaults to public network.`,
 	sslSet := &cobra.Command{
 		Use:   "set-certificate <Load Balancer ID>",
 		Short: "Add or set a SSL certificate on a load balancer",
-		Args:  cobra.ExactArgs(1),
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a load balancer ID")
+			}
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			certFile, _ := cmd.Flags().GetString("certificate")
 			keyFile, _ := cmd.Flags().GetString("private-key")
 			chainFile, _ := cmd.Flags().GetString("chain")
@@ -864,7 +868,12 @@ When not provided, load balancer defaults to public network.`,
 	autosslSet := &cobra.Command{
 		Use:   "set-auto-ssl <Load Balancer ID>",
 		Short: "Add or set AutoSSL for a load balancer",
-		Args:  cobra.ExactArgs(1),
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a load balancer ID")
+			}
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			domainZone, errDz := cmd.Flags().GetString("domain-zone")
 			if errDz != nil {
