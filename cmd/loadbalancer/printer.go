@@ -48,6 +48,7 @@ func (l *LBsPrinter) Data() [][]string {
 			[]string{"HAS SSL", strconv.FormatBool(*l.LBs[i].SSLInfo)},
 			[]string{"NODES", strconv.Itoa(l.LBs[i].Nodes)},
 			[]string{"INSTANCES", printer.ArrayOfStringsToString(l.LBs[i].Instances)},
+			[]string{"GLOBAL REGIONS", printer.ArrayOfStringsToString(l.LBs[i].GlobalRegions)},
 
 			[]string{" "},
 			[]string{"HEALTH CHECKS"},
@@ -72,13 +73,14 @@ func (l *LBsPrinter) Data() [][]string {
 
 			[]string{" "},
 			[]string{"GENERIC INFO"},
-			[]string{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "VPC"},
+			[]string{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "VPC", "TIMEOUT"},
 			[]string{
 				l.LBs[i].GenericInfo.BalancingAlgorithm,
 				strconv.FormatBool(*l.LBs[i].GenericInfo.SSLRedirect),
 				l.LBs[i].GenericInfo.StickySessions.CookieName,
 				strconv.FormatBool(*l.LBs[i].GenericInfo.ProxyProtocol),
 				l.LBs[i].GenericInfo.VPC,
+				strconv.Itoa(l.LBs[i].GenericInfo.Timeout),
 			},
 
 			[]string{" "},
@@ -170,6 +172,7 @@ func (l *LBPrinter) Data() [][]string {
 		[]string{"HAS SSL", strconv.FormatBool(*l.LB.SSLInfo)},
 		[]string{"NODES", strconv.Itoa(l.LB.Nodes)},
 		[]string{"INSTANCES", printer.ArrayOfStringsToString(l.LB.Instances)},
+		[]string{"GLOBAL REGIONS", printer.ArrayOfStringsToString(l.LB.GlobalRegions)},
 
 		[]string{" "},
 		[]string{"HEALTH CHECKS"},
@@ -194,13 +197,14 @@ func (l *LBPrinter) Data() [][]string {
 
 		[]string{" "},
 		[]string{"GENERIC INFO"},
-		[]string{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "VPC"},
+		[]string{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "VPC", "TIMEOUT"},
 		[]string{
 			l.LB.GenericInfo.BalancingAlgorithm,
 			strconv.FormatBool(*l.LB.GenericInfo.SSLRedirect),
 			l.LB.GenericInfo.StickySessions.CookieName,
 			strconv.FormatBool(*l.LB.GenericInfo.ProxyProtocol),
 			l.LB.GenericInfo.VPC,
+			strconv.Itoa(l.LB.GenericInfo.Timeout),
 		},
 
 		[]string{" "},
