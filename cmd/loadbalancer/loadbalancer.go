@@ -2,6 +2,7 @@
 package loadbalancer
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
@@ -64,6 +65,16 @@ var (
 	#Full example with attached VPC
 	vultr-cli load-balancer update 57539f6f-66a2-4580-936b-d0af934bce5d --vpc="bff36707-977e-4357-8f30-bef3339155cc"
 	`
+)
+
+const (
+	timeout            = 600
+	healthythreshold   = 15
+	unhealthyThreshold = 15
+	checkInterval      = 15
+	responseTimeout    = 15
+	port               = 80
+	backendPort        = 80
 )
 
 // NewCmdLoadBalancer provides the CLI command for load balancers
@@ -180,19 +191,14 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'ssl-redirect' for load balancer create : %v", errSs)
 			}
 
-			globalRegions, errGr := cmd.Flags().GetStringArray("global-regions")
+			globalRegions, errGr := cmd.Flags().GetStringSlice("global-regions")
 			if errGr != nil {
-				return fmt.Errorf("error parsing flag 'global-regions for load balancer create': %v", errGr)
+				return fmt.Errorf("error parsing flag 'global-regions' for load balancer create: %v", errGr)
 			}
 
-			http2, errH2 := cmd.Flags().GetBool("http2")
-			if errH2 != nil {
-				return fmt.Errorf("error parsing flag 'http2' for load balancer create : %v", errH2)
-			}
-
-			http3, errH3 := cmd.Flags().GetBool("http3")
-			if errH3 != nil {
-				return fmt.Errorf("error parsing flag 'http3' for load balancer create : %v", errH3)
+			httpVersion, errHv := cmd.Flags().GetInt("http-version")
+			if errHv != nil {
+				return fmt.Errorf("error parsing flag 'http-version' for load balancer create: %v", errHv)
 			}
 
 			proxyProtocol, errPr := cmd.Flags().GetBool("proxy-protocol")
@@ -305,8 +311,6 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				VPC:                &vpc,
 				ProxyProtocol:      &proxyProtocol,
 				Timeout:            timeout,
-				HTTP2:              &http2,
-				HTTP3:              &http3,
 				SSLRedirect:        &sslRedirect,
 				BalancingAlgorithm: algorithm,
 				Nodes:              nodes,
@@ -331,19 +335,15 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				},
 			}
 
-			if len(globalRegions) > 0 {
-				var regions []string
-				for _, region := range globalRegions {
-					regions = append(regions, strings.Split(region, ",")...)
+			if cmd.Flags().Changed("http-version") {
+				if httpVersion == 2 {
+					o.CreateReq.HTTP2 = govultr.BoolToBoolPtr(true)
+				} else if httpVersion == 3 {
+					o.CreateReq.HTTP2 = govultr.BoolToBoolPtr(true)
+					o.CreateReq.HTTP3 = govultr.BoolToBoolPtr(true)
+				} else {
+					return fmt.Errorf("error creating load balancer allowed values are 2 or 3")
 				}
-
-				if len(regions) > 0 {
-					o.CreateReq.GlobalRegions = regions
-				}
-			}
-
-			if http3 && !http2 {
-				return fmt.Errorf("HTTP3 requires HTTP2 to be enabled")
 			}
 
 			if cmd.Flags().Changed("cookie-name") {
@@ -385,7 +385,6 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 	create.Flags().StringP("region", "r", "", "region id you wish to have the load balancer created in")
 	if err := create.MarkFlagRequired("region"); err != nil {
-		fmt.Printf("error marking load-balancer create 'region' flag required: %v", err)
 		os.Exit(1)
 	}
 	create.Flags().StringP(
@@ -409,7 +408,7 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	)
 	create.Flags().Int(
 		"timeout",
-		600, //nolint:mnd
+		timeout,
 		"(optional) The maximum time allowed for the connection to remain inactive before timing out in seconds.",
 	)
 	create.Flags().StringArrayP(
@@ -437,21 +436,21 @@ When not provided, load balancer defaults to public network.`,
 	)
 
 	create.Flags().String("protocol", "http", "(optional) the protocol to use for health checks. | https, http, tcp")
-	create.Flags().Int("port", 80, "(optional) the port to use for health checks.") //nolint:mnd
+	create.Flags().Int("port", port, "(optional) the port to use for health checks.")
 	create.Flags().String("path", "/", "(optional) HTTP Path to check. only applies if protocol is HTTP or HTTPS.")
-	create.Flags().IntP("check-interval", "c", 15, "(optional) interval between health checks.")      //nolint:mnd
-	create.Flags().IntP("response-timeout", "t", 15, "(optional) timeout before health check fails.") //nolint:mnd
+	create.Flags().IntP("check-interval", "c", checkInterval, "(optional) interval between health checks.")
+	create.Flags().IntP("response-timeout", "t", responseTimeout, "(optional) timeout before health check fails.")
 
 	create.Flags().IntP(
 		"unhealthy-threshold",
 		"u",
-		15, //nolint:mnd
+		unhealthyThreshold,
 		"(optional) number times a check must fail before becoming unhealthy.",
 	)
 
 	create.Flags().Int(
 		"healthy-threshold",
-		15, //nolint:mnd
+		healthythreshold,
 		"(optional) number times a check must succeed before returning to healthy status.",
 	)
 
@@ -478,9 +477,12 @@ When not provided, load balancer defaults to public network.`,
 		1,
 		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
-	create.Flags().StringArray("global-regions", []string{}, "(optional) Deploy the load balancer across multiple global regions.")                              //nolint:lll
-	create.Flags().Bool("http2", false, "(optional) Enable HTTP2 traffic. You must have an HTTPS forwarding rule combo (HTTPS -> HTTPS) to enable this option.") //nolint:lll
-	create.Flags().Bool("http3", false, "(optional) Enable HTTP3/QUIC traffic. You must have HTTP2 enabled.")
+	create.Flags().StringSlice(
+		"global-regions",
+		[]string{},
+		"(optional) Deploy the load balancer across multiple global regions.")
+
+	create.Flags().Int("http-version", 0, "(optional) Set HTTP version. Use 2 for HTTP2 or 3 for HTTP3. HTTP3 requires HTTP2 to be enabled.")
 
 	// Update
 	update := &cobra.Command{
@@ -511,19 +513,14 @@ When not provided, load balancer defaults to public network.`,
 				return fmt.Errorf("error parsing flag 'ssl-redirect' for load balancer update : %v", errSs)
 			}
 
-			globalRegions, errGr := cmd.Flags().GetStringArray("global-regions")
+			globalRegions, errGr := cmd.Flags().GetStringSlice("global-regions")
 			if errGr != nil {
-				return fmt.Errorf("error parsing flag 'global-regions': %v", errGr)
+				return fmt.Errorf("error parsing flag 'global-regions' for load balancer update: %v", errGr)
 			}
 
-			http2, errH2 := cmd.Flags().GetBool("http2")
-			if errH2 != nil {
-				return fmt.Errorf("error parsing flag 'http2' for load balancer create : %v", errH2)
-			}
-
-			http3, errH3 := cmd.Flags().GetBool("http3")
-			if errH3 != nil {
-				return fmt.Errorf("error parsing flag 'http3' for load balancer create : %v", errH3)
+			httpVersion, errHv := cmd.Flags().GetInt("http-version")
+			if errHv != nil {
+				return fmt.Errorf("error parsing flag 'http-version' for load balancer update: %v", errHv)
 			}
 
 			proxyProtocol, errPr := cmd.Flags().GetBool("proxy-protocol")
@@ -603,6 +600,17 @@ When not provided, load balancer defaults to public network.`,
 
 			o.UpdateReq = &govultr.LoadBalancerReq{}
 
+			if cmd.Flags().Changed("http-version") {
+				if httpVersion == 2 {
+					o.UpdateReq.HTTP2 = govultr.BoolToBoolPtr(true)
+				} else if httpVersion == 3 {
+					o.UpdateReq.HTTP2 = govultr.BoolToBoolPtr(true)
+					o.UpdateReq.HTTP3 = govultr.BoolToBoolPtr(true)
+				} else {
+					return fmt.Errorf("error creating load balancer allowed values are 2 or 3")
+				}
+			}
+
 			if len(rulesInForward) > 0 {
 				rulesFo, errFo := formatForwardingRules(rulesInForward)
 				if errFo != nil {
@@ -674,13 +682,6 @@ When not provided, load balancer defaults to public network.`,
 			if cmd.Flags().Changed("timeout") {
 				o.UpdateReq.Timeout = timeout
 			}
-			if cmd.Flags().Changed("http2") {
-				o.UpdateReq.HTTP2 = &http2
-			}
-
-			if cmd.Flags().Changed("http3") {
-				o.UpdateReq.HTTP3 = &http3
-			}
 
 			if cmd.Flags().Changed("global-regions") {
 				o.UpdateReq.GlobalRegions = globalRegions
@@ -739,7 +740,7 @@ When not provided, load balancer defaults to public network.`,
 	)
 	update.Flags().Int(
 		"timeout",
-		600, //nolint:mnd
+		timeout,
 		"(optional) The maximum time allowed for the connection to remain inactive before timing out in seconds.",
 	)
 	update.Flags().StringArrayP(
@@ -792,9 +793,11 @@ When not provided, load balancer defaults to public network.`,
 		1,
 		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
-	update.Flags().StringArray("global-regions", []string{}, "(optional) Deploy the load balancer across multiple global regions.")                              //nolint:lll
-	update.Flags().Bool("http2", false, "(optional) Enable HTTP2 traffic. You must have an HTTPS forwarding rule combo (HTTPS -> HTTPS) to enable this option.") //nolint:lll
-	update.Flags().Bool("http3", false, "(optional) Enable HTTP3/QUIC traffic. You must have HTTP2 enabled.")
+	update.Flags().StringArray(
+		"global-regions",
+		[]string{},
+		"(optional) Deploy the load balancer across multiple global regions.")
+	update.Flags().Int("http-version", 0, "(optional) Set HTTP version. Use 2 for HTTP2 or 3 for HTTP3. HTTP3 requires HTTP2 to be enabled.")
 
 	// Delete
 	del := &cobra.Command{
@@ -826,7 +829,7 @@ When not provided, load balancer defaults to public network.`,
 	// Set Load Balancer SSL Certificate
 	sslSet := &cobra.Command{
 		Use:   "set-certificate <Load Balancer ID>",
-		Short: "Add or set a SSL certificate on a load balancer",
+		Short: "Set an SSL certificate on a load balancer",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a load balancer ID")
@@ -834,74 +837,59 @@ When not provided, load balancer defaults to public network.`,
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			certFile, _ := cmd.Flags().GetString("certificate")
-			keyFile, _ := cmd.Flags().GetString("private-key")
-			chainFile, _ := cmd.Flags().GetString("chain")
-			base64Encoded, _ := cmd.Flags().GetBool("base64")
+			cert, errCert := cmd.Flags().GetString("certificate")
+			if errCert != nil {
+				return fmt.Errorf("error parsing flag 'certificate': %v", errCert)
+			}
 
-			if certFile == "" || keyFile == "" {
-				return errors.New("certificate and private-key are required")
+			key, errKey := cmd.Flags().GetString("private-key")
+			if errKey != nil {
+				return fmt.Errorf("error parsing flag 'private-key': %v", errKey)
+			}
+
+			chain, errChain := cmd.Flags().GetString("chain")
+			if errChain != nil {
+				return fmt.Errorf("error parsing flag 'chain': %v", errChain)
+			}
+
+			base64Encoded, errB64 := cmd.Flags().GetBool("base64")
+			if errB64 != nil {
+				return fmt.Errorf("error parsing flag 'base64': %v", errB64)
+			}
+			o.UpdateReq = &govultr.LoadBalancerReq{
+				SSL: &govultr.SSL{},
 			}
 
 			if base64Encoded {
-				if err := o.updateSSLBase64(args[0], keyFile, certFile, chainFile); err != nil {
-					return fmt.Errorf("error updating SSL certificate: %v", err)
-				}
-				o.Base.Printer.Display(printer.Info("SSL certificate has been updated with Base64"), nil)
+				o.UpdateReq.SSL.PrivateKeyB64 = base64.StdEncoding.EncodeToString([]byte(key))
+				o.UpdateReq.SSL.CertificateB64 = base64.StdEncoding.EncodeToString([]byte(cert))
+				o.UpdateReq.SSL.ChainB64 = base64.StdEncoding.EncodeToString([]byte(chain))
 			} else {
-				if err := o.updateSSL(args[0], keyFile, certFile, chainFile); err != nil {
-					return fmt.Errorf("error updating SSL certificate: %v", err)
-				}
-				o.Base.Printer.Display(printer.Info("SSL certificate has been updated"), nil)
+				o.UpdateReq.SSL.PrivateKey = key
+				o.UpdateReq.SSL.Certificate = cert
+				o.UpdateReq.SSL.Chain = chain
 			}
+
+			if err := o.Base.Client.LoadBalancer.Update(o.Base.Context, args[0], o.UpdateReq); err != nil {
+				return fmt.Errorf("error updating SSL certificate: %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("SSL certificate has been updated"), nil)
 
 			return nil
 		},
 	}
 
 	sslSet.Flags().String("certificate", "", "SSL certificate")
-	sslSet.Flags().String("private-key", "", "SSL private key")
-	sslSet.Flags().String("chain", "", "(optional) SSL certificate chain")
-	sslSet.Flags().Bool("base64", false, "Indicates SSL values are Base64-encoded")
-
-	// Set Load Balancer AutoSSL
-	autosslSet := &cobra.Command{
-		Use:   "set-auto-ssl <Load Balancer ID>",
-		Short: "Add or set AutoSSL for a load balancer",
-		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("please provide a load balancer ID")
-			}
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			domainZone, errDz := cmd.Flags().GetString("domain-zone")
-			if errDz != nil {
-				return fmt.Errorf("error parsing flag 'domain-zone' for load balancer ssl set-auto-ssl: %v", errDz)
-			}
-
-			domainSub, errDs := cmd.Flags().GetString("sub-domain")
-			if errDs != nil {
-				return fmt.Errorf("error parsing flag 'sub-domain' for load balancer ssl set-auto-ssl: %v", errDs)
-			}
-
-			if domainSub != "" && domainZone == "" {
-				return fmt.Errorf("domain-zone is required when specifying 'sub-domain'")
-			}
-
-			if domainZone != "" {
-				if err := o.updateAutoSSL(args[0], domainZone, domainSub); err != nil {
-					return fmt.Errorf("error updating AutoSSL: %v", err)
-				}
-				o.Base.Printer.Display(printer.Info("AutoSSL has been updated for the Load Balancer"), nil)
-			}
-
-			return nil
-		},
+	if err := sslSet.MarkFlagRequired("certificate"); err != nil {
+		fmt.Printf("error marking load-balancer ssl set-certificate 'certificate' flag required: %v", err)
 	}
-
-	autosslSet.Flags().String("domain-zone", "", "The domain zone for AutoSSL. E.g: example.com")
-	autosslSet.Flags().String("sub-domain", "", "(optional) The subdomain to append to the domain zone.")
+	sslSet.Flags().String("private-key", "", "SSL private key")
+	if err := sslSet.MarkFlagRequired("private-key"); err != nil {
+		fmt.Printf("error marking load-balancer ssl set-certificate 'private-key' flag required: %v", err)
+	}
+	sslSet.Flags().String("chain", "", "(optional) SSL certificate chain")
+	sslSet.Flags().Bool("base64", false, "Encode SSL values as Base64 before passing")
 
 	// Remove Load Balancer SSL
 	sslDelete := &cobra.Command{
@@ -924,10 +912,52 @@ When not provided, load balancer defaults to public network.`,
 		},
 	}
 
-	// Remove Load Balancer Auto SSL
-	autosslDelete := &cobra.Command{
+	// Set Load Balancer AutoSSL
+	sslAutoSSLSet := &cobra.Command{
+		Use:   "set-auto-ssl <Load Balancer ID>",
+		Short: "Set AutoSSL for a load balancer",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a load balancer ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			domainZone, errDz := cmd.Flags().GetString("domain-zone")
+			if errDz != nil {
+				return fmt.Errorf("error parsing flag 'domain-zone' for load balancer ssl set-auto-ssl: %v", errDz)
+			}
+
+			domainSub, errDs := cmd.Flags().GetString("sub-domain")
+			if errDs != nil {
+				return fmt.Errorf("error parsing flag 'sub-domain' for load balancer ssl set-auto-ssl: %v", errDs)
+			}
+
+			if err := o.Base.Client.LoadBalancer.Update(o.Base.Context, args[0], &govultr.LoadBalancerReq{
+				AutoSSL: &govultr.AutoSSL{
+					DomainZone: domainZone,
+					DomainSub:  domainSub,
+				},
+			}); err != nil {
+				return fmt.Errorf("error updating AutoSSL: %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("AutoSSL has been updated for the load balancer"), nil)
+
+			return nil
+		},
+	}
+
+	sslAutoSSLSet.Flags().String("domain-zone", "", "The domain zone for AutoSSL. E.g: example.com")
+	if err := sslAutoSSLSet.MarkFlagRequired("domain-zone"); err != nil {
+		fmt.Printf("error marking load-balancer ssl set-auto-ssl 'domain-zone' flag required: %v", err)
+	}
+	sslAutoSSLSet.Flags().String("sub-domain", "", "(optional) The subdomain to append to the domain zone.")
+
+	// Disable Load Balancer Auto SSL
+	sslAutoSSLDelete := &cobra.Command{
 		Use:   "disable-auto-ssl <Load Balancer ID>",
-		Short: "Disable a Load Balancer Auto SSL. This will not remove an ssl certificate from the load balancer.",
+		Short: "Disable a Load Balancer Auto SSL. This will not remove an ssl certificate from the load balancer",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a load balancer ID")
@@ -948,9 +978,9 @@ When not provided, load balancer defaults to public network.`,
 
 	ssl.AddCommand(
 		sslSet,
-		autosslSet,
 		sslDelete,
-		autosslDelete,
+		sslAutoSSLSet,
+		sslAutoSSLDelete,
 	)
 	// Forwarding Rules
 	forwarding := &cobra.Command{
@@ -1087,7 +1117,7 @@ When not provided, load balancer defaults to public network.`,
 
 	createForwardingRule.Flags().Int(
 		"frontend-port",
-		80, //nolint:mnd
+		port,
 		"the port number on the Load Balancer to forward to the backend.",
 	)
 	if err := createForwardingRule.MarkFlagRequired("frontend-port"); err != nil {
@@ -1097,7 +1127,7 @@ When not provided, load balancer defaults to public network.`,
 
 	createForwardingRule.Flags().Int(
 		"backend-port",
-		80, //nolint:mnd
+		backendPort,
 		"the port number destination on the backend server.",
 	)
 	if err := createForwardingRule.MarkFlagRequired("backend-port"); err != nil {
@@ -1243,43 +1273,6 @@ func (o *options) update() error {
 
 func (o *options) del() error {
 	return o.Base.Client.LoadBalancer.Delete(o.Base.Context, o.Base.Args[0])
-}
-
-func (o *options) updateSSL(lbID, privateKey, certificate, chain string) error {
-	sslConfig := &govultr.SSL{
-		PrivateKey:  privateKey,
-		Certificate: certificate,
-		Chain:       chain,
-	}
-
-	updateReq := &govultr.LoadBalancerReq{
-		SSL: sslConfig,
-	}
-
-	return o.Base.Client.LoadBalancer.Update(o.Base.Context, lbID, updateReq)
-}
-
-func (o *options) updateSSLBase64(lbID, privateKeyB64, certificateB64, chainB64 string) error {
-	sslConfig := &govultr.SSL{
-		PrivateKeyB64:  privateKeyB64,
-		CertificateB64: certificateB64,
-		ChainB64:       chainB64,
-	}
-	updateReq := &govultr.LoadBalancerReq{
-		SSL: sslConfig,
-	}
-	return o.Base.Client.LoadBalancer.Update(o.Base.Context, lbID, updateReq)
-}
-
-func (o *options) updateAutoSSL(lbID, domainZone, domainSub string) error {
-	autoSSLConfig := &govultr.AutoSSL{
-		DomainZone: domainZone,
-		DomainSub:  domainSub,
-	}
-	updateReq := &govultr.LoadBalancerReq{
-		AutoSSL: autoSSLConfig,
-	}
-	return o.Base.Client.LoadBalancer.Update(o.Base.Context, lbID, updateReq)
 }
 
 func (o *options) deleteSSL() error {
