@@ -482,7 +482,10 @@ When not provided, load balancer defaults to public network.`,
 		[]string{},
 		"(optional) Deploy the load balancer across multiple global regions.")
 
-	create.Flags().Int("http-version", 0, "(optional) Set HTTP version. Use 2 for HTTP2 or 3 for HTTP3. HTTP3 requires HTTP2 to be enabled.")
+	create.Flags().Int(
+		"http-version",
+		0,
+		"(optional) Set HTTP version. Use 2 for HTTP2 or 3 for HTTP3. HTTP3 requires HTTP2 to be enabled.")
 
 	// Update
 	update := &cobra.Command{
@@ -797,7 +800,10 @@ When not provided, load balancer defaults to public network.`,
 		"global-regions",
 		[]string{},
 		"(optional) Deploy the load balancer across multiple global regions.")
-	update.Flags().Int("http-version", 0, "(optional) Set HTTP version. Use 2 for HTTP2 or 3 for HTTP3. HTTP3 requires HTTP2 to be enabled.")
+	update.Flags().Int(
+		"http-version",
+		0,
+		"(optional) Set HTTP version. Use 2 for HTTP2 or 3 for HTTP3. HTTP3 requires HTTP2 to be enabled.")
 
 	// Delete
 	del := &cobra.Command{
