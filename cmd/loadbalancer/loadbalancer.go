@@ -439,8 +439,16 @@ When not provided, load balancer defaults to public network.`,
 	create.Flags().String("protocol", "http", "(optional) the protocol to use for health checks. | https, http, tcp")
 	create.Flags().Int("port", loadBalancerDefaultPort, "(optional) the port to use for health checks.")
 	create.Flags().String("path", "/", "(optional) HTTP Path to check. only applies if protocol is HTTP or HTTPS.")
-	create.Flags().IntP("check-interval", "c", loadBalancerDefaultCheckInterval, "(optional) interval between health checks.")
-	create.Flags().IntP("response-timeout", "t", loadBalancerDefaultResponseTimeout, "(optional) timeout before health check fails.")
+	create.Flags().IntP(
+		"check-interval",
+		"c",
+		loadBalancerDefaultCheckInterval,
+		"(optional) interval between health checks.")
+	create.Flags().IntP(
+		"response-timeout",
+		"t",
+		loadBalancerDefaultResponseTimeout,
+		"(optional) timeout before health check fails.")
 
 	create.Flags().IntP(
 		"unhealthy-threshold",
