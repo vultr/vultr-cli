@@ -2,7 +2,6 @@
 package loadbalancer
 
 import (
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
@@ -68,13 +67,13 @@ var (
 )
 
 const (
-	timeout            = 600
-	healthythreshold   = 15
-	unhealthyThreshold = 15
-	checkInterval      = 15
-	responseTimeout    = 15
-	port               = 80
-	backendPort        = 80
+	loadBalancerDefaultTimeout            = 600
+	loadBalancerDefaultHealthythreshold   = 15
+	loadBalancerDefaultUnhealthyThreshold = 15
+	loadBalancerDefaultCheckInterval      = 15
+	loadBalancerDefaultResponseTimeout    = 15
+	loadBalancerDefaultPort               = 80
+	loadBalancerDefaultBackendPort        = 80
 )
 
 // NewCmdLoadBalancer provides the CLI command for load balancers
@@ -385,8 +384,10 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 	create.Flags().StringP("region", "r", "", "region id you wish to have the load balancer created in")
 	if err := create.MarkFlagRequired("region"); err != nil {
+		fmt.Printf("error marking load-balancer create 'region' flag required: %v", err)
 		os.Exit(1)
 	}
+
 	create.Flags().StringP(
 		"balancing-algorithm",
 		"b",
@@ -408,7 +409,7 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	)
 	create.Flags().Int(
 		"timeout",
-		timeout,
+		loadBalancerDefaultTimeout,
 		"(optional) The maximum time allowed for the connection to remain inactive before timing out in seconds.",
 	)
 	create.Flags().StringArrayP(
@@ -436,21 +437,21 @@ When not provided, load balancer defaults to public network.`,
 	)
 
 	create.Flags().String("protocol", "http", "(optional) the protocol to use for health checks. | https, http, tcp")
-	create.Flags().Int("port", port, "(optional) the port to use for health checks.")
+	create.Flags().Int("port", loadBalancerDefaultPort, "(optional) the port to use for health checks.")
 	create.Flags().String("path", "/", "(optional) HTTP Path to check. only applies if protocol is HTTP or HTTPS.")
-	create.Flags().IntP("check-interval", "c", checkInterval, "(optional) interval between health checks.")
-	create.Flags().IntP("response-timeout", "t", responseTimeout, "(optional) timeout before health check fails.")
+	create.Flags().IntP("check-interval", "c", loadBalancerDefaultCheckInterval, "(optional) interval between health checks.")
+	create.Flags().IntP("response-timeout", "t", loadBalancerDefaultResponseTimeout, "(optional) timeout before health check fails.")
 
 	create.Flags().IntP(
 		"unhealthy-threshold",
 		"u",
-		unhealthyThreshold,
+		loadBalancerDefaultUnhealthyThreshold,
 		"(optional) number times a check must fail before becoming unhealthy.",
 	)
 
 	create.Flags().Int(
 		"healthy-threshold",
-		healthythreshold,
+		loadBalancerDefaultHealthythreshold,
 		"(optional) number times a check must succeed before returning to healthy status.",
 	)
 
@@ -743,7 +744,7 @@ When not provided, load balancer defaults to public network.`,
 	)
 	update.Flags().Int(
 		"timeout",
-		timeout,
+		0,
 		"(optional) The maximum time allowed for the connection to remain inactive before timing out in seconds.",
 	)
 	update.Flags().StringArrayP(
@@ -845,31 +846,31 @@ When not provided, load balancer defaults to public network.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cert, errCert := cmd.Flags().GetString("certificate")
 			if errCert != nil {
-				return fmt.Errorf("error parsing flag 'certificate': %v", errCert)
+				return fmt.Errorf("error parsing flag 'certificate' for load balancer ssl set-certificate: %v", errCert)
 			}
 
 			key, errKey := cmd.Flags().GetString("private-key")
 			if errKey != nil {
-				return fmt.Errorf("error parsing flag 'private-key': %v", errKey)
+				return fmt.Errorf("error parsing flag 'private-key' for load balancer ssl set-certificate: %v", errKey)
 			}
 
 			chain, errChain := cmd.Flags().GetString("chain")
 			if errChain != nil {
-				return fmt.Errorf("error parsing flag 'chain': %v", errChain)
+				return fmt.Errorf("error parsing flag 'chain' for load balancer ssl set-certificate: %v", errChain)
 			}
 
 			base64Encoded, errB64 := cmd.Flags().GetBool("base64")
 			if errB64 != nil {
-				return fmt.Errorf("error parsing flag 'base64': %v", errB64)
+				return fmt.Errorf("error parsing flag 'base64' for load balancer ssl set-certificate: %v", errB64)
 			}
 			o.UpdateReq = &govultr.LoadBalancerReq{
 				SSL: &govultr.SSL{},
 			}
 
 			if base64Encoded {
-				o.UpdateReq.SSL.PrivateKeyB64 = base64.StdEncoding.EncodeToString([]byte(key))
-				o.UpdateReq.SSL.CertificateB64 = base64.StdEncoding.EncodeToString([]byte(cert))
-				o.UpdateReq.SSL.ChainB64 = base64.StdEncoding.EncodeToString([]byte(chain))
+				o.UpdateReq.SSL.PrivateKeyB64 = key
+				o.UpdateReq.SSL.CertificateB64 = cert
+				o.UpdateReq.SSL.ChainB64 = chain
 			} else {
 				o.UpdateReq.SSL.PrivateKey = key
 				o.UpdateReq.SSL.Certificate = cert
@@ -877,10 +878,10 @@ When not provided, load balancer defaults to public network.`,
 			}
 
 			if err := o.Base.Client.LoadBalancer.Update(o.Base.Context, args[0], o.UpdateReq); err != nil {
-				return fmt.Errorf("error updating SSL certificate: %v", err)
+				return fmt.Errorf("error updating load balancer SSL certificate: %v", err)
 			}
 
-			o.Base.Printer.Display(printer.Info("SSL certificate has been updated"), nil)
+			o.Base.Printer.Display(printer.Info(" Load balancer SSL certificate has been updated"), nil)
 
 			return nil
 		},
@@ -889,13 +890,17 @@ When not provided, load balancer defaults to public network.`,
 	sslSet.Flags().String("certificate", "", "SSL certificate")
 	if err := sslSet.MarkFlagRequired("certificate"); err != nil {
 		fmt.Printf("error marking load-balancer ssl set-certificate 'certificate' flag required: %v", err)
+		os.Exit(1)
 	}
+
 	sslSet.Flags().String("private-key", "", "SSL private key")
 	if err := sslSet.MarkFlagRequired("private-key"); err != nil {
 		fmt.Printf("error marking load-balancer ssl set-certificate 'private-key' flag required: %v", err)
+		os.Exit(1)
 	}
+
 	sslSet.Flags().String("chain", "", "(optional) SSL certificate chain")
-	sslSet.Flags().Bool("base64", false, "Encode SSL values as Base64 before passing")
+	sslSet.Flags().Bool("base64", false, " Indicates SSL values are Base64 encoded")
 
 	// Remove Load Balancer SSL
 	sslDelete := &cobra.Command{
@@ -957,7 +962,9 @@ When not provided, load balancer defaults to public network.`,
 	sslAutoSSLSet.Flags().String("domain-zone", "", "The domain zone for AutoSSL. E.g: example.com")
 	if err := sslAutoSSLSet.MarkFlagRequired("domain-zone"); err != nil {
 		fmt.Printf("error marking load-balancer ssl set-auto-ssl 'domain-zone' flag required: %v", err)
+		os.Exit(1)
 	}
+
 	sslAutoSSLSet.Flags().String("sub-domain", "", "(optional) The subdomain to append to the domain zone.")
 
 	// Disable Load Balancer Auto SSL
@@ -1123,7 +1130,7 @@ When not provided, load balancer defaults to public network.`,
 
 	createForwardingRule.Flags().Int(
 		"frontend-port",
-		port,
+		loadBalancerDefaultPort,
 		"the port number on the Load Balancer to forward to the backend.",
 	)
 	if err := createForwardingRule.MarkFlagRequired("frontend-port"); err != nil {
@@ -1133,7 +1140,7 @@ When not provided, load balancer defaults to public network.`,
 
 	createForwardingRule.Flags().Int(
 		"backend-port",
-		backendPort,
+		loadBalancerDefaultBackendPort,
 		"the port number destination on the backend server.",
 	)
 	if err := createForwardingRule.MarkFlagRequired("backend-port"); err != nil {
