@@ -844,7 +844,7 @@ When not provided, load balancer defaults to public network.`,
 	// Set Load Balancer SSL Certificate
 	sslSet := &cobra.Command{
 		Use:   "set-certificate <Load Balancer ID>",
-		Short: "Set an SSL certificate on a load balancer",
+		Short: "Set SSL certificate on a load balancer",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a load balancer ID")
@@ -908,7 +908,7 @@ When not provided, load balancer defaults to public network.`,
 	}
 
 	sslSet.Flags().String("chain", "", "(optional) SSL certificate chain")
-	sslSet.Flags().Bool("base64", false, " Indicates SSL values are Base64 encoded")
+	sslSet.Flags().Bool("base64", false, "Indicates SSL values are Base64 encoded")
 
 	// Remove Load Balancer SSL
 	sslDelete := &cobra.Command{
@@ -934,7 +934,7 @@ When not provided, load balancer defaults to public network.`,
 	// Set Load Balancer AutoSSL
 	sslAutoSSLSet := &cobra.Command{
 		Use:   "set-auto-ssl <Load Balancer ID>",
-		Short: "Set AutoSSL for a load balancer",
+		Short: "Set AutoSSL certificate on a load balancer",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a load balancer ID")
@@ -973,7 +973,7 @@ When not provided, load balancer defaults to public network.`,
 		os.Exit(1)
 	}
 
-	sslAutoSSLSet.Flags().String("sub-domain", "", "(optional) The subdomain to append to the domain zone.")
+	sslAutoSSLSet.Flags().String("sub-domain", "", "(optional) The subdomain to append to the domain zone")
 
 	// Disable Load Balancer Auto SSL
 	sslAutoSSLDelete := &cobra.Command{
