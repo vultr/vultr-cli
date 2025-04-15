@@ -73,6 +73,7 @@ const (
 	loadBalancerDefaultCheckInterval      = 15
 	loadBalancerDefaultResponseTimeout    = 15
 	loadBalancerDefaultPort               = 80
+	loadBalancerDefaultFrontendPort       = 80
 	loadBalancerDefaultBackendPort        = 80
 )
 
@@ -1138,7 +1139,7 @@ When not provided, load balancer defaults to public network.`,
 
 	createForwardingRule.Flags().Int(
 		"frontend-port",
-		loadBalancerDefaultPort,
+		loadBalancerDefaultFrontendPort,
 		"the port number on the Load Balancer to forward to the backend.",
 	)
 	if err := createForwardingRule.MarkFlagRequired("frontend-port"); err != nil {
