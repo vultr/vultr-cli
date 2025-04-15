@@ -890,7 +890,7 @@ When not provided, load balancer defaults to public network.`,
 				return fmt.Errorf("error updating load balancer SSL certificate: %v", err)
 			}
 
-			o.Base.Printer.Display(printer.Info(" Load balancer SSL certificate has been updated"), nil)
+			o.Base.Printer.Display(printer.Info("Load balancer SSL certificate has been updated"), nil)
 
 			return nil
 		},
@@ -935,7 +935,7 @@ When not provided, load balancer defaults to public network.`,
 	// Set Load Balancer AutoSSL
 	sslAutoSSLSet := &cobra.Command{
 		Use:   "set-auto-ssl <Load Balancer ID>",
-		Short: "Set AutoSSL certificate on a load balancer",
+		Short: "Set auto SSL certificate on a load balancer",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a load balancer ID")
@@ -959,16 +959,16 @@ When not provided, load balancer defaults to public network.`,
 					DomainSub:  domainSub,
 				},
 			}); err != nil {
-				return fmt.Errorf("error updating AutoSSL: %v", err)
+				return fmt.Errorf("error updating auto SSL: %v", err)
 			}
 
-			o.Base.Printer.Display(printer.Info("AutoSSL has been updated for the load balancer"), nil)
+			o.Base.Printer.Display(printer.Info("Load balancer auto SSL has been updated"), nil)
 
 			return nil
 		},
 	}
 
-	sslAutoSSLSet.Flags().String("domain-zone", "", "The domain zone for AutoSSL. E.g: example.com")
+	sslAutoSSLSet.Flags().String("domain-zone", "", "The domain zone for auto SSL. E.g: example.com")
 	if err := sslAutoSSLSet.MarkFlagRequired("domain-zone"); err != nil {
 		fmt.Printf("error marking load-balancer ssl set-auto-ssl 'domain-zone' flag required: %v", err)
 		os.Exit(1)
@@ -989,10 +989,10 @@ When not provided, load balancer defaults to public network.`,
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := o.deleteAutoSSL(); err != nil {
-				return fmt.Errorf("error deleting AutoSSL configuration: %v", err)
+				return fmt.Errorf("error deleting auto SSL configuration: %v", err)
 			}
 
-			o.Base.Printer.Display(printer.Info("AutoSSL configuration has been deleted"), nil)
+			o.Base.Printer.Display(printer.Info("Auto SSL configuration has been deleted"), nil)
 
 			return nil
 		},
