@@ -45,9 +45,12 @@ func (l *LBsPrinter) Data() [][]string {
 			[]string{"STATUS", l.LBs[i].Status},
 			[]string{"IPV4", l.LBs[i].IPV4},
 			[]string{"IPV6", l.LBs[i].IPV6},
+			[]string{"HTTP2", strconv.FormatBool(*l.LBs[i].HTTP2)},
+			[]string{"HTTP3", strconv.FormatBool(*l.LBs[i].HTTP3)},
 			[]string{"HAS SSL", strconv.FormatBool(*l.LBs[i].SSLInfo)},
 			[]string{"NODES", strconv.Itoa(l.LBs[i].Nodes)},
 			[]string{"INSTANCES", printer.ArrayOfStringsToString(l.LBs[i].Instances)},
+			[]string{"GLOBAL REGIONS", printer.ArrayOfStringsToString(l.LBs[i].GlobalRegions)},
 
 			[]string{" "},
 			[]string{"HEALTH CHECKS"},
@@ -72,13 +75,14 @@ func (l *LBsPrinter) Data() [][]string {
 
 			[]string{" "},
 			[]string{"GENERIC INFO"},
-			[]string{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "VPC"},
+			[]string{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "VPC", "TIMEOUT"},
 			[]string{
 				l.LBs[i].GenericInfo.BalancingAlgorithm,
 				strconv.FormatBool(*l.LBs[i].GenericInfo.SSLRedirect),
 				l.LBs[i].GenericInfo.StickySessions.CookieName,
 				strconv.FormatBool(*l.LBs[i].GenericInfo.ProxyProtocol),
 				l.LBs[i].GenericInfo.VPC,
+				strconv.Itoa(l.LBs[i].GenericInfo.Timeout),
 			},
 
 			[]string{" "},
@@ -167,9 +171,12 @@ func (l *LBPrinter) Data() [][]string {
 		[]string{"STATUS", l.LB.Status},
 		[]string{"IPV4", l.LB.IPV4},
 		[]string{"IPV6", l.LB.IPV6},
+		[]string{"HTTP2", strconv.FormatBool(*l.LB.HTTP2)},
+		[]string{"HTTP3", strconv.FormatBool(*l.LB.HTTP3)},
 		[]string{"HAS SSL", strconv.FormatBool(*l.LB.SSLInfo)},
 		[]string{"NODES", strconv.Itoa(l.LB.Nodes)},
 		[]string{"INSTANCES", printer.ArrayOfStringsToString(l.LB.Instances)},
+		[]string{"GLOBAL REGIONS", printer.ArrayOfStringsToString(l.LB.GlobalRegions)},
 
 		[]string{" "},
 		[]string{"HEALTH CHECKS"},
@@ -194,13 +201,14 @@ func (l *LBPrinter) Data() [][]string {
 
 		[]string{" "},
 		[]string{"GENERIC INFO"},
-		[]string{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "VPC"},
+		[]string{"BALANCING ALGORITHM", "SSL REDIRECT", "COOKIE NAME", "PROXY PROTOCOL", "VPC", "TIMEOUT"},
 		[]string{
 			l.LB.GenericInfo.BalancingAlgorithm,
 			strconv.FormatBool(*l.LB.GenericInfo.SSLRedirect),
 			l.LB.GenericInfo.StickySessions.CookieName,
 			strconv.FormatBool(*l.LB.GenericInfo.ProxyProtocol),
 			l.LB.GenericInfo.VPC,
+			strconv.Itoa(l.LB.GenericInfo.Timeout),
 		},
 
 		[]string{" "},
