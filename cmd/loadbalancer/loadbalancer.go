@@ -806,7 +806,7 @@ When not provided, load balancer defaults to public network.`,
 		1,
 		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
-	update.Flags().StringArray(
+	update.Flags().StringSlice(
 		"global-regions",
 		[]string{},
 		"(optional) Deploy the load balancer across multiple global regions.")
