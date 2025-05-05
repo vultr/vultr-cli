@@ -19,7 +19,7 @@ jobs:
         run: |
           pattern="^Release v[0-9]+.[0-9]+.[0-9]+ #(minor|major|patch)$"
           if [[ "${{ github.event.head_commit.message }}" =~ ${pattern} ]]; then
-              echo ::set-output name=match::true
+              echo match=true >> $GITHUB_OUTPUT
           fi
   create-tag:
     runs-on: ubuntu-latest
@@ -34,7 +34,7 @@ jobs:
 
     - name: Bump version and push tag
       id: tagger
-      uses: anothrNick/github-tag-action@1.36.0
+      uses: anothrNick/github-tag-action@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         WITH_V: true
