@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -271,18 +272,51 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'private-key' for load balancer create : %v", errPi)
 			}
 
+			if privateKey != "" {
+				rawPrivateKey, err := os.ReadFile(filepath.Clean(privateKey))
+				if err != nil {
+					return fmt.Errorf("error reading private key file: %v", err)
+				}
+				privateKey = string(rawPrivateKey)
+			}
+
 			certificate, errCe := cmd.Flags().GetString("certificate")
 			if errCe != nil {
 				return fmt.Errorf("error parsing flag 'certificate' for load balancer create : %v", errCe)
+			}
+
+			if certificate != "" {
+				rawCertificate, err := os.ReadFile(filepath.Clean(certificate))
+				if err != nil {
+					return fmt.Errorf("error reading certificate file: %v", err)
+				}
+				certificate = string(rawCertificate)
 			}
 
 			certificateChain, errCr := cmd.Flags().GetString("certificate-chain")
 			if errCr != nil {
 				return fmt.Errorf("error parsing flag 'certificate-chain' for load balancer create : %v", errCr)
 			}
+
+			if certificateChain != "" {
+				rawCertificateChain, err := os.ReadFile(filepath.Clean(certificateChain))
+				if err != nil {
+					return fmt.Errorf("error reading certificate chain file: %v", err)
+				}
+				certificateChain = string(rawCertificateChain)
+			}
+
 			privateKeyB64, errPiB64 := cmd.Flags().GetString("private-key-b64")
 			if errPiB64 != nil {
 				return fmt.Errorf("error parsing flag 'private-key-b64' for load balancer create : %v", errPiB64)
+			}
+
+			if privateKeyB64 != "" {
+				rawPrivateKey, err := os.ReadFile(filepath.Clean(privateKeyB64))
+				if err != nil {
+					return fmt.Errorf("error reading private key file: %v", err)
+				}
+				privateKeyB64 = string(rawPrivateKey)
 			}
 
 			certificateB64, errCeB64 := cmd.Flags().GetString("certificate-b64")
@@ -290,9 +324,25 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'certificate-b64' for load balancer create : %v", errCeB64)
 			}
 
+			if certificateB64 != "" {
+				rawCertificate, err := os.ReadFile(filepath.Clean(certificateB64))
+				if err != nil {
+					return fmt.Errorf("error reading certificate file: %v", err)
+				}
+				certificateB64 = string(rawCertificate)
+			}
+
 			certificateChainB64, errCrB64 := cmd.Flags().GetString("certificate-chain-b64")
 			if errCrB64 != nil {
 				return fmt.Errorf("error parsing flag 'certificate-chain-b64' for load balancer create : %v", errCrB64)
+			}
+
+			if certificateChainB64 != "" {
+				rawCertificateChain, err := os.ReadFile(filepath.Clean(certificateChainB64))
+				if err != nil {
+					return fmt.Errorf("error reading certificate chain file: %v", err)
+				}
+				certificateChainB64 = string(rawCertificateChain)
 			}
 
 			instances, errIn := cmd.Flags().GetStringSlice("instances")
@@ -466,12 +516,12 @@ When not provided, load balancer defaults to public network.`,
 
 	create.Flags().String("cookie-name", "", "(optional) the cookie name to make sticky.")
 
-	create.Flags().String("private-key", "", "(optional) the private key component for a ssl certificate.")
-	create.Flags().String("certificate", "", "(optional) the SSL certificate.")
-	create.Flags().String("certificate-chain", "", "(optional) the certificate chain for a ssl certificate.")
-	create.Flags().String("private-key-b64", "", "(optional) Base64-encoded private key for SSL.")
-	create.Flags().String("certificate-b64", "", "(optional) Base64-encoded certificate for SSL.")
-	create.Flags().String("certificate-chain-b64", "", "(optional) Base64-encoded certificate chain for SSL.")
+	create.Flags().String("private-key", "", "(optional) Path to SSL private key.")
+	create.Flags().String("certificate", "", "(optional) Path to SSL certificate.")
+	create.Flags().String("certificate-chain", "", "(optional) Path to SSL certificate chain.")
+	create.Flags().String("private-key-b64", "", "(optional) Path to Base64-encoded SSL private key.")
+	create.Flags().String("certificate-b64", "", "(optional) Path to Base64-encoded SSL certificate.")
+	create.Flags().String("certificate-chain-b64", "", "(optional) Path to Base64-encoded SSL certificate chain.")
 
 	create.Flags().StringP("label", "l", "", "(optional) the label for your load balancer.")
 	create.Flags().StringSliceP(
@@ -853,37 +903,57 @@ When not provided, load balancer defaults to public network.`,
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cert, errCert := cmd.Flags().GetString("certificate")
+			certificate, errCert := cmd.Flags().GetString("certificate")
 			if errCert != nil {
 				return fmt.Errorf("error parsing flag 'certificate' for load balancer ssl set-certificate: %v", errCert)
 			}
 
-			key, errKey := cmd.Flags().GetString("private-key")
+			rawCertificate, err := os.ReadFile(filepath.Clean(certificate))
+			if err != nil {
+				return fmt.Errorf("error reading certificate file: %v", err)
+			}
+
+			privateKey, errKey := cmd.Flags().GetString("private-key")
 			if errKey != nil {
 				return fmt.Errorf("error parsing flag 'private-key' for load balancer ssl set-certificate: %v", errKey)
 			}
 
-			chain, errChain := cmd.Flags().GetString("chain")
+			rawPrivateKey, err := os.ReadFile(filepath.Clean(privateKey))
+			if err != nil {
+				return fmt.Errorf("error reading private key file: %v", err)
+			}
+
+			certificateChain, errChain := cmd.Flags().GetString("chain")
 			if errChain != nil {
 				return fmt.Errorf("error parsing flag 'chain' for load balancer ssl set-certificate: %v", errChain)
+			}
+
+			var rawCertificateChain []byte
+
+			if certificateChain != "" {
+				rawCertificateChain, err = os.ReadFile(filepath.Clean(certificateChain))
+				if err != nil {
+					return fmt.Errorf("error reading chain file: %v", err)
+				}
 			}
 
 			base64Encoded, errB64 := cmd.Flags().GetBool("base64")
 			if errB64 != nil {
 				return fmt.Errorf("error parsing flag 'base64' for load balancer ssl set-certificate: %v", errB64)
 			}
+
 			o.UpdateReq = &govultr.LoadBalancerReq{
 				SSL: &govultr.SSL{},
 			}
 
 			if base64Encoded {
-				o.UpdateReq.SSL.PrivateKeyB64 = key
-				o.UpdateReq.SSL.CertificateB64 = cert
-				o.UpdateReq.SSL.ChainB64 = chain
+				o.UpdateReq.SSL.CertificateB64 = string(rawCertificate)
+				o.UpdateReq.SSL.PrivateKeyB64 = string(rawPrivateKey)
+				o.UpdateReq.SSL.ChainB64 = string(rawCertificateChain)
 			} else {
-				o.UpdateReq.SSL.PrivateKey = key
-				o.UpdateReq.SSL.Certificate = cert
-				o.UpdateReq.SSL.Chain = chain
+				o.UpdateReq.SSL.Certificate = string(rawCertificate)
+				o.UpdateReq.SSL.PrivateKey = string(rawPrivateKey)
+				o.UpdateReq.SSL.Chain = string(rawCertificateChain)
 			}
 
 			if err := o.Base.Client.LoadBalancer.Update(o.Base.Context, args[0], o.UpdateReq); err != nil {
@@ -896,20 +966,20 @@ When not provided, load balancer defaults to public network.`,
 		},
 	}
 
-	sslSet.Flags().String("certificate", "", "SSL certificate")
+	sslSet.Flags().String("certificate", "", "Path to SSL certificate")
 	if err := sslSet.MarkFlagRequired("certificate"); err != nil {
 		fmt.Printf("error marking load-balancer ssl set-certificate 'certificate' flag required: %v", err)
 		os.Exit(1)
 	}
 
-	sslSet.Flags().String("private-key", "", "SSL private key")
+	sslSet.Flags().String("private-key", "", "Path to SSL private key")
 	if err := sslSet.MarkFlagRequired("private-key"); err != nil {
 		fmt.Printf("error marking load-balancer ssl set-certificate 'private-key' flag required: %v", err)
 		os.Exit(1)
 	}
 
-	sslSet.Flags().String("chain", "", "(optional) SSL certificate chain")
-	sslSet.Flags().Bool("base64", false, "Indicates SSL values are Base64 encoded")
+	sslSet.Flags().String("chain", "", "(optional) Path to SSL certificate chain")
+	sslSet.Flags().Bool("base64", false, "Indicates SSL values are Base64-encoded")
 
 	// Remove Load Balancer SSL
 	sslDelete := &cobra.Command{
