@@ -392,7 +392,7 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 	// Repository List
 	repoList := &cobra.Command{
 		Use:     "list <Registry ID>",
-		Short:   "List all container registries",
+		Short:   "List all container registry repositories",
 		Aliases: []string{"l"},
 		Long:    listLong,
 		Example: listExample,
