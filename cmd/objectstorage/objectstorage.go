@@ -216,7 +216,6 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	clusterList := &cobra.Command{
 		Use:   "list",
 		Short: "Retrieve a list of all available object storage clusters",
-		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 
@@ -236,7 +235,6 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	clusterTierList := &cobra.Command{
 		Use:   "tiers",
 		Short: "Retrieve a list of tiers for a given object storage cluster",
-		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clusterID, err := cmd.Flags().GetInt("cluster-id")
 			if err != nil {
@@ -283,7 +281,6 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	tierList := &cobra.Command{
 		Use:   "list",
 		Short: "Retrieve a list of all object storage tiers",
-		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			tiers, err := o.listTiers()
 			if err != nil {
