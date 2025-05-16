@@ -208,9 +208,8 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	// Cluster
 	cluster := &cobra.Command{
-		Use:     "cluster",
-		Short:   "Commands to retrieve object storage cluster information",
-		Aliases: nil,
+		Use:   "cluster",
+		Short: "Commands to retrieve object storage cluster information",
 	}
 
 	// List Clusters
@@ -276,9 +275,8 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	// Tier
 	tier := &cobra.Command{
-		Use:     "tier",
-		Short:   "Commands for object storage tiers",
-		Aliases: []string{""},
+		Use:   "tier",
+		Short: "Commands for object storage tiers",
 	}
 
 	// List Tiers
