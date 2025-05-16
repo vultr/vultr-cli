@@ -9,20 +9,20 @@ Usage:
   vultr-cli [command]
 
 Available Commands:
-  account            Display account information
+  account            Commands related to account information
   apps               Display applications
   backups            Display backups
   bare-metal         Commands to manage bare metal servers
   billing            Display billing information
   block-storage      Commands to manage block storage
+  cdn                Commands to manage your CDN zones
   completion         Generate the autocompletion script for the specified shell
   container-registry Commands to interact with container registries
-  cdn                Commands to manage your CDN zones
   database           Commands to manage databases
   dns                Commands to control DNS records
   firewall           Commands to manage firewalls
   help               Help about any command
-  inference          Commands to interact with serverless inference subscriptions
+  inference          Commands to manage serverless inference
   instance           Commands to interact with instances
   iso                Commands to manage ISOs
   kubernetes         Commands to manage kubernetes clusters
@@ -39,7 +39,6 @@ Available Commands:
   user               Commands to manage users
   version            Display the vultr-cli version
   vpc                Commands to manage VPCs
-  vpc2               Commands to manage VPC2 networks
 
 Flags:
       --config string   config file (default is $HOME/.vultr-cli.yaml)
