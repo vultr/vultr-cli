@@ -214,7 +214,7 @@ func (o *ObjectStorageKeysPrinter) Paging() [][]string {
 
 // ======================================
 
-// ObjectStorageKeysPrinter ...
+// ObjectStorageTiersPrinter ...
 type ObjectStorageTiersPrinter struct {
 	Tiers []govultr.ObjectStorageTier `json:"tiers"`
 }
