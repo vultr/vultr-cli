@@ -984,7 +984,7 @@ When not provided, load balancer defaults to public network.`,
 	// Remove Load Balancer SSL
 	sslDelete := &cobra.Command{
 		Use:   "delete <Load Balancer ID>",
-		Short: "Delete a Load Balancer SSL configuration",
+		Short: "Delete a load balancer SSL configuration",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a load balancer ID")
@@ -1046,10 +1046,10 @@ When not provided, load balancer defaults to public network.`,
 
 	sslAutoSSLSet.Flags().String("sub-domain", "", "(optional) The subdomain to append to the domain zone")
 
-	// Disable Load Balancer Auto SSL
+	// Disable Load Balancer auto SSL
 	sslAutoSSLDelete := &cobra.Command{
 		Use:   "disable-auto-ssl <Load Balancer ID>",
-		Short: "Disable a Load Balancer Auto SSL. This will not remove an ssl certificate from the load balancer",
+		Short: "Disable a load balancer auto SSL. This will not remove an ssl certificate from the load balancer",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a load balancer ID")
