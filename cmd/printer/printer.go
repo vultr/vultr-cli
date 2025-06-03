@@ -182,13 +182,14 @@ func (t *Total) Compose() [][]string {
 // MarshalObject ...
 func MarshalObject(input interface{}, format string) []byte {
 	var output []byte
-	if format == "json" {
+	switch format {
+	case "json":
 		j, errJ := json.MarshalIndent(input, "", JSONIndent)
 		if errJ != nil {
 			panic(fmt.Errorf("error marshaling JSON : %v", errJ))
 		}
 		output = j
-	} else if format == "yaml" {
+	case "yaml":
 		y, errY := yaml.Marshal(input)
 		if errY != nil {
 			panic(fmt.Errorf("error marshaling YAML : %v", errY))

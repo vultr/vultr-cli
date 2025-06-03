@@ -1125,34 +1125,34 @@ func formatNodeData(node []string) (*govultr.NodePoolReq, error) { //nolint:gocy
 		field := nodeDataKeyVal[0]
 		val := nodeDataKeyVal[1]
 
-		switch {
-		case field == "plan":
+		switch field {
+		case "plan":
 			nodeData.Plan = val
-		case field == "quantity":
+		case "quantity":
 			port, err := strconv.Atoi(val)
 			if err != nil {
 				return nil, fmt.Errorf("invalid value for node pool quantity: %v", err)
 			}
 			nodeData.NodeQuantity = port
-		case field == "label":
+		case "label":
 			nodeData.Label = val
-		case field == "tag":
+		case "tag":
 			nodeData.Tag = val
-		case field == "node-labels":
+		case "node-labels":
 			nodeData.Labels = formatNodeLabels(val)
-		case field == "auto-scaler":
+		case "auto-scaler":
 			v, err := strconv.ParseBool(val)
 			if err != nil {
 				return nil, fmt.Errorf("invalid value for node pool auto-scaler: %v", err)
 			}
 			nodeData.AutoScaler = govultr.BoolToBoolPtr(v)
-		case field == "min-nodes":
+		case "min-nodes":
 			v, err := strconv.Atoi(val)
 			if err != nil {
 				return nil, fmt.Errorf("invalid value for node pool min-nodes: %v", err)
 			}
 			nodeData.MinNodes = v
-		case field == "max-nodes":
+		case "max-nodes":
 			v, err := strconv.Atoi(val)
 			if err != nil {
 				return nil, fmt.Errorf("invalid value for max-nodes: %v", err)
