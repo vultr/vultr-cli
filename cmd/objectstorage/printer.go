@@ -54,9 +54,9 @@ func (o *ObjectStoragesPrinter) Data() [][]string {
 			o.ObjectStorages[i].Status,
 			o.ObjectStorages[i].Label,
 			o.ObjectStorages[i].DateCreated,
-			o.ObjectStorages[i].S3Keys.S3Hostname,
-			o.ObjectStorages[i].S3Keys.S3AccessKey,
-			o.ObjectStorages[i].S3Keys.S3SecretKey,
+			o.ObjectStorages[i].S3Hostname,
+			o.ObjectStorages[i].S3AccessKey,
+			o.ObjectStorages[i].S3SecretKey,
 		})
 	}
 
@@ -109,9 +109,9 @@ func (o *ObjectStoragePrinter) Data() [][]string {
 		o.ObjectStorage.Status,
 		o.ObjectStorage.Label,
 		o.ObjectStorage.DateCreated,
-		o.ObjectStorage.S3Keys.S3Hostname,
-		o.ObjectStorage.S3Keys.S3AccessKey,
-		o.ObjectStorage.S3Keys.S3SecretKey,
+		o.ObjectStorage.S3Hostname,
+		o.ObjectStorage.S3AccessKey,
+		o.ObjectStorage.S3SecretKey,
 	}}
 }
 
