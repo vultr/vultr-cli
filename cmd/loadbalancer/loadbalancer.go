@@ -1429,16 +1429,16 @@ func formatFirewallRules(rules []string) ([]govultr.LBFirewallRule, error) {
 			field := ruleKeyVal[0]
 			val := ruleKeyVal[1]
 
-			switch {
-			case field == "ip_type":
+			switch field {
+			case "ip_type":
 				rule.IPType = val
-			case field == "port":
+			case "port":
 				port, errCon := strconv.Atoi(val)
 				if errCon != nil {
 					return nil, fmt.Errorf("unable to parse firewall rule port value")
 				}
 				rule.Port = port
-			case field == "source":
+			case "source":
 				rule.Source = val
 			}
 		}
@@ -1475,18 +1475,18 @@ func formatForwardingRules(rules []string) ([]govultr.ForwardingRule, error) {
 			field := ruleKeyVal[0]
 			val := ruleKeyVal[1]
 
-			switch {
-			case field == "frontend_protocol":
+			switch field {
+			case "frontend_protocol":
 				rule.FrontendProtocol = val
-			case field == "frontend_port":
+			case "frontend_port":
 				port, errCon := strconv.Atoi(val)
 				if errCon != nil {
 					return nil, fmt.Errorf("unable to parse fowarding rule frontend port value")
 				}
 				rule.FrontendPort = port
-			case field == "backend_protocol":
+			case "backend_protocol":
 				rule.BackendProtocol = val
-			case field == "backend_port":
+			case "backend_port":
 				port, errCon := strconv.Atoi(val)
 				if errCon != nil {
 					return nil, fmt.Errorf("unable to parse fowarding rule backend port value")

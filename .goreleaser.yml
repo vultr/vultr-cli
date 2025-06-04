@@ -42,6 +42,11 @@ archives:
       - goos: windows
         format: zip
 
+    builds_info:
+      group: root
+      owner: root
+      mode: 0644
+
 checksum:
   name_template: "{{ .ProjectName }}_v{{ .Version }}_checksums.txt"
   algorithm: sha256

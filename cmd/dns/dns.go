@@ -178,7 +178,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			disabled, errDi := cmd.Flags().GetBool("disabled")
-			if errEn != nil {
+			if errDi != nil {
 				return fmt.Errorf("error parsing 'disabled' flag for dnssec : %v", errDi)
 			}
 

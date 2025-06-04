@@ -111,6 +111,17 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 		data = append(data,
 			[]string{"MAINTENANCE DOW", d.DBs[i].MaintenanceDOW},
 			[]string{"MAINTENANCE TIME", d.DBs[i].MaintenanceTime},
+		)
+
+		if d.DBs[i].BackupHour != nil {
+			data = append(data, []string{"BACKUP HOUR", *d.DBs[i].BackupHour})
+		}
+
+		if d.DBs[i].BackupMinute != nil {
+			data = append(data, []string{"BACKUP MINUTE", *d.DBs[i].BackupMinute})
+		}
+
+		data = append(data,
 			[]string{"LATEST BACKUP", d.DBs[i].LatestBackup},
 			[]string{"TRUSTED IPS", printer.ArrayOfStringsToString(d.DBs[i].TrustedIPs)},
 		)
@@ -212,6 +223,17 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 					[]string{"PASSWORD", d.DBs[i].ReadReplicas[j].Password},
 					[]string{"MAINTENANCE DOW", d.DBs[i].ReadReplicas[j].MaintenanceDOW},
 					[]string{"MAINTENANCE TIME", d.DBs[i].ReadReplicas[j].MaintenanceTime},
+				)
+
+				if d.DBs[i].ReadReplicas[j].BackupHour != nil {
+					data = append(data, []string{"BACKUP HOUR", *d.DBs[i].ReadReplicas[j].BackupHour})
+				}
+
+				if d.DBs[i].ReadReplicas[j].BackupMinute != nil {
+					data = append(data, []string{"BACKUP MINUTE", *d.DBs[i].ReadReplicas[j].BackupMinute})
+				}
+
+				data = append(data,
 					[]string{"LATEST BACKUP", d.DBs[i].ReadReplicas[j].LatestBackup},
 					[]string{"TRUSTED IPS", printer.ArrayOfStringsToString(d.DBs[i].ReadReplicas[j].TrustedIPs)},
 				)
@@ -367,6 +389,17 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 	data = append(data,
 		[]string{"MAINTENANCE DOW", d.DB.MaintenanceDOW},
 		[]string{"MAINTENANCE TIME", d.DB.MaintenanceTime},
+	)
+
+	if d.DB.BackupHour != nil {
+		data = append(data, []string{"BACKUP HOUR", *d.DB.BackupHour})
+	}
+
+	if d.DB.BackupMinute != nil {
+		data = append(data, []string{"BACKUP MINUTE", *d.DB.BackupMinute})
+	}
+
+	data = append(data,
 		[]string{"LATEST BACKUP", d.DB.LatestBackup},
 		[]string{"TRUSTED IPS", printer.ArrayOfStringsToString(d.DB.TrustedIPs)},
 	)
@@ -468,6 +501,17 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 				[]string{"PORT", d.DB.ReadReplicas[i].Port},
 				[]string{"MAINTENANCE DOW", d.DB.ReadReplicas[i].MaintenanceDOW},
 				[]string{"MAINTENANCE TIME", d.DB.ReadReplicas[i].MaintenanceTime},
+			)
+
+			if d.DB.ReadReplicas[i].BackupHour != nil {
+				data = append(data, []string{"BACKUP HOUR", *d.DB.ReadReplicas[i].BackupHour})
+			}
+
+			if d.DB.ReadReplicas[i].BackupMinute != nil {
+				data = append(data, []string{"BACKUP MINUTE", *d.DB.ReadReplicas[i].BackupMinute})
+			}
+
+			data = append(data,
 				[]string{"LATEST BACKUP", d.DB.ReadReplicas[i].LatestBackup},
 				[]string{"TRUSTED IPS", printer.ArrayOfStringsToString(d.DB.ReadReplicas[i].TrustedIPs)},
 			)

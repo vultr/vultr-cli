@@ -46,7 +46,7 @@ func (c *ClustersSummaryPrinter) Data() [][]string {
 	var data [][]string
 	for i := range c.Clusters {
 		nodePoolCount := len(c.Clusters[i].NodePools)
-		var nodeCount int = 0
+		var nodeCount = 0
 
 		for j := range c.Clusters[i].NodePools {
 			nodeCount += len(c.Clusters[i].NodePools[j].Nodes)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
+	"github.com/vultr/vultr-cli/v3/cmd/utils"
 )
 
 // ObjectStoragesPrinter ...
@@ -53,9 +54,9 @@ func (o *ObjectStoragesPrinter) Data() [][]string {
 			o.ObjectStorages[i].Status,
 			o.ObjectStorages[i].Label,
 			o.ObjectStorages[i].DateCreated,
-			o.ObjectStorages[i].S3Keys.S3Hostname,
-			o.ObjectStorages[i].S3Keys.S3AccessKey,
-			o.ObjectStorages[i].S3Keys.S3SecretKey,
+			o.ObjectStorages[i].S3Hostname,
+			o.ObjectStorages[i].S3AccessKey,
+			o.ObjectStorages[i].S3SecretKey,
 		})
 	}
 
@@ -108,9 +109,9 @@ func (o *ObjectStoragePrinter) Data() [][]string {
 		o.ObjectStorage.Status,
 		o.ObjectStorage.Label,
 		o.ObjectStorage.DateCreated,
-		o.ObjectStorage.S3Keys.S3Hostname,
-		o.ObjectStorage.S3Keys.S3AccessKey,
-		o.ObjectStorage.S3Keys.S3SecretKey,
+		o.ObjectStorage.S3Hostname,
+		o.ObjectStorage.S3AccessKey,
+		o.ObjectStorage.S3SecretKey,
 	}}
 }
 
@@ -208,5 +209,77 @@ func (o *ObjectStorageKeysPrinter) Data() [][]string {
 
 // Paging ...
 func (o *ObjectStorageKeysPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// ObjectStorageTiersPrinter ...
+type ObjectStorageTiersPrinter struct {
+	Tiers []govultr.ObjectStorageTier `json:"tiers"`
+}
+
+// JSON ...
+func (o *ObjectStorageTiersPrinter) JSON() []byte {
+	return printer.MarshalObject(o, "json")
+}
+
+// YAML ...
+func (o *ObjectStorageTiersPrinter) YAML() []byte {
+	return printer.MarshalObject(o, "yaml")
+}
+
+// Columns ...
+func (o *ObjectStorageTiersPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"SLUG",
+		"PRICE",
+		"PRICE BANDWIDTH",
+		"PRICE DISK",
+		"RATELIMIT OPS",
+		"RATELIMIT BYTES",
+	}}
+}
+
+// Data ...
+func (o *ObjectStorageTiersPrinter) Data() [][]string {
+	if len(o.Tiers) == 0 {
+		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
+	}
+
+	var data [][]string
+	for i := range o.Tiers {
+		data = append(data, []string{
+			strconv.Itoa(o.Tiers[i].ID),
+			o.Tiers[i].Slug,
+			strconv.FormatFloat(
+				float64(o.Tiers[i].Price),
+				'f',
+				utils.FloatPrecision,
+				utils.FloatBitDepth,
+			),
+			strconv.FormatFloat(
+				float64(o.Tiers[i].PriceBandwidthGB),
+				'f',
+				utils.FloatPrecision,
+				utils.FloatBitDepth,
+			),
+			strconv.FormatFloat(
+				float64(o.Tiers[i].PriceDiskGB),
+				'f',
+				utils.FloatPrecision,
+				utils.FloatBitDepth,
+			),
+			strconv.Itoa(o.Tiers[i].RateLimitOpsSec),
+			strconv.Itoa(o.Tiers[i].RateLimitBytesSec),
+		})
+	}
+
+	return data
+}
+
+// Paging ...
+func (o *ObjectStorageTiersPrinter) Paging() [][]string {
 	return nil
 }

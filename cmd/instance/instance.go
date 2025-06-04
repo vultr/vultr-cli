@@ -1487,8 +1487,9 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 	// VPC2
 	vpc2 := &cobra.Command{
-		Use:   "vpc2",
-		Short: "Commands to handle vpc2s on an instance",
+		Use:        "vpc2",
+		Short:      "Commands to handle vpc2s on an instance",
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	// VPC List
@@ -1515,6 +1516,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	// VPC2 Attach
@@ -1548,6 +1550,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	vpc2Attach.Flags().StringP(
@@ -1578,6 +1581,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			return nil
 		},
+		Deprecated: "all vpc2 commands should be migrated to vpc.",
 	}
 
 	vpc2.AddCommand(
@@ -1777,16 +1781,16 @@ func (o *options) vpcDetach() error {
 }
 
 func (o *options) vpc2s() ([]govultr.VPC2Info, *govultr.Meta, error) {
-	vpc2s, meta, _, err := o.Base.Client.Instance.ListVPC2Info(o.Base.Context, o.Base.Args[0], o.Base.Options)
+	vpc2s, meta, _, err := o.Base.Client.Instance.ListVPC2Info(o.Base.Context, o.Base.Args[0], o.Base.Options) //nolint:staticcheck,lll
 	return vpc2s, meta, err
 }
 
 func (o *options) vpc2Attach() error {
-	return o.Base.Client.Instance.AttachVPC2(o.Base.Context, o.Base.Args[0], o.VPC2Req)
+	return o.Base.Client.Instance.AttachVPC2(o.Base.Context, o.Base.Args[0], o.VPC2Req) //nolint:staticcheck
 }
 
 func (o *options) vpc2Detach() error {
-	return o.Base.Client.Instance.DetachVPC2(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return o.Base.Client.Instance.DetachVPC2(o.Base.Context, o.Base.Args[0], o.Base.Args[1]) //nolint:staticcheck
 }
 
 func (o *options) bandwidth() (*govultr.Bandwidth, error) {

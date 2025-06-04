@@ -177,6 +177,16 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'maintenance-time' for database create : %v", errMt)
 			}
 
+			backupHour, errBh := cmd.Flags().GetString("backup-hour")
+			if errBh != nil {
+				return fmt.Errorf("error parsing flag 'backup-hour' for database create : %v", errMt)
+			}
+
+			backupMinute, errBm := cmd.Flags().GetString("backup-minute")
+			if errBm != nil {
+				return fmt.Errorf("error parsing flag 'backup-minute' for database create : %v", errMt)
+			}
+
 			trustedIPs, errTr := cmd.Flags().GetStringSlice("trusted-ips")
 			if errTr != nil {
 				return fmt.Errorf("error parsing flag 'trusted-ips' for database create : %v", errTr)
@@ -217,6 +227,8 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				VPCID:                  vpc,
 				MaintenanceDOW:         maintenanceDOW,
 				MaintenanceTime:        maintenanceTime,
+				BackupHour:             &backupHour,
+				BackupMinute:           &backupMinute,
 				TrustedIPs:             trustedIPs,
 				MySQLSQLModes:          mysqlSQLModes,
 				MySQLRequirePrimaryKey: &mysqlRequirePrimaryKey,
@@ -271,6 +283,8 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	create.Flags().String("vpc-id", "", "vpc id for the new managed database")
 	create.Flags().String("maintenance-dow", "", "maintenance day of week for the new managed database")
 	create.Flags().String("maintenance-time", "", "maintenance time for the new managed database")
+	create.Flags().String("backup-hour", "", "backup hour for the new managed database")
+	create.Flags().String("backup-minute", "", "backup minute for the new managed database")
 	create.Flags().StringSlice(
 		"trusted-ips",
 		[]string{},
@@ -342,6 +356,16 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'maintenance-time' for database update : %v", errMt)
 			}
 
+			backupHour, errBh := cmd.Flags().GetString("backup-hour")
+			if errBh != nil {
+				return fmt.Errorf("error parsing flag 'backup-hour' for database update : %v", errMt)
+			}
+
+			backupMinute, errBm := cmd.Flags().GetString("backup-minute")
+			if errBm != nil {
+				return fmt.Errorf("error parsing flag 'backup-minute' for database update : %v", errMt)
+			}
+
 			clusterTimeZone, errTz := cmd.Flags().GetString("cluster-time-zone")
 			if errTz != nil {
 				return fmt.Errorf("error parsing flag 'cluster-time-zone' for database update : %v", errTz)
@@ -393,6 +417,14 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				o.UpdateReq.MaintenanceTime = maintenanceTime
 			}
 
+			if cmd.Flags().Changed("backup-hour") {
+				o.UpdateReq.BackupHour = &backupHour
+			}
+
+			if cmd.Flags().Changed("backup-minute") {
+				o.UpdateReq.BackupMinute = &backupMinute
+			}
+
 			if cmd.Flags().Changed("cluster-time-zone") {
 				o.UpdateReq.ClusterTimeZone = clusterTimeZone
 			}
@@ -432,6 +464,8 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	update.Flags().String("vpc-id", "", "vpc id for the managed database")
 	update.Flags().String("maintenance-dow", "", "maintenance day of week for the managed database")
 	update.Flags().String("maintenance-time", "", "maintenance time for the managed database")
+	update.Flags().String("backup-hour", "", "backup hour for the managed database")
+	update.Flags().String("backup-minute", "", "backup minute for the managed database")
 	update.Flags().String("cluster-time-zone", "", "configured time zone for the managed database")
 	update.Flags().StringSlice(
 		"trusted-ips",

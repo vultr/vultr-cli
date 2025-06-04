@@ -361,7 +361,7 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			fw, errFw := cmd.Flags().GetBool("enable-firewall")
-			if errHi != nil {
+			if errFw != nil {
 				return fmt.Errorf("error parsing flag 'enable-firewall' for kubernetes cluster create : %v", errFw)
 			}
 
@@ -520,7 +520,7 @@ required in node pool. Use / between each new node pool.  E.g:
 		Example: getConfigExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("please provide a clusterID")
+				return errors.New("please provide a cluster ID")
 			}
 			return nil
 		},
@@ -603,7 +603,7 @@ required in node pool. Use / between each new node pool.  E.g:
 		Aliases: []string{"l"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("please provide a clusterID")
+				return errors.New("please provide a cluster ID")
 			}
 			return nil
 		},
@@ -629,7 +629,7 @@ required in node pool. Use / between each new node pool.  E.g:
 		Aliases: []string{"s"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("please provide a clusterID")
+				return errors.New("please provide a cluster ID")
 			}
 			return nil
 		},
@@ -1125,34 +1125,34 @@ func formatNodeData(node []string) (*govultr.NodePoolReq, error) { //nolint:gocy
 		field := nodeDataKeyVal[0]
 		val := nodeDataKeyVal[1]
 
-		switch {
-		case field == "plan":
+		switch field {
+		case "plan":
 			nodeData.Plan = val
-		case field == "quantity":
+		case "quantity":
 			port, err := strconv.Atoi(val)
 			if err != nil {
 				return nil, fmt.Errorf("invalid value for node pool quantity: %v", err)
 			}
 			nodeData.NodeQuantity = port
-		case field == "label":
+		case "label":
 			nodeData.Label = val
-		case field == "tag":
+		case "tag":
 			nodeData.Tag = val
-		case field == "node-labels":
+		case "node-labels":
 			nodeData.Labels = formatNodeLabels(val)
-		case field == "auto-scaler":
+		case "auto-scaler":
 			v, err := strconv.ParseBool(val)
 			if err != nil {
 				return nil, fmt.Errorf("invalid value for node pool auto-scaler: %v", err)
 			}
 			nodeData.AutoScaler = govultr.BoolToBoolPtr(v)
-		case field == "min-nodes":
+		case "min-nodes":
 			v, err := strconv.Atoi(val)
 			if err != nil {
 				return nil, fmt.Errorf("invalid value for node pool min-nodes: %v", err)
 			}
 			nodeData.MinNodes = v
-		case field == "max-nodes":
+		case "max-nodes":
 			v, err := strconv.Atoi(val)
 			if err != nil {
 				return nil, fmt.Errorf("invalid value for max-nodes: %v", err)
