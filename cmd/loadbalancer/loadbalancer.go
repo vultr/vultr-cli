@@ -386,13 +386,14 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			if cmd.Flags().Changed("http-version") {
-				if httpVersion == 2 {
+				switch httpVersion {
+				case 2:
 					o.CreateReq.HTTP2 = govultr.BoolToBoolPtr(true)
-				} else if httpVersion == 3 {
+				case 3:
 					o.CreateReq.HTTP2 = govultr.BoolToBoolPtr(true)
 					o.CreateReq.HTTP3 = govultr.BoolToBoolPtr(true)
-				} else {
-					return fmt.Errorf("error creating load balancer allowed values are 2 or 3")
+				default:
+					return fmt.Errorf("error creating load balancer: allowed values are 2 or 3")
 				}
 			}
 
@@ -664,13 +665,14 @@ When not provided, load balancer defaults to public network.`,
 			o.UpdateReq = &govultr.LoadBalancerReq{}
 
 			if cmd.Flags().Changed("http-version") {
-				if httpVersion == 2 {
+				switch httpVersion {
+				case 2:
 					o.UpdateReq.HTTP2 = govultr.BoolToBoolPtr(true)
-				} else if httpVersion == 3 {
+				case 3:
 					o.UpdateReq.HTTP2 = govultr.BoolToBoolPtr(true)
 					o.UpdateReq.HTTP3 = govultr.BoolToBoolPtr(true)
-				} else {
-					return fmt.Errorf("error creating load balancer allowed values are 2 or 3")
+				default:
+					return fmt.Errorf("error creating load balancer: allowed values are 2 or 3")
 				}
 			}
 
