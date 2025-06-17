@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	Version string = "v3.4.0"
+	Version string = "v3.5.0"
 )
 
 var (
