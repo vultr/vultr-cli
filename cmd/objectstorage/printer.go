@@ -324,7 +324,7 @@ func (o *ObjectStorageClusterTiersPrinter) Columns() [][]string {
 // Data ...
 func (o *ObjectStorageClusterTiersPrinter) Data() [][]string {
 	if len(o.Tiers) == 0 {
-		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---", "---"}}
+		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
 	}
 
 	var data [][]string
