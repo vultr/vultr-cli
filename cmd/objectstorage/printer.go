@@ -253,8 +253,8 @@ func (o *ObjectStorageTiersPrinter) Data() [][]string {
 	var data [][]string
 	for i := range o.Tiers {
 		var regions []string
-		for _, id := range o.Tiers[i].Locations {
-			regions = append(regions, id.Region)
+		for j := range o.Tiers[i].Locations {
+			regions = append(regions, o.Tiers[i].Locations[j].Region)
 		}
 		data = append(data, []string{
 			strconv.Itoa(o.Tiers[i].ID),
