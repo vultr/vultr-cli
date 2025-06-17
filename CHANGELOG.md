@@ -1,4 +1,59 @@
 # Change Log
+## [3.5.0](https://github.com/vultr/vultr-cli/compare/v3.4.0...v3.5.0) (2025-06-17)
+### Enhancements
+* Object Storage: add tier flag to create [PR 520](https://github.com/vultr/vultr-cli/pull/520)
+* Database: adjust plans printer for new supported engines [PR 505](https://github.com/vultr/vultr-cli/pull/505)
+* Database: add backup schedule [PR 534](https://github.com/vultr/vultr-cli/pull/534)
+* Account: add bandwidth command [PR 535](https://github.com/vultr/vultr-cli/pull/535)
+* Object Storage: update cluster display and add tiers [PR 536](https://github.com/vultr/vultr-cli/pull/536)
+* Load Balancer: add auto-ssl [PR 521](https://github.com/vultr/vultr-cli/pull/521)
+* Load Balancer: make SSL options read from files [PR 521](https://github.com/vultr/vultr-cli/pull/521)
+
+### Bug Fixes
+* Account: correctly set global command options [PR 517](https://github.com/vultr/vultr-cli/pull/517)
+* Container Registry: add missing args check [PR 506](https://github.com/vultr/vultr-cli/pull/506)
+* Kubernetes: fix nil error checks [PR 526](https://github.com/vultr/vultr-cli/pull/526)
+* DNS: fix nil error checks [PR 526](https://github.com/vultr/vultr-cli/pull/526)
+* Bare Metal: fix nil error checks [PR 526](https://github.com/vultr/vultr-cli/pull/526)
+* Object Storage: fix printer output for tiers [PR 539](https://github.com/vultr/vultr-cli/pull/539)
+
+### Documentation
+* Instance: clarify userdata flag usage [PR 499](https://github.com/vultr/vultr-cli/pull/499)
+* Kubernetes: fix whitespace on upgrades helptext [PR 522](https://github.com/vultr/vultr-cli/pull/522)
+* Object Storage: add example help text for all commands [PR 538](https://github.com/vultr/vultr-cli/pull/538)
+
+### Automation
+* Remove unused lint config rules exclusion [PR 511](https://github.com/vultr/vultr-cli/pull/511)
+* Remove coverage workflow [PR 518](https://github.com/vultr/vultr-cli/pull/518)
+* Set goreleaser builds info to root [PR 527](https://github.com/vultr/vultr-cli/pull/527)
+* Replace set-output with GITHUB_OUTPUT [PR 531](https://github.com/vultr/vultr-cli/pull/531)
+* Update Golangci-lint to use v2 [PR 537](https://github.com/vultr/vultr-cli/pull/537)
+
+### Deprecations
+* VPC2: all vpc2 commands are deprecated [PR 525](https://github.com/vultr/vultr-cli/pull/525)
+* Database: redis-named fields are deprecated [PR 495](https://github.com/vultr/vultr-cli/pull/495)
+
+### Dependencies 
+* Update govultr from v3.11.2 to v3.12.0 [PR 494](https://github.com/vultr/vultr-cli/pull/494)
+* Update govultr from v3.12.0 to v3.14.1 [PR 503](https://github.com/vultr/vultr-cli/pull/503)
+* Update govultr from v3.14.1 to v3.15.0 [PR 516](https://github.com/vultr/vultr-cli/pull/516)
+* Update govultr from v3.15.0 to v3.17.0 [PR 524](https://github.com/vultr/vultr-cli/pull/524)
+* Update govultr from v3.17.0 to v3.20.0 [PR 533](https://github.com/vultr/vultr-cli/pull/533)
+* Update oauth from 0.23.0 to 0.24.0 [PR 496](https://github.com/vultr/vultr-cli/pull/496)
+* Update go to v1.24 [PR 515](https://github.com/vultr/vultr-cli/pull/515)
+* Bump github.com/spf13/cobra from 1.8.1 to 1.9.1 [PR 509](https://github.com/vultr/vultr-cli/pull/509)
+* Bump golang.org/x/oauth2 from 0.25.0 to 0.27.0 [PR 510](https://github.com/vultr/vultr-cli/pull/510)
+* Bump golang.org/x/oauth2 from 0.27.0 to 0.28.0 [PR 519](https://github.com/vultr/vultr-cli/pull/519)
+* Bump golang.org/x/oauth2 from 0.24.0 to 0.25.0 [PR 500](https://github.com/vultr/vultr-cli/pull/500)
+* Bump github.com/spf13/viper from 1.19.0 to 1.20.0 [PR 523](https://github.com/vultr/vultr-cli/pull/523)
+* Bump golang.org/x/oauth2 from 0.28.0 to 0.29.0 [PR 529](https://github.com/vultr/vultr-cli/pull/529)
+* Bump github.com/spf13/viper from 1.20.0 to 1.20.1 [PR 528](https://github.com/vultr/vultr-cli/pull/528)
+* Bump golang.org/x/oauth2 from 0.29.0 to 0.30.0 [PR 532](https://github.com/vultr/vultr-cli/pull/532)
+
+### New Contributors
+* @mdspur made their first contribution in [PR 499](https://github.com/vultr/vultr-cli/pull/499)
+* @kanha-gupta made their first contribution in [PR 506](https://github.com/vultr/vultr-cli/pull/506)
+
 ## [3.4.0](https://github.com/vultr/vultr-cli/compare/v3.3.1...v3.4.0) (2024-10-31)
 ### Enhancements
 * Database: Add MySQL advanced config [PR 472](https://github.com/vultr/vultr-cli/pull/472)
