@@ -253,8 +253,8 @@ func (o *ObjectStorageTiersPrinter) Data() [][]string {
 	var data [][]string
 	for i := range o.Tiers {
 		var regions []string
-		for _, id := range o.Tiers[i].Locations {
-			regions = append(regions, id.Region)
+		for j := range o.Tiers[i].Locations {
+			regions = append(regions, o.Tiers[i].Locations[j].Region)
 		}
 		data = append(data, []string{
 			strconv.Itoa(o.Tiers[i].ID),
@@ -288,5 +288,77 @@ func (o *ObjectStorageTiersPrinter) Data() [][]string {
 
 // Paging ...
 func (o *ObjectStorageTiersPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// ObjectStorageTiersPrinter ...
+type ObjectStorageClusterTiersPrinter struct {
+	Tiers []govultr.ObjectStorageTier `json:"tiers"`
+}
+
+// JSON ...
+func (o *ObjectStorageClusterTiersPrinter) JSON() []byte {
+	return printer.MarshalObject(o, "json")
+}
+
+// YAML ...
+func (o *ObjectStorageClusterTiersPrinter) YAML() []byte {
+	return printer.MarshalObject(o, "yaml")
+}
+
+// Columns ...
+func (o *ObjectStorageClusterTiersPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"SLUG",
+		"PRICE",
+		"PRICE BANDWIDTH",
+		"PRICE DISK",
+		"RATELIMIT OPS",
+		"RATELIMIT BYTES",
+	}}
+}
+
+// Data ...
+func (o *ObjectStorageClusterTiersPrinter) Data() [][]string {
+	if len(o.Tiers) == 0 {
+		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
+	}
+
+	var data [][]string
+	for i := range o.Tiers {
+		data = append(data, []string{
+			strconv.Itoa(o.Tiers[i].ID),
+			o.Tiers[i].Slug,
+			strconv.FormatFloat(
+				float64(o.Tiers[i].Price),
+				'f',
+				utils.FloatPrecision,
+				utils.FloatBitDepth,
+			),
+			strconv.FormatFloat(
+				float64(o.Tiers[i].PriceBandwidthGB),
+				'f',
+				utils.FloatPrecision,
+				utils.FloatBitDepth,
+			),
+			strconv.FormatFloat(
+				float64(o.Tiers[i].PriceDiskGB),
+				'f',
+				utils.FloatPrecision,
+				utils.FloatBitDepth,
+			),
+			strconv.Itoa(o.Tiers[i].RateLimitOpsSec),
+			strconv.Itoa(o.Tiers[i].RateLimitBytesSec),
+		})
+	}
+
+	return data
+}
+
+// Paging ...
+func (o *ObjectStorageClusterTiersPrinter) Paging() [][]string {
 	return nil
 }
