@@ -31,7 +31,7 @@ var (
 	vultr-cli cr c -i="sjc" -n="my-registry" -p=true -l="start_up"
 	`
 
-	getLong    = `Display information for a specific VPC`
+	getLong    = `Display information for a specific container registry`
 	getExample = `
 	# Full example
 	vultr-cli container-registry get e8ba183d-df3b-487a-acbf-f6c06aa32468 

@@ -13,14 +13,71 @@ import (
 	"github.com/vultr/vultr-cli/v3/pkg/cli"
 )
 
+var (
+	long    = `Show commands available to object storage`
+	example = `
+	# Full example
+	vultr-cli object-storage
+	`
+
+	listLong    = `List all object storages on the account`
+	listExample = `
+	# Full example
+	vultr-cli object-storage list
+	`
+
+	getLong    = `Display information for a specific object storage`
+	getExample = `
+	# Full example
+	vultr-cli object-storage get 0298dc89-4b0f-4f64-9984-c5c9f0e16a25
+	`
+
+	createLong    = `Create a new object storage`
+	createExample = `
+	# Full example
+	vultr-cli object-storage create --cluster-id=2 --tier-id=4 --label="Example Object Storage"
+
+	You must pass --cluster-id and --tier-id; other arguments are optional
+
+	Use the vultr-cli object-storage cluster list and tier list commands to
+	help identify the appropriate values for your object storage
+	`
+	labelLong    = `Update an object storage label`
+	labelExample = `
+	# Full example
+	vultr-cli object-storage label 57ad432f-66a2-4580-936b-d0af934bce5d --label="Updated Object Storage"
+	`
+
+	deleteExample = `
+	# Full example
+	vultr-cli object-storage delete 57ad432f-66a2-4580-936b-d0af934bce5d
+	`
+
+	regenerateKeysExample = `
+	# Full example
+	vultr-cli object-storage regenerate-keys 57ad432f-66a2-4580-936b-d0af934bce5d
+	`
+
+	clusterListExample = `
+	# Full example
+	vultr-cli object-storage cluster list
+	`
+
+	clusterTierListExample = `
+	# Full example
+	vultr-cli object-storage cluster tiers --cluster-id=2
+	`
+)
+
 // NewCmdObjectStorage provides the CLI command for object storage functions
 func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
-		Use:   "object-storage",
-		Short: "Commands to manage object storage",
-		Long:  `object-storage is used to interact with object storages`,
+		Use:     "object-storage",
+		Short:   "Commands to manage object storage",
+		Long:    long,
+		Example: example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			utils.SetOptions(o.Base, cmd, args)
 			if !o.Base.HasAuth {
@@ -32,9 +89,10 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	// List
 	list := &cobra.Command{
-		Use:   "list",
-		Short: "Retrieve all active object storages",
-		Long:  ``,
+		Use:     "list",
+		Short:   "Retrieve all active object storages",
+		Long:    listLong,
+		Example: listExample,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 
@@ -63,9 +121,10 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	// Get
 	get := &cobra.Command{
-		Use:   "get <Object Storage ID>",
-		Short: "Retrieve a given object storage",
-		Long:  ``,
+		Use:     "get <Object Storage ID>",
+		Short:   "Retrieve a given object storage",
+		Long:    getLong,
+		Example: getExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide an object storage ID")
@@ -87,9 +146,10 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	// Create
 	create := &cobra.Command{
-		Use:   "create",
-		Short: "Create a new object storage",
-		Long:  ``,
+		Use:     "create",
+		Short:   "Create a new object storage",
+		Long:    createLong,
+		Example: createExample,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clusterID, errCl := cmd.Flags().GetInt("cluster-id")
 			if errCl != nil {
@@ -144,9 +204,10 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	// Label
 	label := &cobra.Command{
-		Use:   "label <Object Storage ID>",
-		Short: "Change the label for object storage",
-		Long:  ``,
+		Use:     "label <Object Storage ID>",
+		Short:   "Change the label for object storage",
+		Long:    labelLong,
+		Example: labelExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide an object storage ID")
@@ -182,7 +243,7 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		Use:     "delete <Object Storage ID>",
 		Short:   "Delete an object storage",
 		Aliases: []string{"destroy"},
-		Long:    ``,
+		Example: deleteExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide an object storage ID")
@@ -201,9 +262,9 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	// Regenerate Keys
 	regenerateKeys := &cobra.Command{
-		Use:   "regenerate-keys <Object Storage ID>",
-		Short: "Regenerate the S3 API keys for an object storage",
-		Long:  ``,
+		Use:     "regenerate-keys <Object Storage ID>",
+		Short:   "Regenerate the S3 API keys for an object storage",
+		Example: regenerateKeysExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide an object storage ID")
@@ -231,8 +292,9 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	// List Clusters
 	clusterList := &cobra.Command{
-		Use:   "list",
-		Short: "Retrieve a list of all available object storage clusters",
+		Use:     "list",
+		Short:   "Retrieve a list of all available object storage clusters",
+		Example: clusterListExample,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			o.Base.Options = utils.GetPaging(cmd)
 
@@ -250,8 +312,9 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	// List Cluster Tiers
 	clusterTierList := &cobra.Command{
-		Use:   "tiers",
-		Short: "Retrieve a list of tiers for a given object storage cluster",
+		Use:     "tiers",
+		Short:   "Retrieve a list of tiers for a given object storage cluster",
+		Example: clusterTierListExample,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clusterID, err := cmd.Flags().GetInt("cluster-id")
 			if err != nil {
