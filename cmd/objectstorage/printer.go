@@ -2,6 +2,7 @@ package objectstorage
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
@@ -239,17 +240,22 @@ func (o *ObjectStorageTiersPrinter) Columns() [][]string {
 		"PRICE DISK",
 		"RATELIMIT OPS",
 		"RATELIMIT BYTES",
+		"AVAILABLE REGIONS",
 	}}
 }
 
 // Data ...
 func (o *ObjectStorageTiersPrinter) Data() [][]string {
 	if len(o.Tiers) == 0 {
-		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
+		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---", "---"}}
 	}
 
 	var data [][]string
 	for i := range o.Tiers {
+		var regions []string
+		for _, id := range o.Tiers[i].Locations {
+			regions = append(regions, id.Region)
+		}
 		data = append(data, []string{
 			strconv.Itoa(o.Tiers[i].ID),
 			o.Tiers[i].Slug,
@@ -273,6 +279,7 @@ func (o *ObjectStorageTiersPrinter) Data() [][]string {
 			),
 			strconv.Itoa(o.Tiers[i].RateLimitOpsSec),
 			strconv.Itoa(o.Tiers[i].RateLimitBytesSec),
+			strings.Join(regions, ", "),
 		})
 	}
 

@@ -101,9 +101,15 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 				return fmt.Errorf("error parsing flag 'label' for object storage create : %v", errLa)
 			}
 
+			tierID, errTi := cmd.Flags().GetInt("tier-id")
+			if errTi != nil {
+				return fmt.Errorf("error parsing flag 'tier-id' for object storage create : %v", errTi)
+			}
+
 			o.ObjectStorageReq = &govultr.ObjectStorageReq{
 				ClusterID: clusterID,
 				Label:     label,
+				TierID:    tierID,
 			}
 
 			os, err := o.create()
@@ -120,8 +126,19 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	create.Flags().StringP("label", "l", "", "label you want your object storage to have")
 	create.Flags().IntP("cluster-id", "i", 0, "ID of the cluster in which to create the object storage")
+	create.Flags().IntP(
+		"tier-id",
+		"t",
+		0,
+		"ID of the tier to create the object storage in. Must be one of the available tiers for the cluster",
+	)
+
 	if err := create.MarkFlagRequired("cluster-id"); err != nil {
 		printer.Error(fmt.Errorf("error marking object storage create 'cluster-id' flag required : %v", err))
+		os.Exit(1)
+	}
+	if err := create.MarkFlagRequired("tier-id"); err != nil {
+		printer.Error(fmt.Errorf("error marking object storage create 'tier-id' flag required : %v", err))
 		os.Exit(1)
 	}
 
