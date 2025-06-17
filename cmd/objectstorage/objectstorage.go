@@ -328,7 +328,7 @@ func NewCmdObjectStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 				return fmt.Errorf("error retrieving object storage cluster tier list : %v", err)
 			}
 
-			data := &ObjectStorageTiersPrinter{Tiers: clusterTiers}
+			data := &ObjectStorageClusterTiersPrinter{Tiers: clusterTiers}
 			o.Base.Printer.Display(data, nil)
 
 			return nil
