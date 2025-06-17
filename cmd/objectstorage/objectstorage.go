@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	long    = `Show commands available to obejct storage`
+	long    = `Show commands available to object storage`
 	example = `
 	# Full example
 	vultr-cli object-storage
