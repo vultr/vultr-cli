@@ -103,6 +103,16 @@ func (i *InstancePrinter) Data() [][]string {
 		[]string{"RAM", strconv.Itoa(i.Instance.RAM)},
 		[]string{"DISK", strconv.Itoa(i.Instance.Disk)},
 		[]string{"MAIN IP", i.Instance.MainIP},
+		[]string{"USER SCHEME", i.Instance.UserScheme},
+	)
+
+	if i.Instance.DefaultPassword != "" {
+		data = append(data, []string{"PASSWORD", i.Instance.DefaultPassword})
+	} else {
+		data = append(data, []string{"PASSWORD", "UNAVAILABLE"})
+	}
+
+	data = append(data,
 		[]string{"VCPU COUNT", strconv.Itoa(i.Instance.VCPUCount)},
 		[]string{"REGION", i.Instance.Region},
 		[]string{"DATE CREATED", i.Instance.DateCreated},
