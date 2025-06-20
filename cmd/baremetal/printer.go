@@ -88,38 +88,38 @@ func (b *BareMetalPrinter) YAML() []byte {
 
 // Columns ...
 func (b *BareMetalPrinter) Columns() [][]string {
-	return [][]string{0: {
-		"ID",
-		"IP",
-		"MAC ADDRESS",
-		"LABEL",
-		"OS",
-		"STATUS",
-		"REGION",
-		"CPU",
-		"RAM",
-		"DISK",
-		"FEATURES",
-		"TAGS",
-	}}
+	return [][]string{0: {"BARE METAL INFO"}}
 }
 
 // Data ...
 func (b *BareMetalPrinter) Data() [][]string {
-	return [][]string{0: {
-		b.BareMetal.ID,
-		b.BareMetal.MainIP,
-		strconv.Itoa(b.BareMetal.MacAddress),
-		b.BareMetal.Label,
-		b.BareMetal.Os,
-		b.BareMetal.Status,
-		b.BareMetal.Region,
-		strconv.Itoa(b.BareMetal.CPUCount),
-		b.BareMetal.RAM,
-		b.BareMetal.Disk,
-		printer.ArrayOfStringsToString(b.BareMetal.Features),
-		printer.ArrayOfStringsToString(b.BareMetal.Tags),
-	}}
+	var data [][]string
+	data = append(data,
+		[]string{"ID", b.BareMetal.ID},
+		[]string{"IP", b.BareMetal.MainIP},
+		[]string{"USER SCHEME", b.BareMetal.UserScheme},
+	)
+
+	if b.BareMetal.DefaultPassword != "" {
+		data = append(data, []string{"PASSWORD", b.BareMetal.DefaultPassword})
+	} else {
+		data = append(data, []string{"PASSWORD", "UNAVAILABLE"})
+	}
+
+	data = append(data,
+		[]string{"MAC ADDRESS", strconv.Itoa(b.BareMetal.MacAddress)},
+		[]string{"LABEL", b.BareMetal.Label},
+		[]string{"OS", b.BareMetal.Os},
+		[]string{"STATUS", b.BareMetal.Status},
+		[]string{"REGION", b.BareMetal.Region},
+		[]string{"CPU", strconv.Itoa(b.BareMetal.CPUCount)},
+		[]string{"RAM", b.BareMetal.RAM},
+		[]string{"DISK", b.BareMetal.Disk},
+		[]string{"FEATURES", printer.ArrayOfStringsToString(b.BareMetal.Features)},
+		[]string{"TAGS", printer.ArrayOfStringsToString(b.BareMetal.Tags)},
+	)
+
+	return data
 }
 
 // Paging ...
