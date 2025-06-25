@@ -106,6 +106,26 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 				[]string{"ACCESS KEY", d.DBs[i].AccessKey},
 				[]string{"ACCESS CERT", d.DBs[i].AccessCert},
 			)
+
+			if d.DBs[i].EnableKafkaREST != nil {
+				data = append(data, []string{"ENABLE KAFKA REST", strconv.FormatBool(*d.DBs[i].EnableKafkaREST)})
+
+				if d.DBs[i].KafkaRESTURI != "" {
+					data = append(data, []string{"KAFKA REST URI", d.DBs[i].KafkaRESTURI})
+				}
+			}
+
+			if d.DBs[i].EnableSchemaRegistry != nil {
+				data = append(data, []string{"ENABLE SCHEMA REGISTRY", strconv.FormatBool(*d.DBs[i].EnableSchemaRegistry)})
+
+				if d.DBs[i].SchemaRegistryURI != "" {
+					data = append(data, []string{"SCHEMA REGISTRY URI", d.DBs[i].SchemaRegistryURI})
+				}
+			}
+
+			if d.DBs[i].EnableKafkaConnect != nil {
+				data = append(data, []string{"ENABLE KAFKA CONNECT", strconv.FormatBool(*d.DBs[i].EnableKafkaConnect)})
+			}
 		}
 
 		data = append(data,
@@ -384,6 +404,30 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 			[]string{"ACCESS KEY", d.DB.AccessKey},
 			[]string{"ACCESS CERT", d.DB.AccessCert},
 		)
+
+		if d.DB.DatabaseEngine == "kafka" {
+			data = append(data, []string{"SASL PORT", d.DB.SASLPort})
+
+			if d.DB.EnableKafkaREST != nil {
+				data = append(data, []string{"ENABLE KAFKA REST", strconv.FormatBool(*d.DB.EnableKafkaREST)})
+
+				if d.DB.KafkaRESTURI != "" {
+					data = append(data, []string{"KAFKA REST URI", d.DB.KafkaRESTURI})
+				}
+			}
+
+			if d.DB.EnableSchemaRegistry != nil {
+				data = append(data, []string{"ENABLE SCHEMA REGISTRY", strconv.FormatBool(*d.DB.EnableSchemaRegistry)})
+
+				if d.DB.SchemaRegistryURI != "" {
+					data = append(data, []string{"SCHEMA REGISTRY URI", d.DB.SchemaRegistryURI})
+				}
+			}
+
+			if d.DB.EnableKafkaConnect != nil {
+				data = append(data, []string{"ENABLE KAFKA CONNECT", strconv.FormatBool(*d.DB.EnableKafkaConnect)})
+			}
+		}
 	}
 
 	data = append(data,
@@ -1595,6 +1639,294 @@ func (a *AdvancedOptionsPrinter) Data() [][]string {
 
 // Paging ...
 func (a *AdvancedOptionsPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// AdvancedOptionsKafkaRESTPrinter ...
+type AdvancedOptionsKafkaRESTPrinter struct {
+	Configured *govultr.DatabaseKafkaRESTAdvancedOptions `json:"configured_options"`
+	Available  []govultr.AvailableOption                 `json:"available_options"`
+}
+
+// JSON ...
+func (a *AdvancedOptionsKafkaRESTPrinter) JSON() []byte {
+	return printer.MarshalObject(a, "json")
+}
+
+// YAML ...
+func (a *AdvancedOptionsKafkaRESTPrinter) YAML() []byte {
+	return printer.MarshalObject(a, "yaml")
+}
+
+// Columns ...
+func (a *AdvancedOptionsKafkaRESTPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (a *AdvancedOptionsKafkaRESTPrinter) Data() [][]string {
+	var data [][]string
+
+	if a.Configured == (&govultr.DatabaseKafkaRESTAdvancedOptions{}) {
+		data = append(data, []string{"CONFIGURED OPTIONS", "None"})
+	} else {
+		data = append(data, []string{"CONFIGURED OPTIONS"})
+		v := reflect.ValueOf(*a.Configured)
+		for i := 0; i < v.NumField(); i++ {
+			if !v.Field(i).IsZero() {
+				switch v.Field(i).Kind() {
+				case reflect.Pointer:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.FormatBool(v.Field(i).Elem().Interface().(bool))})
+				case reflect.Int:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.Itoa(v.Field(i).Interface().(int))})
+				case reflect.Float64:
+					data = append(data,
+						[]string{
+							v.Type().Field(i).Name,
+							strconv.FormatFloat(float64(v.Field(i).Interface().(float64)), 'f', utils.FloatPrecision, 32),
+						},
+					)
+				default:
+					data = append(data, []string{v.Type().Field(i).Name, v.Field(i).Interface().(string)})
+				}
+			}
+		}
+	}
+
+	data = append(data,
+		[]string{" "},
+		[]string{"AVAILABLE OPTIONS"},
+	)
+
+	for i := range a.Available {
+		data = append(data,
+			[]string{"NAME", a.Available[i].Name},
+			[]string{"TYPE", a.Available[i].Type},
+		)
+
+		if a.Available[i].Type == "enum" {
+			data = append(data,
+				[]string{"ENUMERALS", printer.ArrayOfStringsToString(a.Available[i].Enumerals)},
+			)
+		}
+
+		if a.Available[i].Type == "int" || a.Available[i].Type == "float" {
+			data = append(data,
+				[]string{"MIN VALUE", strconv.FormatFloat(float64(*a.Available[i].MinValue), 'f', utils.FloatPrecision, 32)},
+				[]string{"MAX VALUE", strconv.FormatFloat(float64(*a.Available[i].MaxValue), 'f', utils.FloatPrecision, 32)},
+			)
+		}
+
+		if len(a.Available[i].AltValues) > 0 {
+			data = append(data, []string{"ALT VALUES", printer.ArrayOfIntsToString(a.Available[i].AltValues)})
+		}
+
+		if a.Available[i].Units != "" {
+			data = append(data, []string{"UNITS", a.Available[i].Units})
+		}
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (a *AdvancedOptionsKafkaRESTPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// AdvancedOptionsSchemaRegistryPrinter ...
+type AdvancedOptionsSchemaRegistryPrinter struct {
+	Configured *govultr.DatabaseSchemaRegistryAdvancedOptions `json:"configured_options"`
+	Available  []govultr.AvailableOption                      `json:"available_options"`
+}
+
+// JSON ...
+func (a *AdvancedOptionsSchemaRegistryPrinter) JSON() []byte {
+	return printer.MarshalObject(a, "json")
+}
+
+// YAML ...
+func (a *AdvancedOptionsSchemaRegistryPrinter) YAML() []byte {
+	return printer.MarshalObject(a, "yaml")
+}
+
+// Columns ...
+func (a *AdvancedOptionsSchemaRegistryPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (a *AdvancedOptionsSchemaRegistryPrinter) Data() [][]string {
+	var data [][]string
+
+	if a.Configured == (&govultr.DatabaseSchemaRegistryAdvancedOptions{}) {
+		data = append(data, []string{"CONFIGURED OPTIONS", "None"})
+	} else {
+		data = append(data, []string{"CONFIGURED OPTIONS"})
+		v := reflect.ValueOf(*a.Configured)
+		for i := 0; i < v.NumField(); i++ {
+			if !v.Field(i).IsZero() {
+				switch v.Field(i).Kind() {
+				case reflect.Pointer:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.FormatBool(v.Field(i).Elem().Interface().(bool))})
+				case reflect.Int:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.Itoa(v.Field(i).Interface().(int))})
+				case reflect.Float64:
+					data = append(data,
+						[]string{
+							v.Type().Field(i).Name,
+							strconv.FormatFloat(float64(v.Field(i).Interface().(float64)), 'f', utils.FloatPrecision, 32),
+						},
+					)
+				default:
+					data = append(data, []string{v.Type().Field(i).Name, v.Field(i).Interface().(string)})
+				}
+			}
+		}
+	}
+
+	data = append(data,
+		[]string{" "},
+		[]string{"AVAILABLE OPTIONS"},
+	)
+
+	for i := range a.Available {
+		data = append(data,
+			[]string{"NAME", a.Available[i].Name},
+			[]string{"TYPE", a.Available[i].Type},
+		)
+
+		if a.Available[i].Type == "enum" {
+			data = append(data,
+				[]string{"ENUMERALS", printer.ArrayOfStringsToString(a.Available[i].Enumerals)},
+			)
+		}
+
+		if a.Available[i].Type == "int" || a.Available[i].Type == "float" {
+			data = append(data,
+				[]string{"MIN VALUE", strconv.FormatFloat(float64(*a.Available[i].MinValue), 'f', utils.FloatPrecision, 32)},
+				[]string{"MAX VALUE", strconv.FormatFloat(float64(*a.Available[i].MaxValue), 'f', utils.FloatPrecision, 32)},
+			)
+		}
+
+		if len(a.Available[i].AltValues) > 0 {
+			data = append(data, []string{"ALT VALUES", printer.ArrayOfIntsToString(a.Available[i].AltValues)})
+		}
+
+		if a.Available[i].Units != "" {
+			data = append(data, []string{"UNITS", a.Available[i].Units})
+		}
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (a *AdvancedOptionsSchemaRegistryPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// AdvancedOptionsKafkaConnectPrinter ...
+type AdvancedOptionsKafkaConnectPrinter struct {
+	Configured *govultr.DatabaseKafkaConnectAdvancedOptions `json:"configured_options"`
+	Available  []govultr.AvailableOption                    `json:"available_options"`
+}
+
+// JSON ...
+func (a *AdvancedOptionsKafkaConnectPrinter) JSON() []byte {
+	return printer.MarshalObject(a, "json")
+}
+
+// YAML ...
+func (a *AdvancedOptionsKafkaConnectPrinter) YAML() []byte {
+	return printer.MarshalObject(a, "yaml")
+}
+
+// Columns ...
+func (a *AdvancedOptionsKafkaConnectPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (a *AdvancedOptionsKafkaConnectPrinter) Data() [][]string {
+	var data [][]string
+
+	if a.Configured == (&govultr.DatabaseKafkaConnectAdvancedOptions{}) {
+		data = append(data, []string{"CONFIGURED OPTIONS", "None"})
+	} else {
+		data = append(data, []string{"CONFIGURED OPTIONS"})
+		v := reflect.ValueOf(*a.Configured)
+		for i := 0; i < v.NumField(); i++ {
+			if !v.Field(i).IsZero() {
+				switch v.Field(i).Kind() {
+				case reflect.Pointer:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.FormatBool(v.Field(i).Elem().Interface().(bool))})
+				case reflect.Int:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.Itoa(v.Field(i).Interface().(int))})
+				case reflect.Float64:
+					data = append(data,
+						[]string{
+							v.Type().Field(i).Name,
+							strconv.FormatFloat(float64(v.Field(i).Interface().(float64)), 'f', utils.FloatPrecision, 32),
+						},
+					)
+				default:
+					data = append(data, []string{v.Type().Field(i).Name, v.Field(i).Interface().(string)})
+				}
+			}
+		}
+	}
+
+	data = append(data,
+		[]string{" "},
+		[]string{"AVAILABLE OPTIONS"},
+	)
+
+	for i := range a.Available {
+		data = append(data,
+			[]string{"NAME", a.Available[i].Name},
+			[]string{"TYPE", a.Available[i].Type},
+		)
+
+		if a.Available[i].Type == "enum" {
+			data = append(data,
+				[]string{"ENUMERALS", printer.ArrayOfStringsToString(a.Available[i].Enumerals)},
+			)
+		}
+
+		if a.Available[i].Type == "int" || a.Available[i].Type == "float" {
+			data = append(data,
+				[]string{"MIN VALUE", strconv.FormatFloat(float64(*a.Available[i].MinValue), 'f', utils.FloatPrecision, 32)},
+				[]string{"MAX VALUE", strconv.FormatFloat(float64(*a.Available[i].MaxValue), 'f', utils.FloatPrecision, 32)},
+			)
+		}
+
+		if len(a.Available[i].AltValues) > 0 {
+			data = append(data, []string{"ALT VALUES", printer.ArrayOfIntsToString(a.Available[i].AltValues)})
+		}
+
+		if a.Available[i].Units != "" {
+			data = append(data, []string{"UNITS", a.Available[i].Units})
+		}
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (a *AdvancedOptionsKafkaConnectPrinter) Paging() [][]string {
 	return nil
 }
 

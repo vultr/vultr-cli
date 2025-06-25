@@ -202,12 +202,12 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'mysql-require-primary-key' for database create : %v", errMq)
 			}
 
-			mySQLSlowQueryLog, errMl := cmd.Flags().GetBool("mysql-slow-query-log")
+			mysqlSlowQueryLog, errMl := cmd.Flags().GetBool("mysql-slow-query-log")
 			if errMl != nil {
 				return fmt.Errorf("error parsing flag 'mysql-slow-query-log' for database create : %v", errMl)
 			}
 
-			mySQLLongQueryTime, errMt := cmd.Flags().GetInt("mysql-long-query-time")
+			mysqlLongQueryTime, errMt := cmd.Flags().GetInt("mysql-long-query-time")
 			if errMt != nil {
 				return fmt.Errorf("error parsing flag 'mysql-long-query-time' for database create : %v", errMt)
 			}
@@ -215,6 +215,21 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			evictionPolicy, errEe := cmd.Flags().GetString("eviction-policy")
 			if errEe != nil {
 				return fmt.Errorf("error parsing flag 'eviction-policy' for database create : %v", errEe)
+			}
+
+			enableKafkaREST, errEe := cmd.Flags().GetBool("enable-kafka-rest")
+			if errEe != nil {
+				return fmt.Errorf("error parsing flag 'enable-kafka-rest' for database create : %v", errEe)
+			}
+
+			enableSchemaRegistry, errEe := cmd.Flags().GetBool("enable-schema-registry")
+			if errEe != nil {
+				return fmt.Errorf("error parsing flag 'enable-schema-registry' for database create : %v", errEe)
+			}
+
+			enableKafkaConnect, errEe := cmd.Flags().GetBool("enable-kafka-connect")
+			if errEe != nil {
+				return fmt.Errorf("error parsing flag 'enable-kafka-connect' for database create : %v", errEe)
 			}
 
 			o.CreateReq = &govultr.DatabaseCreateReq{
@@ -232,9 +247,12 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				TrustedIPs:             trustedIPs,
 				MySQLSQLModes:          mysqlSQLModes,
 				MySQLRequirePrimaryKey: &mysqlRequirePrimaryKey,
-				MySQLSlowQueryLog:      &mySQLSlowQueryLog,
-				MySQLLongQueryTime:     mySQLLongQueryTime,
+				MySQLSlowQueryLog:      &mysqlSlowQueryLog,
+				MySQLLongQueryTime:     mysqlLongQueryTime,
 				EvictionPolicy:         evictionPolicy,
+				EnableKafkaREST:        &enableKafkaREST,
+				EnableSchemaRegistry:   &enableSchemaRegistry,
+				EnableKafkaConnect:     &enableKafkaConnect,
 			}
 
 			db, err := o.create()
@@ -302,15 +320,30 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	)
 	create.Flags().Bool(
 		"mysql-slow-query-log",
-		false,
+		true,
 		"enable slow query logging for the new mysql managed database",
 	)
 	create.Flags().Int(
 		"mysql-long-query-time",
-		0,
+		1,
 		"long query time for the new mysql managed database when slow query logging is enabled",
 	)
 	create.Flags().String("eviction-policy", "", "eviction policy for the new caching managed database")
+	create.Flags().Bool(
+		"enable-kafka-rest",
+		false,
+		"enable Kafka REST for the new apache kafka managed database",
+	)
+	create.Flags().Bool(
+		"enable-schema-registry",
+		false,
+		"enable Schema Registry for the new apache kafka managed database",
+	)
+	create.Flags().Bool(
+		"enable-kafka-connect",
+		false,
+		"enable Kafka Connect for the new apache kafka managed database",
+	)
 
 	// Update
 	update := &cobra.Command{
@@ -381,7 +414,17 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'mysql-sql-modes' for database update : %v", errMy)
 			}
 
-			mySQLLongQueryTime, errMt := cmd.Flags().GetInt("mysql-long-query-time")
+			mysqlRequirePrimaryKey, errMy := cmd.Flags().GetBool("mysql-require-primary-key")
+			if errMy != nil {
+				return fmt.Errorf("error parsing flag 'mysql-require-primary-key' for database update : %v", errMy)
+			}
+
+			mysqlSlowQueryLog, errMy := cmd.Flags().GetBool("mysql-slow-query-log")
+			if errMy != nil {
+				return fmt.Errorf("error parsing flag 'mysql-slow-query-log' for database update : %v", errMy)
+			}
+
+			mysqlLongQueryTime, errMt := cmd.Flags().GetInt("mysql-long-query-time")
 			if errMt != nil {
 				return fmt.Errorf("error parsing flag 'mysql-long-query-time' for database update : %v", errMt)
 			}
@@ -389,6 +432,21 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			evictionPolicy, errEe := cmd.Flags().GetString("eviction-policy")
 			if errEe != nil {
 				return fmt.Errorf("error parsing flag 'eviction-policy' for database update : %v", errEe)
+			}
+
+			enableKafkaREST, errMy := cmd.Flags().GetBool("enable-kafka-rest")
+			if errMy != nil {
+				return fmt.Errorf("error parsing flag 'enable-kafka-rest' for database update : %v", errMy)
+			}
+
+			enableSchemaRegistry, errMy := cmd.Flags().GetBool("enable-schema-registry")
+			if errMy != nil {
+				return fmt.Errorf("error parsing flag 'enable-schema-registry' for database update : %v", errMy)
+			}
+
+			enableKafkaConnect, errMy := cmd.Flags().GetBool("enable-kafka-connect")
+			if errMy != nil {
+				return fmt.Errorf("error parsing flag 'enable-kafka-connect' for database update : %v", errMy)
 			}
 
 			o.UpdateReq = &govultr.DatabaseUpdateReq{}
@@ -437,12 +495,32 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				o.UpdateReq.MySQLSQLModes = mysqlSQLModes
 			}
 
+			if cmd.Flags().Changed("mysql-require-primary-key") {
+				o.UpdateReq.MySQLRequirePrimaryKey = &mysqlRequirePrimaryKey
+			}
+
+			if cmd.Flags().Changed("mysql-slow-query-log") {
+				o.UpdateReq.MySQLSlowQueryLog = &mysqlSlowQueryLog
+			}
+
 			if cmd.Flags().Changed("mysql-long-query-time") {
-				o.UpdateReq.MySQLLongQueryTime = mySQLLongQueryTime
+				o.UpdateReq.MySQLLongQueryTime = mysqlLongQueryTime
 			}
 
 			if cmd.Flags().Changed("eviction-policy") {
 				o.UpdateReq.EvictionPolicy = evictionPolicy
+			}
+
+			if cmd.Flags().Changed("enable-kafka-rest") {
+				o.UpdateReq.EnableKafkaREST = &enableKafkaREST
+			}
+
+			if cmd.Flags().Changed("enable-schema-registry") {
+				o.UpdateReq.EnableSchemaRegistry = &enableSchemaRegistry
+			}
+
+			if cmd.Flags().Changed("enable-kafka-connect") {
+				o.UpdateReq.EnableKafkaConnect = &enableKafkaConnect
 			}
 
 			db, err := o.update()
@@ -482,13 +560,28 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		true,
 		"enable requiring primary keys for the mysql managed database",
 	)
-	update.Flags().Bool("mysql-slow-query-log", false, "enable slow query logging for the mysql managed database")
+	update.Flags().Bool("mysql-slow-query-log", true, "enable slow query logging for the mysql managed database")
 	update.Flags().Int(
 		"mysql-long-query-time",
-		0,
+		1,
 		"long query time for the mysql managed database when slow query logging is enabled",
 	)
 	update.Flags().String("eviction-policy", "", "eviction policy for the caching managed database")
+	update.Flags().Bool(
+		"enable-kafka-rest",
+		false,
+		"enable Kafka REST for the new apache kafka managed database",
+	)
+	update.Flags().Bool(
+		"enable-schema-registry",
+		false,
+		"enable Schema Registry for the new apache kafka managed database",
+	)
+	update.Flags().Bool(
+		"enable-kafka-connect",
+		false,
+		"enable Kafka Connect for the new apache kafka managed database",
+	)
 
 	// Delete
 	del := &cobra.Command{
@@ -1052,22 +1145,22 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		RunE: func(cmd *cobra.Command, args []string) error {
 			partitions, errPa := cmd.Flags().GetInt("partitions")
 			if errPa != nil {
-				return fmt.Errorf("error parsing flag 'partitions' for database topic create : %v", errPa)
+				return fmt.Errorf("error parsing flag 'partitions' for database topic update : %v", errPa)
 			}
 
 			replication, errPa := cmd.Flags().GetInt("replication")
 			if errPa != nil {
-				return fmt.Errorf("error parsing flag 'replication' for database topic create : %v", errPa)
+				return fmt.Errorf("error parsing flag 'replication' for database topic update : %v", errPa)
 			}
 
 			retentionHours, errPa := cmd.Flags().GetInt("retention-hours")
 			if errPa != nil {
-				return fmt.Errorf("error parsing flag 'retention-hours' for database topic create : %v", errPa)
+				return fmt.Errorf("error parsing flag 'retention-hours' for database topic update : %v", errPa)
 			}
 
 			retentionBytes, errPa := cmd.Flags().GetInt("retention-bytes")
 			if errPa != nil {
-				return fmt.Errorf("error parsing flag 'retention-bytes' for database topic create : %v", errPa)
+				return fmt.Errorf("error parsing flag 'retention-bytes' for database topic update : %v", errPa)
 			}
 
 			o.TopicUpdateReq = &govultr.DatabaseTopicUpdateReq{
@@ -1237,6 +1330,54 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	quotaCreate.Flags().IntP("request-percentage", "", 0, "CPU request percentage for the new managed database quota")
 	quotaCreate.Flags().StringP("user", "", "", "user for the new managed database quota")
 
+	// Quota Update
+	quotaUpdate := &cobra.Command{
+		Use:   "update <Database ID> <Client ID> <User Name>",
+		Short: "Update a database quota",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 3 {
+				return errors.New("please provide a database ID, client ID, and user name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			consumerByteRate, errCBR := cmd.Flags().GetInt("consumer-byte-rate")
+			if errCBR != nil {
+				return fmt.Errorf("error parsing flag 'consumer-byte-rate' for database quota update : %v", errCBR)
+			}
+
+			producerByteRate, errPBR := cmd.Flags().GetInt("producer-byte-rate")
+			if errPBR != nil {
+				return fmt.Errorf("error parsing flag 'producer-byte-rate' for database quota update : %v", errPBR)
+			}
+
+			requestPercentage, errRP := cmd.Flags().GetInt("request-percentage")
+			if errRP != nil {
+				return fmt.Errorf("error parsing flag 'request-percentage' for database quota update : %v", errRP)
+			}
+
+			o.QuotaUpdateReq = &govultr.DatabaseQuotaUpdateReq{
+				ConsumerByteRate:  consumerByteRate,
+				ProducerByteRate:  producerByteRate,
+				RequestPercentage: requestPercentage,
+			}
+
+			q, err := o.updateQuota()
+			if err != nil {
+				return fmt.Errorf("error updating database quota : %v", err)
+			}
+
+			data := &QuotaPrinter{Quota: q}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	quotaUpdate.Flags().IntP("consumer-byte-rate", "", 0, "consumer byte rate for the managed database quota")
+	quotaUpdate.Flags().IntP("producer-byte-rate", "", 0, "producer byte rate factor for the managed database quota")
+	quotaUpdate.Flags().IntP("request-percentage", "", 0, "CPU request percentage for the managed database quota")
+
 	// Quota Delete
 	quotaDelete := &cobra.Command{
 		Use:   "delete <Database ID> <Client ID> <User Name>",
@@ -1262,6 +1403,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		quotaList,
 		quotaGet,
 		quotaCreate,
+		quotaUpdate,
 		quotaDelete,
 	)
 
@@ -1439,7 +1581,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	// Migration Start
 	migrationStart := &cobra.Command{
 		Use:   "start <Database ID>",
-		Short: "Get migration status of a database",
+		Short: "Start a migration for a database",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("please provide a database ID")
@@ -3843,9 +3985,711 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"set the managed kafka configuration value for transaction_partition_verification_enable",
 	)
 
+	// Advanced Option Kafka REST
+	advancedOptionKafkaREST := &cobra.Command{
+		Use:   "kafka-rest",
+		Short: "Commands to handle managed database advanced options for Kafka REST",
+	}
+
+	// Advanced Option Kafka REST List
+	advancedOptionKafkaRESTList := &cobra.Command{
+		Use:   "list <Database ID>",
+		Short: "List all available and configured Kafka REST advanced options for a managed database",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cur, avail, err := o.listAdvancedOptionsKafkaREST()
+			if err != nil {
+				return fmt.Errorf("error retrieving database Kafka REST options : %v", err)
+			}
+
+			data := &AdvancedOptionsKafkaRESTPrinter{Configured: cur, Available: avail}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Advanced Option Kafka REST Update
+	advancedOptionKafkaRESTUpdate := &cobra.Command{
+		Use:   "update <Database ID>",
+		Short: "Update Kafka REST advanced options for a managed database",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			producerAcks, err := cmd.Flags().GetString("producer-acks")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'producer-acks' for Kafka REST advanced options update : %v",
+					err,
+				)
+			}
+
+			producerCompressionType, err := cmd.Flags().GetString("producer-compression-type")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'producer-compression-type' for Kafka REST advanced options update : %v",
+					err,
+				)
+			}
+
+			producerLingerMS, err := cmd.Flags().GetInt("producer-linger-ms")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'producer-linger-ms' for Kafka REST advanced options update : %v",
+					err,
+				)
+			}
+
+			producerMaxRequestSize, err := cmd.Flags().GetInt("producer-max-request-size")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'producer-max-request-size' for Kafka REST advanced options update : %v",
+					err,
+				)
+			}
+
+			consumerEnableAutoCommit, err := cmd.Flags().GetBool("consumer-enable-auto-commit")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'consumer-enable-auto-commit' for Kafka REST advanced options update : %v",
+					err,
+				)
+			}
+
+			consumerRequestMaxBytes, err := cmd.Flags().GetInt("consumer-request-max-bytes")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'consumer-request-max-bytes' for Kafka REST advanced options update : %v",
+					err,
+				)
+			}
+
+			consumerRequestTimeoutMS, err := cmd.Flags().GetInt("consumer-request-timeout-ms")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'consumer-request-timeout-ms' for Kafka REST advanced options update : %v",
+					err,
+				)
+			}
+
+			nameStrategy, err := cmd.Flags().GetString("name-strategy")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'name-strategy' for Kafka REST advanced options update : %v",
+					err,
+				)
+			}
+
+			nameStrategyValidation, err := cmd.Flags().GetBool("name-strategy-validation")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'name-strategy-validation' for Kafka REST advanced options update : %v",
+					err,
+				)
+			}
+
+			simpleConsumerPoolSizeMax, err := cmd.Flags().GetInt("simpleconsumer-pool-size-max")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'simpleconsumer-pool-size-max' for Kafka REST advanced options update : %v",
+					err,
+				)
+			}
+
+			o.KafkaRESTAdvancedOptionsReq = &govultr.DatabaseKafkaRESTAdvancedOptions{}
+
+			if cmd.Flags().Changed("producer-acks") {
+				o.KafkaRESTAdvancedOptionsReq.ProducerAcks = producerAcks
+			}
+
+			if cmd.Flags().Changed("producer-compression-type") {
+				o.KafkaRESTAdvancedOptionsReq.ProducerCompressionType = producerCompressionType
+			}
+
+			if cmd.Flags().Changed("producer-linger-ms") {
+				o.KafkaRESTAdvancedOptionsReq.ProducerLingerMS = producerLingerMS
+			}
+
+			if cmd.Flags().Changed("producer-max-request-size") {
+				o.KafkaRESTAdvancedOptionsReq.ProducerMaxRequestSize = producerMaxRequestSize
+			}
+
+			if cmd.Flags().Changed("consumer-enable-auto-commit") {
+				o.KafkaRESTAdvancedOptionsReq.ConsumerEnableAutoCommit = &consumerEnableAutoCommit
+			}
+
+			if cmd.Flags().Changed("consumer-request-max-bytes") {
+				o.KafkaRESTAdvancedOptionsReq.ConsumerRequestMaxBytes = consumerRequestMaxBytes
+			}
+
+			if cmd.Flags().Changed("consumer-request-timeout-ms") {
+				o.KafkaRESTAdvancedOptionsReq.ConsumerRequestTimeoutMS = consumerRequestTimeoutMS
+			}
+
+			if cmd.Flags().Changed("name-strategy") {
+				o.KafkaRESTAdvancedOptionsReq.NameStrategy = nameStrategy
+			}
+
+			if cmd.Flags().Changed("name-strategy-validation") {
+				o.KafkaRESTAdvancedOptionsReq.NameStrategyValidation = &nameStrategyValidation
+			}
+
+			if cmd.Flags().Changed("simpleconsumer-pool-size-max") {
+				o.KafkaRESTAdvancedOptionsReq.SimpleConsumerPoolSizeMax = simpleConsumerPoolSizeMax
+			}
+
+			cur, avail, err := o.updateAdvancedOptionsKafkaREST()
+			if err != nil {
+				return fmt.Errorf("error updating database Kafka REST advanced options : %v", err)
+			}
+
+			data := &AdvancedOptionsKafkaRESTPrinter{Configured: cur, Available: avail}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	advancedOptionKafkaRESTUpdate.Flags().String(
+		"producer-acks",
+		"",
+		"set the managed database Kafka REST configuration value for producer_acks",
+	)
+
+	advancedOptionKafkaRESTUpdate.Flags().String(
+		"producer-compression-type",
+		"",
+		"set the managed database Kafka REST configuration value for producer_compression_type",
+	)
+
+	advancedOptionKafkaRESTUpdate.Flags().Int(
+		"producer-linger-ms",
+		0,
+		"set the managed database Kafka REST configuration value for producer_linger_ms",
+	)
+
+	advancedOptionKafkaRESTUpdate.Flags().Int(
+		"producer-max-request-size",
+		0,
+		"set the managed database Kafka REST configuration value for producer_max_request_size",
+	)
+
+	advancedOptionKafkaRESTUpdate.Flags().Bool(
+		"consumer-enable-auto-commit",
+		true,
+		"set the managed database Kafka REST configuration value for consumer_enable_auto_commit",
+	)
+
+	advancedOptionKafkaRESTUpdate.Flags().Int(
+		"consumer-request-max-bytes",
+		0,
+		"set the managed database Kafka REST configuration value for consumer_request_max_bytes",
+	)
+
+	advancedOptionKafkaRESTUpdate.Flags().Int(
+		"consumer-request-timeout-ms",
+		0,
+		"set the managed database Kafka REST configuration value for consumer_request_timeout_ms",
+	)
+
+	advancedOptionKafkaRESTUpdate.Flags().String(
+		"name-strategy",
+		"",
+		"set the managed database Kafka REST configuration value for name_strategy",
+	)
+
+	advancedOptionKafkaRESTUpdate.Flags().Bool(
+		"name-strategy-validation",
+		true,
+		"set the managed database Kafka REST configuration value for name_strategy_validation",
+	)
+
+	advancedOptionKafkaRESTUpdate.Flags().Int(
+		"simpleconsumer-pool-size-max",
+		0,
+		"set the managed database Kafka REST configuration value for simpleconsumer_pool_size_max",
+	)
+
+	advancedOptionKafkaREST.AddCommand(
+		advancedOptionKafkaRESTList,
+		advancedOptionKafkaRESTUpdate,
+	)
+
+	// Advanced Option Schema Registry
+	advancedOptionSchemaRegistry := &cobra.Command{
+		Use:   "schema-registry",
+		Short: "Commands to handle managed database advanced options for Schema Registry",
+	}
+
+	// Advanced Option Schema Registry List
+	advancedOptionSchemaRegistryList := &cobra.Command{
+		Use:   "list <Database ID>",
+		Short: "List all available and configured Schema Registry advanced options for a managed database",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cur, avail, err := o.listAdvancedOptionsSchemaRegistry()
+			if err != nil {
+				return fmt.Errorf("error retrieving database Schema Registry options : %v", err)
+			}
+
+			data := &AdvancedOptionsSchemaRegistryPrinter{Configured: cur, Available: avail}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Advanced Option Schema Registry Update
+	advancedOptionSchemaRegistryUpdate := &cobra.Command{
+		Use:   "update <Database ID>",
+		Short: "Update Schema Registry advanced options for a managed database",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			leaderEligibility, err := cmd.Flags().GetBool("leader-eligibility")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'leader-eligibility' for Schema Registry advanced options update : %v",
+					err,
+				)
+			}
+
+			schemaReaderStrictMode, err := cmd.Flags().GetBool("schema-reader-strict-mode")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'schema-reader-strict-mode' for Schema Registry advanced options update : %v",
+					err,
+				)
+			}
+
+			retriableErrorsSilenced, err := cmd.Flags().GetBool("retriable-errors-silenced")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'retriable-errors-silenced' for Schema Registry advanced options update : %v",
+					err,
+				)
+			}
+
+			o.SchemaRegistryAdvancedOptionsReq = &govultr.DatabaseSchemaRegistryAdvancedOptions{}
+
+			if cmd.Flags().Changed("leader-eligibility") {
+				o.SchemaRegistryAdvancedOptionsReq.LeaderEligibility = &leaderEligibility
+			}
+
+			if cmd.Flags().Changed("schema-reader-strict-mode") {
+				o.SchemaRegistryAdvancedOptionsReq.SchemaReaderStrictMode = &schemaReaderStrictMode
+			}
+
+			if cmd.Flags().Changed("retriable-errors-silenced") {
+				o.SchemaRegistryAdvancedOptionsReq.RetriableErrorsSilenced = &retriableErrorsSilenced
+			}
+
+			cur, avail, err := o.updateAdvancedOptionsSchemaRegistry()
+			if err != nil {
+				return fmt.Errorf("error updating database Schema Registry advanced options : %v", err)
+			}
+
+			data := &AdvancedOptionsSchemaRegistryPrinter{Configured: cur, Available: avail}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	advancedOptionSchemaRegistryUpdate.Flags().Bool(
+		"leader-eligibility",
+		true,
+		"set the managed database Kafka REST configuration value for leader_eligibility",
+	)
+
+	advancedOptionSchemaRegistryUpdate.Flags().Bool(
+		"schema-reader-strict-mode",
+		false,
+		"set the managed database Kafka REST configuration value for schema_reader_strict_mode",
+	)
+
+	advancedOptionSchemaRegistryUpdate.Flags().Bool(
+		"retriable-errors-silenced",
+		true,
+		"set the managed database Kafka REST configuration value for retriable_errors_silenced",
+	)
+
+	advancedOptionSchemaRegistry.AddCommand(
+		advancedOptionSchemaRegistryList,
+		advancedOptionSchemaRegistryUpdate,
+	)
+
+	// Advanced Option Kafka Connect
+	advancedOptionKafkaConnect := &cobra.Command{
+		Use:   "kafka-connect",
+		Short: "Commands to handle managed database advanced options for Kafka Connect",
+	}
+
+	// Advanced Option Kafka Connect List
+	advancedOptionKafkaConnectList := &cobra.Command{
+		Use:   "list <Database ID>",
+		Short: "List all available and configured Kafka Connect advanced options for a managed database",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cur, avail, err := o.listAdvancedOptionsKafkaConnect()
+			if err != nil {
+				return fmt.Errorf("error retrieving database Kafka Connect options : %v", err)
+			}
+
+			data := &AdvancedOptionsKafkaConnectPrinter{Configured: cur, Available: avail}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Advanced Option Kafka Connect Update
+	advancedOptionKafkaConnectUpdate := &cobra.Command{
+		Use:   "update <Database ID>",
+		Short: "Update Kafka Connect advanced options for a managed database",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			connectorClientConfigOverridePolicy, err := cmd.Flags().GetString("connector-client-config-override-policy")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'connector-client-config-override-policy' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			consumerAutoOffsetReset, err := cmd.Flags().GetString("consumer-auto-offset-reset")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'consumer-auto-offset-reset' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			consumerFetchMaxBytes, err := cmd.Flags().GetInt("consumer-fetch-max-bytes")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'consumer-fetch-max-bytes' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			consumerIsolationLevel, err := cmd.Flags().GetString("consumer-isolation-level")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'consumer-isolation-level' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			consumerMaxPartitionFetchBytes, err := cmd.Flags().GetInt("consumer-max-partition-fetch-bytes")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'consumer-max-partition-fetch-bytes' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			consumerMaxPollIntervalMS, err := cmd.Flags().GetInt("consumer-max-poll-interval-ms")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'consumer-max-poll-interval-ms' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			consumerMaxPollRecords, err := cmd.Flags().GetInt("consumer-max-poll-records")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'consumer-max-poll-records' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			offsetFlushIntervalMS, err := cmd.Flags().GetInt("offset-flush-interval-ms")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'offset-flush-interval-ms' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			offsetFlushTimeoutMS, err := cmd.Flags().GetInt("offset-flush-timeout-ms")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'offset-flush-timeout-ms' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			producerBatchSize, err := cmd.Flags().GetInt("producer-batch-size")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'producer-batch-size' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			producerBufferMemory, err := cmd.Flags().GetInt("producer-buffer-memory")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'producer-buffer-memory' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			producerCompressionType, err := cmd.Flags().GetString("producer-compression-type")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'producer-compression-type' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			producerLingerMS, err := cmd.Flags().GetInt("producer-linger-ms")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'producer-linger-ms' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			producerMaxRequestSize, err := cmd.Flags().GetInt("producer-max-request-size")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'producer-max-request-size' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			scheduledRebalanceMaxDelayMS, err := cmd.Flags().GetInt("scheduled-rebalance-max-delay-ms")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'scheduled-rebalance-max-delay-ms' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			sessionTimeoutMS, err := cmd.Flags().GetInt("session-timeout-ms")
+			if err != nil {
+				return fmt.Errorf(
+					"error parsing flag 'session-timeout-ms' for Kafka Connect advanced options update : %v",
+					err,
+				)
+			}
+
+			o.KafkaConnectAdvancedOptionsReq = &govultr.DatabaseKafkaConnectAdvancedOptions{}
+
+			if cmd.Flags().Changed("connector-client-config-override-policy") {
+				o.KafkaConnectAdvancedOptionsReq.ConnectorClientConfigOverridePolicy = connectorClientConfigOverridePolicy
+			}
+
+			if cmd.Flags().Changed("consumer-auto-offset-reset") {
+				o.KafkaConnectAdvancedOptionsReq.ConsumerAutoOffsetReset = consumerAutoOffsetReset
+			}
+
+			if cmd.Flags().Changed("consumer-fetch-max-bytes") {
+				o.KafkaConnectAdvancedOptionsReq.ConsumerFetchMaxBytes = consumerFetchMaxBytes
+			}
+
+			if cmd.Flags().Changed("consumer-isolation-level") {
+				o.KafkaConnectAdvancedOptionsReq.ConsumerIsolationLevel = consumerIsolationLevel
+			}
+
+			if cmd.Flags().Changed("consumer-max-partition-fetch-bytes") {
+				o.KafkaConnectAdvancedOptionsReq.ConsumerMaxPartitionFetchBytes = consumerMaxPartitionFetchBytes
+			}
+
+			if cmd.Flags().Changed("consumer-max-poll-interval-ms") {
+				o.KafkaConnectAdvancedOptionsReq.ConsumerMaxPollIntervalMS = consumerMaxPollIntervalMS
+			}
+
+			if cmd.Flags().Changed("consumer-max-poll-records") {
+				o.KafkaConnectAdvancedOptionsReq.ConsumerMaxPollRecords = consumerMaxPollRecords
+			}
+
+			if cmd.Flags().Changed("offset-flush-interval-ms") {
+				o.KafkaConnectAdvancedOptionsReq.OffsetFlushIntervalMS = offsetFlushIntervalMS
+			}
+
+			if cmd.Flags().Changed("offset-flush-timeout-ms") {
+				o.KafkaConnectAdvancedOptionsReq.OffsetFlushTimeoutMS = offsetFlushTimeoutMS
+			}
+
+			if cmd.Flags().Changed("producer-batch-size") {
+				o.KafkaConnectAdvancedOptionsReq.ProducerBatchSize = producerBatchSize
+			}
+
+			if cmd.Flags().Changed("producer-buffer-memory") {
+				o.KafkaConnectAdvancedOptionsReq.ProducerBufferMemory = producerBufferMemory
+			}
+
+			if cmd.Flags().Changed("producer-compression-type") {
+				o.KafkaConnectAdvancedOptionsReq.ProducerCompressionType = producerCompressionType
+			}
+
+			if cmd.Flags().Changed("producer-linger-ms") {
+				o.KafkaConnectAdvancedOptionsReq.ProducerLingerMS = producerLingerMS
+			}
+
+			if cmd.Flags().Changed("producer-max-request-size") {
+				o.KafkaConnectAdvancedOptionsReq.ProducerMaxRequestSize = producerMaxRequestSize
+			}
+
+			if cmd.Flags().Changed("scheduled-rebalance-max-delay-ms") {
+				o.KafkaConnectAdvancedOptionsReq.ScheduledRebalanceMaxDelayMS = scheduledRebalanceMaxDelayMS
+			}
+
+			if cmd.Flags().Changed("session-timeout-ms") {
+				o.KafkaConnectAdvancedOptionsReq.SessionTimeoutMS = sessionTimeoutMS
+			}
+
+			cur, avail, err := o.updateAdvancedOptionsKafkaConnect()
+			if err != nil {
+				return fmt.Errorf("error updating database Kafka Connect advanced options : %v", err)
+			}
+
+			data := &AdvancedOptionsKafkaConnectPrinter{Configured: cur, Available: avail}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	advancedOptionKafkaConnectUpdate.Flags().String(
+		"connector-client-config-override-policy",
+		"",
+		"set the managed database Kafka Connect configuration value for connector_client_config_override_policy",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().String(
+		"consumer-auto-offset-reset",
+		"",
+		"set the managed database Kafka Connect configuration value for consumer_auto_offset_reset",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().Int(
+		"consumer-fetch-max-bytes",
+		0,
+		"set the managed database Kafka Connect configuration value for consumer_fetch_max_bytes",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().String(
+		"consumer-isolation-level",
+		"",
+		"set the managed database Kafka Connect configuration value for consumer_isolation_level",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().Int(
+		"consumer-max-partition-fetch-bytes",
+		0,
+		"set the managed database Kafka Connect configuration value for consumer_max_partition_fetch_bytes",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().Int(
+		"consumer-max-poll-interval-ms",
+		0,
+		"set the managed database Kafka Connect configuration value for consumer_max_poll_interval_ms",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().Int(
+		"consumer-max-poll-records",
+		0,
+		"set the managed database Kafka Connect configuration value for consumer_max_poll_records",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().Int(
+		"offset-flush-interval-ms",
+		0,
+		"set the managed database Kafka Connect configuration value for offset_flush_interval_ms",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().Int(
+		"offset-flush-timeout-ms",
+		0,
+		"set the managed database Kafka Connect configuration value for offset_flush_timeout_ms",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().Int(
+		"producer-batch-size",
+		0,
+		"set the managed database Kafka Connect configuration value for producer_batch_size",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().Int(
+		"producer-buffer-memory",
+		0,
+		"set the managed database Kafka Connect configuration value for producer_buffer_memory",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().String(
+		"producer-compression-type",
+		"",
+		"set the managed database Kafka Connect configuration value for producer_compression_type",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().Int(
+		"producer-linger-ms",
+		0,
+		"set the managed database Kafka Connect configuration value for producer_linger_ms",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().Int(
+		"producer-max-request-size",
+		0,
+		"set the managed database Kafka Connect configuration value for producer_max_request_size",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().Int(
+		"scheduled-rebalance-max-delay-ms",
+		0,
+		"set the managed database Kafka Connect configuration value for scheduled_rebalance_max_delay_ms",
+	)
+
+	advancedOptionKafkaConnectUpdate.Flags().Int(
+		"session-timeout-ms",
+		0,
+		"set the managed database Kafka Connect configuration value for session_timeout_ms",
+	)
+
+	advancedOptionKafkaConnect.AddCommand(
+		advancedOptionKafkaConnectList,
+		advancedOptionKafkaConnectUpdate,
+	)
+
 	advancedOption.AddCommand(
 		advancedOptionList,
 		advancedOptionUpdate,
+		advancedOptionKafkaREST,
+		advancedOptionSchemaRegistry,
+		advancedOptionKafkaConnect,
 	)
 
 	// Version
@@ -3945,25 +4789,29 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 }
 
 type options struct {
-	Base                    *cli.Base
-	CreateReq               *govultr.DatabaseCreateReq
-	UpdateReq               *govultr.DatabaseUpdateReq
-	UserCreateReq           *govultr.DatabaseUserCreateReq
-	UserUpdateReq           *govultr.DatabaseUserUpdateReq
-	UserUpdateACLReq        *govultr.DatabaseUserACLReq
-	DBCreateReq             *govultr.DatabaseDBCreateReq
-	TopicCreateReq          *govultr.DatabaseTopicCreateReq
-	TopicUpdateReq          *govultr.DatabaseTopicUpdateReq
-	QuotaCreateReq          *govultr.DatabaseQuotaCreateReq
-	AlertsReq               *govultr.DatabaseListAlertsReq
-	MigrationReq            *govultr.DatabaseMigrationStartReq
-	ReadReplicaCreateReq    *govultr.DatabaseAddReplicaReq
-	BackupReq               *govultr.DatabaseBackupRestoreReq
-	ForkReq                 *govultr.DatabaseForkReq
-	ConnectionPoolCreateReq *govultr.DatabaseConnectionPoolCreateReq
-	ConnectionPoolUpdateReq *govultr.DatabaseConnectionPoolUpdateReq
-	AdvancedOptionsReq      *govultr.DatabaseAdvancedOptions
-	UpgradeReq              *govultr.DatabaseVersionUpgradeReq
+	Base                             *cli.Base
+	CreateReq                        *govultr.DatabaseCreateReq
+	UpdateReq                        *govultr.DatabaseUpdateReq
+	UserCreateReq                    *govultr.DatabaseUserCreateReq
+	UserUpdateReq                    *govultr.DatabaseUserUpdateReq
+	UserUpdateACLReq                 *govultr.DatabaseUserACLReq
+	DBCreateReq                      *govultr.DatabaseDBCreateReq
+	TopicCreateReq                   *govultr.DatabaseTopicCreateReq
+	TopicUpdateReq                   *govultr.DatabaseTopicUpdateReq
+	QuotaCreateReq                   *govultr.DatabaseQuotaCreateReq
+	QuotaUpdateReq                   *govultr.DatabaseQuotaUpdateReq
+	AlertsReq                        *govultr.DatabaseListAlertsReq
+	MigrationReq                     *govultr.DatabaseMigrationStartReq
+	ReadReplicaCreateReq             *govultr.DatabaseAddReplicaReq
+	BackupReq                        *govultr.DatabaseBackupRestoreReq
+	ForkReq                          *govultr.DatabaseForkReq
+	ConnectionPoolCreateReq          *govultr.DatabaseConnectionPoolCreateReq
+	ConnectionPoolUpdateReq          *govultr.DatabaseConnectionPoolUpdateReq
+	AdvancedOptionsReq               *govultr.DatabaseAdvancedOptions
+	KafkaRESTAdvancedOptionsReq      *govultr.DatabaseKafkaRESTAdvancedOptions
+	SchemaRegistryAdvancedOptionsReq *govultr.DatabaseSchemaRegistryAdvancedOptions
+	KafkaConnectAdvancedOptionsReq   *govultr.DatabaseKafkaConnectAdvancedOptions
+	UpgradeReq                       *govultr.DatabaseVersionUpgradeReq
 }
 
 func (o *options) list() ([]govultr.Database, *govultr.Meta, error) {
@@ -4077,6 +4925,11 @@ func (o *options) createQuota() (*govultr.DatabaseQuota, error) {
 	return quota, err
 }
 
+func (o *options) updateQuota() (*govultr.DatabaseQuota, error) {
+	quota, _, err := o.Base.Client.Database.UpdateQuota(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2], o.QuotaUpdateReq)
+	return quota, err
+}
+
 func (o *options) delQuota() error {
 	return o.Base.Client.Database.DeleteQuota(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
 }
@@ -4170,6 +5023,36 @@ func (o *options) listAdvancedOptions() (*govultr.DatabaseAdvancedOptions, []gov
 
 func (o *options) updateAdvancedOptions() (*govultr.DatabaseAdvancedOptions, []govultr.AvailableOption, error) {
 	cur, avail, _, err := o.Base.Client.Database.UpdateAdvancedOptions(o.Base.Context, o.Base.Args[0], o.AdvancedOptionsReq) //nolint:lll
+	return cur, avail, err
+}
+
+func (o *options) listAdvancedOptionsKafkaREST() (*govultr.DatabaseKafkaRESTAdvancedOptions, []govultr.AvailableOption, error) {
+	cur, avail, _, err := o.Base.Client.Database.ListKafkaRESTAdvancedOptions(o.Base.Context, o.Base.Args[0])
+	return cur, avail, err
+}
+
+func (o *options) updateAdvancedOptionsKafkaREST() (*govultr.DatabaseKafkaRESTAdvancedOptions, []govultr.AvailableOption, error) {
+	cur, avail, _, err := o.Base.Client.Database.UpdateKafkaRESTAdvancedOptions(o.Base.Context, o.Base.Args[0], o.KafkaRESTAdvancedOptionsReq) //nolint:lll
+	return cur, avail, err
+}
+
+func (o *options) listAdvancedOptionsSchemaRegistry() (*govultr.DatabaseSchemaRegistryAdvancedOptions, []govultr.AvailableOption, error) {
+	cur, avail, _, err := o.Base.Client.Database.ListSchemaRegistryAdvancedOptions(o.Base.Context, o.Base.Args[0])
+	return cur, avail, err
+}
+
+func (o *options) updateAdvancedOptionsSchemaRegistry() (*govultr.DatabaseSchemaRegistryAdvancedOptions, []govultr.AvailableOption, error) {
+	cur, avail, _, err := o.Base.Client.Database.UpdateSchemaRegistryAdvancedOptions(o.Base.Context, o.Base.Args[0], o.SchemaRegistryAdvancedOptionsReq) //nolint:lll
+	return cur, avail, err
+}
+
+func (o *options) listAdvancedOptionsKafkaConnect() (*govultr.DatabaseKafkaConnectAdvancedOptions, []govultr.AvailableOption, error) {
+	cur, avail, _, err := o.Base.Client.Database.ListKafkaConnectAdvancedOptions(o.Base.Context, o.Base.Args[0])
+	return cur, avail, err
+}
+
+func (o *options) updateAdvancedOptionsKafkaConnect() (*govultr.DatabaseKafkaConnectAdvancedOptions, []govultr.AvailableOption, error) {
+	cur, avail, _, err := o.Base.Client.Database.UpdateKafkaConnectAdvancedOptions(o.Base.Context, o.Base.Args[0], o.KafkaConnectAdvancedOptionsReq) //nolint:lll
 	return cur, avail, err
 }
 
