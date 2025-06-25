@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
@@ -4800,6 +4801,8 @@ type options struct {
 	TopicUpdateReq                   *govultr.DatabaseTopicUpdateReq
 	QuotaCreateReq                   *govultr.DatabaseQuotaCreateReq
 	QuotaUpdateReq                   *govultr.DatabaseQuotaUpdateReq
+	ConnectorCreateReq               *govultr.DatabaseConnectorCreateReq
+	ConnectorUpdateReq               *govultr.DatabaseConnectorUpdateReq
 	AlertsReq                        *govultr.DatabaseListAlertsReq
 	MigrationReq                     *govultr.DatabaseMigrationStartReq
 	ReadReplicaCreateReq             *govultr.DatabaseAddReplicaReq
@@ -4932,6 +4935,66 @@ func (o *options) updateQuota() (*govultr.DatabaseQuota, error) {
 
 func (o *options) delQuota() error {
 	return o.Base.Client.Database.DeleteQuota(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
+}
+
+func (o *options) listAvailableConnectors() ([]govultr.DatabaseAvailableConnector, error) {
+	availableConnectors, _, err := o.Base.Client.Database.ListAvailableConnectors(o.Base.Context, o.Base.Args[0])
+	return availableConnectors, err
+}
+
+func (o *options) getConnectorConfigurationSchema() ([]govultr.DatabaseConnectorConfigurationOption, error) {
+	configurationSchema, _, err := o.Base.Client.Database.GetConnectorConfigurationSchema(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return configurationSchema, err
+}
+
+func (o *options) listConnectors() ([]govultr.DatabaseConnector, *govultr.Meta, error) {
+	connectors, meta, _, err := o.Base.Client.Database.ListConnectors(o.Base.Context, o.Base.Args[0])
+	return connectors, meta, err
+}
+
+func (o *options) getConnector() (*govultr.DatabaseConnector, error) {
+	connector, _, err := o.Base.Client.Database.GetConnector(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return connector, err
+}
+
+func (o *options) createConnector() (*govultr.DatabaseConnector, error) {
+	connector, _, err := o.Base.Client.Database.CreateConnector(o.Base.Context, o.Base.Args[0], o.ConnectorCreateReq)
+	return connector, err
+}
+
+func (o *options) updateConnector() (*govultr.DatabaseConnector, error) {
+	connector, _, err := o.Base.Client.Database.UpdateConnector(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.ConnectorUpdateReq)
+	return connector, err
+}
+
+func (o *options) delConnector() error {
+	return o.Base.Client.Database.DeleteConnector(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+}
+
+func (o *options) getConnectorStatus() (*govultr.DatabaseConnectorStatus, error) {
+	connectorStatus, _, err := o.Base.Client.Database.GetConnectorStatus(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return connectorStatus, err
+}
+
+func (o *options) restartConnector() error {
+	err := o.Base.Client.Database.RestartConnector(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return err
+}
+
+func (o *options) pauseConnector() error {
+	err := o.Base.Client.Database.PauseConnector(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return err
+}
+
+func (o *options) resumeConnector() error {
+	err := o.Base.Client.Database.ResumeConnector(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return err
+}
+
+func (o *options) restartConnectorTask() error {
+	taskID, _ := strconv.Atoi(o.Base.Args[2])
+	err := o.Base.Client.Database.RestartConnectorTask(o.Base.Context, o.Base.Args[0], o.Base.Args[1], taskID)
+	return err
 }
 
 func (o *options) getUsage() (*govultr.DatabaseUsage, error) {

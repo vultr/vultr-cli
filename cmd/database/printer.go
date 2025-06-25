@@ -3,6 +3,7 @@ package database
 import (
 	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
@@ -1966,5 +1967,229 @@ func (v *VersionsPrinter) Data() [][]string {
 
 // Paging ...
 func (v *VersionsPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// AvailableConnectorsPrinter ...
+type AvailableConnectorsPrinter struct {
+	AvailableConnectors []govultr.DatabaseAvailableConnector `json:"available_connectors"`
+}
+
+// JSON ...
+func (c *AvailableConnectorsPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *AvailableConnectorsPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *AvailableConnectorsPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (c *AvailableConnectorsPrinter) Data() [][]string {
+	if len(c.AvailableConnectors) == 0 {
+		return [][]string{0: {"No database connectors available"}}
+	}
+
+	var data [][]string
+	for i := range c.AvailableConnectors {
+		data = append(data,
+			[]string{"CLASS", c.AvailableConnectors[i].Class},
+			[]string{"TITLE", c.AvailableConnectors[i].Title},
+			[]string{"VERSION", c.AvailableConnectors[i].Version},
+			[]string{"TYPE", c.AvailableConnectors[i].Type},
+			[]string{"DOC URL", c.AvailableConnectors[i].DocURL},
+			[]string{"---------------------------"},
+		)
+	}
+
+	return data
+}
+
+// Paging ...
+func (c *AvailableConnectorsPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// ConnectorsPrinter ...
+type ConnectorsPrinter struct {
+	Connectors []govultr.DatabaseConnector `json:"connectors"`
+	Meta       *govultr.Meta               `json:"meta"`
+}
+
+// JSON ...
+func (c *ConnectorsPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *ConnectorsPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *ConnectorsPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (c *ConnectorsPrinter) Data() [][]string {
+	if len(c.Connectors) == 0 {
+		return [][]string{0: {"No database connectors available"}}
+	}
+
+	var data [][]string
+	for i := range c.Connectors {
+		data = append(data,
+			[]string{"NAME", c.Connectors[i].Name},
+			[]string{"CLASS", c.Connectors[i].Class},
+			[]string{"TOPICS", c.Connectors[i].Topics},
+		)
+
+		if c.Connectors[i].Config != nil {
+			data = append(data,
+				[]string{" "},
+				[]string{"CONFIG"},
+			)
+
+			for key, value := range c.Connectors[i].Config {
+				data = append(data,
+					[]string{strings.ToUpper(key), value.(string)},
+				)
+			}
+		} else {
+			data = append(data,
+				[]string{"CONFIG", "NONE"},
+			)
+		}
+
+		data = append(data,
+			[]string{"---------------------------"},
+		)
+	}
+
+	return data
+}
+
+// Paging ...
+func (d *ConnectorsPrinter) Paging() [][]string {
+	paging := &printer.Total{Total: d.Meta.Total}
+	return paging.Compose()
+}
+
+// ======================================
+
+// ConnectorPrinter ...
+type ConnectorPrinter struct {
+	Connector *govultr.DatabaseConnector `json:"connector"`
+}
+
+// JSON ...
+func (c *ConnectorPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *ConnectorPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *ConnectorPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (c *ConnectorPrinter) Data() [][]string {
+	var data [][]string
+	data = append(data,
+		[]string{"NAME", c.Connector.Name},
+		[]string{"CLASS", c.Connector.Class},
+		[]string{"TOPICS", c.Connector.Topics},
+	)
+
+	if c.Connector.Config != nil {
+		data = append(data,
+			[]string{" "},
+			[]string{"CONFIG"},
+		)
+
+		for key, value := range c.Connector.Config {
+			data = append(data,
+				[]string{strings.ToUpper(key), value.(string)},
+			)
+		}
+	} else {
+		data = append(data,
+			[]string{"CONFIG", "NONE"},
+		)
+	}
+
+	return data
+}
+
+// Paging ...
+func (c *ConnectorPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// ConnectorStatusPrinter ...
+type ConnectorStatusPrinter struct {
+	ConnectorStatus *govultr.DatabaseConnectorStatus `json:"connector_status"`
+}
+
+// JSON ...
+func (c *ConnectorStatusPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *ConnectorStatusPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *ConnectorStatusPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (c *ConnectorStatusPrinter) Data() [][]string {
+	var data [][]string
+	data = append(data,
+		[]string{"STATE", c.ConnectorStatus.State},
+	)
+
+	if c.ConnectorStatus.Tasks != nil {
+		data = append(data,
+			[]string{" "},
+			[]string{"TASKS"},
+		)
+
+		for i := range c.ConnectorStatus.Tasks {
+			data = append(data,
+				[]string{"ID", strconv.Itoa(c.ConnectorStatus.Tasks[i].ID)},
+				[]string{"STATE", c.ConnectorStatus.Tasks[i].State},
+				[]string{"TRACE", c.ConnectorStatus.Tasks[i].Trace},
+			)
+		}
+	}
+
+	return data
+}
+
+// Paging ...
+func (c *ConnectorStatusPrinter) Paging() [][]string {
 	return nil
 }
