@@ -5297,7 +5297,7 @@ func (o *options) createQuota() (*govultr.DatabaseQuota, error) {
 }
 
 func (o *options) updateQuota() (*govultr.DatabaseQuota, error) {
-	quota, _, err := o.Base.Client.Database.UpdateQuota(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2], o.QuotaUpdateReq)
+	quota, _, err := o.Base.Client.Database.UpdateQuota(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2], o.QuotaUpdateReq) //nolint:lll
 	return quota, err
 }
 
@@ -5311,7 +5311,7 @@ func (o *options) listAvailableConnectors() ([]govultr.DatabaseAvailableConnecto
 }
 
 func (o *options) getConnectorConfigurationSchema() ([]govultr.DatabaseConnectorConfigurationOption, error) {
-	configurationSchema, _, err := o.Base.Client.Database.GetConnectorConfigurationSchema(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	configurationSchema, _, err := o.Base.Client.Database.GetConnectorConfigurationSchema(o.Base.Context, o.Base.Args[0], o.Base.Args[1]) //nolint:lll
 	return configurationSchema, err
 }
 
@@ -5331,7 +5331,7 @@ func (o *options) createConnector() (*govultr.DatabaseConnector, error) {
 }
 
 func (o *options) updateConnector() (*govultr.DatabaseConnector, error) {
-	connector, _, err := o.Base.Client.Database.UpdateConnector(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.ConnectorUpdateReq)
+	connector, _, err := o.Base.Client.Database.UpdateConnector(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.ConnectorUpdateReq) //nolint:lll
 	return connector, err
 }
 
@@ -5457,32 +5457,32 @@ func (o *options) updateAdvancedOptions() (*govultr.DatabaseAdvancedOptions, []g
 	return cur, avail, err
 }
 
-func (o *options) listAdvancedOptionsKafkaREST() (*govultr.DatabaseKafkaRESTAdvancedOptions, []govultr.AvailableOption, error) {
+func (o *options) listAdvancedOptionsKafkaREST() (*govultr.DatabaseKafkaRESTAdvancedOptions, []govultr.AvailableOption, error) { //nolint:lll
 	cur, avail, _, err := o.Base.Client.Database.ListKafkaRESTAdvancedOptions(o.Base.Context, o.Base.Args[0])
 	return cur, avail, err
 }
 
-func (o *options) updateAdvancedOptionsKafkaREST() (*govultr.DatabaseKafkaRESTAdvancedOptions, []govultr.AvailableOption, error) {
+func (o *options) updateAdvancedOptionsKafkaREST() (*govultr.DatabaseKafkaRESTAdvancedOptions, []govultr.AvailableOption, error) { //nolint:lll
 	cur, avail, _, err := o.Base.Client.Database.UpdateKafkaRESTAdvancedOptions(o.Base.Context, o.Base.Args[0], o.KafkaRESTAdvancedOptionsReq) //nolint:lll
 	return cur, avail, err
 }
 
-func (o *options) listAdvancedOptionsSchemaRegistry() (*govultr.DatabaseSchemaRegistryAdvancedOptions, []govultr.AvailableOption, error) {
+func (o *options) listAdvancedOptionsSchemaRegistry() (*govultr.DatabaseSchemaRegistryAdvancedOptions, []govultr.AvailableOption, error) { //nolint:lll
 	cur, avail, _, err := o.Base.Client.Database.ListSchemaRegistryAdvancedOptions(o.Base.Context, o.Base.Args[0])
 	return cur, avail, err
 }
 
-func (o *options) updateAdvancedOptionsSchemaRegistry() (*govultr.DatabaseSchemaRegistryAdvancedOptions, []govultr.AvailableOption, error) {
+func (o *options) updateAdvancedOptionsSchemaRegistry() (*govultr.DatabaseSchemaRegistryAdvancedOptions, []govultr.AvailableOption, error) { //nolint:lll
 	cur, avail, _, err := o.Base.Client.Database.UpdateSchemaRegistryAdvancedOptions(o.Base.Context, o.Base.Args[0], o.SchemaRegistryAdvancedOptionsReq) //nolint:lll
 	return cur, avail, err
 }
 
-func (o *options) listAdvancedOptionsKafkaConnect() (*govultr.DatabaseKafkaConnectAdvancedOptions, []govultr.AvailableOption, error) {
+func (o *options) listAdvancedOptionsKafkaConnect() (*govultr.DatabaseKafkaConnectAdvancedOptions, []govultr.AvailableOption, error) { //nolint:lll
 	cur, avail, _, err := o.Base.Client.Database.ListKafkaConnectAdvancedOptions(o.Base.Context, o.Base.Args[0])
 	return cur, avail, err
 }
 
-func (o *options) updateAdvancedOptionsKafkaConnect() (*govultr.DatabaseKafkaConnectAdvancedOptions, []govultr.AvailableOption, error) {
+func (o *options) updateAdvancedOptionsKafkaConnect() (*govultr.DatabaseKafkaConnectAdvancedOptions, []govultr.AvailableOption, error) { //nolint:lll
 	cur, avail, _, err := o.Base.Client.Database.UpdateKafkaConnectAdvancedOptions(o.Base.Context, o.Base.Args[0], o.KafkaConnectAdvancedOptionsReq) //nolint:lll
 	return cur, avail, err
 }

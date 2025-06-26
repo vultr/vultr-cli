@@ -1667,7 +1667,7 @@ func (a *AdvancedOptionsKafkaRESTPrinter) Columns() [][]string {
 }
 
 // Data ...
-func (a *AdvancedOptionsKafkaRESTPrinter) Data() [][]string {
+func (a *AdvancedOptionsKafkaRESTPrinter) Data() [][]string { //nolint:lll
 	var data [][]string
 
 	if a.Configured == (&govultr.DatabaseKafkaRESTAdvancedOptions{}) {
@@ -1763,7 +1763,7 @@ func (a *AdvancedOptionsSchemaRegistryPrinter) Columns() [][]string {
 }
 
 // Data ...
-func (a *AdvancedOptionsSchemaRegistryPrinter) Data() [][]string {
+func (a *AdvancedOptionsSchemaRegistryPrinter) Data() [][]string { //nolint:lll
 	var data [][]string
 
 	if a.Configured == (&govultr.DatabaseSchemaRegistryAdvancedOptions{}) {
@@ -1859,7 +1859,7 @@ func (a *AdvancedOptionsKafkaConnectPrinter) Columns() [][]string {
 }
 
 // Data ...
-func (a *AdvancedOptionsKafkaConnectPrinter) Data() [][]string {
+func (a *AdvancedOptionsKafkaConnectPrinter) Data() [][]string { //nolint:lll
 	var data [][]string
 
 	if a.Configured == (&govultr.DatabaseKafkaConnectAdvancedOptions{}) {
