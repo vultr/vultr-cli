@@ -2,6 +2,7 @@
 package database
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -1406,6 +1407,371 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		quotaCreate,
 		quotaUpdate,
 		quotaDelete,
+	)
+
+	// Available Connector
+	availableConnector := &cobra.Command{
+		Use:   "available-connector",
+		Short: "Commands to handle database available connectors",
+	}
+
+	// Available Connector List
+	availableConnectorList := &cobra.Command{
+		Use:   "list <Database ID>",
+		Short: "List database available connectors",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			co, err := o.listAvailableConnectors()
+			if err != nil {
+				return fmt.Errorf("error retrieving database available connectors : %v", err)
+			}
+
+			data := &AvailableConnectorsPrinter{AvailableConnectors: co}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Get Connector Configuration Schema
+	getConnectorConfigSchema := &cobra.Command{
+		Use:   "get-schema <Database ID> <Connector Class>",
+		Short: "Get database connector configuration schema",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a connector class")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			co, err := o.getConnectorConfigurationSchema()
+			if err != nil {
+				return fmt.Errorf("error retrieving database connector configuration schema : %v", err)
+			}
+
+			data := &ConnectorConfigSchemaPrinter{ConfigurationSchema: co}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	availableConnector.AddCommand(
+		availableConnectorList,
+		getConnectorConfigSchema,
+	)
+
+	// Connector
+	connector := &cobra.Command{
+		Use:   "connector",
+		Short: "Commands to handle database connectors",
+	}
+
+	// Connector List
+	connectorList := &cobra.Command{
+		Use:   "list <Database ID>",
+		Short: "List database connectors",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			co, meta, err := o.listConnectors()
+			if err != nil {
+				return fmt.Errorf("error retrieving database connectors : %v", err)
+			}
+
+			data := &ConnectorsPrinter{Connectors: co, Meta: meta}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Connector Get
+	connectorGet := &cobra.Command{
+		Use:   "get <Database ID> <Connector Name>",
+		Short: "Get a database connector",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a connector name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			co, err := o.getConnector()
+			if err != nil {
+				return fmt.Errorf("error retrieving database connector : %v", err)
+			}
+
+			data := &ConnectorPrinter{Connector: co}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Connector Create
+	connectorCreate := &cobra.Command{
+		Use:   "create <Database ID>",
+		Short: "Create a database connector",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a database ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			name, err := cmd.Flags().GetString("name")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'name' for database connector create : %v", err)
+			}
+
+			class, err := cmd.Flags().GetString("class")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'class' for database connector create : %v", err)
+			}
+
+			topics, err := cmd.Flags().GetString("topics")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'topics' for database connector create : %v", err)
+			}
+
+			config, err := cmd.Flags().GetString("config")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'config' for database connector create : %v", err)
+			}
+
+			var configMap map[string]interface{}
+			if config != "" {
+				if err := json.Unmarshal([]byte(config), &configMap); err != nil {
+					return fmt.Errorf("error parsing JSON for flag 'config' for database connector create : %v", err)
+				}
+			}
+
+			o.ConnectorCreateReq = &govultr.DatabaseConnectorCreateReq{
+				Name:   name,
+				Class:  class,
+				Topics: topics,
+				Config: configMap,
+			}
+
+			co, err := o.createConnector()
+			if err != nil {
+				return fmt.Errorf("error creating database connector : %v", err)
+			}
+
+			data := &ConnectorPrinter{Connector: co}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	connectorCreate.Flags().StringP("name", "n", "", "name for the new managed database connector")
+	connectorCreate.Flags().StringP("class", "c", "", "class for the new managed database connector")
+	connectorCreate.Flags().StringP("topics", "t", "", "topics for the new managed database connector")
+	connectorCreate.Flags().StringP("config", "", "", "configuration json for the new managed database connector")
+
+	// Connector Update
+	connectorUpdate := &cobra.Command{
+		Use:   "update <Database ID> <Connector Name>",
+		Short: "Update a database connector",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a connector name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			topics, err := cmd.Flags().GetString("topics")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'topics' for database connector update : %v", err)
+			}
+
+			config, err := cmd.Flags().GetString("config")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'config' for database connector update : %v", err)
+			}
+
+			var configMap map[string]interface{}
+			if config != "" {
+				if err := json.Unmarshal([]byte(config), &configMap); err != nil {
+					return fmt.Errorf("error parsing JSON for flag 'config' for database connector update : %v", err)
+				}
+			}
+
+			o.ConnectorUpdateReq = &govultr.DatabaseConnectorUpdateReq{}
+
+			if cmd.Flags().Changed("topics") {
+				o.ConnectorUpdateReq.Topics = topics
+			}
+
+			if cmd.Flags().Changed("config") {
+				o.ConnectorUpdateReq.Config = configMap
+			}
+
+			co, err := o.updateConnector()
+			if err != nil {
+				return fmt.Errorf("error updating database connector : %v", err)
+			}
+
+			data := &ConnectorPrinter{Connector: co}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	connectorUpdate.Flags().StringP("topics", "t", "", "topics for the managed database connector")
+	connectorUpdate.Flags().StringP("config", "c", "", "configuration json for the managed database connector")
+
+	// Connector Delete
+	connectorDelete := &cobra.Command{
+		Use:   "delete <Database ID> <Connector Name>",
+		Short: "Delete a database connector",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a connector name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.delConnector(); err != nil {
+				return fmt.Errorf("error deleting database connector : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("Connector deleted"), nil)
+
+			return nil
+		},
+	}
+
+	// Connector Get Status
+	connectorGetStatus := &cobra.Command{
+		Use:   "get-status <Database ID> <Connector Name>",
+		Short: "Get the status of a database connector",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a connector name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			co, err := o.getConnectorStatus()
+			if err != nil {
+				return fmt.Errorf("error retrieving database connector status : %v", err)
+			}
+
+			data := &ConnectorStatusPrinter{ConnectorStatus: co}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Connector Restart
+	connectorRestart := &cobra.Command{
+		Use:   "restart <Database ID> <Connector Name>",
+		Short: "Restart a database connector",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a connector name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.restartConnector(); err != nil {
+				return fmt.Errorf("error restarting database connector : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("Connector restarted"), nil)
+
+			return nil
+		},
+	}
+
+	// Connector Pause
+	connectorPause := &cobra.Command{
+		Use:   "pause <Database ID> <Connector Name>",
+		Short: "Pause a database connector",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a connector name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.pauseConnector(); err != nil {
+				return fmt.Errorf("error pausing database connector : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("Connector paused"), nil)
+
+			return nil
+		},
+	}
+
+	// Connector Resume
+	connectorResume := &cobra.Command{
+		Use:   "resume <Database ID> <Connector Name>",
+		Short: "Resume a database connector",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a database ID and a connector name")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.resumeConnector(); err != nil {
+				return fmt.Errorf("error resuming database connector : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("Connector resumed"), nil)
+
+			return nil
+		},
+	}
+
+	// Connector Restart Task
+	connectorRestartTask := &cobra.Command{
+		Use:   "restart-task <Database ID> <Connector Name> <Task ID>",
+		Short: "Restart a database connector task",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 3 {
+				return errors.New("please provide a database ID, a connector name, and a task ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.restartConnectorTask(); err != nil {
+				return fmt.Errorf("error restarting database connector task : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("Connector task restarted"), nil)
+
+			return nil
+		},
+	}
+
+	connector.AddCommand(
+		connectorList,
+		connectorGet,
+		connectorCreate,
+		connectorUpdate,
+		connectorDelete,
+		connectorGetStatus,
+		connectorRestart,
+		connectorPause,
+		connectorResume,
+		connectorRestartTask,
 	)
 
 	// Usage
@@ -4774,6 +5140,8 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		db,
 		topic,
 		quota,
+		availableConnector,
+		connector,
 		usage,
 		maintenance,
 		plan,

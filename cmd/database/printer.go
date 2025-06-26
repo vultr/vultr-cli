@@ -2020,6 +2020,54 @@ func (c *AvailableConnectorsPrinter) Paging() [][]string {
 
 // ======================================
 
+// ConnectorConfigSchemaPrinter ...
+type ConnectorConfigSchemaPrinter struct {
+	ConfigurationSchema []govultr.DatabaseConnectorConfigurationOption `json:"configuration_schema"`
+}
+
+// JSON ...
+func (c *ConnectorConfigSchemaPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *ConnectorConfigSchemaPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *ConnectorConfigSchemaPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (c *ConnectorConfigSchemaPrinter) Data() [][]string {
+	if len(c.ConfigurationSchema) == 0 {
+		return [][]string{0: {"No database connector configuration schema available"}}
+	}
+
+	var data [][]string
+	for i := range c.ConfigurationSchema {
+		data = append(data,
+			[]string{"NAME", c.ConfigurationSchema[i].Name},
+			[]string{"TYPE", c.ConfigurationSchema[i].Type},
+			[]string{"REQUIRED", strconv.FormatBool(c.ConfigurationSchema[i].Required)},
+			[]string{"DEFAULT VALUE", c.ConfigurationSchema[i].DefaultValue},
+			[]string{"DESCRIPTION", c.ConfigurationSchema[i].Description},
+			[]string{"---------------------------"},
+		)
+	}
+
+	return data
+}
+
+// Paging ...
+func (c *ConnectorConfigSchemaPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
 // ConnectorsPrinter ...
 type ConnectorsPrinter struct {
 	Connectors []govultr.DatabaseConnector `json:"connectors"`
@@ -2173,7 +2221,6 @@ func (c *ConnectorStatusPrinter) Data() [][]string {
 
 	if c.ConnectorStatus.Tasks != nil {
 		data = append(data,
-			[]string{" "},
 			[]string{"TASKS"},
 		)
 
