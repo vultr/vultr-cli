@@ -3,6 +3,7 @@ package database
 import (
 	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
@@ -106,6 +107,26 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 				[]string{"ACCESS KEY", d.DBs[i].AccessKey},
 				[]string{"ACCESS CERT", d.DBs[i].AccessCert},
 			)
+
+			if d.DBs[i].EnableKafkaREST != nil {
+				data = append(data, []string{"ENABLE KAFKA REST", strconv.FormatBool(*d.DBs[i].EnableKafkaREST)})
+
+				if d.DBs[i].KafkaRESTURI != "" {
+					data = append(data, []string{"KAFKA REST URI", d.DBs[i].KafkaRESTURI})
+				}
+			}
+
+			if d.DBs[i].EnableSchemaRegistry != nil {
+				data = append(data, []string{"ENABLE SCHEMA REGISTRY", strconv.FormatBool(*d.DBs[i].EnableSchemaRegistry)})
+
+				if d.DBs[i].SchemaRegistryURI != "" {
+					data = append(data, []string{"SCHEMA REGISTRY URI", d.DBs[i].SchemaRegistryURI})
+				}
+			}
+
+			if d.DBs[i].EnableKafkaConnect != nil {
+				data = append(data, []string{"ENABLE KAFKA CONNECT", strconv.FormatBool(*d.DBs[i].EnableKafkaConnect)})
+			}
 		}
 
 		data = append(data,
@@ -384,6 +405,30 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 			[]string{"ACCESS KEY", d.DB.AccessKey},
 			[]string{"ACCESS CERT", d.DB.AccessCert},
 		)
+
+		if d.DB.DatabaseEngine == "kafka" {
+			data = append(data, []string{"SASL PORT", d.DB.SASLPort})
+
+			if d.DB.EnableKafkaREST != nil {
+				data = append(data, []string{"ENABLE KAFKA REST", strconv.FormatBool(*d.DB.EnableKafkaREST)})
+
+				if d.DB.KafkaRESTURI != "" {
+					data = append(data, []string{"KAFKA REST URI", d.DB.KafkaRESTURI})
+				}
+			}
+
+			if d.DB.EnableSchemaRegistry != nil {
+				data = append(data, []string{"ENABLE SCHEMA REGISTRY", strconv.FormatBool(*d.DB.EnableSchemaRegistry)})
+
+				if d.DB.SchemaRegistryURI != "" {
+					data = append(data, []string{"SCHEMA REGISTRY URI", d.DB.SchemaRegistryURI})
+				}
+			}
+
+			if d.DB.EnableKafkaConnect != nil {
+				data = append(data, []string{"ENABLE KAFKA CONNECT", strconv.FormatBool(*d.DB.EnableKafkaConnect)})
+			}
+		}
 	}
 
 	data = append(data,
@@ -1526,7 +1571,7 @@ func (a *AdvancedOptionsPrinter) Columns() [][]string {
 }
 
 // Data ...
-func (a *AdvancedOptionsPrinter) Data() [][]string {
+func (a *AdvancedOptionsPrinter) Data() [][]string { //nolint:dupl
 	var data [][]string
 
 	if a.Configured == (&govultr.DatabaseAdvancedOptions{}) {
@@ -1600,6 +1645,294 @@ func (a *AdvancedOptionsPrinter) Paging() [][]string {
 
 // ======================================
 
+// AdvancedOptionsKafkaRESTPrinter ...
+type AdvancedOptionsKafkaRESTPrinter struct {
+	Configured *govultr.DatabaseKafkaRESTAdvancedOptions `json:"configured_options"`
+	Available  []govultr.AvailableOption                 `json:"available_options"`
+}
+
+// JSON ...
+func (a *AdvancedOptionsKafkaRESTPrinter) JSON() []byte {
+	return printer.MarshalObject(a, "json")
+}
+
+// YAML ...
+func (a *AdvancedOptionsKafkaRESTPrinter) YAML() []byte {
+	return printer.MarshalObject(a, "yaml")
+}
+
+// Columns ...
+func (a *AdvancedOptionsKafkaRESTPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (a *AdvancedOptionsKafkaRESTPrinter) Data() [][]string { //nolint:dupl
+	var data [][]string
+
+	if a.Configured == (&govultr.DatabaseKafkaRESTAdvancedOptions{}) {
+		data = append(data, []string{"CONFIGURED OPTIONS", "None"})
+	} else {
+		data = append(data, []string{"CONFIGURED OPTIONS"})
+		v := reflect.ValueOf(*a.Configured)
+		for i := 0; i < v.NumField(); i++ {
+			if !v.Field(i).IsZero() {
+				switch v.Field(i).Kind() {
+				case reflect.Pointer:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.FormatBool(v.Field(i).Elem().Interface().(bool))})
+				case reflect.Int:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.Itoa(v.Field(i).Interface().(int))})
+				case reflect.Float64:
+					data = append(data,
+						[]string{
+							v.Type().Field(i).Name,
+							strconv.FormatFloat(float64(v.Field(i).Interface().(float64)), 'f', utils.FloatPrecision, 32),
+						},
+					)
+				default:
+					data = append(data, []string{v.Type().Field(i).Name, v.Field(i).Interface().(string)})
+				}
+			}
+		}
+	}
+
+	data = append(data,
+		[]string{" "},
+		[]string{"AVAILABLE OPTIONS"},
+	)
+
+	for i := range a.Available {
+		data = append(data,
+			[]string{"NAME", a.Available[i].Name},
+			[]string{"TYPE", a.Available[i].Type},
+		)
+
+		if a.Available[i].Type == "enum" {
+			data = append(data,
+				[]string{"ENUMERALS", printer.ArrayOfStringsToString(a.Available[i].Enumerals)},
+			)
+		}
+
+		if a.Available[i].Type == "int" || a.Available[i].Type == "float" {
+			data = append(data,
+				[]string{"MIN VALUE", strconv.FormatFloat(float64(*a.Available[i].MinValue), 'f', utils.FloatPrecision, 32)},
+				[]string{"MAX VALUE", strconv.FormatFloat(float64(*a.Available[i].MaxValue), 'f', utils.FloatPrecision, 32)},
+			)
+		}
+
+		if len(a.Available[i].AltValues) > 0 {
+			data = append(data, []string{"ALT VALUES", printer.ArrayOfIntsToString(a.Available[i].AltValues)})
+		}
+
+		if a.Available[i].Units != "" {
+			data = append(data, []string{"UNITS", a.Available[i].Units})
+		}
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (a *AdvancedOptionsKafkaRESTPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// AdvancedOptionsSchemaRegistryPrinter ...
+type AdvancedOptionsSchemaRegistryPrinter struct {
+	Configured *govultr.DatabaseSchemaRegistryAdvancedOptions `json:"configured_options"`
+	Available  []govultr.AvailableOption                      `json:"available_options"`
+}
+
+// JSON ...
+func (a *AdvancedOptionsSchemaRegistryPrinter) JSON() []byte {
+	return printer.MarshalObject(a, "json")
+}
+
+// YAML ...
+func (a *AdvancedOptionsSchemaRegistryPrinter) YAML() []byte {
+	return printer.MarshalObject(a, "yaml")
+}
+
+// Columns ...
+func (a *AdvancedOptionsSchemaRegistryPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (a *AdvancedOptionsSchemaRegistryPrinter) Data() [][]string { //nolint:dupl
+	var data [][]string
+
+	if a.Configured == (&govultr.DatabaseSchemaRegistryAdvancedOptions{}) {
+		data = append(data, []string{"CONFIGURED OPTIONS", "None"})
+	} else {
+		data = append(data, []string{"CONFIGURED OPTIONS"})
+		v := reflect.ValueOf(*a.Configured)
+		for i := 0; i < v.NumField(); i++ {
+			if !v.Field(i).IsZero() {
+				switch v.Field(i).Kind() {
+				case reflect.Pointer:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.FormatBool(v.Field(i).Elem().Interface().(bool))})
+				case reflect.Int:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.Itoa(v.Field(i).Interface().(int))})
+				case reflect.Float64:
+					data = append(data,
+						[]string{
+							v.Type().Field(i).Name,
+							strconv.FormatFloat(float64(v.Field(i).Interface().(float64)), 'f', utils.FloatPrecision, 32),
+						},
+					)
+				default:
+					data = append(data, []string{v.Type().Field(i).Name, v.Field(i).Interface().(string)})
+				}
+			}
+		}
+	}
+
+	data = append(data,
+		[]string{" "},
+		[]string{"AVAILABLE OPTIONS"},
+	)
+
+	for i := range a.Available {
+		data = append(data,
+			[]string{"NAME", a.Available[i].Name},
+			[]string{"TYPE", a.Available[i].Type},
+		)
+
+		if a.Available[i].Type == "enum" {
+			data = append(data,
+				[]string{"ENUMERALS", printer.ArrayOfStringsToString(a.Available[i].Enumerals)},
+			)
+		}
+
+		if a.Available[i].Type == "int" || a.Available[i].Type == "float" {
+			data = append(data,
+				[]string{"MIN VALUE", strconv.FormatFloat(float64(*a.Available[i].MinValue), 'f', utils.FloatPrecision, 32)},
+				[]string{"MAX VALUE", strconv.FormatFloat(float64(*a.Available[i].MaxValue), 'f', utils.FloatPrecision, 32)},
+			)
+		}
+
+		if len(a.Available[i].AltValues) > 0 {
+			data = append(data, []string{"ALT VALUES", printer.ArrayOfIntsToString(a.Available[i].AltValues)})
+		}
+
+		if a.Available[i].Units != "" {
+			data = append(data, []string{"UNITS", a.Available[i].Units})
+		}
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (a *AdvancedOptionsSchemaRegistryPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// AdvancedOptionsKafkaConnectPrinter ...
+type AdvancedOptionsKafkaConnectPrinter struct {
+	Configured *govultr.DatabaseKafkaConnectAdvancedOptions `json:"configured_options"`
+	Available  []govultr.AvailableOption                    `json:"available_options"`
+}
+
+// JSON ...
+func (a *AdvancedOptionsKafkaConnectPrinter) JSON() []byte {
+	return printer.MarshalObject(a, "json")
+}
+
+// YAML ...
+func (a *AdvancedOptionsKafkaConnectPrinter) YAML() []byte {
+	return printer.MarshalObject(a, "yaml")
+}
+
+// Columns ...
+func (a *AdvancedOptionsKafkaConnectPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (a *AdvancedOptionsKafkaConnectPrinter) Data() [][]string { //nolint:dupl
+	var data [][]string
+
+	if a.Configured == (&govultr.DatabaseKafkaConnectAdvancedOptions{}) {
+		data = append(data, []string{"CONFIGURED OPTIONS", "None"})
+	} else {
+		data = append(data, []string{"CONFIGURED OPTIONS"})
+		v := reflect.ValueOf(*a.Configured)
+		for i := 0; i < v.NumField(); i++ {
+			if !v.Field(i).IsZero() {
+				switch v.Field(i).Kind() {
+				case reflect.Pointer:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.FormatBool(v.Field(i).Elem().Interface().(bool))})
+				case reflect.Int:
+					data = append(data, []string{v.Type().Field(i).Name, strconv.Itoa(v.Field(i).Interface().(int))})
+				case reflect.Float64:
+					data = append(data,
+						[]string{
+							v.Type().Field(i).Name,
+							strconv.FormatFloat(float64(v.Field(i).Interface().(float64)), 'f', utils.FloatPrecision, 32),
+						},
+					)
+				default:
+					data = append(data, []string{v.Type().Field(i).Name, v.Field(i).Interface().(string)})
+				}
+			}
+		}
+	}
+
+	data = append(data,
+		[]string{" "},
+		[]string{"AVAILABLE OPTIONS"},
+	)
+
+	for i := range a.Available {
+		data = append(data,
+			[]string{"NAME", a.Available[i].Name},
+			[]string{"TYPE", a.Available[i].Type},
+		)
+
+		if a.Available[i].Type == "enum" {
+			data = append(data,
+				[]string{"ENUMERALS", printer.ArrayOfStringsToString(a.Available[i].Enumerals)},
+			)
+		}
+
+		if a.Available[i].Type == "int" || a.Available[i].Type == "float" {
+			data = append(data,
+				[]string{"MIN VALUE", strconv.FormatFloat(float64(*a.Available[i].MinValue), 'f', utils.FloatPrecision, 32)},
+				[]string{"MAX VALUE", strconv.FormatFloat(float64(*a.Available[i].MaxValue), 'f', utils.FloatPrecision, 32)},
+			)
+		}
+
+		if len(a.Available[i].AltValues) > 0 {
+			data = append(data, []string{"ALT VALUES", printer.ArrayOfIntsToString(a.Available[i].AltValues)})
+		}
+
+		if a.Available[i].Units != "" {
+			data = append(data, []string{"UNITS", a.Available[i].Units})
+		}
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (a *AdvancedOptionsKafkaConnectPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
 // VersionsPrinter ...
 type VersionsPrinter struct {
 	Versions []string `json:"available_versions"`
@@ -1634,5 +1967,276 @@ func (v *VersionsPrinter) Data() [][]string {
 
 // Paging ...
 func (v *VersionsPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// AvailableConnectorsPrinter ...
+type AvailableConnectorsPrinter struct {
+	AvailableConnectors []govultr.DatabaseAvailableConnector `json:"available_connectors"`
+}
+
+// JSON ...
+func (c *AvailableConnectorsPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *AvailableConnectorsPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *AvailableConnectorsPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (c *AvailableConnectorsPrinter) Data() [][]string {
+	if len(c.AvailableConnectors) == 0 {
+		return [][]string{0: {"No database connectors available"}}
+	}
+
+	var data [][]string
+	for i := range c.AvailableConnectors {
+		data = append(data,
+			[]string{"CLASS", c.AvailableConnectors[i].Class},
+			[]string{"TITLE", c.AvailableConnectors[i].Title},
+			[]string{"VERSION", c.AvailableConnectors[i].Version},
+			[]string{"TYPE", c.AvailableConnectors[i].Type},
+			[]string{"DOC URL", c.AvailableConnectors[i].DocURL},
+			[]string{"---------------------------"},
+		)
+	}
+
+	return data
+}
+
+// Paging ...
+func (c *AvailableConnectorsPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// ConnectorConfigSchemaPrinter ...
+type ConnectorConfigSchemaPrinter struct {
+	ConfigurationSchema []govultr.DatabaseConnectorConfigurationOption `json:"configuration_schema"`
+}
+
+// JSON ...
+func (c *ConnectorConfigSchemaPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *ConnectorConfigSchemaPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *ConnectorConfigSchemaPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (c *ConnectorConfigSchemaPrinter) Data() [][]string {
+	if len(c.ConfigurationSchema) == 0 {
+		return [][]string{0: {"No database connector configuration schema available"}}
+	}
+
+	var data [][]string
+	for i := range c.ConfigurationSchema {
+		data = append(data,
+			[]string{"NAME", c.ConfigurationSchema[i].Name},
+			[]string{"TYPE", c.ConfigurationSchema[i].Type},
+			[]string{"REQUIRED", strconv.FormatBool(c.ConfigurationSchema[i].Required)},
+			[]string{"DEFAULT VALUE", c.ConfigurationSchema[i].DefaultValue},
+			[]string{"DESCRIPTION", c.ConfigurationSchema[i].Description},
+			[]string{"---------------------------"},
+		)
+	}
+
+	return data
+}
+
+// Paging ...
+func (c *ConnectorConfigSchemaPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// ConnectorsPrinter ...
+type ConnectorsPrinter struct {
+	Connectors []govultr.DatabaseConnector `json:"connectors"`
+	Meta       *govultr.Meta               `json:"meta"`
+}
+
+// JSON ...
+func (c *ConnectorsPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *ConnectorsPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *ConnectorsPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (c *ConnectorsPrinter) Data() [][]string {
+	if len(c.Connectors) == 0 {
+		return [][]string{0: {"No database connectors available"}}
+	}
+
+	var data [][]string
+	for i := range c.Connectors {
+		data = append(data,
+			[]string{"NAME", c.Connectors[i].Name},
+			[]string{"CLASS", c.Connectors[i].Class},
+			[]string{"TOPICS", c.Connectors[i].Topics},
+		)
+
+		if c.Connectors[i].Config != nil {
+			data = append(data,
+				[]string{" "},
+				[]string{"CONFIG"},
+			)
+
+			for key, value := range c.Connectors[i].Config {
+				data = append(data,
+					[]string{strings.ToUpper(key), value.(string)},
+				)
+			}
+		} else {
+			data = append(data,
+				[]string{"CONFIG", "NONE"},
+			)
+		}
+
+		data = append(data,
+			[]string{"---------------------------"},
+		)
+	}
+
+	return data
+}
+
+// Paging ...
+func (d *ConnectorsPrinter) Paging() [][]string {
+	paging := &printer.Total{Total: d.Meta.Total}
+	return paging.Compose()
+}
+
+// ======================================
+
+// ConnectorPrinter ...
+type ConnectorPrinter struct {
+	Connector *govultr.DatabaseConnector `json:"connector"`
+}
+
+// JSON ...
+func (c *ConnectorPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *ConnectorPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *ConnectorPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (c *ConnectorPrinter) Data() [][]string {
+	var data [][]string
+	data = append(data,
+		[]string{"NAME", c.Connector.Name},
+		[]string{"CLASS", c.Connector.Class},
+		[]string{"TOPICS", c.Connector.Topics},
+	)
+
+	if c.Connector.Config != nil {
+		data = append(data,
+			[]string{" "},
+			[]string{"CONFIG"},
+		)
+
+		for key, value := range c.Connector.Config {
+			data = append(data,
+				[]string{strings.ToUpper(key), value.(string)},
+			)
+		}
+	} else {
+		data = append(data,
+			[]string{"CONFIG", "NONE"},
+		)
+	}
+
+	return data
+}
+
+// Paging ...
+func (c *ConnectorPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// ConnectorStatusPrinter ...
+type ConnectorStatusPrinter struct {
+	ConnectorStatus *govultr.DatabaseConnectorStatus `json:"connector_status"`
+}
+
+// JSON ...
+func (c *ConnectorStatusPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *ConnectorStatusPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *ConnectorStatusPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (c *ConnectorStatusPrinter) Data() [][]string {
+	var data [][]string
+	data = append(data,
+		[]string{"STATE", c.ConnectorStatus.State},
+	)
+
+	if c.ConnectorStatus.Tasks != nil {
+		data = append(data,
+			[]string{"TASKS"},
+		)
+
+		for i := range c.ConnectorStatus.Tasks {
+			data = append(data,
+				[]string{"ID", strconv.Itoa(c.ConnectorStatus.Tasks[i].ID)},
+				[]string{"STATE", c.ConnectorStatus.Tasks[i].State},
+				[]string{"TRACE", c.ConnectorStatus.Tasks[i].Trace},
+			)
+		}
+	}
+
+	return data
+}
+
+// Paging ...
+func (c *ConnectorStatusPrinter) Paging() [][]string {
 	return nil
 }
