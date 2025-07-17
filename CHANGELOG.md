@@ -1,9 +1,9 @@
 # Change Log
 ## [3.6.0](https://github.com/vultr/vultr-cli/compare/v3.5.0...v3.6.0) (2025-07-17)
 ### Enhancements
-* Instances: Add user and password display [PR 541](https://github.com/vultr/vultr-cli/pull/541)
-* Bare Metals: Add user and password display [PR 541](https://github.com/vultr/vultr-cli/pull/541)
-* Databases: Add support for additional Kafka features  [PR 543](https://github.com/vultr/vultr-cli/pull/543)
+* Instance: Add user and password display [PR 541](https://github.com/vultr/vultr-cli/pull/541)
+* Bare Metal: Add user and password display [PR 541](https://github.com/vultr/vultr-cli/pull/541)
+* Database: Add support for additional Kafka features  [PR 543](https://github.com/vultr/vultr-cli/pull/543)
 
 ### Dependencies
 * Update govultr from v3.20.0 to v3.21.0 [PR 542](https://github.com/vultr/vultr-cli/pull/542)
