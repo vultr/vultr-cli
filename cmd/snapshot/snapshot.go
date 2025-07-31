@@ -126,6 +126,14 @@ func NewCmdSnapshot(base *cli.Base) *cobra.Command {
 				URL: url,
 			}
 
+			if cmd.Flags().Changed("uefi") {
+				if b, err := cmd.Flags().GetBool("uefi"); err != nil {
+					return fmt.Errorf("error parsing flag 'uefi' for createURL : %v", err)
+				} else {
+					o.URLReq.UEFI = &b
+				}
+			}
+
 			snapshot, err := o.createURL()
 			if err != nil {
 				return fmt.Errorf("error creating snapshot from URL : %v", err)
@@ -139,6 +147,7 @@ func NewCmdSnapshot(base *cli.Base) *cobra.Command {
 	}
 
 	createURL.Flags().StringP("url", "u", "", "Remote URL from where the snapshot will be downloaded.")
+	createURL.Flags().Bool("uefi", false, "Mark snapshot as UEFI.")
 	if err := createURL.MarkFlagRequired("url"); err != nil {
 		fmt.Printf("error marking snapshot create 'url' flag required: %v", err)
 		os.Exit(1)
