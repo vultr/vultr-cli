@@ -18,11 +18,12 @@ jobs:
         uses: qodo-ai/pr-agent@main
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
           OPENAI__API_BASE: ${{ secrets.OPENAI__API_BASE }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           github_action_config.auto_review: "true"
           github_action_config.auto_describe: "true"
           github_action_config.auto_improve: "true"
           github_action_config.pr_actions: '["opened", "reopened", "ready_for_review", "review_requested"]'
-          config.model: "openai/llama-3.3-70b-instruct-fp8"
-          config.custom_model_max_tokens: 32768
+          config.model: "openai/${{ secrets.AI_MODEL }}"
+          config.custom_model_max_tokens: ${{ secrets.AI_MAX_TOKENS }}
