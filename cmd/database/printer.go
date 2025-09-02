@@ -562,7 +562,7 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 			data = append(data,
 				[]string{"LATEST BACKUP", d.DB.ReadReplicas[i].LatestBackup},
 				[]string{"TRUSTED IPS", printer.ArrayOfStringsToString(d.DB.ReadReplicas[i].TrustedIPs)},
-				[]string{"CA CERTiFICATE", d.DB.ReadReplicas[i].CACertificate},
+				[]string{"CA CERTIFICATE", d.DB.ReadReplicas[i].CACertificate},
 			)
 
 			if d.DB.ReadReplicas[i].DatabaseEngine == "mysql" {
