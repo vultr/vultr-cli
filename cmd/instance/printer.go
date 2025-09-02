@@ -100,6 +100,7 @@ func (i *InstancePrinter) Data() [][]string {
 		[]string{"OS", i.Instance.Os},
 		[]string{"OS ID", strconv.Itoa(i.Instance.OsID)},
 		[]string{"APP ID", strconv.Itoa(i.Instance.AppID)},
+		[]string{"SNAPSHOT ID", i.Instance.SnapshotID},
 		[]string{"RAM", strconv.Itoa(i.Instance.RAM)},
 		[]string{"DISK", strconv.Itoa(i.Instance.Disk)},
 		[]string{"MAIN IP", i.Instance.MainIP},
