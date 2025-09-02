@@ -110,6 +110,7 @@ func (b *BareMetalPrinter) Data() [][]string {
 		[]string{"MAC ADDRESS", strconv.Itoa(b.BareMetal.MacAddress)},
 		[]string{"LABEL", b.BareMetal.Label},
 		[]string{"OS", b.BareMetal.Os},
+		[]string{"SNAPSHOT ID", b.BareMetal.SnapshotID},
 		[]string{"STATUS", b.BareMetal.Status},
 		[]string{"REGION", b.BareMetal.Region},
 		[]string{"CPU", strconv.Itoa(b.BareMetal.CPUCount)},

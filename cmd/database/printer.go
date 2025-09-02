@@ -145,6 +145,7 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 		data = append(data,
 			[]string{"LATEST BACKUP", d.DBs[i].LatestBackup},
 			[]string{"TRUSTED IPS", printer.ArrayOfStringsToString(d.DBs[i].TrustedIPs)},
+			[]string{"CA CERTIFICATE", d.DBs[i].CACertificate},
 		)
 
 		if d.DBs[i].DatabaseEngine == "mysql" {
@@ -257,6 +258,7 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 				data = append(data,
 					[]string{"LATEST BACKUP", d.DBs[i].ReadReplicas[j].LatestBackup},
 					[]string{"TRUSTED IPS", printer.ArrayOfStringsToString(d.DBs[i].ReadReplicas[j].TrustedIPs)},
+					[]string{"CA CERTIFICATE", d.DBs[i].ReadReplicas[j].CACertificate},
 				)
 
 				if d.DBs[i].ReadReplicas[j].DatabaseEngine == "mysql" {
@@ -447,6 +449,7 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 	data = append(data,
 		[]string{"LATEST BACKUP", d.DB.LatestBackup},
 		[]string{"TRUSTED IPS", printer.ArrayOfStringsToString(d.DB.TrustedIPs)},
+		[]string{"CA CERTIFICATE", d.DB.CACertificate},
 	)
 
 	if d.DB.DatabaseEngine == "mysql" {
@@ -559,6 +562,7 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 			data = append(data,
 				[]string{"LATEST BACKUP", d.DB.ReadReplicas[i].LatestBackup},
 				[]string{"TRUSTED IPS", printer.ArrayOfStringsToString(d.DB.ReadReplicas[i].TrustedIPs)},
+				[]string{"CA CERTIFICATE", d.DB.ReadReplicas[i].CACertificate},
 			)
 
 			if d.DB.ReadReplicas[i].DatabaseEngine == "mysql" {
