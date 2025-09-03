@@ -1,4 +1,23 @@
 # Change Log
+## [3.7.0](https://github.com/vultr/vultr-cli/compare/v3.6.0...v3.7) (2025-09-03)
+### Enhancements
+* Database: Add CA certificate field to display [PR 552](https://github.com/vultr/vultr-cli/pull/552)
+* Instance: Add snapshot ID field to display [PR 552](https://github.com/vultr/vultr-cli/pull/552)
+* Bare Metal: Add snapshot ID field to display [PR 552](https://github.com/vultr/vultr-cli/pull/552)
+* Snapshot: Add UEFI and description options for create-url [PR 547](https://github.com/vultr/vultr-cli/pull/547)
+
+### Dependencies
+* Bump github.com/spf13/cobra from 1.9.1 to 1.10.1 [PR 553](https://github.com/vultr/vultr-cli/pull/553)
+* Bump github.com/go-viper/mapstructure/v2 from 2.3.0 to 2.4.0 [PR 549](https://github.com/vultr/vultr-cli/pull/549)
+* Update govultr from v3.21.1 to v3.22.1 [PR 548](https://github.com/vultr/vultr-cli/pull/548)
+* Update govultr from v3.22.1 to v3.23.0 [PR 551](https://github.com/vultr/vultr-cli/pull/551)
+
+### Automation
+* Ignore gocyclo on snapshot cmd [PR 554](https://github.com/vultr/vultr-cli/pull/554)
+
+### New Contributors
+* @mmonaco made their first contribution in [PR 547](https://github.com/vultr/vultr-cli/pull/547)
+
 ## [3.6.0](https://github.com/vultr/vultr-cli/compare/v3.5.0...v3.6.0) (2025-07-17)
 ### Enhancements
 * Instance: Add user and password display [PR 541](https://github.com/vultr/vultr-cli/pull/541)
