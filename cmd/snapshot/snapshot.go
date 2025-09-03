@@ -14,7 +14,7 @@ import (
 )
 
 // NewCmdSnapshot provides the CLI command for snapshot functions
-func NewCmdSnapshot(base *cli.Base) *cobra.Command {
+func NewCmdSnapshot(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
