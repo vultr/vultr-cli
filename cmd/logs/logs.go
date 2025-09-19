@@ -106,7 +106,7 @@ func NewCmdLogs(base *cli.Base) *cobra.Command {
 	}
 
 	list.Flags().String("end", "", "timestamp for the end of the time period from which to return logs")
-	if err := list.MarkFlagRequired("start"); err != nil {
+	if err := list.MarkFlagRequired("end"); err != nil {
 		fmt.Printf("error marking logs list 'end' flag required: %v", err)
 		os.Exit(1)
 	}
