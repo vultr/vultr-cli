@@ -1,4 +1,13 @@
 # Change Log
+## [3.8.0](https://github.com/vultr/vultr-cli/compare/v3.7.0...v3.8.0) (2025-09-19)
+### Enhancements
+* Logs: Add logs commands [PR 559](https://github.com/vultr/vultr-cli/pull/559)
+
+### Dependencies
+* Bump golang.org/x/oauth2 from 0.30.0 to 0.31.0 [PR 556](https://github.com/vultr/vultr-cli/pull/556)
+* Bump github.com/spf13/viper from 1.20.1 to 1.21.0 [PR 557](https://github.com/vultr/vultr-cli/pull/557)
+* Update govultr from v3.23.0 to v3.24.0 [PR 558](https://github.com/vultr/vultr-cli/pull/558)
+
 ## [3.7.0](https://github.com/vultr/vultr-cli/compare/v3.6.0...v3.7) (2025-09-03)
 ### Enhancements
 * Database: Add CA certificate field to display [PR 552](https://github.com/vultr/vultr-cli/pull/552)
