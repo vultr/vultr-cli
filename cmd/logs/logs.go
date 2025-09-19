@@ -22,7 +22,8 @@ var (
 	listLong    = `Retrieve all logs between the start and end timestamps, filtered by UUID, type or log level`
 	listExample = `
 	# Full example
-	vultr-cli logs list --start '2025-08-26T00:00:00Z' --end '2025-09-13T00:30:00Z' --uuid '8b903420-b2e3-4e4f-9f88-19efb30e1237' --type 'instances'
+	vultr-cli logs list --start '2025-08-26T00:00:00Z' --end '2025-09-13T00:30:00Z' \
+		--uuid '8b903420-b2e3-4e4f-9f88-19efb30e1237' --type 'instances'
 	`
 )
 
