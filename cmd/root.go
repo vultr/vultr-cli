@@ -24,6 +24,7 @@ import (
 	"github.com/vultr/vultr-cli/v3/cmd/iso"
 	"github.com/vultr/vultr-cli/v3/cmd/kubernetes"
 	"github.com/vultr/vultr-cli/v3/cmd/loadbalancer"
+	"github.com/vultr/vultr-cli/v3/cmd/logs"
 	"github.com/vultr/vultr-cli/v3/cmd/marketplace"
 	"github.com/vultr/vultr-cli/v3/cmd/objectstorage"
 	"github.com/vultr/vultr-cli/v3/cmd/operatingsystems"
@@ -104,6 +105,7 @@ func init() {
 		iso.NewCmdISO(base),
 		kubernetes.NewCmdKubernetes(base),
 		loadbalancer.NewCmdLoadBalancer(base),
+		logs.NewCmdLogs(base),
 		marketplace.NewCmdMarketplace(base),
 		operatingsystems.NewCmdOS(base),
 		objectstorage.NewCmdObjectStorage(base),
