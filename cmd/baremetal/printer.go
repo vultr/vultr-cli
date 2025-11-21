@@ -213,7 +213,7 @@ func (b *BareMetalBandwidthPrinter) Paging() [][]string {
 
 // BareMetalVPC2sPrinter ...
 type BareMetalVPC2sPrinter struct {
-	VPC2s []govultr.VPC2Info `json:"vpcs"`
+	VPC2s []govultr.VPC2Info `json:"vpcs"` //nolint:staticcheck
 }
 
 // JSON ...

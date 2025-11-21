@@ -1537,7 +1537,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'ip-address' for vpc2 instance attach : %v", errIP)
 			}
 
-			o.VPC2Req = &govultr.AttachVPC2Req{
+			o.VPC2Req = &govultr.AttachVPC2Req{ //nolint:staticcheck
 				VPCID:     o.Base.Args[1],
 				IPAddress: &ip,
 			}
@@ -1653,7 +1653,7 @@ type options struct {
 	ISOAttachID     string
 	Reboot          *bool
 	ReverseDNSReq   *govultr.ReverseIP
-	VPC2Req         *govultr.AttachVPC2Req
+	VPC2Req         *govultr.AttachVPC2Req //nolint:staticcheck
 }
 
 func (o *options) list() ([]govultr.Instance, *govultr.Meta, error) {
@@ -1780,7 +1780,7 @@ func (o *options) vpcDetach() error {
 	return o.Base.Client.Instance.DetachVPC(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
 }
 
-func (o *options) vpc2s() ([]govultr.VPC2Info, *govultr.Meta, error) {
+func (o *options) vpc2s() ([]govultr.VPC2Info, *govultr.Meta, error) { //nolint:staticcheck
 	vpc2s, meta, _, err := o.Base.Client.Instance.ListVPC2Info(o.Base.Context, o.Base.Args[0], o.Base.Options) //nolint:staticcheck,lll
 	return vpc2s, meta, err
 }

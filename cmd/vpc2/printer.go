@@ -9,7 +9,7 @@ import (
 
 // VPC2sPrinter ...
 type VPC2sPrinter struct {
-	VPC2s []govultr.VPC2 `json:"vpcs"`
+	VPC2s []govultr.VPC2 `json:"vpcs"` //nolint:staticcheck
 	Meta  *govultr.Meta  `json:"meta"`
 }
 
@@ -65,7 +65,7 @@ func (s *VPC2sPrinter) Paging() [][]string {
 
 // VPC2Printer ...
 type VPC2Printer struct {
-	VPC2 *govultr.VPC2 `json:"vpc"`
+	VPC2 *govultr.VPC2 `json:"vpc"` //nolint:staticcheck
 }
 
 // JSON ...

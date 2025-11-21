@@ -420,17 +420,17 @@ type options struct {
 	Description     string
 }
 
-func (o *options) list() ([]govultr.VPC2, *govultr.Meta, error) {
+func (o *options) list() ([]govultr.VPC2, *govultr.Meta, error) { //nolint:staticcheck
 	vpc2s, meta, _, err := o.Base.Client.VPC2.List(o.Base.Context, o.Base.Options) //nolint:staticcheck
 	return vpc2s, meta, err
 }
 
-func (o *options) get() (*govultr.VPC2, error) {
+func (o *options) get() (*govultr.VPC2, error) { //nolint:staticcheck
 	vpc2, _, err := o.Base.Client.VPC2.Get(o.Base.Context, o.Base.Args[0]) //nolint:staticcheck
 	return vpc2, err
 }
 
-func (o *options) create() (*govultr.VPC2, error) {
+func (o *options) create() (*govultr.VPC2, error) { //nolint:staticcheck
 	vpc2, _, err := o.Base.Client.VPC2.Create(o.Base.Context, o.CreateReq) //nolint:staticcheck
 	return vpc2, err
 }
