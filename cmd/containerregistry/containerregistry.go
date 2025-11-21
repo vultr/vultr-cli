@@ -20,6 +20,7 @@ var (
 	# Full example
 	vultr-cli container-registry
 	`
+
 	createLong    = `Create a new container registry with specified options`
 	createExample = `
 	# Full example
@@ -39,6 +40,7 @@ var (
 	# Shortened example with aliases
 	vultr-cli cr g e8ba183d-df3b-487a-acbf-f6c06aa32468
 	`
+
 	updateLong    = `Update an existing container registry`
 	updateExample = `
 	# Full example
@@ -47,6 +49,7 @@ var (
 	# Shortened example with aliases
 	vultr-cli cr u 835fd402-e0eb-47aa-a5a9-a9885feea1cf -p="premium" -b="true"
 	`
+
 	deleteLong    = `Delete a container registry`
 	deleteExample = `
 	#Full example
@@ -55,6 +58,7 @@ var (
 	#Shortened example with aliases
 	vultr-cli cr d b20fa61e-4abb-46c5-92c3-8700150e1f9a 
 	`
+
 	listLong    = `List all container registries on the account`
 	listExample = `
 	# Full example
@@ -63,18 +67,21 @@ var (
 	# Shortened example with aliases
 	vultr-cli cr l
 	`
+
 	credentialsLong = `Commands for accessing the credentials on registries`
 	//nolint:gosec
 	credentialsExample = `
 	# Full example
 	vultr-cli container-registry credentials
 	`
+
 	credentialsDockerLong = `Create the credential string used by docker`
 	//nolint:gosec
 	credentialsDockerExample = `
 	# Full example
 	vultr-cli container-registry credentials docker d24cfdcc-0534-4700-bf88-8ee48f20064e 
 	`
+
 	repoLong    = `Access commands for individual repositories on a container registry`
 	repoExample = `
 	# Full example
@@ -83,7 +90,20 @@ var (
 	# Shortened example with aliases
 	vultr-cli cr r
 	`
-	repoUpdateLong    = `Update the details of registry's repository`
+
+	repoListLong    = `List all container registry repositories`
+	repoListExample = `
+	# Full example
+	vultr-cli container-registry repository list
+	`
+
+	repoGetLong    = `Get a container registry repository`
+	repoGetExample = `
+	# Full example
+	vultr-cli container-registry repository get 0492ced1-3235-4acc-9da6-6cfa5637c867
+	`
+
+	repoUpdateLong    = `Update the details of a container registry repository`
 	repoUpdateExample = `
 	# Full example
 	vultr-cli container-registry repository update 4dcdc52e-9c63-401e-8c5f-1582490fe09c --image-name="my-thing" 
@@ -92,7 +112,8 @@ var (
 	# Shortened example with aliases
 	vultr-cli cr r u 4dcdc52e-9c63-401e-8c5f-1582490fe09c -i="my-thing" -d="new description"
 	`
-	repoDeleteLong    = `Delete a repository in a registry`
+
+	repoDeleteLong    = `Delete a repository in a container registry`
 	repoDeleteExample = `
 	# Full example
 	vultr-cli container-registry repository delete 4dcdc52e-9c63-401e-8c5f-1582490fe09c --image-name="my-thing"
@@ -100,6 +121,7 @@ var (
 	# Shortened example with aliases
 	vultr-cli cr r d 4dcdc52e-9c63-401e-8c5f-1582490fe09c -i="my-thing"
 	`
+
 	plansLong    = `Retrieve the current plan details for container registry`
 	plansExample = `
 	# Full example
@@ -108,6 +130,7 @@ var (
 	# Shortened example with aliases
 	vultr-cli cr p
 	`
+
 	regionsLong    = `Retrieve the available regions for container registries`
 	regionsExample = `
 	# Full example
@@ -394,8 +417,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 		Use:     "list <Registry ID>",
 		Short:   "List all container registry repositories",
 		Aliases: []string{"l"},
-		Long:    listLong,
-		Example: listExample,
+		Long:    repoListLong,
+		Example: repoListExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a container registry ID")
@@ -421,8 +444,8 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 		Use:     "get <Registry ID>",
 		Short:   "Get a container registry repository",
 		Aliases: []string{"g"},
-		Long:    getLong,
-		Example: getExample,
+		Long:    repoGetLong,
+		Example: repoGetExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a container registry ID")
