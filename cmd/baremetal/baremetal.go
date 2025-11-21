@@ -931,7 +931,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 				return fmt.Errorf("error parsing ip-address flag for bare metal VPC2 attach : %v", errIP)
 			}
 
-			o.VPC2Req = &govultr.AttachVPC2Req{
+			o.VPC2Req = &govultr.AttachVPC2Req{ //nolint:staticcheck
 				VPCID:     vpcID,
 				IPAddress: &IPAddress,
 			}
@@ -1025,7 +1025,7 @@ type options struct {
 	Base      *cli.Base
 	CreateReq *govultr.BareMetalCreate
 	UpdateReq *govultr.BareMetalUpdate
-	VPC2Req   *govultr.AttachVPC2Req
+	VPC2Req   *govultr.AttachVPC2Req //nolint:staticcheck
 	VPC2ID    string
 }
 
@@ -1100,7 +1100,7 @@ func (b *options) getIPv6Addresses() ([]govultr.IPv6, *govultr.Meta, error) {
 	return ips, meta, err
 }
 
-func (b *options) vpc2NetworksList() ([]govultr.VPC2Info, error) {
+func (b *options) vpc2NetworksList() ([]govultr.VPC2Info, error) { //nolint:staticcheck
 	vpc2s, _, err := b.Base.Client.BareMetalServer.ListVPC2Info(b.Base.Context, b.Base.Args[0]) //nolint:staticcheck
 	return vpc2s, err
 }

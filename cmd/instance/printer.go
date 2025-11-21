@@ -476,7 +476,7 @@ func (r *ReverseIPsPrinter) Paging() [][]string {
 
 // VPC2sPrinter ...
 type VPC2sPrinter struct {
-	VPC2s []govultr.VPC2Info `json:"vpcs"`
+	VPC2s []govultr.VPC2Info `json:"vpcs"` //nolint:staticcheck
 	Meta  *govultr.Meta      `json:"meta"`
 }
 
