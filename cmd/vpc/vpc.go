@@ -257,21 +257,194 @@ func NewCmdVPC(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		},
 	}
 
+	// NAT Gateway
+	natGateway := &cobra.Command{
+		Use:   "nat-gateway",
+		Short: "Commands to handle NAT Gateways",
+	}
+
+	// NAT Gateway List
+	natGatewayList := &cobra.Command{
+		Use:   "list <VPC ID>",
+		Short: "List NAT Gateways",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a VPC ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ng, meta, err := o.listNATGateways()
+			if err != nil {
+				return fmt.Errorf("error retrieving NAT Gateways : %v", err)
+			}
+
+			data := &NATGatewaysPrinter{NATGateways: ng, Meta: meta}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// NAT Gateway Get
+	natGatewayGet := &cobra.Command{
+		Use:   "get <VPC ID> <NAT Gateway ID>",
+		Short: "Get a NAT Gateway",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a VPC ID and a NAT Gateway ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ng, err := o.getNATGateway()
+			if err != nil {
+				return fmt.Errorf("error retrieving NAT Gateway : %v", err)
+			}
+
+			data := &NATGatewayPrinter{NATGateway: ng}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// NAT Gateway Create
+	natGatewayCreate := &cobra.Command{
+		Use:   "create <VPC ID>",
+		Short: "Create a NAT Gateway",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return errors.New("please provide a VPC ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			label, errLa := cmd.Flags().GetString("label")
+			if errLa != nil {
+				return fmt.Errorf("error parsing flag 'label' for NAT Gateway create : %v", errLa)
+			}
+
+			tag, errTa := cmd.Flags().GetString("tag")
+			if errTa != nil {
+				return fmt.Errorf("error parsing flag 'tag' for NAT Gateway create : %v", errTa)
+			}
+
+			o.NATGatewayReq = &govultr.NATGatewayReq{
+				Label: label,
+				Tag:   tag,
+			}
+
+			ng, err := o.createNATGateway()
+			if err != nil {
+				return fmt.Errorf("error creating NAT Gateway : %v", err)
+			}
+
+			data := &NATGatewayPrinter{NATGateway: ng}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	natGatewayCreate.Flags().StringP("label", "l", "", "label for the new NAT Gateway subscription")
+	natGatewayCreate.Flags().StringP("tag", "t", "", "tag for the new NAT Gateway subscription")
+
+	// NAT Gateway Update
+	natGatewayUpdate := &cobra.Command{
+		Use:   "update <VPC ID> <NAT Gateway ID>",
+		Short: "Update a NAT Gateway",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a VPC ID and a NAT Gateway ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			label, errLa := cmd.Flags().GetString("label")
+			if errLa != nil {
+				return fmt.Errorf("error parsing flag 'label' for NAT Gateway update : %v", errLa)
+			}
+
+			tag, errTa := cmd.Flags().GetString("tag")
+			if errTa != nil {
+				return fmt.Errorf("error parsing flag 'tag' for NAT Gateway update : %v", errTa)
+			}
+
+			o.NATGatewayReq = &govultr.NATGatewayReq{}
+
+			if cmd.Flags().Changed("label") {
+				o.NATGatewayReq.Label = label
+			}
+
+			if cmd.Flags().Changed("tag") {
+				o.NATGatewayReq.Tag = tag
+			}
+
+			ng, err := o.updateNATGateway()
+			if err != nil {
+				return fmt.Errorf("error updating NAT Gateway : %v", err)
+			}
+
+			data := &NATGatewayPrinter{NATGateway: ng}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	natGatewayUpdate.Flags().StringP("label", "l", "", "label for the NAT Gateway subnscription")
+	natGatewayUpdate.Flags().StringP("tag", "t", "", "tag for the NAT Gateway subnscription")
+
+	// NAT Gateway Delete
+	natGatewayDelete := &cobra.Command{
+		Use:   "delete <VPC ID> <NAT Gateway ID>",
+		Short: "Delete a NAT Gateway",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a VPC ID and a NAT Gateway ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.delNATGateway(); err != nil {
+				return fmt.Errorf("error deleting NAT Gateway : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("NAT Gateway deleted"), nil)
+
+			return nil
+		},
+	}
+
+	natGateway.AddCommand(
+		natGatewayList,
+		natGatewayGet,
+		natGatewayCreate,
+		natGatewayUpdate,
+		natGatewayDelete,
+	)
+
 	cmd.AddCommand(
 		list,
 		get,
 		create,
 		update,
 		del,
+		natGateway,
 	)
 
 	return cmd
 }
 
 type options struct {
-	Base        *cli.Base
-	CreateReq   *govultr.VPCReq
-	Description string
+	Base                  *cli.Base
+	CreateReq             *govultr.VPCReq
+	Description           string
+	NATGatewayReq         *govultr.NATGatewayReq
+	FirewallRuleCreateReq *govultr.NATGatewayFirewallRuleCreateReq
+	FirewallRuleUpdateReq *govultr.NATGatewayFirewallRuleUpdateReq
+	PortForwardingRuleReq *govultr.NATGatewayPortForwardingRuleReq
 }
 
 func (o *options) list() ([]govultr.VPC, *govultr.Meta, error) {
@@ -295,4 +468,28 @@ func (o *options) update() error {
 
 func (o *options) del() error {
 	return o.Base.Client.VPC.Delete(o.Base.Context, o.Base.Args[0])
+}
+
+func (o *options) listNATGateways() ([]govultr.NATGateway, *govultr.Meta, error) {
+	natGateways, meta, _, err := o.Base.Client.VPC.ListNATGateways(o.Base.Context, o.Base.Args[0], o.Base.Options)
+	return natGateways, meta, err
+}
+
+func (o *options) getNATGateway() (*govultr.NATGateway, error) {
+	natGateway, _, err := o.Base.Client.VPC.GetNATGateway(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return natGateway, err
+}
+
+func (o *options) createNATGateway() (*govultr.NATGateway, error) {
+	natGateway, _, err := o.Base.Client.VPC.CreateNATGateway(o.Base.Context, o.Base.Args[0], o.NATGatewayReq)
+	return natGateway, err
+}
+
+func (o *options) updateNATGateway() (*govultr.NATGateway, error) {
+	natGateway, _, err := o.Base.Client.VPC.UpdateNATGateway(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.NATGatewayReq)
+	return natGateway, err
+}
+
+func (o *options) delNATGateway() error {
+	return o.Base.Client.VPC.DeleteNATGateway(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
 }

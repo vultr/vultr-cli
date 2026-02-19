@@ -1,7 +1,9 @@
 package vpc
 
 import (
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/vultr/govultr/v3"
 
@@ -140,27 +142,18 @@ func (ng *NATGatewaysPrinter) Data() [][]string {
 	var data [][]string
 	for i := range ng.NATGateways {
 		data = append(data,
-			[]string{"USERNAME", ng.NATGateways[i].Username},
-			[]string{"PASSWORD", ng.NATGateways[i].Password},
+			[]string{"ID", ng.NATGateways[i].ID},
+			[]string{"VPC ID", ng.NATGateways[i].VPCID},
+			[]string{"DATE CREATED", ng.NATGateways[i].DateCreated},
+			[]string{"STATUS", ng.NATGateways[i].Status},
+			[]string{"LABEL", ng.NATGateways[i].Label},
+			[]string{"TAG", ng.NATGateways[i].Tag},
+			[]string{"PUBLIC IPS", strings.Join(ng.NATGateways[i].PublicIPs, ",")},
+			[]string{"PUBLIC IPSV6", strings.Join(ng.NATGateways[i].PublicIPsV6, ",")},
+			[]string{"PRIVATE IPS", strings.Join(ng.NATGateways[i].PrivateIPs, ",")},
+			[]string{"BILLING CHARGES", fmt.Sprintf("%.2f", ng.NATGateways[i].Billing.Charges)},
+			[]string{"BILLING MONTHLY", fmt.Sprintf("%.2f", ng.NATGateways[i].Billing.Monthly)},
 		)
-
-		if ng.NATGateways[i].Encryption != "" {
-			data = append(data, []string{"ENCRYPTION", ng.NATGateways[i].Encryption})
-		}
-
-		if ng.NATGateways[i].AccessControl != nil {
-			data = append(data,
-				[]string{"ACCESS CONTROL"},
-				[]string{"ACL CATEGORIES", printer.ArrayOfStringsToString(ng.NATGateways[i].AccessControl.ACLCategories)},
-				[]string{"ACL CHANNELS", printer.ArrayOfStringsToString(ng.NATGateways[i].AccessControl.ACLChannels)},
-				[]string{"ACL COMMANDS", printer.ArrayOfStringsToString(ng.NATGateways[i].AccessControl.ACLCommands)},
-				[]string{"ACL KEYS", printer.ArrayOfStringsToString(ng.NATGateways[i].AccessControl.ACLKeys)},
-			)
-		}
-
-		if ng.NATGateways[i].Permission != "" {
-			data = append(data, []string{"PERMISSION", ng.NATGateways[i].Permission})
-		}
 
 		data = append(data, []string{"---------------------------"})
 	}
@@ -183,12 +176,12 @@ type NATGatewayPrinter struct {
 
 // JSON ...
 func (ng *NATGatewayPrinter) JSON() []byte {
-	return printer.MarshalObject(u, "json")
+	return printer.MarshalObject(ng, "json")
 }
 
 // YAML ...
 func (ng *NATGatewayPrinter) YAML() []byte {
-	return printer.MarshalObject(u, "yaml")
+	return printer.MarshalObject(ng, "yaml")
 }
 
 // Columns ...
@@ -200,35 +193,18 @@ func (ng *NATGatewayPrinter) Columns() [][]string {
 func (ng *NATGatewayPrinter) Data() [][]string {
 	var data [][]string
 	data = append(data,
-		[]string{"USERNAME", ng.NATGateway.Username},
-		[]string{"PASSWORD", ng.NATGateway.Password},
+		[]string{"ID", ng.NATGateway.ID},
+		[]string{"VPC ID", ng.NATGateway.VPCID},
+		[]string{"DATE CREATED", ng.NATGateway.DateCreated},
+		[]string{"STATUS", ng.NATGateway.Status},
+		[]string{"LABEL", ng.NATGateway.Label},
+		[]string{"TAG", ng.NATGateway.Tag},
+		[]string{"PUBLIC IPS", strings.Join(ng.NATGateway.PublicIPs, ",")},
+		[]string{"PUBLIC IPSV6", strings.Join(ng.NATGateway.PublicIPsV6, ",")},
+		[]string{"PRIVATE IPS", strings.Join(ng.NATGateway.PrivateIPs, ",")},
+		[]string{"BILLING CHARGES", fmt.Sprintf("%.2f", ng.NATGateway.Billing.Charges)},
+		[]string{"BILLING MONTHLY", fmt.Sprintf("%.2f", ng.NATGateway.Billing.Monthly)},
 	)
-
-	if ng.NATGateway.Encryption != "" {
-		data = append(data, []string{"ENCRYPTION", ng.NATGateway.Encryption})
-	}
-
-	if ng.NATGateway.AccessControl != nil {
-		data = append(data,
-			[]string{"ACCESS CONTROL"},
-			[]string{"ACL CATEGORIES", printer.ArrayOfStringsToString(ng.NATGateway.AccessControl.ACLCategories)},
-			[]string{"ACL CHANNELS", printer.ArrayOfStringsToString(ng.NATGateway.AccessControl.ACLChannels)},
-			[]string{"ACL COMMANDS", printer.ArrayOfStringsToString(ng.NATGateway.AccessControl.ACLCommands)},
-			[]string{"ACL KEYS", printer.ArrayOfStringsToString(ng.NATGateway.AccessControl.ACLKeys)},
-		)
-	}
-
-	if ng.NATGateway.Permission != "" {
-		data = append(data, []string{"PERMISSION", ng.NATGateway.Permission})
-	}
-
-	if ng.NATGateway.AccessKey != "" {
-		data = append(data, []string{"ACCESS KEY", ng.NATGateway.AccessKey})
-	}
-
-	if ng.NATGateway.AccessCert != "" {
-		data = append(data, []string{"ACCESS CERT", ng.NATGateway.AccessCert})
-	}
 
 	return data
 }
