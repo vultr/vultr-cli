@@ -512,7 +512,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			o.RecordUpdateReq = &govultr.DomainRecordUpdateReq{}
 
 			if cmd.Flags().Changed("name") {
-				o.RecordUpdateReq.Name = &name
+				o.RecordUpdateReq.Name = govultr.StringToStringPtr(name)
 			}
 
 			if cmd.Flags().Changed("data") {
