@@ -213,3 +213,201 @@ func (ng *NATGatewayPrinter) Data() [][]string {
 func (ng *NATGatewayPrinter) Paging() [][]string {
 	return nil
 }
+
+// ======================================
+
+// NATGatewayPortForwardingRulesPrinter ...
+type NATGatewayPortForwardingRulesPrinter struct {
+	PortForwardingRules []govultr.NATGatewayPortForwardingRule `json:"port_forwarding_rules"`
+	Meta                *govultr.Meta                          `json:"meta"`
+}
+
+// JSON ...
+func (pfr *NATGatewayPortForwardingRulesPrinter) JSON() []byte {
+	return printer.MarshalObject(pfr, "json")
+}
+
+// YAML ...
+func (pfr *NATGatewayPortForwardingRulesPrinter) YAML() []byte {
+	return printer.MarshalObject(pfr, "yaml")
+}
+
+// Columns ...
+func (pfr *NATGatewayPortForwardingRulesPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (pfr *NATGatewayPortForwardingRulesPrinter) Data() [][]string {
+	if len(pfr.PortForwardingRules) == 0 {
+		return [][]string{0: {"No NAT Gateway port forwarding rules"}}
+	}
+
+	var data [][]string
+	for i := range pfr.PortForwardingRules {
+		data = append(data,
+			[]string{"ID", pfr.PortForwardingRules[i].ID},
+			[]string{"NAME", pfr.PortForwardingRules[i].Name},
+			[]string{"PROTOCOL", pfr.PortForwardingRules[i].Protocol},
+			[]string{"EXTERNAL PORT", strconv.Itoa(pfr.PortForwardingRules[i].ExternalPort)},
+			[]string{"INTERNAL IP", pfr.PortForwardingRules[i].InternalIP},
+			[]string{"INTERNAL PORT", strconv.Itoa(pfr.PortForwardingRules[i].InternalPort)},
+			[]string{"ENABLED", strconv.FormatBool(*pfr.PortForwardingRules[i].Enabled)},
+			[]string{"DESCRIPTION", pfr.PortForwardingRules[i].Description},
+			[]string{"DATE CREATED", pfr.PortForwardingRules[i].DateCreated},
+			[]string{"DATE UPDATED", pfr.PortForwardingRules[i].DateUpdated},
+		)
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (pfr *NATGatewayPortForwardingRulesPrinter) Paging() [][]string {
+	paging := &printer.Total{Total: pfr.Meta.Total}
+	return paging.Compose()
+}
+
+// ======================================
+
+// NATGatewayPortForwardingRulePrinter ...
+type NATGatewayPortForwardingRulePrinter struct {
+	PortForwardingRule *govultr.NATGatewayPortForwardingRule `json:"port_forwarding_rule"`
+}
+
+// JSON ...
+func (pfr *NATGatewayPortForwardingRulePrinter) JSON() []byte {
+	return printer.MarshalObject(pfr, "json")
+}
+
+// YAML ...
+func (pfr *NATGatewayPortForwardingRulePrinter) YAML() []byte {
+	return printer.MarshalObject(pfr, "yaml")
+}
+
+// Columns ...
+func (pfr *NATGatewayPortForwardingRulePrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (pfr *NATGatewayPortForwardingRulePrinter) Data() [][]string {
+	var data [][]string
+	data = append(data,
+		[]string{"ID", pfr.PortForwardingRule.ID},
+		[]string{"NAME", pfr.PortForwardingRule.Name},
+		[]string{"PROTOCOL", pfr.PortForwardingRule.Protocol},
+		[]string{"EXTERNAL PORT", strconv.Itoa(pfr.PortForwardingRule.ExternalPort)},
+		[]string{"INTERNAL IP", pfr.PortForwardingRule.InternalIP},
+		[]string{"INTERNAL PORT", strconv.Itoa(pfr.PortForwardingRule.InternalPort)},
+		[]string{"ENABLED", strconv.FormatBool(*pfr.PortForwardingRule.Enabled)},
+		[]string{"DESCRIPTION", pfr.PortForwardingRule.Description},
+		[]string{"DATE CREATED", pfr.PortForwardingRule.DateCreated},
+		[]string{"DATE UPDATED", pfr.PortForwardingRule.DateUpdated},
+	)
+
+	return data
+}
+
+// Paging ...
+func (pfr *NATGatewayPortForwardingRulePrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// NATGatewayFirewallRulesPrinter ...
+type NATGatewayFirewallRulesPrinter struct {
+	FirewallRules []govultr.NATGatewayFirewallRule `json:"firewall_rules"`
+	Meta          *govultr.Meta                    `json:"meta"`
+}
+
+// JSON ...
+func (fwr *NATGatewayFirewallRulesPrinter) JSON() []byte {
+	return printer.MarshalObject(fwr, "json")
+}
+
+// YAML ...
+func (fwr *NATGatewayFirewallRulesPrinter) YAML() []byte {
+	return printer.MarshalObject(fwr, "yaml")
+}
+
+// Columns ...
+func (fwr *NATGatewayFirewallRulesPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (fwr *NATGatewayFirewallRulesPrinter) Data() [][]string {
+	if len(fwr.FirewallRules) == 0 {
+		return [][]string{0: {"No NAT Gateway firewall rules"}}
+	}
+
+	var data [][]string
+	for i := range fwr.FirewallRules {
+		data = append(data,
+			[]string{"ID", fwr.FirewallRules[i].ID},
+			[]string{"ACTION", fwr.FirewallRules[i].Action},
+			[]string{"PROTOCOL", fwr.FirewallRules[i].Protocol},
+			[]string{"PORT", fwr.FirewallRules[i].Port},
+			[]string{"SUBNET", fwr.FirewallRules[i].Subnet},
+			[]string{"SUBNET SIZE", strconv.Itoa(fwr.FirewallRules[i].SubnetSize)},
+			[]string{"NOTES", fwr.FirewallRules[i].Notes},
+		)
+
+		data = append(data, []string{"---------------------------"})
+	}
+
+	return data
+}
+
+// Paging ...
+func (fwr *NATGatewayFirewallRulesPrinter) Paging() [][]string {
+	paging := &printer.Total{Total: fwr.Meta.Total}
+	return paging.Compose()
+}
+
+// ======================================
+
+// NATGatewayFirewallRulePrinter ...
+type NATGatewayFirewallRulePrinter struct {
+	FirewallRule *govultr.NATGatewayFirewallRule `json:"firewall_rule"`
+}
+
+// JSON ...
+func (fwr *NATGatewayFirewallRulePrinter) JSON() []byte {
+	return printer.MarshalObject(fwr, "json")
+}
+
+// YAML ...
+func (fwr *NATGatewayFirewallRulePrinter) YAML() []byte {
+	return printer.MarshalObject(fwr, "yaml")
+}
+
+// Columns ...
+func (fwr *NATGatewayFirewallRulePrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (fwr *NATGatewayFirewallRulePrinter) Data() [][]string {
+	var data [][]string
+	data = append(data,
+		[]string{"ID", fwr.FirewallRule.ID},
+		[]string{"ACTION", fwr.FirewallRule.Action},
+		[]string{"PROTOCOL", fwr.FirewallRule.Protocol},
+		[]string{"PORT", fwr.FirewallRule.Port},
+		[]string{"SUBNET", fwr.FirewallRule.Subnet},
+		[]string{"SUBNET SIZE", strconv.Itoa(fwr.FirewallRule.SubnetSize)},
+		[]string{"NOTES", fwr.FirewallRule.Notes},
+	)
+
+	return data
+}
+
+// Paging ...
+func (fwr *NATGatewayFirewallRulePrinter) Paging() [][]string {
+	return nil
+}

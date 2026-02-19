@@ -274,12 +274,12 @@ func NewCmdVPC(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ng, meta, err := o.listNATGateways()
+			ngs, meta, err := o.listNATGateways()
 			if err != nil {
 				return fmt.Errorf("error retrieving NAT Gateways : %v", err)
 			}
 
-			data := &NATGatewaysPrinter{NATGateways: ng, Meta: meta}
+			data := &NATGatewaysPrinter{NATGateways: ngs, Meta: meta}
 			o.Base.Printer.Display(data, nil)
 
 			return nil
@@ -417,12 +417,266 @@ func NewCmdVPC(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		},
 	}
 
+	// NAT Gateway Port Forwarding Rule
+	portForwardingRule := &cobra.Command{
+		Use:   "port-forwarding-rule",
+		Short: "Commands to handle NAT Gateway port forwarding rules",
+	}
+
+	// NAT Gateway Port Forwarding Rule List
+	portForwardingRuleList := &cobra.Command{
+		Use:   "list <VPC ID>",
+		Short: "List NAT Gateway port forwarding rules",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 2 {
+				return errors.New("please provide a VPC ID and a NAT Gateway ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pfrs, meta, err := o.listNATGatewayPortForwardingRules()
+			if err != nil {
+				return fmt.Errorf("error retrieving NAT Gateway port forwarding rules : %v", err)
+			}
+
+			data := &NATGatewayPortForwardingRulesPrinter{PortForwardingRules: pfrs, Meta: meta}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// NAT Gateway Port Forwarding Rule Get
+	portForwardingRuleGet := &cobra.Command{
+		Use:   "get <VPC ID> <NAT Gateway ID> <Port Forwarding Rule ID>",
+		Short: "Get a NAT Gateway port forwarding rule",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 3 {
+				return errors.New("please provide a VPC ID, a NAT Gateway ID, and a Port Forwarding Rule ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pfr, err := o.getNATGatewayPortForwardingRule()
+			if err != nil {
+				return fmt.Errorf("error retrieving NAT Gateway port forwarding rule : %v", err)
+			}
+
+			data := &NATGatewayPortForwardingRulePrinter{PortForwardingRule: pfr}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// NAT Gateway Port Forwarding Rule Create
+	portForwardingRuleCreate := &cobra.Command{
+		Use:   "create <VPC ID> <NAT Gateway ID>",
+		Short: "Create a NAT Gateway port forwarding rule",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 2 {
+				return errors.New("please provide a VPC ID and a NAT Gateway ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			name, errNa := cmd.Flags().GetString("name")
+			if errNa != nil {
+				return fmt.Errorf("error parsing flag 'name' for NAT Gateway port forwarding rule create : %v", errNa)
+			}
+
+			description, errDe := cmd.Flags().GetString("description")
+			if errDe != nil {
+				return fmt.Errorf("error parsing flag 'description' for NAT Gateway port forwarding rule create : %v", errDe)
+			}
+
+			internalIP, errIIP := cmd.Flags().GetString("internal-ip")
+			if errIIP != nil {
+				return fmt.Errorf("error parsing flag 'internal-ip' for NAT Gateway port forwarding rule create : %v", errIIP)
+			}
+
+			protocol, errPr := cmd.Flags().GetString("protocol")
+			if errPr != nil {
+				return fmt.Errorf("error parsing flag 'protocol' for NAT Gateway port forwarding rule create : %v", errPr)
+			}
+
+			externalPort, errEP := cmd.Flags().GetInt("external-port")
+			if errEP != nil {
+				return fmt.Errorf("error parsing flag 'external-port' for NAT Gateway port forwarding rule create : %v", errEP)
+			}
+
+			internalPort, errIP := cmd.Flags().GetInt("internal-port")
+			if errIP != nil {
+				return fmt.Errorf("error parsing flag 'internal-port' for NAT Gateway port forwarding rule create : %v", errIP)
+			}
+
+			enabled, errEn := cmd.Flags().GetBool("enabled")
+			if errEn != nil {
+				return fmt.Errorf("error parsing flag 'enabled' for NAT Gateway port forwarding rule create : %v", errEn)
+			}
+
+			o.PortForwardingRuleReq = &govultr.NATGatewayPortForwardingRuleReq{
+				Name:         name,
+				Description:  description,
+				InternalIP:   internalIP,
+				Protocol:     protocol,
+				ExternalPort: externalPort,
+				InternalPort: internalPort,
+				Enabled:      &enabled,
+			}
+
+			pfr, err := o.createNATGatewayPortForwardingRule()
+			if err != nil {
+				return fmt.Errorf("error creating NAT Gateway port forwarding rule : %v", err)
+			}
+
+			data := &NATGatewayPortForwardingRulePrinter{PortForwardingRule: pfr}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	portForwardingRuleCreate.Flags().StringP("name", "n", "", "name for the new NAT Gateway port forwarding rule")
+	portForwardingRuleCreate.Flags().StringP("description", "d", "", "description for the new NAT Gateway port forwarding rule")
+	portForwardingRuleCreate.Flags().String("internal-ip", "", "internal IP for the new NAT Gateway port forwarding rule")
+	portForwardingRuleCreate.Flags().String("protocol", "", "protocol for the new NAT Gateway port forwarding rule")
+	portForwardingRuleCreate.Flags().Int("external-port", 0, "external port for the new NAT Gateway port forwarding rule")
+	portForwardingRuleCreate.Flags().Int("internal-port", 0, "internal port for the new NAT Gateway port forwarding rule")
+	portForwardingRuleCreate.Flags().Bool("enabled", true, "name for the new NAT Gateway port forwarding rule")
+
+	// NAT Gateway Port Forwarding Rule Update
+	portForwardingRuleUpdate := &cobra.Command{
+		Use:   "update <VPC ID> <NAT Gateway ID> <Port Forwarding Rule ID>",
+		Short: "Update a NAT Gateway port forwarding rule",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 3 {
+				return errors.New("please provide a VPC ID, a NAT Gateway ID, and a Port Forwarding Rule ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			name, errNa := cmd.Flags().GetString("name")
+			if errNa != nil {
+				return fmt.Errorf("error parsing flag 'name' for NAT Gateway port forwarding rule create : %v", errNa)
+			}
+
+			description, errDe := cmd.Flags().GetString("description")
+			if errDe != nil {
+				return fmt.Errorf("error parsing flag 'description' for NAT Gateway port forwarding rule update : %v", errDe)
+			}
+
+			internalIP, errIIP := cmd.Flags().GetString("internal-ip")
+			if errIIP != nil {
+				return fmt.Errorf("error parsing flag 'internal-ip' for NAT Gateway port forwarding rule update : %v", errIIP)
+			}
+
+			protocol, errPr := cmd.Flags().GetString("protocol")
+			if errPr != nil {
+				return fmt.Errorf("error parsing flag 'protocol' for NAT Gateway port forwarding rule update : %v", errPr)
+			}
+
+			externalPort, errEP := cmd.Flags().GetInt("external-port")
+			if errEP != nil {
+				return fmt.Errorf("error parsing flag 'external-port' for NAT Gateway port forwarding rule update : %v", errEP)
+			}
+
+			internalPort, errIP := cmd.Flags().GetInt("internal-port")
+			if errIP != nil {
+				return fmt.Errorf("error parsing flag 'internal-port' for NAT Gateway port forwarding rule update : %v", errIP)
+			}
+
+			enabled, errEn := cmd.Flags().GetBool("enabled")
+			if errEn != nil {
+				return fmt.Errorf("error parsing flag 'enabled' for NAT Gateway port forwarding rule update : %v", errEn)
+			}
+
+			o.PortForwardingRuleReq = &govultr.NATGatewayPortForwardingRuleReq{}
+
+			if cmd.Flags().Changed("name") {
+				o.PortForwardingRuleReq.Name = name
+			}
+
+			if cmd.Flags().Changed("description") {
+				o.PortForwardingRuleReq.Description = description
+			}
+
+			if cmd.Flags().Changed("internal-ip") {
+				o.PortForwardingRuleReq.InternalIP = internalIP
+			}
+
+			if cmd.Flags().Changed("protocol") {
+				o.PortForwardingRuleReq.Protocol = protocol
+			}
+
+			if cmd.Flags().Changed("external-port") {
+				o.PortForwardingRuleReq.ExternalPort = externalPort
+			}
+
+			if cmd.Flags().Changed("internal-port") {
+				o.PortForwardingRuleReq.InternalPort = internalPort
+			}
+
+			if cmd.Flags().Changed("enabled") {
+				o.PortForwardingRuleReq.Enabled = &enabled
+			}
+
+			pfr, err := o.updateNATGatewayPortForwardingRule()
+			if err != nil {
+				return fmt.Errorf("error updating NAT Gateway port forwarding rule : %v", err)
+			}
+
+			data := &NATGatewayPortForwardingRulePrinter{PortForwardingRule: pfr}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	portForwardingRuleUpdate.Flags().StringP("name", "n", "", "name for the NAT Gateway port forwarding rule")
+	portForwardingRuleUpdate.Flags().StringP("description", "d", "", "description for the NAT Gateway port forwarding rule")
+	portForwardingRuleUpdate.Flags().String("internal-ip", "", "internal IP for the NAT Gateway port forwarding rule")
+	portForwardingRuleUpdate.Flags().String("protocol", "", "protocol for the NAT Gateway port forwarding rule")
+	portForwardingRuleUpdate.Flags().Int("external-port", 0, "external port for the NAT Gateway port forwarding rule")
+	portForwardingRuleUpdate.Flags().Int("internal-port", 0, "internal port for the NAT Gateway port forwarding rule")
+	portForwardingRuleUpdate.Flags().Bool("enabled", true, "name for the NAT Gateway port forwarding rule")
+
+	// NAT Gateway Port Forwarding Rule Delete
+	portForwardingRuleDelete := &cobra.Command{
+		Use:   "delete <VPC ID> <NAT Gateway ID> <Port Forwarding Rule ID>",
+		Short: "Delete a NAT Gateway port forwarding rule",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 3 {
+				return errors.New("please provide a VPC ID, a NAT Gateway ID, and a Port Forwarding Rule ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.delNATGatewayPortForwardingRule(); err != nil {
+				return fmt.Errorf("error deleting NAT Gateway port forwarding rule : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("NAT Gateway port forwarding rule deleted"), nil)
+
+			return nil
+		},
+	}
+
+	portForwardingRule.AddCommand(
+		portForwardingRuleList,
+		portForwardingRuleGet,
+		portForwardingRuleCreate,
+		portForwardingRuleUpdate,
+		portForwardingRuleDelete,
+	)
+
 	natGateway.AddCommand(
 		natGatewayList,
 		natGatewayGet,
 		natGatewayCreate,
 		natGatewayUpdate,
 		natGatewayDelete,
+		portForwardingRule,
 	)
 
 	cmd.AddCommand(
@@ -442,9 +696,9 @@ type options struct {
 	CreateReq             *govultr.VPCReq
 	Description           string
 	NATGatewayReq         *govultr.NATGatewayReq
+	PortForwardingRuleReq *govultr.NATGatewayPortForwardingRuleReq
 	FirewallRuleCreateReq *govultr.NATGatewayFirewallRuleCreateReq
 	FirewallRuleUpdateReq *govultr.NATGatewayFirewallRuleUpdateReq
-	PortForwardingRuleReq *govultr.NATGatewayPortForwardingRuleReq
 }
 
 func (o *options) list() ([]govultr.VPC, *govultr.Meta, error) {
@@ -492,4 +746,28 @@ func (o *options) updateNATGateway() (*govultr.NATGateway, error) {
 
 func (o *options) delNATGateway() error {
 	return o.Base.Client.VPC.DeleteNATGateway(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+}
+
+func (o *options) listNATGatewayPortForwardingRules() ([]govultr.NATGatewayPortForwardingRule, *govultr.Meta, error) {
+	portForwardingRules, meta, _, err := o.Base.Client.VPC.ListNATGatewayPortForwardingRules(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Options)
+	return portForwardingRules, meta, err
+}
+
+func (o *options) getNATGatewayPortForwardingRule() (*govultr.NATGatewayPortForwardingRule, error) {
+	portForwardingRule, _, err := o.Base.Client.VPC.GetNATGatewayPortForwardingRule(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
+	return portForwardingRule, err
+}
+
+func (o *options) createNATGatewayPortForwardingRule() (*govultr.NATGatewayPortForwardingRule, error) {
+	portForwardingRule, _, err := o.Base.Client.VPC.CreateNATGatewayPortForwardingRule(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.PortForwardingRuleReq)
+	return portForwardingRule, err
+}
+
+func (o *options) updateNATGatewayPortForwardingRule() (*govultr.NATGatewayPortForwardingRule, error) {
+	portForwardingRule, _, err := o.Base.Client.VPC.UpdateNATGatewayPortForwardingRule(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2], o.PortForwardingRuleReq)
+	return portForwardingRule, err
+}
+
+func (o *options) delNATGatewayPortForwardingRule() error {
+	return o.Base.Client.VPC.DeleteNATGatewayPortForwardingRule(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
 }
