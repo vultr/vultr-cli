@@ -415,7 +415,7 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing 'priority' flag for domain record create : %v", errPr)
 			}
 
-			o.RecordReq = &govultr.DomainRecordReq{
+			o.RecordCreateReq = &govultr.DomainRecordCreateReq{
 				Name:     name,
 				Type:     rType,
 				Data:     dt,
@@ -509,22 +509,22 @@ func NewCmdDNS(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing 'priority' flag for domain record update : %v", errPr)
 			}
 
-			o.RecordReq = &govultr.DomainRecordReq{}
+			o.RecordUpdateReq = &govultr.DomainRecordUpdateReq{}
 
 			if cmd.Flags().Changed("name") {
-				o.RecordReq.Name = name
+				o.RecordUpdateReq.Name = &name
 			}
 
 			if cmd.Flags().Changed("data") {
-				o.RecordReq.Data = dt
+				o.RecordUpdateReq.Data = dt
 			}
 
 			if cmd.Flags().Changed("ttl") {
-				o.RecordReq.TTL = ttl
+				o.RecordUpdateReq.TTL = ttl
 			}
 
 			if cmd.Flags().Changed("priority") {
-				o.RecordReq.Priority = govultr.IntToIntPtr(priority)
+				o.RecordUpdateReq.Priority = govultr.IntToIntPtr(priority)
 			}
 
 			if err := o.recordUpdate(); err != nil {
@@ -563,7 +563,8 @@ type options struct {
 	DomainCreateReq     *govultr.DomainReq
 	DomainDNSSECEnabled string
 	SOAUpdateReq        *govultr.Soa
-	RecordReq           *govultr.DomainRecordReq
+	RecordCreateReq     *govultr.DomainRecordCreateReq
+	RecordUpdateReq     *govultr.DomainRecordUpdateReq
 }
 
 // domainList ...
@@ -625,13 +626,13 @@ func (o *options) recordGet() (*govultr.DomainRecord, error) {
 
 // recordCreate ...
 func (o *options) recordCreate() (*govultr.DomainRecord, error) {
-	rec, _, err := o.Base.Client.DomainRecord.Create(o.Base.Context, o.Base.Args[0], o.RecordReq)
+	rec, _, err := o.Base.Client.DomainRecord.Create(o.Base.Context, o.Base.Args[0], o.RecordCreateReq)
 	return rec, err
 }
 
 // recordUpdate ...
 func (o *options) recordUpdate() error {
-	return o.Base.Client.DomainRecord.Update(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.RecordReq)
+	return o.Base.Client.DomainRecord.Update(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.RecordUpdateReq)
 }
 
 // recordDelete ...
