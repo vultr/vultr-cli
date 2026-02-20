@@ -944,7 +944,7 @@ required in node pool. Use / between each new node pool.  E.g:
 			}
 
 			if cmd.Flags().Changed("node-labels") {
-				o.npUpdateReq.Labels = npLabels
+				o.npUpdateReq.Labels = npLabels //nolint
 			}
 
 			np, err := o.nodePoolUpdate()
