@@ -135,8 +135,8 @@ var (
 	pfrGetLong    = `Display information for a specific Port Forwarding Rule`
 	pfrGetExample = `
 	# Full example
-	vultr-cli vpc nat-gateway port-forwarding-rule get e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 \
-		bf66d7cf-7587-4acd-a053-a2ea34e33f1d
+	vultr-cli vpc nat-gateway port-forwarding-rule get e3512e83-64e9-4d3e-a401-9b86f2e09b1d \
+		efc811e7-d07d-45b1-b50e-19a0c2936ce0 bf66d7cf-7587-4acd-a053-a2ea34e33f1d
 
 	# Shortened example with aliases
 	vultr-cli vpc ng pfr g e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 \
@@ -233,7 +233,8 @@ var (
 		efc811e7-d07d-45b1-b50e-19a0c2936ce0 74fb2217-de13-4ca2-8065-0c16281a7849
 
 	#Shortened example with aliases
-	vultr-cli vpc ng fr d e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 74fb2217-de13-4ca2-8065-0c16281a7849
+	vultr-cli vpc ng fr d e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 \
+		74fb2217-de13-4ca2-8065-0c16281a7849
 	`
 )
 
