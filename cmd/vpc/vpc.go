@@ -99,10 +99,12 @@ var (
 	natGatewayUpdateLong    = `Update an existing NAT Gateway with the supplied information`
 	natGatewayUpdateExample = `
 	# Full example
-	vultr-cli vpc nat-gateway update e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 --tag="example updated tag"
+	vultr-cli vpc nat-gateway update e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 \
+		--tag="example updated tag"
 
 	# Shortned example with aliases
-	vultr-cli vpc ng u e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 -t="example updated tag"
+	vultr-cli vpc ng u e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 \
+		-t="example updated tag"
 	`
 	natGatewayDeleteLong    = `Delete an existing NAT Gateway`
 	natGatewayDeleteExample = `
@@ -124,7 +126,8 @@ var (
 	pfrListLong    = `List all available Port Forwarding Rule information on the account's NAT Gateway`
 	pfrListExample = `
 	# Full example
-	vultr-cli vpc nat-gateway port-forwarding-rule list e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0
+	vultr-cli vpc nat-gateway port-forwarding-rule list e3512e83-64e9-4d3e-a401-9b86f2e09b1d \
+		efc811e7-d07d-45b1-b50e-19a0c2936ce0
 
 	# Shortened example with aliases
 	vultr-cli vpc ng pfr l e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0
@@ -132,36 +135,45 @@ var (
 	pfrGetLong    = `Display information for a specific Port Forwarding Rule`
 	pfrGetExample = `
 	# Full example
-	vultr-cli vpc nat-gateway port-forwarding-rule get e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 bf66d7cf-7587-4acd-a053-a2ea34e33f1d
+	vultr-cli vpc nat-gateway port-forwarding-rule get e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 \
+		bf66d7cf-7587-4acd-a053-a2ea34e33f1d
 
 	# Shortened example with aliases
-	vultr-cli vpc ng pfr g e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 bf66d7cf-7587-4acd-a053-a2ea34e33f1d
+	vultr-cli vpc ng pfr g e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 \
+		bf66d7cf-7587-4acd-a053-a2ea34e33f1d
 	`
 	pfrCreateLong    = `Create a new Port Forwarding Rule with desired options`
 	pfrCreateExample = `
 	# Full example
-	vultr-cli vpc nat-gateway port-forwarding-rule create e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 --name="example-rule" --description="example desc" --internal-ip="10.1.2.3" --protocol="tcp" --external-port="123" --internal-port="555" --enabled="true"
+	vultr-cli vpc nat-gateway port-forwarding-rule create e3512e83-64e9-4d3e-a401-9b86f2e09b1d \
+		efc811e7-d07d-45b1-b50e-19a0c2936ce0 --name="example-rule" --description="example desc" --internal-ip="10.1.2.3" \
+		--protocol="tcp" --external-port="123" --internal-port="555" --enabled="true"
 
 	--description is optional. Everything else is required
 
 	# Shortened example with aliases
-	vultr-cli vpc ng pfr c e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 -n="example-rule" -d="example desc" --internal-ip="10.1.2.3" -p="tcp" --external-port="123" --internal-port="555" -e="true"
+	vultr-cli vpc ng pfr c e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 -n="example-rule" \
+		-d="example desc" --internal-ip="10.1.2.3" -p="tcp" --external-port="123" --internal-port="555" -e="true"
 	`
 	pfrUpdateLong    = `Update an existing Port Forwarding Rule with the supplied information`
 	pfrUpdateExample = `
 	# Full example
-	vultr-cli vpc nat-gateway port-forwarding-rule update e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 bf66d7cf-7587-4acd-a053-a2ea34e33f1d --name="example-rule-updated"
+	vultr-cli vpc nat-gateway port-forwarding-rule update e3512e83-64e9-4d3e-a401-9b86f2e09b1d \
+		efc811e7-d07d-45b1-b50e-19a0c2936ce0 bf66d7cf-7587-4acd-a053-a2ea34e33f1d --name="example-rule-updated"
 
 	# Shortned example with aliases
-	vultr-cli vpc ng pfr u e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 bf66d7cf-7587-4acd-a053-a2ea34e33f1d -n="example-rule-updated"
+	vultr-cli vpc ng pfr u e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 \
+		bf66d7cf-7587-4acd-a053-a2ea34e33f1d -n="example-rule-updated"
 	`
 	pfrDeleteLong    = `Delete an existing Port Forwarding Rule`
 	pfrDeleteExample = `
 	#Full example
-	vultr-cli vpc nat-gateway port-forwarding-rule delete e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 bf66d7cf-7587-4acd-a053-a2ea34e33f1d
+	vultr-cli vpc nat-gateway port-forwarding-rule delete e3512e83-64e9-4d3e-a401-9b86f2e09b1d \
+		efc811e7-d07d-45b1-b50e-19a0c2936ce0 bf66d7cf-7587-4acd-a053-a2ea34e33f1d
 
 	#Shortened example with aliases
-	vultr-cli vpc ng pfr d e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 bf66d7cf-7587-4acd-a053-a2ea34e33f1d
+	vultr-cli vpc ng pfr d e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 \
+		bf66d7cf-7587-4acd-a053-a2ea34e33f1d
 	`
 
 	fwrLong    = `Access information about Firewall Rules on the account's NAT Gateway and perform CRUD operations`
@@ -175,7 +187,8 @@ var (
 	fwrListLong    = `List all available Firewall Rule information on the account's NAT Gateway`
 	fwrListExample = `
 	# Full example
-	vultr-cli vpc nat-gateway firewall-rule list e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0
+	vultr-cli vpc nat-gateway firewall-rule list e3512e83-64e9-4d3e-a401-9b86f2e09b1d \
+		efc811e7-d07d-45b1-b50e-19a0c2936ce0
 
 	# Shortened example with aliases
 	vultr-cli vpc ng fr l e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0
@@ -183,33 +196,41 @@ var (
 	fwrGetLong    = `Display information for a specific Firewall Rule`
 	fwrGetExample = `
 	# Full example
-	vultr-cli vpc nat-gateway firewall-rule get e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 74fb2217-de13-4ca2-8065-0c16281a7849
+	vultr-cli vpc nat-gateway firewall-rule get e3512e83-64e9-4d3e-a401-9b86f2e09b1d \
+		efc811e7-d07d-45b1-b50e-19a0c2936ce0 74fb2217-de13-4ca2-8065-0c16281a7849
 
 	# Shortened example with aliases
-	vultr-cli vpc ng fr g e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 74fb2217-de13-4ca2-8065-0c16281a7849
+	vultr-cli vpc ng fr g e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 \
+		74fb2217-de13-4ca2-8065-0c16281a7849
 	`
 	fwrCreateLong    = `Create a new Firewall Rule with desired options`
 	fwrCreateExample = `
 	# Full example
-	vultr-cli vpc nat-gateway firewall-rule create e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 --protocol="tcp" --port="123" --subnet="1.2.3.4" --subnet-size="24" --notes="example rule"
+	vultr-cli vpc nat-gateway firewall-rule create e3512e83-64e9-4d3e-a401-9b86f2e09b1d \
+		efc811e7-d07d-45b1-b50e-19a0c2936ce0 --protocol="tcp" --port="123" --subnet="1.2.3.4" --subnet-size="24" \
+		--notes="example rule"
 
 	--notes is optional. Everything else is required
 
 	# Shortened example with aliases
-	vultr-cli vpc ng fr c e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 --protocol="tcp" -p="123" -s="1.2.3.4" --subnet-size="24" -n="example rule"
+	vultr-cli vpc ng fr c e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 --protocol="tcp" \
+		-p="123" -s="1.2.3.4" --subnet-size="24" -n="example rule"
 	`
 	fwrUpdateLong    = `Update an existing Firewall Rule with the supplied information`
 	fwrUpdateExample = `
 	# Full example
-	vultr-cli vpc nat-gateway firewall-rule update e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 74fb2217-de13-4ca2-8065-0c16281a7849 --name="example-rule-updated"
+	vultr-cli vpc nat-gateway firewall-rule update e3512e83-64e9-4d3e-a401-9b86f2e09b1d \
+		efc811e7-d07d-45b1-b50e-19a0c2936ce0 74fb2217-de13-4ca2-8065-0c16281a7849 --name="example-rule-updated"
 
 	# Shortned example with aliases
-	vultr-cli vpc ng fr u e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 74fb2217-de13-4ca2-8065-0c16281a7849 -n="example-rule-updated"
+	vultr-cli vpc ng fr u e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 \
+		74fb2217-de13-4ca2-8065-0c16281a7849 -n="example-rule-updated"
 	`
 	fwrDeleteLong    = `Delete an existing Firewall Rule`
 	fwrDeleteExample = `
 	#Full example
-	vultr-cli vpc nat-gateway firewall-rule delete e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 74fb2217-de13-4ca2-8065-0c16281a7849
+	vultr-cli vpc nat-gateway firewall-rule delete e3512e83-64e9-4d3e-a401-9b86f2e09b1d \
+		efc811e7-d07d-45b1-b50e-19a0c2936ce0 74fb2217-de13-4ca2-8065-0c16281a7849
 
 	#Shortened example with aliases
 	vultr-cli vpc ng fr d e3512e83-64e9-4d3e-a401-9b86f2e09b1d efc811e7-d07d-45b1-b50e-19a0c2936ce0 74fb2217-de13-4ca2-8065-0c16281a7849
@@ -217,7 +238,7 @@ var (
 )
 
 // NewCmdVPC provides the CLI command for VPC functions
-func NewCmdVPC(base *cli.Base) *cobra.Command { //nolint:gocyclo
+func NewCmdVPC(base *cli.Base) *cobra.Command { //nolint:gocyclo,funlen
 	o := &options{Base: base}
 
 	cmd := &cobra.Command{
@@ -721,7 +742,12 @@ func NewCmdVPC(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	}
 
 	portForwardingRuleCreate.Flags().StringP("name", "n", "", "name for the new NAT Gateway port forwarding rule")
-	portForwardingRuleCreate.Flags().StringP("description", "d", "", "description for the new NAT Gateway port forwarding rule")
+	portForwardingRuleCreate.Flags().StringP(
+		"description",
+		"d",
+		"",
+		"description for the new NAT Gateway port forwarding rule",
+	)
 	portForwardingRuleCreate.Flags().String("internal-ip", "", "internal IP for the new NAT Gateway port forwarding rule")
 	portForwardingRuleCreate.Flags().StringP("protocol", "p", "", "protocol for the new NAT Gateway port forwarding rule")
 	portForwardingRuleCreate.Flags().Int("external-port", 0, "external port for the new NAT Gateway port forwarding rule")
@@ -820,7 +846,12 @@ func NewCmdVPC(base *cli.Base) *cobra.Command { //nolint:gocyclo
 	}
 
 	portForwardingRuleUpdate.Flags().StringP("name", "n", "", "name for the NAT Gateway port forwarding rule")
-	portForwardingRuleUpdate.Flags().StringP("description", "d", "", "description for the NAT Gateway port forwarding rule")
+	portForwardingRuleUpdate.Flags().StringP(
+		"description",
+		"d",
+		"",
+		"description for the NAT Gateway port forwarding rule",
+	)
 	portForwardingRuleUpdate.Flags().String("internal-ip", "", "internal IP for the NAT Gateway port forwarding rule")
 	portForwardingRuleUpdate.Flags().StringP("protocol", "p", "", "protocol for the NAT Gateway port forwarding rule")
 	portForwardingRuleUpdate.Flags().Int("external-port", 0, "external port for the NAT Gateway port forwarding rule")
@@ -1127,7 +1158,12 @@ func (o *options) createNATGateway() (*govultr.NATGateway, error) {
 }
 
 func (o *options) updateNATGateway() (*govultr.NATGateway, error) {
-	natGateway, _, err := o.Base.Client.VPC.UpdateNATGateway(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.NATGatewayReq)
+	natGateway, _, err := o.Base.Client.VPC.UpdateNATGateway(
+		o.Base.Context,
+		o.Base.Args[0],
+		o.Base.Args[1],
+		o.NATGatewayReq,
+	)
 	return natGateway, err
 }
 
@@ -1136,46 +1172,93 @@ func (o *options) delNATGateway() error {
 }
 
 func (o *options) listNATGatewayPortForwardingRules() ([]govultr.NATGatewayPortForwardingRule, *govultr.Meta, error) {
-	portForwardingRules, meta, _, err := o.Base.Client.VPC.ListNATGatewayPortForwardingRules(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Options)
+	portForwardingRules, meta, _, err := o.Base.Client.VPC.ListNATGatewayPortForwardingRules(
+		o.Base.Context,
+		o.Base.Args[0],
+		o.Base.Args[1],
+		o.Base.Options,
+	)
 	return portForwardingRules, meta, err
 }
 
 func (o *options) getNATGatewayPortForwardingRule() (*govultr.NATGatewayPortForwardingRule, error) {
-	portForwardingRule, _, err := o.Base.Client.VPC.GetNATGatewayPortForwardingRule(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
+	portForwardingRule, _, err := o.Base.Client.VPC.GetNATGatewayPortForwardingRule(
+		o.Base.Context,
+		o.Base.Args[0],
+		o.Base.Args[1],
+		o.Base.Args[2],
+	)
 	return portForwardingRule, err
 }
 
 func (o *options) createNATGatewayPortForwardingRule() (*govultr.NATGatewayPortForwardingRule, error) {
-	portForwardingRule, _, err := o.Base.Client.VPC.CreateNATGatewayPortForwardingRule(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.PortForwardingRuleReq)
+	portForwardingRule, _, err := o.Base.Client.VPC.CreateNATGatewayPortForwardingRule(
+		o.Base.Context,
+		o.Base.Args[0],
+		o.Base.Args[1],
+		o.PortForwardingRuleReq,
+	)
 	return portForwardingRule, err
 }
 
 func (o *options) updateNATGatewayPortForwardingRule() (*govultr.NATGatewayPortForwardingRule, error) {
-	portForwardingRule, _, err := o.Base.Client.VPC.UpdateNATGatewayPortForwardingRule(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2], o.PortForwardingRuleReq)
+	portForwardingRule, _, err := o.Base.Client.VPC.UpdateNATGatewayPortForwardingRule(
+		o.Base.Context,
+		o.Base.Args[0],
+		o.Base.Args[1],
+		o.Base.Args[2],
+		o.PortForwardingRuleReq,
+	)
 	return portForwardingRule, err
 }
 
 func (o *options) delNATGatewayPortForwardingRule() error {
-	return o.Base.Client.VPC.DeleteNATGatewayPortForwardingRule(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
+	return o.Base.Client.VPC.DeleteNATGatewayPortForwardingRule(
+		o.Base.Context,
+		o.Base.Args[0],
+		o.Base.Args[1],
+		o.Base.Args[2],
+	)
 }
 
 func (o *options) listNATGatewayFirewallRules() ([]govultr.NATGatewayFirewallRule, *govultr.Meta, error) {
-	firewallRules, meta, _, err := o.Base.Client.VPC.ListNATGatewayFirewallRules(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Options)
+	firewallRules, meta, _, err := o.Base.Client.VPC.ListNATGatewayFirewallRules(
+		o.Base.Context,
+		o.Base.Args[0],
+		o.Base.Args[1],
+		o.Base.Options,
+	)
 	return firewallRules, meta, err
 }
 
 func (o *options) getNATGatewayFirewallRule() (*govultr.NATGatewayFirewallRule, error) {
-	firewallRule, _, err := o.Base.Client.VPC.GetNATGatewayFirewallRule(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
+	firewallRule, _, err := o.Base.Client.VPC.GetNATGatewayFirewallRule(
+		o.Base.Context,
+		o.Base.Args[0],
+		o.Base.Args[1],
+		o.Base.Args[2],
+	)
 	return firewallRule, err
 }
 
 func (o *options) createNATGatewayFirewallRule() (*govultr.NATGatewayFirewallRule, error) {
-	firewallRule, _, err := o.Base.Client.VPC.CreateNATGatewayFirewallRule(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.FirewallRuleCreateReq)
+	firewallRule, _, err := o.Base.Client.VPC.CreateNATGatewayFirewallRule(
+		o.Base.Context,
+		o.Base.Args[0],
+		o.Base.Args[1],
+		o.FirewallRuleCreateReq,
+	)
 	return firewallRule, err
 }
 
 func (o *options) updateNATGatewayFirewallRule() (*govultr.NATGatewayFirewallRule, error) {
-	firewallRule, _, err := o.Base.Client.VPC.UpdateNATGatewayFirewallRule(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2], o.FirewallRuleUpdateReq)
+	firewallRule, _, err := o.Base.Client.VPC.UpdateNATGatewayFirewallRule(
+		o.Base.Context,
+		o.Base.Args[0],
+		o.Base.Args[1],
+		o.Base.Args[2],
+		o.FirewallRuleUpdateReq,
+	)
 	return firewallRule, err
 }
 
