@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -62,6 +63,7 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 			[]string{"STATUS", d.DBs[i].Status},
 			[]string{"LABEL", d.DBs[i].Label},
 			[]string{"TAG", d.DBs[i].Tag},
+			[]string{"PENDING CHARGES", fmt.Sprintf("%.2f", d.DBs[i].PendingCharges)},
 			[]string{"DB NAME", d.DBs[i].DBName},
 		)
 
@@ -209,6 +211,7 @@ func (d *DBsPrinter) Data() [][]string { //nolint:funlen,gocyclo
 					[]string{"STATUS", d.DBs[i].ReadReplicas[j].Status},
 					[]string{"LABEL", d.DBs[i].ReadReplicas[j].Label},
 					[]string{"TAG", d.DBs[i].ReadReplicas[j].Tag},
+					[]string{"PENDING CHARGES", fmt.Sprintf("%.2f", d.DBs[i].ReadReplicas[j].PendingCharges)},
 					[]string{"DB NAME", d.DBs[i].ReadReplicas[j].DBName},
 				)
 
@@ -362,6 +365,7 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 		[]string{"STATUS", d.DB.Status},
 		[]string{"LABEL", d.DB.Label},
 		[]string{"TAG", d.DB.Tag},
+		[]string{"PENDING CHARGES", fmt.Sprintf("%.2f", d.DB.PendingCharges)},
 		[]string{"DB NAME", d.DB.DBName},
 	)
 
@@ -513,6 +517,7 @@ func (d *DBPrinter) Data() [][]string { //nolint:funlen,gocyclo
 				[]string{"STATUS", d.DB.ReadReplicas[i].Status},
 				[]string{"LABEL", d.DB.ReadReplicas[i].Label},
 				[]string{"TAG", d.DB.ReadReplicas[i].Tag},
+				[]string{"PENDING CHARGES", fmt.Sprintf("%.2f", d.DB.ReadReplicas[i].PendingCharges)},
 				[]string{"DB NAME", d.DB.ReadReplicas[i].DBName},
 			)
 
