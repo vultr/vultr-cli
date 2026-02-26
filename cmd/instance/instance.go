@@ -1715,7 +1715,7 @@ func formatBlockDevices(blockDevices []string) ([]govultr.InstanceBlockDevice, e
 }
 
 // formatBlockDeviceData loops over the parse strings for a block device and returns the formatted struct
-func formatBlockDeviceData(bd []string) (*govultr.InstanceBlockDevice, error) { //nolint:gocyclo
+func formatBlockDeviceData(bd []string) (*govultr.InstanceBlockDevice, error) {
 	bdData := &govultr.InstanceBlockDevice{}
 	for _, f := range bd {
 		bdDataKeyVal := strings.Split(f, ":")
