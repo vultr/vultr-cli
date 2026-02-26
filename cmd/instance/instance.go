@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
@@ -49,6 +51,30 @@ var (
 	# Full example with assigned ssh keys
 	vultr-cli instance create --region="ewr" --plan="vc2-2c-4gb" --os=1743 \
 		--ssh-keys="a14b6539-5583-41e8-a035-c07a76897f2b,be624232-56c7-4d5c-bf87-9bdaae7a1fbd"
+
+	# Block devices options
+	The --block-devices option allows you to pass in options for any number of
+	block storage devices when creating an instance with a VX1 plan. The options
+	are passed in a delimited string.  Different block devices are delimited by a
+	slash (/). The options for each device are delimited by a comma (,) and each
+	option is defined by colon (:).
+
+	For example:
+
+	Local Only
+	--block-devices="block-id:local,bootable:true"
+
+	Local Boot + New Block
+	--block-devices="block-id:local,bootable:true/disk-size:50,label:new-block-label"
+
+	New Bootable Block
+	--block-devices="disk-size:50,label:new-bootable-block,bootable:true"
+
+	Existing Bootable Block
+	--block-devices="block-id:BLOCK_DEVICE_ID,bootable:true"
+
+	Existing Bootable Block + Local NVMe
+	--block-devices="block-id:local/block-id:BLOCK_DEVICE_ID,bootable:true"
 	`
 	deleteLong    = ``
 	deleteExample = ``
@@ -282,6 +308,11 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'firewall-group' for instance create : %v", errFw)
 			}
 
+			blockDevices, errBD := cmd.Flags().GetStringArray("block-devices")
+			if errBD != nil {
+				return fmt.Errorf("error parsing flag 'block-devices' for kubernetes cluster create : %v", errBD)
+			}
+
 			o.CreateReq = &govultr.InstanceCreateReq{
 				Plan:            plan,
 				Region:          region,
@@ -313,6 +344,15 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			if userData != "" {
 				o.CreateReq.UserData = base64.StdEncoding.EncodeToString([]byte(userData))
+			}
+
+			if len(blockDevices) > 0 {
+				bds, errFb := formatBlockDevices(blockDevices)
+				if errFb != nil {
+					return fmt.Errorf("error in block devices formating : %v", errFb)
+				}
+
+				o.CreateReq.BlockDevices = bds
 			}
 
 			instance, err := o.create()
@@ -372,6 +412,12 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	create.Flags().StringP("host", "", "", "The hostname to assign to this instance")
 	create.Flags().StringSliceP("tags", "", []string{}, "A comma-separated list of tags to assign to this instance")
 	create.Flags().StringP("firewall-group", "", "", "The firewall group to assign to this instance")
+
+	create.Flags().StringArray(
+		"block-devices",
+		[]string{},
+		`a comma-separated, key-value pair list of block devices. At least one block is required for VX1 plans.`,
+	)
 
 	// Update
 	// update := &cobra.Command{}
@@ -1641,6 +1687,67 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	)
 
 	return cmd
+}
+
+// formatBlockDevices parses block devices into proper format
+func formatBlockDevices(blockDevices []string) ([]govultr.InstanceBlockDevice, error) {
+	var formattedList []govultr.InstanceBlockDevice
+	bdList := strings.Split(blockDevices[0], "/")
+
+	for _, r := range bdList {
+		bdData := strings.Split(r, ",")
+
+		if len(bdData) < 1 || len(bdData) > 4 {
+			return nil, fmt.Errorf(
+				`unable to format block devices. valid fields are block-id, bootable, disk-size, and label`,
+			)
+		}
+
+		formattedBDData, errFormat := formatBlockDeviceData(bdData)
+		if errFormat != nil {
+			return nil, errFormat
+		}
+
+		formattedList = append(formattedList, *formattedBDData)
+	}
+
+	return formattedList, nil
+}
+
+// formatBlockDeviceData loops over the parse strings for a block device and returns the formatted struct
+func formatBlockDeviceData(bd []string) (*govultr.InstanceBlockDevice, error) { //nolint:gocyclo
+	bdData := &govultr.InstanceBlockDevice{}
+	for _, f := range bd {
+		bdDataKeyVal := strings.Split(f, ":")
+
+		if len(bdDataKeyVal) != 2 {
+			return nil, fmt.Errorf("invalid block device format")
+		}
+
+		field := bdDataKeyVal[0]
+		val := bdDataKeyVal[1]
+
+		switch field {
+		case "block-id":
+			bdData.BlockID = val
+		case "bootable":
+			bootable, err := strconv.ParseBool(val)
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for block device bootable: %v", err)
+			}
+			bdData.Bootable = bootable
+		case "disk-size":
+			diskSize, err := strconv.Atoi(val)
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for block device disk size: %v", err)
+			}
+			bdData.DiskSize = diskSize
+		case "label":
+			bdData.Label = val
+		}
+	}
+
+	return bdData, nil
 }
 
 type options struct {
