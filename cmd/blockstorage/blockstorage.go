@@ -198,11 +198,29 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 				return fmt.Errorf("error parsing 'block-type' flag for block storage create : %v", errBt)
 			}
 
+			blockOSID, errOS := cmd.Flags().GetInt("os-id")
+			if errOS != nil {
+				return fmt.Errorf("error parsing 'os-id' flag for block storage create : %v", errOS)
+			}
+
+			blockSnapshotID, errSID := cmd.Flags().GetString("snapshot-id")
+			if errSID != nil {
+				return fmt.Errorf("error parsing 'snapshot-id' flag for block storage create : %v", errSID)
+			}
+
+			blockBootable, errBt := cmd.Flags().GetBool("bootable")
+			if errBt != nil {
+				return fmt.Errorf("error parsing 'bootable' flag for block storage create : %v", errBt)
+			}
+
 			o.CreateReq = &govultr.BlockStorageCreate{
-				Region:    reg,
-				SizeGB:    size,
-				Label:     label,
-				BlockType: blockType,
+				Region:     reg,
+				SizeGB:     size,
+				Label:      label,
+				BlockType:  blockType,
+				OSID:       blockOSID,
+				SnapshotID: blockSnapshotID,
+				Bootable:   &blockBootable,
 			}
 
 			bs, err := o.create()
@@ -237,6 +255,15 @@ func NewCmdBlockStorage(base *cli.Base) *cobra.Command { //nolint:gocyclo
 		"",
 		`(optional) Block type you want to give the block storage.
 		Possible values: 'high_perf', 'storage_opt'. Currently defaults to 'high_perf'.`,
+	)
+
+	create.Flags().Bool("bootable", false, "(Optional) Allows you to flag a block device as bootable.")
+	create.Flags().Int("os-id", 0, "(Optional) OS ID to use for the bootable block device")
+
+	create.Flags().String(
+		"snapshot-id",
+		"",
+		"(Optional) Allows you to create a block device as a clone of an existing block snapshot.",
 	)
 
 	// Delete

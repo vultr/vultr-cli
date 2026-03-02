@@ -31,6 +31,7 @@ func (r *RegionsPrinter) Columns() [][]string {
 		"COUNTRY",
 		"CONTINENT",
 		"OPTIONS",
+		"CONNECTIVITY",
 	}}
 }
 
@@ -50,6 +51,7 @@ func (r *RegionsPrinter) Data() [][]string {
 			r.Regions[i].Country,
 			r.Regions[i].Continent,
 			printer.ArrayOfStringsToString(r.Regions[i].Options),
+			printer.ArrayOfStringsToString(r.Regions[i].Connectivity),
 		})
 	}
 
