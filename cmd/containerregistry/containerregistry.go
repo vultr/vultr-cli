@@ -642,7 +642,7 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 	// Artifact Get
 	artifactGet := &cobra.Command{
 		Use:     "get <Registry ID> <Image ID> <Artifact Digest>",
-		Short:   "Get an image artifact on a repository",
+		Short:   "Get an image artifact from a repository",
 		Aliases: []string{"g"},
 		Long:    artifactGetLong,
 		Example: artifactGetExample,
