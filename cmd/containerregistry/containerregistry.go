@@ -122,6 +122,30 @@ var (
 	vultr-cli cr r d 4dcdc52e-9c63-401e-8c5f-1582490fe09c -i="my-thing"
 	`
 
+	artifactLong    = `Access commands for container registry repository artifacts`
+	artifactExample = `
+	# Full example
+	vultr-cli container-registry artifact 
+	`
+
+	artifactListLong    = `Retrieve a list of container registry repository artifacts by image ID`
+	artifactListExample = `
+	# Full example
+	vultr-cli container-registry artifact list 12efc08e-87dd-45a2-89d1-8b2485d81e68 Y2VydC13YW53a2VyDXdlYchvb2etdnVadHI
+	`
+
+	artifactGetLong    = `Retrieve a container registry repository artifact by image ID and image digest`
+	artifactGetExample = `
+	# Full example
+	vultr-cli container-registry artifact get 12efc08e-87dd-45a2-89d1-8b2485d81e68 Y2VydC13YW53a2VyDXdlYchvb2etdnVadHI sha256:a562e4325e2ece0834f06b9a4ac687d7d5ehc6d95132h86968d986899385a2dd 
+	`
+
+	artifactDeleteLong    = `Delete a container registry repository artifact`
+	artifactDeleteExample = `
+	# Full example
+	vultr-cli container-registry artifact delete 12efc08e-87dd-45a2-89d1-8b2485d81e68 Y2VydC13YW53a2VyDXdlYchvb2etdnVadHI sha256:a562e4325e2ece0834f06b9a4ac687d7d5ehc6d95132h86968d986899385a2dd 
+	`
+
 	plansLong    = `Retrieve the current plan details for container registry`
 	plansExample = `
 	# Full example
@@ -575,11 +599,105 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 		os.Exit(1)
 	}
 
+	// Artifact
+	artifact := &cobra.Command{
+		Use:     "artifact",
+		Short:   "Interact with container registry repository artifacts",
+		Aliases: []string{"a"},
+		Long:    artifactLong,
+		Example: artifactExample,
+	}
+
+	// Artifact List
+	artifactList := &cobra.Command{
+		Use:     "list <Registry ID> <Image ID>",
+		Short:   "List all image artifacts on a repository",
+		Aliases: []string{"l"},
+		Long:    artifactListLong,
+		Example: artifactListExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 2 {
+				return errors.New("please provide a container registry ID and an image ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			o.Base.Options = utils.GetPaging(cmd)
+			artifacts, meta, err := o.artifactList()
+			if err != nil {
+				return fmt.Errorf("error retrieving artifacts for container registry : %v", err)
+			}
+
+			data := &ContainerRegistryArtifactsPrinter{Artifacts: artifacts, Meta: meta}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Artifact Get
+	artifactGet := &cobra.Command{
+		Use:     "get <Registry ID> <Image ID> <Artifact Digest>",
+		Short:   "Get an image artifact on a repository",
+		Aliases: []string{"g"},
+		Long:    artifactGetLong,
+		Example: artifactGetExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 3 {
+				return errors.New("please provide a container registry ID and an image ID and digest")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			o.Base.Options = utils.GetPaging(cmd)
+			artifact, err := o.artifactGet()
+			if err != nil {
+				return fmt.Errorf("error retrieving artifact for container registry : %v", err)
+			}
+
+			data := &ContainerRegistryArtifactPrinter{Artifact: artifact}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Artifact Delete
+	artifactDelete := &cobra.Command{
+		Use:     "delete <Registry ID> <Image ID> <Artifact Digest>",
+		Short:   "Delete an artifact in a repository",
+		Aliases: []string{"d"},
+		Long:    artifactDeleteLong,
+		Example: artifactDeleteExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 3 {
+				return errors.New("please provide a container registry ID image ID and digest")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.artifactDelete(); err != nil {
+				return fmt.Errorf("error deleting artifact in container registry : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("container registry artifact has been deleted"), nil)
+
+			return nil
+		},
+	}
+
+	artifact.AddCommand(
+		artifactList,
+		artifactGet,
+		artifactDelete,
+	)
+
 	repository.AddCommand(
 		repoGet,
 		repoList,
 		repoUpdate,
 		repoDelete,
+		artifact,
 	)
 
 	// Credentials
@@ -734,6 +852,20 @@ func (o *options) repositoryUpdate() error {
 
 func (o *options) repositoryDelete() error {
 	return o.Base.Client.ContainerRegistry.DeleteRepository(o.Base.Context, o.Base.Args[0], o.RepoName)
+}
+
+func (o *options) artifactList() ([]govultr.ContainerRegistryArtifact, *govultr.Meta, error) {
+	artifacts, meta, _, err := o.Base.Client.ContainerRegistry.ListArtifacts(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Options) //nolint:lll
+	return artifacts, meta, err
+}
+
+func (o *options) artifactGet() (*govultr.ContainerRegistryArtifact, error) {
+	artifacts, _, err := o.Base.Client.ContainerRegistry.GetArtifact(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2]) //nolint:lll
+	return artifacts, err
+}
+
+func (o *options) artifactDelete() error {
+	return o.Base.Client.ContainerRegistry.DeleteArtifact(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2])
 }
 
 func (o *options) credentialsDocker() (*govultr.ContainerRegistryDockerCredentials, error) {

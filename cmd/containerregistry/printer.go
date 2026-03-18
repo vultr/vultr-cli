@@ -349,6 +349,133 @@ func (c *ContainerRegistryRepositoriesPrinter) Paging() [][]string {
 
 // ======================================
 
+// ContainerRegistryArtifactsPrinter ...
+type ContainerRegistryArtifactsPrinter struct {
+	Artifacts []govultr.ContainerRegistryArtifact `json:"artifacts"`
+	Meta      *govultr.Meta                       `json:"meta"`
+}
+
+// JSON ...
+func (c *ContainerRegistryArtifactsPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *ContainerRegistryArtifactsPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *ContainerRegistryArtifactsPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (c *ContainerRegistryArtifactsPrinter) Data() [][]string {
+	if len(c.Artifacts) == 0 {
+		return [][]string{0: {"No "}}
+	}
+
+	var data [][]string
+	for i := range c.Artifacts {
+		data = append(data,
+			[]string{"---------------------------"},
+			[]string{"DIGEST", c.Artifacts[i].Digest},
+			[]string{"REPOSITORY NAME", c.Artifacts[i].RepositoryName},
+			[]string{"ARTIFACT TYPE", c.Artifacts[i].ArtifactType},
+			[]string{"MANIFEST MEDIA TYPE", c.Artifacts[i].ManifestMediaType},
+			[]string{"SIZE (BYTES)", strconv.Itoa(c.Artifacts[i].Size)},
+			[]string{"TYPE", c.Artifacts[i].Type},
+			[]string{" "},
+			[]string{"TAGS"},
+		)
+
+		for j := range c.Artifacts[i].Tags {
+			data = append(data,
+				[]string{"NAME", c.Artifacts[i].Tags[j].Name},
+				[]string{"IMMUTABLE", strconv.FormatBool(c.Artifacts[i].Tags[j].Immutable)},
+				[]string{"DATE PUSHED", c.Artifacts[i].Tags[j].DatePushed},
+				[]string{"DATE PULLED", c.Artifacts[i].Tags[j].DatePulled},
+				[]string{" "},
+			)
+		}
+
+		data = append(data,
+			[]string{"DATE PUSHED", c.Artifacts[i].DatePushed},
+			[]string{"DATE PULLED", c.Artifacts[i].DatePulled},
+		)
+	}
+
+	return data
+}
+
+// Paging ...
+func (c *ContainerRegistryArtifactsPrinter) Paging() [][]string {
+	return printer.NewPagingFromMeta(c.Meta).Compose()
+}
+
+// ======================================
+
+// ContainerRegistryArtifactPrinter ...
+type ContainerRegistryArtifactPrinter struct {
+	Artifact *govultr.ContainerRegistryArtifact `json:"artifact"`
+}
+
+// JSON ...
+func (c *ContainerRegistryArtifactPrinter) JSON() []byte {
+	return printer.MarshalObject(c, "json")
+}
+
+// YAML ...
+func (c *ContainerRegistryArtifactPrinter) YAML() []byte {
+	return printer.MarshalObject(c, "yaml")
+}
+
+// Columns ...
+func (c *ContainerRegistryArtifactPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (c *ContainerRegistryArtifactPrinter) Data() [][]string {
+	var data [][]string
+	data = append(data,
+		[]string{"---------------------------"},
+		[]string{"DIGEST", c.Artifact.Digest},
+		[]string{"REPOSITORY NAME", c.Artifact.RepositoryName},
+		[]string{"ARTIFACT TYPE", c.Artifact.ArtifactType},
+		[]string{"MANIFEST MEDIA TYPE", c.Artifact.ManifestMediaType},
+		[]string{"SIZE (BYTES)", strconv.Itoa(c.Artifact.Size)},
+		[]string{"TYPE", c.Artifact.Type},
+		[]string{" "},
+		[]string{"TAGS"},
+	)
+
+	for i := range c.Artifact.Tags {
+		data = append(data,
+			[]string{"NAME", c.Artifact.Tags[i].Name},
+			[]string{"IMMUTABLE", strconv.FormatBool(c.Artifact.Tags[i].Immutable)},
+			[]string{"DATE PUSHED", c.Artifact.Tags[i].DatePushed},
+			[]string{"DATE PULLED", c.Artifact.Tags[i].DatePulled},
+			[]string{" "},
+		)
+	}
+
+	data = append(data,
+		[]string{"DATE PUSHED", c.Artifact.DatePushed},
+		[]string{"DATE PULLED", c.Artifact.DatePulled},
+	)
+
+	return data
+}
+
+// Paging ...
+func (c *ContainerRegistryArtifactPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
 // ContainerRegistryCredentialDockerPrinter ...
 type ContainerRegistryCredentialDockerPrinter struct {
 	Credential *govultr.ContainerRegistryDockerCredentials `json:"docker_credentials"`
