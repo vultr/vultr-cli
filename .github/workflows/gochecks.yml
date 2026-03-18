@@ -9,9 +9,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: "1.24"
+          go-version: "1.26"
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
@@ -22,9 +22,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: "1.24"
+          go-version: "1.26"
       - name: Run fmt
         run: |
           gofmt_files=$(gofmt -l cmd)
