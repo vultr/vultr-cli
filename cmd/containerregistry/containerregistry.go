@@ -137,13 +137,17 @@ var (
 	artifactGetLong    = `Retrieve a container registry repository artifact by image ID and image digest`
 	artifactGetExample = `
 	# Full example
-	vultr-cli container-registry artifact get 12efc08e-87dd-45a2-89d1-8b2485d81e68 Y2VydC13YW53a2VyDXdlYchvb2etdnVadHI sha256:a562e4325e2ece0834f06b9a4ac687d7d5ehc6d95132h86968d986899385a2dd 
+	vultr-cli container-registry artifact get 12efc08e-87dd-45a2-89d1-8b2485d81e68 \
+		Y2VydC13YW53a2VyDXdlYchvb2etdnVadHI \
+		sha256:a562e4325e2ece0834f06b9a4ac687d7d5ehc6d95132h86968d986899385a2dd 
 	`
 
 	artifactDeleteLong    = `Delete a container registry repository artifact`
 	artifactDeleteExample = `
 	# Full example
-	vultr-cli container-registry artifact delete 12efc08e-87dd-45a2-89d1-8b2485d81e68 Y2VydC13YW53a2VyDXdlYchvb2etdnVadHI sha256:a562e4325e2ece0834f06b9a4ac687d7d5ehc6d95132h86968d986899385a2dd 
+	vultr-cli container-registry artifact delete 12efc08e-87dd-45a2-89d1-8b2485d81e68 \
+		Y2VydC13YW53a2VyDXdlYchvb2etdnVadHI \
+		sha256:a562e4325e2ece0834f06b9a4ac687d7d5ehc6d95132h86968d986899385a2dd 
 	`
 
 	plansLong    = `Retrieve the current plan details for container registry`
