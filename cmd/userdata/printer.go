@@ -1,4 +1,3 @@
-// Package userdata provides a printer for server user data
 package userdata
 
 import (
