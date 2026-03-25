@@ -4,7 +4,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -138,40 +137,26 @@ func initConfig() {
 
 func configHome() string {
 	// check for a config file in the user config directory
-	configFolder, errConfig := os.UserConfigDir()
+	configDir, errConfig := os.UserConfigDir()
 	if errConfig != nil {
 		fmt.Printf("Unable to determine default user config directory : %v", errConfig)
 		os.Exit(1)
 	}
 
-	configFile := fmt.Sprintf("%s/vultr-cli.yaml", configFolder)
-	if _, err := os.Stat(configFile); err == nil {
+	configPath := fmt.Sprintf("%s/vultr-cli.yaml", configDir)
+	if _, err := os.Stat(configPath); err == nil {
 		// if one exists, return the path
-		return configFile
+		return configPath
 	}
 
 	// check for a config file at ~/.vultr-cli.yaml
-	configFolder, errHome := os.UserHomeDir()
+	homeDir, errHome := os.UserHomeDir()
 	if errHome != nil {
 		fmt.Printf("Unable to check user config in home directory: %v", errHome)
 		os.Exit(1)
 	}
 
-	configFile = fmt.Sprintf("%s/.vultr-cli.yaml", configFolder)
-	if _, err := os.Stat(configFile); err != nil {
-		// if it doesn't exist, create one
-		f, err := os.Create(filepath.Clean(configFile))
-		if err != nil {
-			fmt.Printf("Unable to create default config file : %v", err)
-			os.Exit(1)
-		}
+	homePath := fmt.Sprintf("%s/.vultr-cli.yaml", homeDir)
 
-		defer func() {
-			if errCls := f.Close(); errCls != nil {
-				fmt.Printf("failed to close config file.. error: %v", errCls)
-			}
-		}()
-	}
-
-	return configFile
+	return homePath
 }
