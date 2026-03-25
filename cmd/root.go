@@ -77,7 +77,9 @@ func init() {
 
 	// read in api key env var
 	viper.SetEnvPrefix("vultr")
-	viper.BindEnv("api-key")
+	if err := viper.BindEnv("api-key"); err != nil {
+		fmt.Printf("error binding VULTR_API_KEY env var: %v", err)
+	}
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
 	// init the config file with viper just before commands are executed
