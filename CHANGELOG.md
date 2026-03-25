@@ -1,4 +1,30 @@
 # Change Log
+## [3.9.0](https://github.com/vultr/vultr-cli/compare/v3.8.0...v3.9.0) (2026-03-25)
+### Bug Fixes
+* Rework HTTP client authentication [PR 579](https://github.com/vultr/vultr-cli/pull/579)
+
+### Enhancements
+* VPC: Add NAT gateway [PR 571](https://github.com/vultr/vultr-cli/pull/571)
+* Block Storage: Add bootable storage options [PR 574](https://github.com/vultr/vultr-cli/pull/574)
+* Instance: Add bootable block device options[PR 574](https://github.com/vultr/vultr-cli/pull/574)
+* Container Registry: Add repository artifact commands [PR 576](https://github.com/vultr/vultr-cli/pull/576)
+* Instance: Add user data file options [PR 580](https://github.com/vultr/vultr-cli/pull/580)
+* Bare Metal: Add user data file options [PR 580](https://github.com/vultr/vultr-cli/pull/580)
+
+### Dependencies
+* Update go from v1.24 to v1.26 [PR 577](https://github.com/vultr/vultr-cli/pull/577)
+* Bump github.com/spf13/cobra from 1.10.1 to 1.10.2 [PR 566](https://github.com/vultr/vultr-cli/pull/566)
+* Bump golang.org/x/oauth2 from 0.35.0 to 0.36.0 [PR 575](https://github.com/vultr/vultr-cli/pull/575)
+* Bump golang.org/x/oauth2 from 0.33.0 to 0.35.0 [PR 569](https://github.com/vultr/vultr-cli/pull/569)
+* Bump golang.org/x/oauth2 from 0.31.0 to 0.33.0 [PR 563](https://github.com/vultr/vultr-cli/pull/563)
+* Update govultr from v3.27.0 to v3.28.1 [PR 573](https://github.com/vultr/vultr-cli/pull/573)
+* Update govultr from v3.25.0 to v3.27.0 [PR 570](https://github.com/vultr/vultr-cli/pull/570)
+* Update govultr from v3.24.0 to v3.25.0 [PR 564](https://github.com/vultr/vultr-cli/pull/564)
+
+### Automation
+* Ignore lint errors on deprecated vpc2 functions [PR 565](https://github.com/vultr/vultr-cli/pull/565)
+* Update golangci-lint to v2.11 [PR 578](https://github.com/vultr/vultr-cli/pull/578)
+
 ## [3.8.0](https://github.com/vultr/vultr-cli/compare/v3.7.0...v3.8.0) (2025-09-19)
 ### Enhancements
 * Logs: Add logs commands [PR 559](https://github.com/vultr/vultr-cli/pull/559)
