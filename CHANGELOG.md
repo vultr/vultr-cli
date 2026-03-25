@@ -1,4 +1,8 @@
 # Change Log
+## [3.9.1](https://github.com/vultr/vultr-cli/compare/v3.9.0...v3.9.1) (2026-03-25)
+### Automation
+* Update goreleaser from v6 to v7 [PR 582](https://github.com/vultr/vultr-cli/pull/582)
+
 ## [3.9.0](https://github.com/vultr/vultr-cli/compare/v3.8.0...v3.9.0) (2026-03-25)
 ### Bug Fixes
 * Rework HTTP client authentication [PR 579](https://github.com/vultr/vultr-cli/pull/579)
