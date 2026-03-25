@@ -3,11 +3,9 @@
 package baremetal
 
 import (
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
@@ -95,12 +93,20 @@ There is no going back from this call.`
 	operatingSystemListLong      = ``
 	operatingSystemListExample   = ``
 
-	userDataLong       = ``
-	userDataExample    = ``
-	userDataGetLong    = ``
-	userDataGetExample = ``
-	userDataSetLong    = ``
-	userDataSetExample = ``
+	userDataGetLong    = `Retrieve the user data from a bare metal `
+	userDataGetExample = `
+	# Full example
+	vultr-cli bare-metal user-data get <bareMetalID>"
+	`
+	userDataSetLong    = `Set the server user data via STDIN or read from a file on disk`
+	userDataSetExample = `
+	# Full example
+	vultr-cli bare-metal user-data set <bareMetalID> --text='!#/bin/sh echo "hello, world!"'
+
+	Or with a file instead: 
+
+	vultr-cli bare-metal user-data set <bareMetalID> --file="/home/me/user_data.txt"
+	`
 
 	vncLong    = ``
 	vncExample = ``
@@ -264,13 +270,20 @@ func NewCmdBareMetal(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		"",
 		"(optional) Image ID of the application that will be installed on the server.",
 	)
+
 	create.Flags().StringP(
 		"userdata",
 		"u",
 		"",
-		`(optional) A generic data store, which some provisioning tools and cloud operating 
-systems use as a configuration file.`,
+		"plain text used for the server user data",
 	)
+	create.Flags().String(
+		"userdata-file",
+		"",
+		"file path to read in for the user data",
+	)
+	create.MarkFlagsMutuallyExclusive("userdata", "userdata-file")
+
 	create.Flags().StringP(
 		"notify",
 		"n",
@@ -661,9 +674,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 	userData := &cobra.Command{
 		Use:     "user-data",
 		Short:   "Commands for bare metal server user data",
-		Aliases: []string{"u"},
-		Long:    userDataLong,
-		Example: userDataExample,
+		Aliases: []string{"u", "userdata"},
 	}
 
 	// User Data Get
@@ -682,7 +693,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ud, err := o.getUserData()
 			if err != nil {
-				return fmt.Errorf("error with bare metal get user data : %v", err)
+				return fmt.Errorf("error with bare metal userdata get : %v", err)
 			}
 
 			data := &userdata.UserDataPrinter{UserData: *ud}
@@ -695,7 +706,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 	// User Data Set
 	userDataSet := &cobra.Command{
 		Use:     "set <Bare Metal ID>",
-		Short:   "Set the plain text user-data of a bare metal server",
+		Short:   "Set the user data of a bare metal server",
 		Long:    userDataSetLong,
 		Example: userDataSetExample,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -705,23 +716,34 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			path, err := cmd.Flags().GetString("user-data")
+			text, err := cmd.Flags().GetString("text")
 			if err != nil {
-				return fmt.Errorf("error parsing user-data flag for bare metal user data set : %v", err)
+				return fmt.Errorf("error parsing `text` flag for bare metal userdata set : %v", err)
 			}
 
-			rawData, err := os.ReadFile(filepath.Clean(path))
+			file, err := cmd.Flags().GetString("file")
 			if err != nil {
-				return fmt.Errorf("error reading user-data : %v", err)
+				return fmt.Errorf("error parsing `file` flag for bare metal userdata set : %v", err)
 			}
 
-			o.UpdateReq = &govultr.BareMetalUpdate{
-				UserData: base64.StdEncoding.EncodeToString(rawData),
+			o.UpdateReq = &govultr.BareMetalUpdate{}
+
+			if text != "" {
+				ud := userdata.NewUserDataFromString(text)
+				o.UpdateReq.UserData = ud.Base64Encode()
 			}
 
-			_, errUpdate := o.update()
-			if errUpdate != nil {
-				return fmt.Errorf("error updating bare metal user-data : %v", errUpdate)
+			if file != "" {
+				ud, err := userdata.NewUserDataFromFile(file)
+				if err != nil {
+					return fmt.Errorf("error reading from file for bare metal userdata set : %v", err)
+
+				}
+				o.UpdateReq.UserData = ud.Base64Encode()
+			}
+
+			if _, err := o.update(); err != nil {
+				return fmt.Errorf("error with bare metal userdata set : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("bare metal server user data has been set"), nil)
@@ -730,11 +752,10 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 		},
 	}
 
-	userDataSet.Flags().StringP("user-data", "d", "/dev/stdin", "file to read userdata from")
-	if err := userDataSet.MarkFlagRequired("user-data"); err != nil {
-		fmt.Printf("error marking bare metal 'user-data' flag required: %v", err)
-		os.Exit(1)
-	}
+	userDataSet.Flags().StringP("text", "t", "", "plain text to insert into server user data")
+	userDataSet.Flags().StringP("file", "f", "", "path to the file from which to read the server user data")
+	userDataSet.MarkFlagsMutuallyExclusive("text", "file")
+	userDataSet.MarkFlagsOneRequired("text", "file")
 
 	userData.AddCommand(userDataGet, userDataSet)
 
@@ -1161,9 +1182,14 @@ func parseCreateFlags(cmd *cobra.Command) (*govultr.BareMetalCreate, error) { //
 		return nil, fmt.Errorf("error parsing app flag for bare metal create : %v", err)
 	}
 
-	userdata, err := cmd.Flags().GetString("userdata")
+	userData, err := cmd.Flags().GetString("userdata")
 	if err != nil {
 		return nil, fmt.Errorf("error parsing userdata flag for bare metal create : %v", err)
+	}
+
+	userDataFile, err := cmd.Flags().GetString("userdata-file")
+	if err != nil {
+		return nil, fmt.Errorf("error parsing userdata-file flag for bare metal create : %v", err)
 	}
 
 	notify, err := cmd.Flags().GetString("notify")
@@ -1217,8 +1243,19 @@ func parseCreateFlags(cmd *cobra.Command) (*govultr.BareMetalCreate, error) { //
 		PersistentPxe:   govultr.BoolToBoolPtr(pxe),
 		MdiskMode:       mdiskMode,
 	}
-	if userdata != "" {
-		options.UserData = base64.StdEncoding.EncodeToString([]byte(userdata))
+
+	if userData != "" {
+		ud := userdata.NewUserDataFromString(userData)
+		options.UserData = ud.Base64Encode()
+	}
+
+	if userDataFile != "" {
+		ud, err := userdata.NewUserDataFromFile(userDataFile)
+		if err != nil {
+			return nil, fmt.Errorf("error reading user data from file : %v", err)
+
+		}
+		options.UserData = ud.Base64Encode()
 	}
 
 	if notify == "yes" {
@@ -1248,9 +1285,14 @@ func parseUpdateFlags(cmd *cobra.Command) (*govultr.BareMetalUpdate, error) { //
 		return nil, fmt.Errorf("error parsing app flag for bare metal update : %v", err)
 	}
 
-	userdata, err := cmd.Flags().GetString("userdata")
+	userData, err := cmd.Flags().GetString("userdata")
 	if err != nil {
 		return nil, fmt.Errorf("error parsing userdata flag for bare metal update : %v", err)
+	}
+
+	userDataFile, err := cmd.Flags().GetString("userdata-file")
+	if err != nil {
+		return nil, fmt.Errorf("error parsing userdata-file flag for bare metal update : %v", err)
 	}
 
 	tags, err := cmd.Flags().GetStringSlice("tags")
@@ -1276,8 +1318,19 @@ func parseUpdateFlags(cmd *cobra.Command) (*govultr.BareMetalUpdate, error) { //
 		Tags:      tags,
 		MdiskMode: mdiskMode,
 	}
-	if userdata != "" {
-		options.UserData = base64.StdEncoding.EncodeToString([]byte(userdata))
+
+	if userData != "" {
+		ud := userdata.NewUserDataFromString(userData)
+		options.UserData = ud.Base64Encode()
+	}
+
+	if userDataFile != "" {
+		ud, err := userdata.NewUserDataFromFile(userDataFile)
+		if err != nil {
+			return nil, fmt.Errorf("error reading user data from file : %v", err)
+
+		}
+		options.UserData = ud.Base64Encode()
 	}
 
 	return options, nil

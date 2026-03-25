@@ -2,11 +2,9 @@
 package instance
 
 import (
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -87,12 +85,22 @@ var (
 	vultr-cli instance tags <instanceID> -t="example-tag-1,example-tag-2"
 	`
 
-	userDataSetLong    = ``
-	userDataSetExample = ``
-	userDataGetLong    = ``
-	userDataGetExample = ``
-	vpcAttachLong      = `Attaches an existing VPC to the specified instance`
-	vpcAttachExample   = `
+	userDataSetLong    = `Set the instance user data via STDIN or read from a file on disk`
+	userDataSetExample = `
+	# Full example
+	vultr-cli instance user-data set <instanceID> --text='!#/bin/sh echo "hello, world!"'
+
+	Or with a file instead: 
+
+	vultr-cli instance user-data set <instanceID> --file="/home/me/user_data.txt"
+	`
+	userDataGetLong    = `Retrieve the user data from an instance`
+	userDataGetExample = `
+	# Full example
+	vultr-cli instance user-data get <instanceID>"
+	`
+	vpcAttachLong    = `Attaches an existing VPC to the specified instance`
+	vpcAttachExample = `
 	# Full example
 	vultr-cli instance vpc attach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
 	`
@@ -275,7 +283,12 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			userData, errUs := cmd.Flags().GetString("userdata")
 			if errUs != nil {
-				return fmt.Errorf("error parsing flag 'userData' for instance create : %v", errUs)
+				return fmt.Errorf("error parsing flag 'userdata' for instance create : %v", errUs)
+			}
+
+			userDataFile, errUd := cmd.Flags().GetString("userdata-file")
+			if errUd != nil {
+				return fmt.Errorf("error parsing flag 'userdata-file' for instance create : %v", errUd)
 			}
 
 			notify, errNo := cmd.Flags().GetBool("notify")
@@ -343,7 +356,16 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			}
 
 			if userData != "" {
-				o.CreateReq.UserData = base64.StdEncoding.EncodeToString([]byte(userData))
+				ud := userdata.NewUserDataFromString(userData)
+				o.CreateReq.UserData = ud.Base64Encode()
+			}
+
+			if userDataFile != "" {
+				ud, err := userdata.NewUserDataFromFile(userDataFile)
+				if err != nil {
+					return fmt.Errorf("error reading user data from file : %v", err)
+				}
+				o.CreateReq.UserData = ud.Base64Encode()
 			}
 
 			if len(blockDevices) > 0 {
@@ -400,12 +422,20 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	create.Flags().StringP("label", "l", "", "label you want to give this instance")
 	create.Flags().StringSliceP("ssh-keys", "s", []string{}, "ssh keys you want to assign to the instance")
 	create.Flags().BoolP("auto-backup", "b", false, "enable auto backups | true or false")
+
 	create.Flags().StringP(
 		"userdata",
 		"u",
 		"",
-		"plain text userdata you want to give this instance",
+		"plain text userdata you want to give to this instance",
 	)
+	create.Flags().String(
+		"userdata-file",
+		"",
+		"file path to read in for the userdata you want to give to this instance",
+	)
+	create.MarkFlagsMutuallyExclusive("userdata", "userdata-file")
+
 	create.Flags().BoolP("notify", "n", false, "notify when instance has been created | true or false")
 	create.Flags().BoolP("ddos", "d", false, "enable ddos protection | true or false")
 	create.Flags().StringP("reserved-ipv4", "", "", "ID of the floating IP to use as the main IP for this instance")
@@ -527,8 +557,9 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 	// User Data
 	userData := &cobra.Command{
-		Use:   "user-data",
-		Short: "Commands to manage user data on an instance",
+		Use:     "user-data",
+		Short:   "Commands to manage user data on an instance",
+		Aliases: []string{"u", "userdata"},
 	}
 
 	// User Data Get
@@ -569,25 +600,33 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			userDataPath, errPa := cmd.Flags().GetString("userdata")
-			if errPa != nil {
-				return fmt.Errorf("error parsing flag 'userdata' for instance update : %v", errPa)
-			}
-
-			userDataPath = filepath.Clean(userDataPath)
-
-			rawData, errRe := os.ReadFile(userDataPath)
-			if errRe != nil {
-				return fmt.Errorf("error reading user-data : %v", errRe)
-			}
-
-			o.UpdateReq = &govultr.InstanceUpdateReq{
-				UserData: base64.StdEncoding.EncodeToString(rawData),
-			}
-
-			_, err := o.update()
+			text, err := cmd.Flags().GetString("text")
 			if err != nil {
-				return fmt.Errorf("error updating instance user data : %v", err)
+				return fmt.Errorf("error parsing flag 'text' for instance userdata set : %v", err)
+			}
+
+			file, err := cmd.Flags().GetString("file")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'file' for instance userdata set : %v", err)
+			}
+
+			o.UpdateReq = &govultr.InstanceUpdateReq{}
+
+			if text != "" {
+				ud := userdata.NewUserDataFromString(text)
+				o.UpdateReq.UserData = ud.Base64Encode()
+			}
+
+			if file != "" {
+				ud, err := userdata.NewUserDataFromFile(file)
+				if err != nil {
+					return fmt.Errorf("error reading from file for instance userdata set : %v", err)
+				}
+				o.UpdateReq.UserData = ud.Base64Encode()
+			}
+
+			if _, err := o.update(); err != nil {
+				return fmt.Errorf("error with instance userdata set : %v", err)
 			}
 
 			o.Base.Printer.Display(printer.Info("Instance user data has been updated"), nil)
@@ -596,7 +635,10 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
-	userDataSet.Flags().StringP("userdata", "d", "/dev/stdin", "The file to read userdata from")
+	userDataSet.Flags().StringP("text", "t", "", "plain text to insert into instance user data")
+	userDataSet.Flags().StringP("file", "f", "", "file path from which to read the instance user data")
+	userDataSet.MarkFlagsMutuallyExclusive("text", "file")
+	userDataSet.MarkFlagsOneRequired("text", "file")
 
 	userData.AddCommand(
 		userDataGet,
