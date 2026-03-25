@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -46,11 +47,6 @@ const (
 	perPageDefault int = 100
 )
 
-var (
-	cfgFile string
-	output  string
-)
-
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:          "vultr-cli",
@@ -68,26 +64,27 @@ func Execute() {
 }
 
 func init() {
-	configPath := configHome()
+	defaultConfigPath := configHome()
 
-	// init the config file with viper
-	initConfig()
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", configPath, "config file (default is $HOME/.vultr-cli.yaml)")
+	rootCmd.PersistentFlags().String("config", defaultConfigPath, "path to config file")
 	if err := viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config")); err != nil {
 		fmt.Printf("error binding root pflag 'config': %v\n", err)
 	}
 
-	rootCmd.PersistentFlags().StringVarP(&output, "output", "o", "text", "output format [ text | json | yaml ]")
+	rootCmd.PersistentFlags().StringP("output", "o", "text", "output format [ text | json | yaml ]")
 	if err := viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output")); err != nil {
 		fmt.Printf("error binding root pflag 'output': %v\n", err)
 	}
 
-	base := cli.NewCLIBase(
-		os.Getenv("VULTR_API_KEY"),
-		userAgent,
-		output,
-	)
+	// read in api key env var
+	viper.SetEnvPrefix("vultr")
+	viper.BindEnv("api-key")
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+
+	// init the config file with viper just before commands are executed
+	cobra.OnInitialize(initConfig)
+
+	base := cli.NewCLIBase(userAgent)
 
 	rootCmd.AddCommand(
 		account.NewCmdAccount(base),
@@ -125,22 +122,17 @@ func init() {
 
 // initConfig reads in config file to viper if it exists
 func initConfig() {
-	configPath := viper.GetString("config")
+	path := viper.GetString("config")
 
-	if configPath == "" {
-		cfgDir, err := os.UserHomeDir()
-		if err != nil {
-			os.Exit(1)
-		}
-		configPath = fmt.Sprintf("%s/.vultr-cli.yaml", cfgDir)
+	if path == "" {
+		return
 	}
 
-	viper.AutomaticEnv()
 	viper.SetConfigType("yaml")
-	viper.SetConfigFile(configPath)
+	viper.SetConfigFile(path)
 
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Println("Error Reading in file:", viper.ConfigFileUsed())
+		fmt.Printf("Error reading in config file (%s) : %v", viper.ConfigFileUsed(), err)
 	}
 }
 
