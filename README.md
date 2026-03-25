@@ -27,6 +27,7 @@ Available Commands:
   iso                Commands to manage ISOs
   kubernetes         Commands to manage kubernetes clusters
   load-balancer      Commands to managed load balancers
+  logs               Commands to view logs
   marketplace        Display marketplace information
   object-storage     Commands to manage object storage
   os                 Display available operating systems
@@ -41,7 +42,7 @@ Available Commands:
   vpc                Commands to manage VPCs
 
 Flags:
-      --config string   config file (default is $HOME/.vultr-cli.yaml)
+      --config string   path to config file
   -h, --help            help for vultr-cli
   -o, --output string   output format [ text | json | yaml ] (default "text")
 
@@ -163,7 +164,7 @@ You should use = when using a boolean flag.
 `vultr-cli instance create --region <region-id> --plan <plan-id> --os <os-id> --host <hostname> --notify=true`
 
 ##### Utilizing the config flag
-The config flag can be used to specify the vultr-cli.yaml file path when it's outside the default location (default is $HOME/.vultr-cli.yaml). If the file has the `api-key` defined, the CLI will use the vultr-cli.yaml config, otherwise it will default to reading the environment variable for the api key.
+The config flag can be used to specify the `vultr-cli.yaml` config filepath. When the `api-key` key is defined with a value the CLI will use it. Keep in mind that environment variables will override the value defined in a config file.
 
 `vultr-cli instance list --config /Users/myuser/vultr-cli.yaml`
 
