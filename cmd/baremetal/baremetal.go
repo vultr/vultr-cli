@@ -737,7 +737,6 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 				ud, err := userdata.NewUserDataFromFile(file)
 				if err != nil {
 					return fmt.Errorf("error reading from file for bare metal userdata set : %v", err)
-
 				}
 				o.UpdateReq.UserData = ud.Base64Encode()
 			}
@@ -1253,7 +1252,6 @@ func parseCreateFlags(cmd *cobra.Command) (*govultr.BareMetalCreate, error) { //
 		ud, err := userdata.NewUserDataFromFile(userDataFile)
 		if err != nil {
 			return nil, fmt.Errorf("error reading user data from file : %v", err)
-
 		}
 		options.UserData = ud.Base64Encode()
 	}
@@ -1328,7 +1326,6 @@ func parseUpdateFlags(cmd *cobra.Command) (*govultr.BareMetalUpdate, error) { //
 		ud, err := userdata.NewUserDataFromFile(userDataFile)
 		if err != nil {
 			return nil, fmt.Errorf("error reading user data from file : %v", err)
-
 		}
 		options.UserData = ud.Base64Encode()
 	}
