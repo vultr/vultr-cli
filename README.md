@@ -42,7 +42,7 @@ Available Commands:
   vpc                Commands to manage VPCs
 
 Flags:
-      --config string   path to config file (default "/home/michael/.vultr-cli.yaml")
+      --config string   path to config file
   -h, --help            help for vultr-cli
   -o, --output string   output format [ text | json | yaml ] (default "text")
 
