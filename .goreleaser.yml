@@ -37,14 +37,16 @@ archives:
       {{- if eq .Arch "arm" }}arm32-v{{ .Arm }}
       {{- else }}{{ .Arch }}{{ end }}
 
-    format: tar.gz
+    formats: 
+      - tar.gz
 
     files:
       - none*
 
     format_overrides:
       - goos: windows
-        format: zip
+        formats: 
+          - zip
 
     builds_info:
       group: root
