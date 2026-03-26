@@ -1,9 +1,9 @@
-FROM golang:1.21-alpine as builder
+FROM golang:1.26-alpine3.22 AS builder
 
 RUN  apk add --update \
      make
 
-ENV CGO_ENABLED 0
+ENV CGO_ENABLED=0
 
 RUN mkdir -p /out
 RUN mkdir -p /go/src/github.com/vultr/vultr-cli
