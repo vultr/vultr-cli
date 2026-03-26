@@ -1,4 +1,9 @@
 # Change Log
+## What's Changed
+## [3.9.2](https://github.com/vultr/vultr-cli/compare/v3.9.1...v3.9.2) (2026-03-26)
+### Automation
+* Goreleaser config deprecations and updates [PR 584](https://github.com/vultr/vultr-cli/pull/584)
+
 ## [3.9.1](https://github.com/vultr/vultr-cli/compare/v3.9.0...v3.9.1) (2026-03-25)
 ### Automation
 * Update goreleaser from v6 to v7 [PR 582](https://github.com/vultr/vultr-cli/pull/582)
