@@ -326,29 +326,35 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'block-devices' for kubernetes cluster create : %v", errBD)
 			}
 
+			pubIPv4, errPb := cmd.Flags().GetBool("disable-public-ipv4")
+			if errPb != nil {
+				return fmt.Errorf("error parsing flag 'disable-public-ipv4' for instance create : %v", errPb)
+			}
+
 			o.CreateReq = &govultr.InstanceCreateReq{
-				Plan:            plan,
-				Region:          region,
-				OsID:            osID,
-				ISOID:           iso,
-				SnapshotID:      snapshot,
-				AppID:           app,
-				ImageID:         image,
-				IPXEChainURL:    ipxe,
-				ScriptID:        script,
-				Label:           label,
-				SSHKeys:         ssh,
-				UserData:        userData,
-				ReservedIPv4:    ipv4,
-				Hostname:        host,
-				Tags:            tags,
-				FirewallGroupID: fwg,
-				EnableIPv6:      govultr.BoolToBoolPtr(ipv6),
-				DDOSProtection:  govultr.BoolToBoolPtr(ddos),
-				ActivationEmail: govultr.BoolToBoolPtr(notify),
-				Backups:         "disabled",
-				EnableVPC:       govultr.BoolToBoolPtr(vpcEnable),
-				AttachVPC:       vpcAttach,
+				Plan:              plan,
+				Region:            region,
+				OsID:              osID,
+				ISOID:             iso,
+				SnapshotID:        snapshot,
+				AppID:             app,
+				ImageID:           image,
+				IPXEChainURL:      ipxe,
+				ScriptID:          script,
+				Label:             label,
+				SSHKeys:           ssh,
+				UserData:          userData,
+				ReservedIPv4:      ipv4,
+				Hostname:          host,
+				Tags:              tags,
+				FirewallGroupID:   fwg,
+				EnableIPv6:        govultr.BoolToBoolPtr(ipv6),
+				DisablePublicIPv4: govultr.BoolToBoolPtr(pubIPv4),
+				DDOSProtection:    govultr.BoolToBoolPtr(ddos),
+				ActivationEmail:   govultr.BoolToBoolPtr(notify),
+				Backups:           "disabled",
+				EnableVPC:         govultr.BoolToBoolPtr(vpcEnable),
+				AttachVPC:         vpcAttach,
 			}
 
 			if backup {
@@ -442,6 +448,11 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	create.Flags().StringP("host", "", "", "The hostname to assign to this instance")
 	create.Flags().StringSliceP("tags", "", []string{}, "A comma-separated list of tags to assign to this instance")
 	create.Flags().StringP("firewall-group", "", "", "The firewall group to assign to this instance")
+	create.Flags().Bool(
+		"disable-public-ipv4",
+		false,
+		"disable configuration of IPv4 address (requires ipv6) | true or false",
+	)
 
 	create.Flags().StringArray(
 		"block-devices",
