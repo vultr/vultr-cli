@@ -50,6 +50,10 @@ var (
 	vultr-cli instance create --region="ewr" --plan="vc2-2c-4gb" --os=1743 \
 		--ssh-keys="a14b6539-5583-41e8-a035-c07a76897f2b,be624232-56c7-4d5c-bf87-9bdaae7a1fbd"
 
+	# Full example with IPv6 only
+	vultr-cli instance create --region="ord" --plan="vc2-2c-4gb" --os=1743 \
+		--ipv6=true --disable-public-ipv4=true
+
 	# Block devices options
 	The --block-devices option allows you to pass in options for any number of
 	block storage devices when creating an instance with a VX1 plan. The options
