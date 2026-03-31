@@ -323,7 +323,12 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			blockDevices, errBD := cmd.Flags().GetStringArray("block-devices")
 			if errBD != nil {
-				return fmt.Errorf("error parsing flag 'block-devices' for kubernetes cluster create : %v", errBD)
+				return fmt.Errorf("error parsing flag 'block-devices' for instance create : %v", errBD)
+			}
+
+			vpcOnly, errVO := cmd.Flags().GetBool("vpc-only")
+			if errVO != nil {
+				return fmt.Errorf("error parsing flag 'vpc-only' for instance create : %v", errVO)
 			}
 
 			o.CreateReq = &govultr.InstanceCreateReq{
@@ -349,6 +354,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				Backups:         "disabled",
 				EnableVPC:       govultr.BoolToBoolPtr(vpcEnable),
 				AttachVPC:       vpcAttach,
+				VPCOnly:         govultr.BoolToBoolPtr(vpcOnly),
 			}
 
 			if backup {
@@ -422,6 +428,11 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	create.Flags().StringP("label", "l", "", "label you want to give this instance")
 	create.Flags().StringSliceP("ssh-keys", "s", []string{}, "ssh keys you want to assign to the instance")
 	create.Flags().BoolP("auto-backup", "b", false, "enable auto backups | true or false")
+	create.Flags().Bool(
+		"vpc-only",
+		false,
+		"deploy with no public networking.  A --vpc-ids ID with NAT gateway attached is required | true or false",
+	)
 
 	create.Flags().StringP(
 		"userdata",
