@@ -766,7 +766,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		RunE: func(cmd *cobra.Command, args []string) error {
 			iso, errIs := cmd.Flags().GetString("iso-id")
 			if errIs != nil {
-				return fmt.Errorf("error parsing flag 'iso' for instance iso attach: %v", errIs)
+				return fmt.Errorf("error parsing flag 'iso-id' for instance iso attach: %v", errIs)
 			}
 
 			o.ISOAttachID = iso
