@@ -1,5 +1,13 @@
 # Change Log
-## What's Changed
+## [3.10.0](https://github.com/vultr/vultr-cli/compare/v3.9.2...v3.10.0) (2026-04-16)
+### Enhancements
+* Instance: Add VPC only flag on create [PR 588](https://github.com/vultr/vultr-cli/pull/588)
+* Instance: Add ISO detach command [PR 589](https://github.com/vultr/vultr-cli/pull/589)
+* Script: Add script-file flag to read in script file on create [PR 590](https://github.com/vultr/vultr-cli/pull/590)
+
+### Dependencies
+* Update govultr from v3.28.1 to v3.30.0 [PR 587](https://github.com/vultr/vultr-cli/pull/587)
+
 ## [3.9.2](https://github.com/vultr/vultr-cli/compare/v3.9.1...v3.9.2) (2026-03-26)
 ### Automation
 * Goreleaser config deprecations and updates [PR 584](https://github.com/vultr/vultr-cli/pull/584)
