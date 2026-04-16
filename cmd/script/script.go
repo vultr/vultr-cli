@@ -124,7 +124,6 @@ func NewCmdScript(base *cli.Base) *cobra.Command { //nolint:gocyclo
 				if err != nil {
 					return fmt.Errorf("error reading script file: %v", err)
 				}
-				fmt.Printf("%v", fd)
 				o.ScriptReq.Script = base64.StdEncoding.EncodeToString(fd)
 			}
 
