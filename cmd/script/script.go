@@ -2,9 +2,11 @@
 package script
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/vultr/govultr/v3"
@@ -98,15 +100,32 @@ func NewCmdScript(base *cli.Base) *cobra.Command { //nolint:gocyclo
 				return fmt.Errorf("error parsing flag 'script' for script create : %v", errSc)
 			}
 
+			scriptFile, errSf := cmd.Flags().GetString("script-file")
+			if errSf != nil {
+				return fmt.Errorf("error parsing flag 'script-file' for script create : %v", errSf)
+			}
+
 			sType, errST := cmd.Flags().GetString("type")
 			if errST != nil {
 				return fmt.Errorf("error parsing flag 'type' for script create : %v", errST)
 			}
 
 			o.ScriptReq = &govultr.StartupScriptReq{
-				Name:   name,
-				Script: script,
-				Type:   sType,
+				Name: name,
+				Type: sType,
+			}
+
+			if script != "" {
+				o.ScriptReq.Script = base64.StdEncoding.EncodeToString([]byte(script))
+			}
+
+			if scriptFile != "" {
+				fd, err := os.ReadFile(filepath.Clean(scriptFile))
+				if err != nil {
+					return fmt.Errorf("error reading script file: %v", err)
+				}
+				fmt.Printf("%v", fd)
+				o.ScriptReq.Script = base64.StdEncoding.EncodeToString(fd)
 			}
 
 			sNew, err := o.create()
@@ -123,6 +142,10 @@ func NewCmdScript(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	create.Flags().StringP("name", "n", "", "Name of the newly created startup script.")
 	create.Flags().StringP("script", "s", "", "Startup script contents.")
+	create.Flags().StringP("script-file", "f", "", "File path to read in the startup script contents.")
+	create.MarkFlagsOneRequired("script", "script-file")
+	create.MarkFlagsMutuallyExclusive("script", "script-file")
+
 	create.Flags().StringP(
 		"type",
 		"t",
@@ -132,11 +155,6 @@ func NewCmdScript(base *cli.Base) *cobra.Command { //nolint:gocyclo
 
 	if err := create.MarkFlagRequired("name"); err != nil {
 		fmt.Printf("error marking script create 'name' flag required: %v", err)
-		os.Exit(1)
-	}
-
-	if err := create.MarkFlagRequired("script"); err != nil {
-		fmt.Printf("error marking script create 'script' flag required: %v", err)
 		os.Exit(1)
 	}
 
