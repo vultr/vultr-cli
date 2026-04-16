@@ -175,8 +175,8 @@ func (b *BandwidthPrinter) Data() [][]string {
 	for i := range b.Bandwidth.Bandwidth {
 		data = append(data, []string{
 			i,
-			strconv.Itoa(b.Bandwidth.Bandwidth[i].IncomingBytes),
-			strconv.Itoa(b.Bandwidth.Bandwidth[i].OutgoingBytes),
+			strconv.FormatInt(b.Bandwidth.Bandwidth[i].IncomingBytes, 10),
+			strconv.FormatInt(b.Bandwidth.Bandwidth[i].OutgoingBytes, 10),
 		})
 	}
 

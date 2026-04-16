@@ -196,8 +196,8 @@ func (b *BareMetalBandwidthPrinter) Data() [][]string {
 	for k := range b.Bandwidth.Bandwidth {
 		data = append(data, []string{
 			k,
-			strconv.Itoa(b.Bandwidth.Bandwidth[k].IncomingBytes),
-			strconv.Itoa(b.Bandwidth.Bandwidth[k].OutgoingBytes),
+			strconv.FormatInt(b.Bandwidth.Bandwidth[k].IncomingBytes, 10),
+			strconv.FormatInt(b.Bandwidth.Bandwidth[k].OutgoingBytes, 10),
 		})
 	}
 
