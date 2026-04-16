@@ -766,7 +766,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		RunE: func(cmd *cobra.Command, args []string) error {
 			iso, errIs := cmd.Flags().GetString("iso-id")
 			if errIs != nil {
-				return fmt.Errorf("error parsing flag 'iso' for instance iso attach: %v", errIs)
+				return fmt.Errorf("error parsing flag 'iso-id' for instance iso attach: %v", errIs)
 			}
 
 			o.ISOAttachID = iso
@@ -781,6 +781,27 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
+	// ISO Detach
+	isoDetach := &cobra.Command{
+		Use:   "detach <Instance ID>",
+		Short: "Detach ISO from an instance",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide an instance ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.isoDetach(); err != nil {
+				return fmt.Errorf("error detaching iso from instance : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("ISO detached from instance"), nil)
+
+			return nil
+		},
+	}
+
 	isoAttach.Flags().StringP("iso-id", "i", "", "id of the ISO you wish to attach")
 	if err := isoAttach.MarkFlagRequired("iso-id"); err != nil {
 		fmt.Printf("error marking instance iso attach 'iso-id' flag required: %v", err)
@@ -790,6 +811,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	iso.AddCommand(
 		isoStatus,
 		isoAttach,
+		isoDetach,
 	)
 
 	// Backup
@@ -1884,6 +1906,11 @@ func (o *options) isoStatus() (*govultr.Iso, error) {
 
 func (o *options) isoAttach() error {
 	_, err := o.Base.Client.Instance.AttachISO(o.Base.Context, o.Base.Args[0], o.ISOAttachID)
+	return err
+}
+
+func (o *options) isoDetach() error {
+	_, err := o.Base.Client.Instance.DetachISO(o.Base.Context, o.Base.Args[0])
 	return err
 }
 
