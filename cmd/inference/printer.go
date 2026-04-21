@@ -127,11 +127,6 @@ func (u *UsagePrinter) Columns() [][]string {
 func (u *UsagePrinter) Data() [][]string {
 	var data [][]string
 	data = append(data,
-		[]string{"CHAT USAGE"},
-		[]string{"CURRENT TOKENS", strconv.FormatInt(int64(u.Usage.Chat.CurrentTokens), 10)},
-		[]string{"MONTHLY ALLOTMENT", strconv.FormatInt(int64(u.Usage.Chat.MonthlyAllotment), 10)},
-		[]string{"OVERAGE", strconv.FormatInt(int64(u.Usage.Chat.Overage), 10)},
-		[]string{" "},
 		[]string{"AUDIO USAGE"},
 		[]string{"TTS CHARACTERS", strconv.FormatInt(int64(u.Usage.Audio.TTSCharacters), 10)},
 		[]string{"TTS (SM) CHARACTERS", strconv.FormatInt(int64(u.Usage.Audio.TTSSMCharacters), 10)},
