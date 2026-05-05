@@ -1,6 +1,7 @@
 package inference
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/vultr/govultr/v3"
@@ -126,10 +127,67 @@ func (u *UsagePrinter) Columns() [][]string {
 // Data ...
 func (u *UsagePrinter) Data() [][]string {
 	var data [][]string
+
 	data = append(data,
+		[]string{"---------------------------"},
+		[]string{"CHAT USAGE (CURRENT MONTH)"},
+		[]string{"---------------------------"},
+	)
+
+	if len(u.Usage.ChatByModel.CurrentMonth) == 0 {
+		data = append(data,
+			[]string{"None"},
+			[]string{" "},
+		)
+	} else {
+		for i := range u.Usage.ChatByModel.CurrentMonth {
+			data = append(data,
+				[]string{"MODEL", u.Usage.ChatByModel.CurrentMonth[i].Model},
+				[]string{"TOKENS", strconv.Itoa(u.Usage.ChatByModel.CurrentMonth[i].Tokens)},
+				[]string{"INPUT TOKENS", strconv.Itoa(u.Usage.ChatByModel.CurrentMonth[i].InputTokens)},
+				[]string{"OUTPUT PRICE", strconv.Itoa(u.Usage.ChatByModel.CurrentMonth[i].OutputPrice)},
+				[]string{"INPUT PRICE", strconv.Itoa(u.Usage.ChatByModel.CurrentMonth[i].InputPrice)},
+				[]string{" "},
+			)
+		}
+	}
+
+	data = append(data,
+		[]string{"---------------------------"},
+		[]string{"CHAT USAGE (PREVIOUS MONTH)"},
+		[]string{"---------------------------"},
+	)
+
+	if len(u.Usage.ChatByModel.PreviousMonth) == 0 {
+		data = append(data,
+			[]string{"None"},
+			[]string{" "},
+		)
+	} else {
+		for i := range u.Usage.ChatByModel.PreviousMonth {
+			data = append(data,
+				[]string{"MODEL", u.Usage.ChatByModel.PreviousMonth[i].Model},
+				[]string{"TOKENS", strconv.Itoa(u.Usage.ChatByModel.PreviousMonth[i].Tokens)},
+				[]string{"INPUT TOKENS", strconv.Itoa(u.Usage.ChatByModel.PreviousMonth[i].InputTokens)},
+				[]string{"OUTPUT PRICE", strconv.Itoa(u.Usage.ChatByModel.PreviousMonth[i].OutputPrice)},
+				[]string{"INPUT PRICE", strconv.Itoa(u.Usage.ChatByModel.PreviousMonth[i].InputPrice)},
+				[]string{" "},
+			)
+		}
+	}
+
+	data = append(data,
+		[]string{"---------------------------"},
 		[]string{"AUDIO USAGE"},
-		[]string{"TTS CHARACTERS", strconv.FormatInt(int64(u.Usage.Audio.TTSCharacters), 10)},
-		[]string{"TTS (SM) CHARACTERS", strconv.FormatInt(int64(u.Usage.Audio.TTSSMCharacters), 10)},
+		[]string{"---------------------------"},
+		[]string{"TTS CHARACTERS", strconv.Itoa(u.Usage.Audio.TTSCharacters)},
+		[]string{"TTS (SM) CHARACTERS", strconv.Itoa(u.Usage.Audio.TTSSMCharacters)},
+		[]string{" "},
+		[]string{"---------------------------"},
+		[]string{"IMAGE USAGE"},
+		[]string{"---------------------------"},
+		[]string{"MEGAPIXELS", fmt.Sprintf("%g", u.Usage.Image.Megapixels)},
+		[]string{"MEGAPIXELS (SM)", fmt.Sprintf("%g", u.Usage.Image.SMMegapixels)},
 	)
 
 	return data
