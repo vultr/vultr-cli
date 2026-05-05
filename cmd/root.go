@@ -133,7 +133,9 @@ func initConfig() {
 	viper.SetConfigFile(path)
 
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("Error reading in config file (%s) : %v", viper.ConfigFileUsed(), err)
+		if !strings.Contains(err.Error(), "no such file or directory") {
+			fmt.Printf("Error reading in config file (%s) : %v", viper.ConfigFileUsed(), err)
+		}
 	}
 }
 

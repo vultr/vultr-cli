@@ -48,12 +48,14 @@ func (b *Base) configureContext() {
 func (b *Base) HasAuth() bool {
 	var token string
 
-	if viper.IsSet("api-key") {
-		token = viper.GetString("api-key")
+	if !viper.IsSet("api-key") {
+		return false
+	}
 
-		if token == "" {
-			return false
-		}
+	token = viper.GetString("api-key")
+
+	if token == "" {
+		return false
 	}
 
 	config := &oauth2.Config{}
