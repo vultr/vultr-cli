@@ -61,17 +61,6 @@ There is no going back from this call.`
 	vultr-cli bm tags <bareMetalID> -t="tag-1,tag-2"
 	`
 
-	vpc2AttachLong    = `Attaches an existing VPC 2.0 network to the specified bare metal server`
-	vpc2AttachExample = `
-	# Full example
-	vultr-cli bare-metal vpc2 attach <bareMetalID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
-	`
-	vpc2DetachLong    = `Detaches an existing VPC 2.0 network from the specified bare metal server`
-	vpc2DetachExample = `
-	# Full example
-	vultr-cli bare-metal vpc2 detach <bareMetalID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
-	`
-
 	applicationLong    = ``
 	applicationExample = ``
 
@@ -122,10 +111,6 @@ List the IPv6 information of a bare metal server.
 IP information is only available for bare metal servers in the "active" state.
 `
 	ipv6Example = ``
-
-	vpc2Long        = ``
-	vpc2ListLong    = ``
-	vpc2ListExample = ``
 )
 
 // NewCmdBareMetal ...
@@ -894,129 +879,6 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 		},
 	}
 
-	// VPC2
-	vpc2 := &cobra.Command{
-		Use:        "vpc2",
-		Short:      "Commands to manage VPC2s on bare metal servers",
-		Long:       vpc2Long,
-		Deprecated: "all vpc2 commands should be migrated to vpc.",
-	}
-
-	// VPC2 List
-	vpc2List := &cobra.Command{
-		Use:     "list <Bare Metal ID>",
-		Short:   "List all VPC2 networks attached to a server",
-		Aliases: []string{"l"},
-		Long:    vpc2ListLong,
-		Example: vpc2ListExample,
-		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("please provide a bare metal ID")
-			}
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			vpc2s, err := o.vpc2NetworksList()
-			if err != nil {
-				return fmt.Errorf("error retrieving bare metal vpc2 information : %v", err)
-			}
-			data := &BareMetalVPC2sPrinter{VPC2s: vpc2s}
-			o.Base.Printer.Display(data, nil)
-
-			return nil
-		},
-		Deprecated: "all vpc2 commands should be migrated to vpc.",
-	}
-
-	// VPC2 Attach
-	vpc2Attach := &cobra.Command{
-		Use:     "attach <Bare Metal ID>",
-		Short:   "Attach a VPC2 network to a server",
-		Long:    vpc2AttachLong,
-		Example: vpc2AttachExample,
-		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("please provide a bare metal ID")
-			}
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			vpcID, errID := cmd.Flags().GetString("vpc-id")
-			if errID != nil {
-				return fmt.Errorf("error parsing vpc-id flag for bare metal VPC2 attach : %v", errID)
-			}
-
-			IPAddress, errIP := cmd.Flags().GetString("ip-address")
-			if errIP != nil {
-				return fmt.Errorf("error parsing ip-address flag for bare metal VPC2 attach : %v", errIP)
-			}
-
-			o.VPC2Req = &govultr.AttachVPC2Req{ //nolint:staticcheck
-				VPCID:     vpcID,
-				IPAddress: &IPAddress,
-			}
-
-			if err := o.vpc2NetworksAttach(); err != nil {
-				return fmt.Errorf("error attaching bare metal to VPC2 : %v", err)
-			}
-
-			o.Base.Printer.Display(printer.Info("bare metal server has been attached to VPC2 network"), nil)
-
-			return nil
-		},
-		Deprecated: "all vpc2 commands should be migrated to vpc.",
-	}
-
-	vpc2Attach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC 2.0 network you wish to attach")
-	vpc2Attach.Flags().StringP(
-		"ip-address",
-		"i",
-		"",
-		"the IP address to use for this server on the attached VPC 2.0 network",
-	)
-	if errVPC := vpc2Attach.MarkFlagRequired("vpc-id"); errVPC != nil {
-		fmt.Printf("error marking bare metal 'vpc-id' flag required for attach : %v", errVPC)
-		os.Exit(1)
-	}
-
-	// VPC2 Detach
-	vpc2Detach := &cobra.Command{
-		Use:     "detach <Bare Metal ID>",
-		Short:   "Detach a VPC2 network from a server",
-		Long:    vpc2DetachLong,
-		Example: vpc2DetachExample,
-		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("please provide a bare metal ID")
-			}
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			vpcID, errID := cmd.Flags().GetString("vpc-id")
-			if errID != nil {
-				return fmt.Errorf("error parsing vpc-id flag for bare metal VPC2 detach : %v", errID)
-			}
-
-			o.VPC2ID = vpcID
-			if err := o.vpc2NetworksDetach(); err != nil {
-				return fmt.Errorf("error detaching bare metal VPC2 : %v", err)
-			}
-
-			o.Base.Printer.Display(printer.Info("bare metal server has been detached from VPC2 network"), nil)
-
-			return nil
-		},
-		Deprecated: "all vpc2 commands should be migrated to vpc.",
-	}
-
-	vpc2Detach.Flags().StringP("vpc-id", "v", "", "the ID of the VPC 2.0 network you wish to detach")
-	if errVPC2 := vpc2Detach.MarkFlagRequired("vpc-id"); errVPC2 != nil {
-		fmt.Printf("error marking bare metal 'vpc-id' flag required for detach : %v", errVPC2)
-		os.Exit(1)
-	}
-
-	vpc2.AddCommand(vpc2List, vpc2Attach, vpc2Detach)
-
 	cmd.AddCommand(
 		get,
 		list,
@@ -1035,7 +897,6 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 		tags,
 		ipv4,
 		ipv6,
-		vpc2,
 	)
 
 	return cmd
@@ -1045,8 +906,6 @@ type options struct {
 	Base      *cli.Base
 	CreateReq *govultr.BareMetalCreate
 	UpdateReq *govultr.BareMetalUpdate
-	VPC2Req   *govultr.AttachVPC2Req //nolint:staticcheck
-	VPC2ID    string
 }
 
 func (b *options) list() ([]govultr.BareMetalServer, *govultr.Meta, error) {
@@ -1118,19 +977,6 @@ func (b *options) getIPv4Addresses() ([]govultr.IPv4, *govultr.Meta, error) {
 func (b *options) getIPv6Addresses() ([]govultr.IPv6, *govultr.Meta, error) {
 	ips, meta, _, err := b.Base.Client.BareMetalServer.ListIPv6s(b.Base.Context, b.Base.Args[0], b.Base.Options)
 	return ips, meta, err
-}
-
-func (b *options) vpc2NetworksList() ([]govultr.VPC2Info, error) { //nolint:staticcheck
-	vpc2s, _, err := b.Base.Client.BareMetalServer.ListVPC2Info(b.Base.Context, b.Base.Args[0]) //nolint:staticcheck
-	return vpc2s, err
-}
-
-func (b *options) vpc2NetworksAttach() error {
-	return b.Base.Client.BareMetalServer.AttachVPC2(b.Base.Context, b.Base.Args[0], b.VPC2Req) //nolint:staticcheck
-}
-
-func (b *options) vpc2NetworksDetach() error {
-	return b.Base.Client.BareMetalServer.DetachVPC2(b.Base.Context, b.Base.Args[0], b.VPC2ID) //nolint:staticcheck
 }
 
 // ============================

@@ -109,17 +109,6 @@ var (
 	# Full example
 	vultr-cli instance vpc detach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
 	`
-
-	vpc2AttachLong    = `Attaches an existing VPC 2.0 network to the specified instance`
-	vpc2AttachExample = `
-	# Full example
-	vultr-cli instance vpc2 attach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
-	`
-	vpc2DetachLong    = `Detaches an existing VPC 2.0 network from the specified instance`
-	vpc2DetachExample = `
-	# Full example
-	vultr-cli instance vpc2 detach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
-	`
 )
 
 // NewCmdInstance ...
@@ -1606,111 +1595,6 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		vpcDetach,
 	)
 
-	// VPC2
-	vpc2 := &cobra.Command{
-		Use:        "vpc2",
-		Short:      "Commands to handle vpc2s on an instance",
-		Deprecated: "all vpc2 commands should be migrated to vpc.",
-	}
-
-	// VPC List
-	vpc2List := &cobra.Command{
-		Use:     "list <Instance ID>",
-		Aliases: []string{"l"},
-		Short:   "List all VPC2 networks attached to an instance",
-		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("please provide an instance ID")
-			}
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			o.Base.Options = utils.GetPaging(cmd)
-
-			vpc2s, meta, err := o.vpc2s()
-			if err != nil {
-				return fmt.Errorf("error getting vpc2 list for instance : %v", err)
-			}
-
-			data := &VPC2sPrinter{VPC2s: vpc2s, Meta: meta}
-			o.Base.Printer.Display(data, nil)
-
-			return nil
-		},
-		Deprecated: "all vpc2 commands should be migrated to vpc.",
-	}
-
-	// VPC2 Attach
-	vpc2Attach := &cobra.Command{
-		Use:     "attach <Instance ID>, <VPC2 ID>",
-		Short:   "Attach a VPC2 to an instance",
-		Long:    vpc2AttachLong,
-		Example: vpc2AttachExample,
-		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 2 {
-				return errors.New("please provide an instance ID and a VPC ID")
-			}
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ip, errIP := cmd.Flags().GetString("ip-address")
-			if errIP != nil {
-				return fmt.Errorf("error parsing flag 'ip-address' for vpc2 instance attach : %v", errIP)
-			}
-
-			o.VPC2Req = &govultr.AttachVPC2Req{ //nolint:staticcheck
-				VPCID:     o.Base.Args[1],
-				IPAddress: &ip,
-			}
-
-			if err := o.vpc2Attach(); err != nil {
-				return fmt.Errorf("error attaching vpc2 to instance : %v", err)
-			}
-
-			o.Base.Printer.Display(printer.Info("VPC2 attached to instance"), nil)
-
-			return nil
-		},
-		Deprecated: "all vpc2 commands should be migrated to vpc.",
-	}
-
-	vpc2Attach.Flags().StringP(
-		"ip-address",
-		"i",
-		"",
-		"the IP address to use for this instance on the attached VPC 2.0 network",
-	)
-
-	// VPC2 Detach
-	vpc2Detach := &cobra.Command{
-		Use:     "detach <Instance ID>",
-		Short:   "Detach a VPC2 from an instance",
-		Long:    vpc2DetachLong,
-		Example: vpc2DetachExample,
-		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 2 {
-				return errors.New("please provide an instance ID and a VPC2 ID")
-			}
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := o.vpc2Detach(); err != nil {
-				return fmt.Errorf("error detaching vpc2 from instance : %v", err)
-			}
-
-			o.Base.Printer.Display(printer.Info("VPC2 detached from instance"), nil)
-
-			return nil
-		},
-		Deprecated: "all vpc2 commands should be migrated to vpc.",
-	}
-
-	vpc2.AddCommand(
-		vpc2List,
-		vpc2Attach,
-		vpc2Detach,
-	)
-
 	// Bandwidth
 	bandwidth := &cobra.Command{
 		Use:   "bandwidth <Instance ID>",
@@ -1757,7 +1641,6 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		reverseDNS,
 		firewallGroup,
 		vpc,
-		vpc2,
 		bandwidth,
 	)
 
@@ -1835,7 +1718,6 @@ type options struct {
 	ISOAttachID     string
 	Reboot          *bool
 	ReverseDNSReq   *govultr.ReverseIP
-	VPC2Req         *govultr.AttachVPC2Req //nolint:staticcheck
 }
 
 func (o *options) list() ([]govultr.Instance, *govultr.Meta, error) {
@@ -1965,19 +1847,6 @@ func (o *options) vpcAttach() error {
 
 func (o *options) vpcDetach() error {
 	return o.Base.Client.Instance.DetachVPC(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
-}
-
-func (o *options) vpc2s() ([]govultr.VPC2Info, *govultr.Meta, error) { //nolint:staticcheck
-	vpc2s, meta, _, err := o.Base.Client.Instance.ListVPC2Info(o.Base.Context, o.Base.Args[0], o.Base.Options) //nolint:staticcheck,lll
-	return vpc2s, meta, err
-}
-
-func (o *options) vpc2Attach() error {
-	return o.Base.Client.Instance.AttachVPC2(o.Base.Context, o.Base.Args[0], o.VPC2Req) //nolint:staticcheck
-}
-
-func (o *options) vpc2Detach() error {
-	return o.Base.Client.Instance.DetachVPC2(o.Base.Context, o.Base.Args[0], o.Base.Args[1]) //nolint:staticcheck
 }
 
 func (o *options) bandwidth() (*govultr.Bandwidth, error) {
