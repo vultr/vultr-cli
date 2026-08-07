@@ -67,18 +67,18 @@ func init() {
 
 	rootCmd.PersistentFlags().String("config", defaultConfigPath, "path to config file")
 	if err := viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config")); err != nil {
-		fmt.Printf("error binding root pflag 'config': %v\n", err)
+		fmt.Fprintf(os.Stderr, "error binding root pflag 'config': %v\n", err)
 	}
 
 	rootCmd.PersistentFlags().StringP("output", "o", "text", "output format [ text | json | yaml ]")
 	if err := viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output")); err != nil {
-		fmt.Printf("error binding root pflag 'output': %v\n", err)
+		fmt.Fprintf(os.Stderr, "error binding root pflag 'output': %v\n", err)
 	}
 
 	// read in api key env var
 	viper.SetEnvPrefix("vultr")
 	if err := viper.BindEnv("api-key"); err != nil {
-		fmt.Printf("error binding VULTR_API_KEY env var: %v", err)
+		fmt.Fprintf(os.Stderr, "error binding VULTR_API_KEY env var: %v\n", err)
 	}
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
@@ -134,7 +134,7 @@ func initConfig() {
 
 	if err := viper.ReadInConfig(); err != nil {
 		if !strings.Contains(err.Error(), "no such file or directory") {
-			fmt.Printf("Error reading in config file (%s) : %v", viper.ConfigFileUsed(), err)
+			fmt.Fprintf(os.Stderr, "Error reading in config file (%s) : %v\n", viper.ConfigFileUsed(), err)
 		}
 	}
 }
@@ -143,7 +143,7 @@ func configHome() string {
 	// check for a config file in the user config directory
 	configDir, errConfig := os.UserConfigDir()
 	if errConfig != nil {
-		fmt.Printf("Unable to determine default user config directory : %v", errConfig)
+		fmt.Fprintf(os.Stderr, "Unable to determine default user config directory : %v\n", errConfig)
 		os.Exit(1)
 	}
 
@@ -156,7 +156,7 @@ func configHome() string {
 	// check for a config file at ~/.vultr-cli.yaml
 	homeDir, errHome := os.UserHomeDir()
 	if errHome != nil {
-		fmt.Printf("Unable to check user config in home directory: %v", errHome)
+		fmt.Fprintf(os.Stderr, "Unable to check user config in home directory: %v\n", errHome)
 		os.Exit(1)
 	}
 
