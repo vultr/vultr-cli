@@ -66,6 +66,74 @@ func (s *VPCsPrinter) Paging() [][]string {
 
 // ======================================
 
+// VPCAttachmentsPrinter ...
+type VPCAttachmentsPrinter struct {
+	Attachments []govultr.VPCAttachment `json:"attachments"`
+	Meta        *govultr.Meta           `json:"meta"`
+}
+
+// JSON ...
+func (s *VPCAttachmentsPrinter) JSON() []byte {
+	return printer.MarshalObject(s, "json")
+}
+
+// YAML ...
+func (s *VPCAttachmentsPrinter) YAML() []byte {
+	return printer.MarshalObject(s, "yaml")
+}
+
+// Columns ...
+func (s *VPCAttachmentsPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"TYPE",
+		"MAC ADDRESS",
+		"IP V4",
+		"LINKED SUB ID",
+		"LINKED SUB TYPE",
+		"DATE ADDED",
+	}}
+}
+
+// Data ...
+func (s *VPCAttachmentsPrinter) Data() [][]string {
+	if len(s.Attachments) == 0 {
+		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
+	}
+
+	var data [][]string
+	for i := range s.Attachments {
+		subID := s.Attachments[i].LinkedSubscription.ID
+		if subID == "" {
+			subID = "---"
+		}
+
+		subType := s.Attachments[i].LinkedSubscription.Type
+		if subType == "" {
+			subType = "---"
+		}
+
+		data = append(data, []string{
+			s.Attachments[i].ID,
+			s.Attachments[i].Type,
+			s.Attachments[i].MACAddress,
+			s.Attachments[i].IP.V4,
+			subID,
+			subType,
+			s.Attachments[i].DateAdded,
+		})
+	}
+
+	return data
+}
+
+// Paging ...
+func (s *VPCAttachmentsPrinter) Paging() [][]string {
+	return printer.NewPagingFromMeta(s.Meta).Compose()
+}
+
+// ======================================
+
 // VPCPrinter ...
 type VPCPrinter struct {
 	VPC *govultr.VPC `json:"vpc"`
