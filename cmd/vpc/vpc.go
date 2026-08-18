@@ -35,6 +35,14 @@ var (
 	# Shortened example with aliases
 	vultr-cli vpc g 9fd4dcf5-7108-4641-9969-b2b9a8f77990
 	`
+	listAttachmentsLong    = `List all attachments on the specified VPC network`
+	listAttachmentsExample = `
+	# Full example
+	vultr-cli vpc list-attachments e3512e83-64e9-4d3e-a401-9b86f2e09b1d
+
+	# Shortened example with aliases
+	vultr-cli vpc la e3512e83-64e9-4d3e-a401-9b86f2e09b1d
+	`
 	createLong    = `Create a new VPC with desired options`
 	createExample = `
 	# Full example
@@ -279,6 +287,45 @@ func NewCmdVPC(base *cli.Base) *cobra.Command { //nolint:gocyclo,funlen
 
 	list.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
 	list.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
+	)
+
+	// List Attachments
+	listAttachments := &cobra.Command{
+		Use:     "list-attachments <VPC ID>",
+		Aliases: []string{"la"},
+		Short:   "List all attachments on a VPC",
+		Long:    listAttachmentsLong,
+		Example: listAttachmentsExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a VPC ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			o.Base.Options = utils.GetPaging(cmd)
+
+			attachments, meta, err := o.listAttachments()
+			if err != nil {
+				return fmt.Errorf("error retrieving vpc attachments : %v", err)
+			}
+
+			data := &VPCAttachmentsPrinter{Attachments: attachments, Meta: meta}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	listAttachments.Flags().StringP("cursor", "c", "", "(optional) Cursor for paging.")
+	listAttachments.Flags().IntP(
 		"per-page",
 		"p",
 		utils.PerPageDefault,
@@ -1105,6 +1152,7 @@ func NewCmdVPC(base *cli.Base) *cobra.Command { //nolint:gocyclo,funlen
 		update,
 		del,
 		natGateway,
+		listAttachments,
 	)
 
 	return cmd
@@ -1123,6 +1171,15 @@ type options struct {
 func (o *options) list() ([]govultr.VPC, *govultr.Meta, error) {
 	vpcs, meta, _, err := o.Base.Client.VPC.List(o.Base.Context, o.Base.Options)
 	return vpcs, meta, err
+}
+
+func (o *options) listAttachments() ([]govultr.VPCAttachment, *govultr.Meta, error) {
+	attachments, meta, _, err := o.Base.Client.VPC.ListAttachments(
+		o.Base.Context,
+		o.Base.Args[0],
+		o.Base.Options,
+	)
+	return attachments, meta, err
 }
 
 func (o *options) get() (*govultr.VPC, error) {
