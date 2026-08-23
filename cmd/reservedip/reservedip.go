@@ -383,11 +383,11 @@ func NewCmdReservedIP(base *cli.Base) *cobra.Command { //nolint:gocyclo
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := o.detach(); err != nil {
-				return fmt.Errorf("error detaching reserved IP : %v", err)
+			if err := o.del(); err != nil {
+				return fmt.Errorf("error deleting reserved IP : %v", err)
 			}
 
-			o.Base.Printer.Display(printer.Info("reserved IP has been detached"), nil)
+			o.Base.Printer.Display(printer.Info("reserved IP has been deleted"), nil)
 
 			return nil
 		},
@@ -448,6 +448,6 @@ func (o *options) convert() (*govultr.ReservedIP, error) {
 	return ip, err
 }
 
-func (o *options) del() error { //nolint:unused
+func (o *options) del() error {
 	return o.Base.Client.ReservedIP.Delete(o.Base.Context, o.Base.Args[0])
 }
