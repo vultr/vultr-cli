@@ -715,7 +715,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 
 			if text != "" {
 				ud := userdata.NewUserDataFromString(text)
-				o.UpdateReq.UserData = ud.Base64Encode()
+				o.UpdateReq.UserData = govultr.StringToStringPtr(ud.Base64Encode())
 			}
 
 			if file != "" {
@@ -723,7 +723,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 				if err != nil {
 					return fmt.Errorf("error reading from file for bare metal userdata set : %v", err)
 				}
-				o.UpdateReq.UserData = ud.Base64Encode()
+				o.UpdateReq.UserData = govultr.StringToStringPtr(ud.Base64Encode())
 			}
 
 			if _, err := o.update(); err != nil {
@@ -1165,7 +1165,7 @@ func parseUpdateFlags(cmd *cobra.Command) (*govultr.BareMetalUpdate, error) { //
 
 	if userData != "" {
 		ud := userdata.NewUserDataFromString(userData)
-		options.UserData = ud.Base64Encode()
+		options.UserData = govultr.StringToStringPtr(ud.Base64Encode())
 	}
 
 	if userDataFile != "" {
@@ -1173,7 +1173,7 @@ func parseUpdateFlags(cmd *cobra.Command) (*govultr.BareMetalUpdate, error) { //
 		if err != nil {
 			return nil, fmt.Errorf("error reading user data from file : %v", err)
 		}
-		options.UserData = ud.Base64Encode()
+		options.UserData = govultr.StringToStringPtr(ud.Base64Encode())
 	}
 
 	return options, nil
