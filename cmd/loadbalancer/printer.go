@@ -50,8 +50,31 @@ func (l *LBsPrinter) Data() [][]string {
 			[]string{"HAS SSL", strconv.FormatBool(*l.LBs[i].SSLInfo)},
 			[]string{"NODES", strconv.Itoa(l.LBs[i].Nodes)},
 			[]string{"INSTANCES", printer.ArrayOfStringsToString(l.LBs[i].Instances)},
-			[]string{"GLOBAL REGIONS", printer.ArrayOfStringsToString(l.LBs[i].GlobalRegions)},
 
+			[]string{" "},
+			[]string{"GLOBAL REGIONS"},
+			[]string{"REGION ID", "VPC ID"},
+		)
+
+		if len(l.LBs[i].GlobalRegions) == 0 {
+			data = append(data, []string{"---", "---"})
+		} else {
+			for j := range l.LBs[i].GlobalRegions {
+				lbRegionVPCID := "NONE"
+				if len(l.LBs[i].GlobalRegions[j].VPCID) != 0 {
+					lbRegionVPCID = l.LBs[i].GlobalRegions[j].VPCID
+				}
+
+				data = append(data,
+					[]string{
+						l.LBs[i].GlobalRegions[j].RegionID,
+						lbRegionVPCID,
+					},
+				)
+			}
+		}
+
+		data = append(data,
 			[]string{" "},
 			[]string{"HEALTH CHECKS"},
 			[]string{
@@ -176,8 +199,31 @@ func (l *LBPrinter) Data() [][]string {
 		[]string{"HAS SSL", strconv.FormatBool(*l.LB.SSLInfo)},
 		[]string{"NODES", strconv.Itoa(l.LB.Nodes)},
 		[]string{"INSTANCES", printer.ArrayOfStringsToString(l.LB.Instances)},
-		[]string{"GLOBAL REGIONS", printer.ArrayOfStringsToString(l.LB.GlobalRegions)},
 
+		[]string{" "},
+		[]string{"GLOBAL REGIONS"},
+		[]string{"REGION ID", "VPC ID"},
+	)
+
+	if len(l.LB.GlobalRegions) == 0 {
+		data = append(data, []string{"---", "---"})
+	} else {
+		for i := range l.LB.GlobalRegions {
+			lbRegionVPCID := "NONE"
+			if len(l.LB.GlobalRegions[i].VPCID) != 0 {
+				lbRegionVPCID = l.LB.GlobalRegions[i].VPCID
+			}
+
+			data = append(data,
+				[]string{
+					l.LB.GlobalRegions[i].RegionID,
+					lbRegionVPCID,
+				},
+			)
+		}
+	}
+
+	data = append(data,
 		[]string{" "},
 		[]string{"HEALTH CHECKS"},
 		[]string{

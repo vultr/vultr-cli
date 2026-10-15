@@ -192,9 +192,9 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'ssl-redirect' for load balancer create : %v", errSs)
 			}
 
-			globalRegions, errGr := cmd.Flags().GetStringSlice("global-regions")
+			globalRegions, errGr := cmd.Flags().GetStringArray("global-region")
 			if errGr != nil {
-				return fmt.Errorf("error parsing flag 'global-regions' for load balancer create: %v", errGr)
+				return fmt.Errorf("error parsing flag 'global-region' for load balancer create: %v", errGr)
 			}
 
 			httpVersion, errHv := cmd.Flags().GetInt("http-version")
@@ -365,7 +365,6 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				BalancingAlgorithm: algorithm,
 				Nodes:              nodes,
 				Instances:          instances,
-				GlobalRegions:      globalRegions,
 				HealthCheck: &govultr.HealthCheck{
 					Port:               port,
 					Protocol:           protocol,
@@ -421,6 +420,15 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				if len(rulesFi) > 0 {
 					o.CreateReq.FirewallRules = rulesFi
 				}
+			}
+
+			if len(globalRegions) > 0 {
+				regs, errRegs := formatGlobalRegions(globalRegions)
+				if errRegs != nil {
+					return fmt.Errorf("error formatting global regions : %v", errRegs)
+				}
+
+				o.CreateReq.GlobalRegions = regs
 			}
 
 			lb, err := o.create()
@@ -538,10 +546,14 @@ When not provided, load balancer defaults to public network.`,
 		1,
 		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
-	create.Flags().StringSlice(
-		"global-regions",
+	create.Flags().StringArray(
+		"global-region",
 		[]string{},
-		"(optional) Deploy the load balancer across multiple global regions.")
+		`(optional) Deploy the load balancer across multiple regions. One region per
+flag, formatted as a comma-separated string, with the three-letter region ID
+first, follwed by the optional VPC UUID (ie. 'ewr,cb676a46-66fd-4dfb-b839-443f2e6c0b60'). 
+If the VPC UUID is not included, the load balancer will default to the public interface.`,
+	)
 
 	create.Flags().Int(
 		"http-version",
@@ -577,9 +589,9 @@ When not provided, load balancer defaults to public network.`,
 				return fmt.Errorf("error parsing flag 'ssl-redirect' for load balancer update : %v", errSs)
 			}
 
-			globalRegions, errGr := cmd.Flags().GetStringSlice("global-regions")
+			globalRegions, errGr := cmd.Flags().GetStringArray("global-region")
 			if errGr != nil {
-				return fmt.Errorf("error parsing flag 'global-regions' for load balancer update: %v", errGr)
+				return fmt.Errorf("error parsing flag 'global-region' for load balancer update: %v", errGr)
 			}
 
 			httpVersion, errHv := cmd.Flags().GetInt("http-version")
@@ -748,8 +760,13 @@ When not provided, load balancer defaults to public network.`,
 				o.UpdateReq.Timeout = timeout
 			}
 
-			if cmd.Flags().Changed("global-regions") {
-				o.UpdateReq.GlobalRegions = globalRegions
+			if cmd.Flags().Changed("global-region") {
+				regs, errRegs := formatGlobalRegions(globalRegions)
+				if errRegs != nil {
+					return fmt.Errorf("error formatting global regions : %v", errRegs)
+				}
+
+				o.UpdateReq.GlobalRegions = regs
 			}
 
 			if cmd.Flags().Changed("ssl-redirect") {
@@ -858,10 +875,16 @@ When not provided, load balancer defaults to public network.`,
 		1,
 		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
-	update.Flags().StringSlice(
-		"global-regions",
+	update.Flags().StringArray(
+		"global-region",
 		[]string{},
-		"(optional) Deploy the load balancer across multiple global regions.")
+		`(optional) Deploy the load balancer across multiple regions. One region per
+flag, formatted as a comma-separated string, with the three-letter region ID
+first, follwed by the optional VPC UUID (ie. 'ewr,cb676a46-66fd-4dfb-b839-443f2e6c0b60'). 
+If the VPC UUID is not included, the load balancer will default to the public interface.
+Every region needs to be included in the update or previously added regions will be 
+overwritten.`,
+	)
 	update.Flags().Int(
 		"http-version",
 		0,
@@ -1501,4 +1524,28 @@ func formatForwardingRules(rules []string) ([]govultr.ForwardingRule, error) {
 	}
 
 	return formattedList, nil
+}
+
+// formatGlobalRegions parses global regions from string(s) into struct(s)
+func formatGlobalRegions(regions []string) ([]govultr.LBGlobalRegion, error) {
+	var regionList []govultr.LBGlobalRegion
+
+	for i := range regions {
+		parts := strings.Split(regions[i], ",")
+		region := govultr.LBGlobalRegion{}
+
+		if len(parts) == 0 || len(parts) > 2 || len(parts[0]) != 3 {
+			return nil, fmt.Errorf("unable to parse global region flag value")
+		}
+
+		region.RegionID = parts[0]
+
+		if len(parts) == 2 {
+			region.VPCID = parts[1]
+		}
+
+		regionList = append(regionList, region)
+	}
+
+	return regionList, nil
 }
