@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -1531,11 +1532,12 @@ func formatGlobalRegions(regions []string) ([]govultr.LBGlobalRegion, error) {
 	var regionList []govultr.LBGlobalRegion
 
 	for i := range regions {
-		parts := strings.Split(regions[i], ",")
+		regex := regexp.MustCompile(`\s`)
+		parts := strings.Split(regex.ReplaceAllString(regions[i], ""), ",")
 		region := govultr.LBGlobalRegion{}
 
-		if len(parts) == 0 || len(parts) > 2 || len(parts[0]) != 3 {
-			return nil, fmt.Errorf("unable to parse global region flag value")
+		if len(parts) > 2 || len(parts[0]) != 3 {
+			return nil, fmt.Errorf("unable to parse global region flag value %q", regions[i])
 		}
 
 		region.RegionID = parts[0]
