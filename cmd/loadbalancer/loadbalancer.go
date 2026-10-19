@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -52,6 +53,12 @@ var (
 	#Full example with attached VPC
 	vultr-cli load-balancer create --region="lax"  --label="Example Load Balancer with VPC" \
 		--vpc="e951822b-10b2-4c5e-b333-bf38033e7175" --balancing-algorithm="leastconn"
+
+	#Full example with global regions 
+	vultr-cli load-balancer create --region="ams"  --label="Example Global Load Balancer" \
+		--global-region="ewr,e951822b-10b2-4c5e-b333-bf38033e7175" \
+		--global-region="ord,e048dd43-a259-45c7-a1d2-01e449a71f80" \
+		--balancing-algorithm="roundrobin"
 	`
 	updateLong    = `Update a Load Balancer with the desired settings`
 	updateExample = `
@@ -64,6 +71,12 @@ var (
 
 	#Full example with attached VPC
 	vultr-cli load-balancer update 57539f6f-66a2-4580-936b-d0af934bce5d --vpc="bff36707-977e-4357-8f30-bef3339155cc"
+
+	#Full example of adding new global regions.  All existing global regions must be included
+	vultr-cli load-balancer update 8ebc1428-d479-4ab7-a9c9-8f3e1412659e \
+		--global-region="ewr,e951822b-10b2-4c5e-b333-bf38033e7175" \
+		--global-region="ord,e048dd43-a259-45c7-a1d2-01e449a71f80" \
+		--global-region="lax,63438f4b-6927-4082-af6c-eb9575be5cc5" \
 	`
 )
 
@@ -192,9 +205,9 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'ssl-redirect' for load balancer create : %v", errSs)
 			}
 
-			globalRegions, errGr := cmd.Flags().GetStringSlice("global-regions")
+			globalRegions, errGr := cmd.Flags().GetStringArray("global-region")
 			if errGr != nil {
-				return fmt.Errorf("error parsing flag 'global-regions' for load balancer create: %v", errGr)
+				return fmt.Errorf("error parsing flag 'global-region' for load balancer create: %v", errGr)
 			}
 
 			httpVersion, errHv := cmd.Flags().GetInt("http-version")
@@ -365,7 +378,6 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				BalancingAlgorithm: algorithm,
 				Nodes:              nodes,
 				Instances:          instances,
-				GlobalRegions:      globalRegions,
 				HealthCheck: &govultr.HealthCheck{
 					Port:               port,
 					Protocol:           protocol,
@@ -421,6 +433,15 @@ func NewCmdLoadBalancer(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				if len(rulesFi) > 0 {
 					o.CreateReq.FirewallRules = rulesFi
 				}
+			}
+
+			if len(globalRegions) > 0 {
+				regs, errRegs := formatGlobalRegions(globalRegions)
+				if errRegs != nil {
+					return fmt.Errorf("error formatting global regions : %v", errRegs)
+				}
+
+				o.CreateReq.GlobalRegions = regs
 			}
 
 			lb, err := o.create()
@@ -538,10 +559,14 @@ When not provided, load balancer defaults to public network.`,
 		1,
 		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
-	create.Flags().StringSlice(
-		"global-regions",
+	create.Flags().StringArray(
+		"global-region",
 		[]string{},
-		"(optional) Deploy the load balancer across multiple global regions.")
+		`(optional) Deploy the load balancer across multiple regions. One region per
+flag, formatted as a comma-separated string, with the three-letter region ID
+first, follwed by the optional VPC UUID (ie. 'ewr,cb676a46-66fd-4dfb-b839-443f2e6c0b60'). 
+If the VPC UUID is not included, the load balancer will default to the public interface.`,
+	)
 
 	create.Flags().Int(
 		"http-version",
@@ -577,9 +602,9 @@ When not provided, load balancer defaults to public network.`,
 				return fmt.Errorf("error parsing flag 'ssl-redirect' for load balancer update : %v", errSs)
 			}
 
-			globalRegions, errGr := cmd.Flags().GetStringSlice("global-regions")
+			globalRegions, errGr := cmd.Flags().GetStringArray("global-region")
 			if errGr != nil {
-				return fmt.Errorf("error parsing flag 'global-regions' for load balancer update: %v", errGr)
+				return fmt.Errorf("error parsing flag 'global-region' for load balancer update: %v", errGr)
 			}
 
 			httpVersion, errHv := cmd.Flags().GetInt("http-version")
@@ -748,8 +773,13 @@ When not provided, load balancer defaults to public network.`,
 				o.UpdateReq.Timeout = timeout
 			}
 
-			if cmd.Flags().Changed("global-regions") {
-				o.UpdateReq.GlobalRegions = globalRegions
+			if cmd.Flags().Changed("global-region") {
+				regs, errRegs := formatGlobalRegions(globalRegions)
+				if errRegs != nil {
+					return fmt.Errorf("error formatting global regions : %v", errRegs)
+				}
+
+				o.UpdateReq.GlobalRegions = regs
 			}
 
 			if cmd.Flags().Changed("ssl-redirect") {
@@ -858,10 +888,16 @@ When not provided, load balancer defaults to public network.`,
 		1,
 		"(optional) The number of nodes to add to the load balancer (1-99), must be an odd number",
 	)
-	update.Flags().StringSlice(
-		"global-regions",
+	update.Flags().StringArray(
+		"global-region",
 		[]string{},
-		"(optional) Deploy the load balancer across multiple global regions.")
+		`(optional) Deploy the load balancer across multiple regions. One region per
+flag, formatted as a comma-separated string, with the three-letter region ID
+first, follwed by the optional VPC UUID (ie. 'ewr,cb676a46-66fd-4dfb-b839-443f2e6c0b60'). 
+If the VPC UUID is not included, the load balancer will default to the public interface.
+Every region needs to be included in the update or previously added regions will be 
+overwritten.`,
+	)
 	update.Flags().Int(
 		"http-version",
 		0,
@@ -1501,4 +1537,29 @@ func formatForwardingRules(rules []string) ([]govultr.ForwardingRule, error) {
 	}
 
 	return formattedList, nil
+}
+
+// formatGlobalRegions parses global regions from string(s) into struct(s)
+func formatGlobalRegions(regions []string) ([]govultr.LBGlobalRegion, error) {
+	var regionList []govultr.LBGlobalRegion
+
+	for i := range regions {
+		regex := regexp.MustCompile(`\s`)
+		parts := strings.Split(regex.ReplaceAllString(regions[i], ""), ",")
+		region := govultr.LBGlobalRegion{}
+
+		if len(parts) > 2 || len(parts[0]) != 3 {
+			return nil, fmt.Errorf("unable to parse global region flag value %q", regions[i])
+		}
+
+		region.RegionID = parts[0]
+
+		if len(parts) == 2 {
+			region.VPCID = parts[1]
+		}
+
+		regionList = append(regionList, region)
+	}
+
+	return regionList, nil
 }

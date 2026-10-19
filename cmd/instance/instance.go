@@ -614,7 +614,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			if text != "" {
 				ud := userdata.NewUserDataFromString(text)
-				o.UpdateReq.UserData = ud.Base64Encode()
+				o.UpdateReq.UserData = govultr.StringToStringPtr(ud.Base64Encode())
 			}
 
 			if file != "" {
@@ -622,7 +622,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				if err != nil {
 					return fmt.Errorf("error reading from file for instance userdata set : %v", err)
 				}
-				o.UpdateReq.UserData = ud.Base64Encode()
+				o.UpdateReq.UserData = govultr.StringToStringPtr(ud.Base64Encode())
 			}
 
 			if _, err := o.update(); err != nil {
