@@ -53,6 +53,12 @@ var (
 	#Full example with attached VPC
 	vultr-cli load-balancer create --region="lax"  --label="Example Load Balancer with VPC" \
 		--vpc="e951822b-10b2-4c5e-b333-bf38033e7175" --balancing-algorithm="leastconn"
+
+	#Full example with global regions 
+	vultr-cli load-balancer create --region="ams"  --label="Example Global Load Balancer" \
+		--global-region="ewr,e951822b-10b2-4c5e-b333-bf38033e7175" \
+		--global-region="ord,e048dd43-a259-45c7-a1d2-01e449a71f80" \
+		--balancing-algorithm="roundrobin"
 	`
 	updateLong    = `Update a Load Balancer with the desired settings`
 	updateExample = `
@@ -65,6 +71,12 @@ var (
 
 	#Full example with attached VPC
 	vultr-cli load-balancer update 57539f6f-66a2-4580-936b-d0af934bce5d --vpc="bff36707-977e-4357-8f30-bef3339155cc"
+
+	#Full example of adding new global regions.  All existing global regions must be included
+	vultr-cli load-balancer update 8ebc1428-d479-4ab7-a9c9-8f3e1412659e \
+		--global-region="ewr,e951822b-10b2-4c5e-b333-bf38033e7175" \
+		--global-region="ord,e048dd43-a259-45c7-a1d2-01e449a71f80" \
+		--global-region="lax,63438f4b-6927-4082-af6c-eb9575be5cc5" \
 	`
 )
 
