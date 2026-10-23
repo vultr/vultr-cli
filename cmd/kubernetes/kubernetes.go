@@ -365,6 +365,11 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'enable-firewall' for kubernetes cluster create : %v", errFw)
 			}
 
+			vpcID, err := cmd.Flags().GetString("vpc-id")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'vpc-id' for kubenetes create : %v", err)
+			}
+
 			nps, errFm := formatNodePools(nodepools)
 			if errFm != nil {
 				return fmt.Errorf("error in node pool formating : %v", errFm)
@@ -377,6 +382,7 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				Version:         version,
 				HAControlPlanes: ha,
 				EnableFirewall:  fw,
+				VPCID:           vpcID,
 			}
 
 			k8, err := o.create()
@@ -421,6 +427,12 @@ highly available, control planes`,
 		"f",
 		false,
 		`(optional, default false) whether a firewall group should be created for the cluster`,
+	)
+
+	create.Flags().String(
+		"vpc-id",
+		"",
+		`(optional) the VPC ID to use when initializing node private networking. A new VPC is created by default.`,
 	)
 
 	create.Flags().StringArrayP(
