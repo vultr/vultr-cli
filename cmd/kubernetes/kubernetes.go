@@ -365,6 +365,11 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'enable-firewall' for kubernetes cluster create : %v", errFw)
 			}
 
+			vpcID, err := cmd.Flags().GetString("vpc-id")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'vpc-id' for kubernetes create : %v", err)
+			}
+
 			nps, errFm := formatNodePools(nodepools)
 			if errFm != nil {
 				return fmt.Errorf("error in node pool formating : %v", errFm)
@@ -377,6 +382,7 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				Version:         version,
 				HAControlPlanes: ha,
 				EnableFirewall:  fw,
+				VPCID:           vpcID,
 			}
 
 			k8, err := o.create()
@@ -423,13 +429,19 @@ highly available, control planes`,
 		`(optional, default false) whether a firewall group should be created for the cluster`,
 	)
 
+	create.Flags().String(
+		"vpc-id",
+		"",
+		`(optional) the VPC ID to use when initializing node private networking. A new VPC is created by default.`,
+	)
+
 	create.Flags().StringArrayP(
 		"node-pools",
 		"n",
 		[]string{},
-		`a comma-separated, key-value pair list of node pools. At least one node pool is required. At least one node is
-required in node pool. Use / between each new node pool.  E.g: 
-'plan:vhf-8c-32gb,label:mynodepool,tag:my-tag,quantity:3/plan:vhf-8c-32gb,label:mynodepool2,quantity:3`,
+		`a comma-separated, key-value pair list of node pools. At least one node pool is required. 
+At least one node is required in node pool. Use / between each new node pool.  
+E.g: 'plan:vhf-8c-32gb,label:mynodepool,tag:my-tag,quantity:3/plan:vhf-8c-32gb,label:mynodepool2,quantity:3`,
 	)
 	if err := create.MarkFlagRequired("node-pools"); err != nil {
 		fmt.Printf("error marking kubernetes create 'ns-primary' flag required: %v", err)
@@ -810,6 +822,11 @@ required in node pool. Use / between each new node pool.  E.g:
 				)
 			}
 
+			vpcOnly, err := cmd.Flags().GetBool("vpc-only")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'vpc-only' for kubernetes node pool create : %v", err)
+			}
+
 			o.npCreateReq = &govultr.NodePoolReq{
 				NodeQuantity: quantity,
 				Label:        label,
@@ -823,6 +840,10 @@ required in node pool. Use / between each new node pool.  E.g:
 
 			if autoscaler {
 				o.npCreateReq.AutoScaler = govultr.BoolToBoolPtr(true)
+			}
+
+			if vpcOnly {
+				o.npCreateReq.VPCOnly = govultr.BoolToBoolPtr(true)
 			}
 
 			np, err := o.nodePoolCreate()
@@ -869,6 +890,12 @@ required in node pool. Use / between each new node pool.  E.g:
 		"node-labels",
 		nil,
 		"A key=value comma separated string of labels to apply to the nodes in this node pool",
+	)
+
+	npCreate.Flags().Bool("vpc-only", false,
+		`Enable VPC only network access on this node pool. This requires the VPC used by the cluster to 
+have an active NAT gateway and, when enabled, will mean that the nodes will not have a public address 
+or network interface. All traffic from the nodes will be routed, instead, through the NAT gateway.`,
 	)
 
 	// Node Pool Update
@@ -1158,6 +1185,12 @@ func formatNodeData(node []string) (*govultr.NodePoolReq, error) { //nolint:gocy
 				return nil, fmt.Errorf("invalid value for max-nodes: %v", err)
 			}
 			nodeData.MaxNodes = v
+		case "vpc-only":
+			v, err := strconv.ParseBool(val)
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for node pool vpc-only : %v", err)
+			}
+			nodeData.VPCOnly = govultr.BoolToBoolPtr(v)
 		}
 	}
 
