@@ -367,7 +367,7 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 			vpcID, err := cmd.Flags().GetString("vpc-id")
 			if err != nil {
-				return fmt.Errorf("error parsing flag 'vpc-id' for kubenetes create : %v", err)
+				return fmt.Errorf("error parsing flag 'vpc-id' for kubernetes create : %v", err)
 			}
 
 			nps, errFm := formatNodePools(nodepools)
