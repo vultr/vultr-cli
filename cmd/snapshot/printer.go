@@ -48,8 +48,8 @@ func (s *SnapshotsPrinter) Data() [][]string {
 		data = append(data, []string{
 			s.Snapshots[i].ID,
 			s.Snapshots[i].DateCreated,
-			strconv.Itoa(s.Snapshots[i].Size),
-			strconv.Itoa(s.Snapshots[i].CompressedSize),
+			strconv.FormatInt(s.Snapshots[i].Size, 10),
+			strconv.FormatInt(s.Snapshots[i].CompressedSize, 10),
 			s.Snapshots[i].Status,
 			strconv.Itoa(s.Snapshots[i].OsID),
 			strconv.Itoa(s.Snapshots[i].AppID),
@@ -101,8 +101,8 @@ func (s *SnapshotPrinter) Data() [][]string {
 	return [][]string{0: {
 		s.Snapshot.ID,
 		s.Snapshot.DateCreated,
-		strconv.Itoa(s.Snapshot.Size),
-		strconv.Itoa(s.Snapshot.CompressedSize),
+		strconv.FormatInt(s.Snapshot.Size, 10),
+		strconv.FormatInt(s.Snapshot.CompressedSize, 10),
 		s.Snapshot.Status,
 		strconv.Itoa(s.Snapshot.OsID),
 		strconv.Itoa(s.Snapshot.AppID),
