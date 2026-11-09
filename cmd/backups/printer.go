@@ -42,7 +42,7 @@ func (b *BackupsPrinter) Data() [][]string {
 			b.Backups[i].ID,
 			b.Backups[i].DateCreated,
 			b.Backups[i].Description,
-			strconv.Itoa(b.Backups[i].Size),
+			strconv.FormatInt(b.Backups[i].Size, 10),
 			b.Backups[i].Status,
 		})
 	}
@@ -88,7 +88,7 @@ func (b *BackupPrinter) Data() [][]string {
 		b.Backup.ID,
 		b.Backup.DateCreated,
 		b.Backup.Description,
-		strconv.Itoa(b.Backup.Size),
+		strconv.FormatInt(b.Backup.Size, 10),
 		b.Backup.Status,
 	}}
 }

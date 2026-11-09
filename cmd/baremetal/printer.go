@@ -49,7 +49,7 @@ func (b *BareMetalsPrinter) Data() [][]string {
 		data = append(data, []string{
 			b.BareMetals[i].ID,
 			b.BareMetals[i].MainIP,
-			strconv.Itoa(b.BareMetals[i].MacAddress),
+			strconv.FormatInt(b.BareMetals[i].MacAddress, 10),
 			b.BareMetals[i].Label,
 			b.BareMetals[i].Os,
 			b.BareMetals[i].Status,
@@ -107,7 +107,7 @@ func (b *BareMetalPrinter) Data() [][]string {
 	}
 
 	data = append(data,
-		[]string{"MAC ADDRESS", strconv.Itoa(b.BareMetal.MacAddress)},
+		[]string{"MAC ADDRESS", strconv.FormatInt(b.BareMetal.MacAddress, 10)},
 		[]string{"LABEL", b.BareMetal.Label},
 		[]string{"OS", b.BareMetal.Os},
 		[]string{"SNAPSHOT ID", b.BareMetal.SnapshotID},
