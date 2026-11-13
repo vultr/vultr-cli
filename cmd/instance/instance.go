@@ -103,11 +103,17 @@ var (
 	vpcAttachExample = `
 	# Full example
 	vultr-cli instance vpc attach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
+
+	# Positional VPC ID is still accepted
+	vultr-cli instance vpc attach <instanceID> 2126b7d9-5e2a-491e-8840-838aa6b5f294
 	`
 	vpcDetachLong    = `Detaches an existing VPC from the specified instance`
 	vpcDetachExample = `
 	# Full example
 	vultr-cli instance vpc detach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
+
+	# Positional VPC ID is still accepted
+	vultr-cli instance vpc detach <instanceID> 2126b7d9-5e2a-491e-8840-838aa6b5f294
 	`
 )
 
@@ -1546,17 +1552,24 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 	// VPC Attach
 	vpcAttach := &cobra.Command{
-		Use:     "attach <Instance ID>",
+		Use:     "attach <Instance ID> [VPC ID]",
 		Short:   "Attach a VPC to an instance",
 		Long:    vpcAttachLong,
 		Example: vpcAttachExample,
 		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 2 {
-				return errors.New("please provide an instance ID and a VPC ID")
+			if len(args) < 1 {
+				return errors.New("please provide an instance ID")
 			}
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			vpcID, errID := instanceVPCID(cmd, args)
+			if errID != nil {
+				return errID
+			}
+
+			o.VPCID = vpcID
+
 			if err := o.vpcAttach(); err != nil {
 				return fmt.Errorf("error attaching vpc to instance : %v", err)
 			}
@@ -1567,19 +1580,28 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		},
 	}
 
+	vpcAttach.Flags().String("vpc-id", "", "id of the VPC you wish to attach")
+
 	// VPC Detach
 	vpcDetach := &cobra.Command{
-		Use:     "detach <Instance ID>",
+		Use:     "detach <Instance ID> [VPC ID]",
 		Short:   "Detach a VPC from an instance",
 		Long:    vpcDetachLong,
 		Example: vpcDetachExample,
 		Args: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 2 {
-				return errors.New("please provide an instance ID and a VPC ID")
+			if len(args) < 1 {
+				return errors.New("please provide an instance ID")
 			}
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			vpcID, errID := instanceVPCID(cmd, args)
+			if errID != nil {
+				return errID
+			}
+
+			o.VPCID = vpcID
+
 			if err := o.vpcDetach(); err != nil {
 				return fmt.Errorf("error detaching vpc from instance : %v", err)
 			}
@@ -1589,6 +1611,8 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 			return nil
 		},
 	}
+
+	vpcDetach.Flags().String("vpc-id", "", "id of the VPC you wish to detach")
 
 	vpc.AddCommand(
 		vpcAttach,
@@ -1716,6 +1740,7 @@ type options struct {
 	RestoreReq      *govultr.RestoreReq
 	ReinstallReq    *govultr.ReinstallReq
 	ISOAttachID     string
+	VPCID           string
 	Reboot          *bool
 	ReverseDNSReq   *govultr.ReverseIP
 }
@@ -1841,12 +1866,29 @@ func (o *options) reverseDNSIPv6Delete() error {
 	return o.Base.Client.Instance.DeleteReverseIPv6(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
 }
 
+func instanceVPCID(cmd *cobra.Command, args []string) (string, error) {
+	fromFlag, err := cmd.Flags().GetString("vpc-id")
+	if err != nil {
+		return "", fmt.Errorf("error parsing flag 'vpc-id' for instance vpc : %v", err)
+	}
+
+	if fromFlag != "" {
+		return fromFlag, nil
+	}
+
+	if len(args) > 1 && args[1] != "" {
+		return args[1], nil
+	}
+
+	return "", errors.New("please provide a VPC ID with --vpc-id or as an argument")
+}
+
 func (o *options) vpcAttach() error {
-	return o.Base.Client.Instance.AttachVPC(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return o.Base.Client.Instance.AttachVPC(o.Base.Context, o.Base.Args[0], o.VPCID)
 }
 
 func (o *options) vpcDetach() error {
-	return o.Base.Client.Instance.DetachVPC(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return o.Base.Client.Instance.DetachVPC(o.Base.Context, o.Base.Args[0], o.VPCID)
 }
 
 func (o *options) bandwidth() (*govultr.Bandwidth, error) {
