@@ -910,7 +910,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			url, err := cmd.Flags().GetString("url")
 			if err != nil {
-				return fmt.Errorf("error parsing ipxe-chain-url flag for bare metal iPXE URL change : %v", err)
+				return fmt.Errorf("error parsing url flag for bare metal iPXE URL change : %v", err)
 			}
 
 			o.UpdateReq = &govultr.BareMetalUpdate{
