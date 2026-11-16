@@ -915,6 +915,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 
 			o.UpdateReq = &govultr.BareMetalUpdate{
 				IPXEChainURL: url,
+				OsID:         159,
 			}
 
 			if _, err := o.update(); err != nil {
