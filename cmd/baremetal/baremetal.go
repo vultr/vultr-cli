@@ -114,7 +114,7 @@ IP information is only available for bare metal servers in the "active" state.
 
 	ipxeChainURLLong    = `Set the server iPXE chain URL. Must have OS of "custom" (OS ID of 159)`
 	ipxeChainURLExample = `
-	vultr-cli bare-metal pxe set-chain-url <Bare Metal ID> --url "http://www.example.com/bootimage.ipxe`
+	vultr-cli bare-metal pxe set-chain-url <Bare Metal ID> --url "http://www.example.com/bootimage.ipxe"`
 )
 
 // NewCmdBareMetal ...
