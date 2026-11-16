@@ -2249,3 +2249,47 @@ func (c *ConnectorStatusPrinter) Data() [][]string {
 func (c *ConnectorStatusPrinter) Paging() [][]string {
 	return nil
 }
+
+// ======================================
+
+// ServicesPrinter ...
+type ServicesPrinter struct {
+	Services *govultr.DatabaseServices `json:"services"`
+}
+
+// JSON ...
+func (s *ServicesPrinter) JSON() []byte {
+	return printer.MarshalObject(s, "json")
+}
+
+// YAML ...
+func (s *ServicesPrinter) YAML() []byte {
+	return printer.MarshalObject(s, "yaml")
+}
+
+// Columns ...
+func (s *ServicesPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"DATABASE",
+		"VERSIONS",
+	}}
+}
+
+// Data ...
+func (s *ServicesPrinter) Data() [][]string {
+	var data [][]string
+	data = append(data,
+		[]string{"---", "---"},
+		[]string{"KAFKA", strings.Join(s.Services.Kafka, ", ")},
+		[]string{"MYSQL", strings.Join(s.Services.MySQL, ", ")},
+		[]string{"POSTGRESQL", strings.Join(s.Services.PostgreSQL, ", ")},
+		[]string{"VALKEY", strings.Join(s.Services.Valkey, ", ")},
+	)
+
+	return data
+}
+
+// Paging ...
+func (c *ServicesPrinter) Paging() [][]string {
+	return nil
+}
