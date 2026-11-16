@@ -111,6 +111,10 @@ List the IPv6 information of a bare metal server.
 IP information is only available for bare metal servers in the "active" state.
 `
 	ipv6Example = ``
+
+	ipxeChainURLLong    = `Set the server iPXE chain URL. Must have OS of "custom" (OS ID of 159)`
+	ipxeChainURLExample = `
+	vultr-cli bare-metal pxe set-chain-url <Bare Metal ID> --url "http://www.example.com/bootimage.ipxe"`
 )
 
 // NewCmdBareMetal ...
@@ -296,6 +300,11 @@ Defaults to 'yes'.`,
 		"(optional) IP address of the floating IP to use as the main IP of this server.",
 	)
 	create.Flags().BoolP("persistent_pxe", "x", false, "enable persistent_pxe | true or false")
+	create.Flags().String(
+		"ipxe-chain-url",
+		"",
+		"(optional) the URL for the iPXE chainloader. if present, the --os must be 159",
+	)
 	create.Flags().StringP(
 		"mdisk_mode",
 		"",
@@ -879,6 +888,54 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 		},
 	}
 
+	// PXE boot
+	pxe := &cobra.Command{
+		Use:     "pxe",
+		Short:   "Update the PXE boot options of a bare metal server",
+		Aliases: []string{"ipxe"},
+	}
+
+	ipxeChainURL := &cobra.Command{
+		Use:     "set-chain-url <Bare Metal ID>",
+		Short:   "Set the iPXE chain URL for the bare metal server",
+		Long:    ipxeChainURLLong,
+		Example: ipxeChainURLExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a bare metal ID")
+			}
+
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			url, err := cmd.Flags().GetString("url")
+			if err != nil {
+				return fmt.Errorf("error parsing url flag for bare metal iPXE URL change : %v", err)
+			}
+
+			o.UpdateReq = &govultr.BareMetalUpdate{
+				IPXEChainURL: url,
+				OsID:         159,
+			}
+
+			if _, err := o.update(); err != nil {
+				return fmt.Errorf("error updating bare metal iPXE chain URL : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("bare metal server PXE chain URL has been set"), nil)
+
+			return nil
+		},
+	}
+
+	ipxeChainURL.Flags().String("url", "", "The URL for the iPXE chain boot image")
+	if err := ipxeChainURL.MarkFlagRequired("url"); err != nil {
+		fmt.Printf("error marking bare metal 'url' flag required: %v", err)
+		os.Exit(1)
+	}
+
+	pxe.AddCommand(ipxeChainURL)
+
 	cmd.AddCommand(
 		get,
 		list,
@@ -897,6 +954,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 		tags,
 		ipv4,
 		ipv6,
+		pxe,
 	)
 
 	return cmd
@@ -1067,6 +1125,11 @@ func parseCreateFlags(cmd *cobra.Command) (*govultr.BareMetalCreate, error) { //
 		return nil, fmt.Errorf("error parsing persistent_pxe flag for bare metal create : %v", err)
 	}
 
+	ipxeChainURL, err := cmd.Flags().GetString("ipxe-chain-url")
+	if err != nil {
+		return nil, fmt.Errorf("error parsing flag ipxe-chain-url for bare metal create : %v", err)
+	}
+
 	image, err := cmd.Flags().GetString("image")
 	if err != nil {
 		return nil, fmt.Errorf("error parsing image flag for bare metal create : %v", err)
@@ -1086,6 +1149,7 @@ func parseCreateFlags(cmd *cobra.Command) (*govultr.BareMetalCreate, error) { //
 		ReservedIPv4:    ripv4,
 		Region:          region,
 		PersistentPxe:   govultr.BoolToBoolPtr(pxe),
+		IPXEChainURL:    ipxeChainURL,
 		MdiskMode:       mdiskMode,
 	}
 
