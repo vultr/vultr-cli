@@ -5130,6 +5130,34 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		versionUpgrade,
 	)
 
+	// Service
+	service := &cobra.Command{
+		Use:     "service",
+		Aliases: []string{"services"},
+		Short:   "Commands to refer to database services",
+	}
+
+	// Service List
+	serviceList := &cobra.Command{
+		Use:   "list",
+		Short: "List all services available for database creation",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			srv, err := o.listServices()
+			if err != nil {
+				return fmt.Errorf("error retrieving database services : %v", err)
+			}
+
+			data := &ServicesPrinter{Services: srv}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	service.AddCommand(
+		serviceList,
+	)
+
 	cmd.AddCommand(
 		list,
 		get,
@@ -5152,6 +5180,7 @@ func NewCmdDatabase(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		connectionPool,
 		advancedOption,
 		version,
+		service,
 	)
 
 	return cmd
@@ -5495,4 +5524,9 @@ func (o *options) listVersions() ([]string, error) {
 func (o *options) upgradeVersion() (string, error) {
 	up, _, err := o.Base.Client.Database.StartVersionUpgrade(o.Base.Context, o.Base.Args[0], o.UpgradeReq)
 	return up, err
+}
+
+func (o *options) listServices() (*govultr.DatabaseServices, error) {
+	srv, _, err := o.Base.Client.Database.ListServices(o.Base.Context)
+	return srv, err
 }
