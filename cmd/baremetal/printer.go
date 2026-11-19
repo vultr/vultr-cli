@@ -33,11 +33,11 @@ func (b *BareMetalsPrinter) Columns() [][]string {
 		"LABEL",
 		"OS",
 		"STATUS",
+		"POWER",
 		"REGION",
 		"CPU",
 		"RAM",
 		"DISK",
-		"FEATURES",
 		"TAGS",
 	}}
 }
@@ -53,11 +53,11 @@ func (b *BareMetalsPrinter) Data() [][]string {
 			b.BareMetals[i].Label,
 			b.BareMetals[i].Os,
 			b.BareMetals[i].Status,
+			b.BareMetals[i].PowerStatus,
 			b.BareMetals[i].Region,
 			strconv.Itoa(b.BareMetals[i].CPUCount),
 			b.BareMetals[i].RAM,
 			b.BareMetals[i].Disk,
-			printer.ArrayOfStringsToString(b.BareMetals[i].Features),
 			printer.ArrayOfStringsToString(b.BareMetals[i].Tags),
 		})
 	}
@@ -112,11 +112,11 @@ func (b *BareMetalPrinter) Data() [][]string {
 		[]string{"OS", b.BareMetal.Os},
 		[]string{"SNAPSHOT ID", b.BareMetal.SnapshotID},
 		[]string{"STATUS", b.BareMetal.Status},
+		[]string{"POWER", b.BareMetal.PowerStatus},
 		[]string{"REGION", b.BareMetal.Region},
 		[]string{"CPU", strconv.Itoa(b.BareMetal.CPUCount)},
 		[]string{"RAM", b.BareMetal.RAM},
 		[]string{"DISK", b.BareMetal.Disk},
-		[]string{"FEATURES", printer.ArrayOfStringsToString(b.BareMetal.Features)},
 		[]string{"TAGS", printer.ArrayOfStringsToString(b.BareMetal.Tags)},
 	)
 
