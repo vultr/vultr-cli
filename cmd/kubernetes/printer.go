@@ -143,16 +143,17 @@ func (c *ClustersPrinter) Data() [][]string {
 
 			if len(c.Clusters[i].NodePools[j].Nodes) != 0 {
 				// Shouldn't ever be zero
-				data = append(data, []string{"ID", "DATE CREATED", "LABEL", "STATUS"})
+				data = append(data, []string{"ID", "LABEL", "STATUS", "PRIVATE IP", "DATE CREATED"})
 			}
 
 			for k := range c.Clusters[i].NodePools[j].Nodes {
 				data = append(data,
 					[]string{
 						c.Clusters[i].NodePools[j].Nodes[k].ID,
-						c.Clusters[i].NodePools[j].Nodes[k].DateCreated,
 						c.Clusters[i].NodePools[j].Nodes[k].Label,
 						c.Clusters[i].NodePools[j].Nodes[k].Status,
+						c.Clusters[i].NodePools[j].Nodes[k].PrivateIP,
+						c.Clusters[i].NodePools[j].Nodes[k].DateCreated,
 					},
 				)
 			}
@@ -239,16 +240,17 @@ func (c *ClusterPrinter) Data() [][]string {
 
 		if len(c.Cluster.NodePools[i].Nodes) != 0 {
 			// Shouldn't ever be zero
-			data = append(data, []string{"ID", "DATE CREATED", "LABEL", "STATUS"})
+			data = append(data, []string{"ID", "LABEL", "STATUS", "PRIVATE IP", "DATE CREATED"})
 		}
 
 		for j := range c.Cluster.NodePools[i].Nodes {
 			data = append(data,
 				[]string{
 					c.Cluster.NodePools[i].Nodes[j].ID,
-					c.Cluster.NodePools[i].Nodes[j].DateCreated,
 					c.Cluster.NodePools[i].Nodes[j].Label,
 					c.Cluster.NodePools[i].Nodes[j].Status,
+					c.Cluster.NodePools[i].Nodes[j].PrivateIP,
+					c.Cluster.NodePools[i].Nodes[j].DateCreated,
 				},
 			)
 		}
@@ -324,16 +326,17 @@ func (n *NodePoolsPrinter) Data() [][]string {
 
 		if len(n.NodePools[i].Nodes) != 0 {
 			// Shouldn't ever be zero
-			data = append(data, []string{"ID", "DATE CREATED", "LABEL", "STATUS"})
+			data = append(data, []string{"ID", "LABEL", "STATUS", "PRIVATE IP", "DATE CREATED"})
 		}
 
 		for j := range n.NodePools[i].Nodes {
 			data = append(data,
 				[]string{
 					n.NodePools[i].Nodes[j].ID,
-					n.NodePools[i].Nodes[j].DateCreated,
 					n.NodePools[i].Nodes[j].Label,
 					n.NodePools[i].Nodes[j].Status,
+					n.NodePools[i].Nodes[j].PrivateIP,
+					n.NodePools[i].Nodes[j].DateCreated,
 				},
 			)
 		}
@@ -399,16 +402,17 @@ func (n *NodePoolPrinter) Data() [][]string {
 
 	if len(n.NodePool.Nodes) != 0 {
 		// Shouldn't ever be zero
-		data = append(data, []string{"ID", "DATE CREATED", "LABEL", "STATUS"})
+		data = append(data, []string{"ID", "LABEL", "STATUS", "PRIVATE IP", "DATE CREATED"})
 	}
 
 	for i := range n.NodePool.Nodes {
 		data = append(data,
 			[]string{
 				n.NodePool.Nodes[i].ID,
-				n.NodePool.Nodes[i].DateCreated,
 				n.NodePool.Nodes[i].Label,
 				n.NodePool.Nodes[i].Status,
+				n.NodePool.Nodes[i].PrivateIP,
+				n.NodePool.Nodes[i].DateCreated,
 			},
 		)
 	}
