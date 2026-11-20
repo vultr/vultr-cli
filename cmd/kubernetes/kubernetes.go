@@ -18,11 +18,7 @@ import (
 )
 
 var (
-	long    = `Get all available commands for Kubernetes`
-	example = `
-	# Full example
-	vultr-cli kubernetes
-	`
+	long = `Get all available commands for Kubernetes`
 
 	createLong    = `Create kubernetes cluster on your Vultr account`
 	createExample = `
@@ -246,7 +242,6 @@ func NewCmdKubernetes(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		Aliases: []string{"k"},
 		Short:   "Commands to manage kubernetes clusters",
 		Long:    long,
-		Example: example,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			utils.SetOptions(o.Base, cmd, args)
 			if !o.Base.HasAuth() {
