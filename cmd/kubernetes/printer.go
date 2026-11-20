@@ -693,12 +693,12 @@ func (a *AppPrinter) Data() [][]string {
 	}
 
 	return [][]string{
-		[]string{"ID", a.App.ID},
-		[]string{"NAME", a.App.Name},
-		[]string{"DESCRIPTION", a.App.Description},
-		[]string{"VERSION", a.App.Version},
-		[]string{"DATE CREATED", a.App.DateCreated},
-		[]string{"DATE UPDATED", a.App.DateUpdated},
+		{"ID", a.App.ID},
+		{"NAME", a.App.Name},
+		{"DESCRIPTION", a.App.Description},
+		{"VERSION", a.App.Version},
+		{"DATE CREATED", a.App.DateCreated},
+		{"DATE UPDATED", a.App.DateUpdated},
 	}
 }
 
@@ -793,13 +793,13 @@ func (a *AppDeploymentPrinter) Data() [][]string {
 	}
 
 	return [][]string{
-		[]string{"ID", a.Deployment.ID},
-		[]string{"APP ID", a.Deployment.AppID},
-		[]string{"NAME", a.Deployment.AppName},
-		[]string{"VERSION", a.Deployment.Version},
-		[]string{"STATUS", a.Deployment.Status},
-		[]string{"DATE CREATED", a.Deployment.DateCreated},
-		[]string{"DATE UPDATED", a.Deployment.DateUpdated},
+		{"ID", a.Deployment.ID},
+		{"APP ID", a.Deployment.AppID},
+		{"NAME", a.Deployment.AppName},
+		{"VERSION", a.Deployment.Version},
+		{"STATUS", a.Deployment.Status},
+		{"DATE CREATED", a.Deployment.DateCreated},
+		{"DATE UPDATED", a.Deployment.DateUpdated},
 	}
 }
 
