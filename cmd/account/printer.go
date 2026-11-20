@@ -93,20 +93,20 @@ func (a *AccountBandwidthPrinter) Columns() [][]string {
 func (a *AccountBandwidthPrinter) Data() [][]string {
 	previousPeriod := fmt.Sprintf(
 		"%s - %s",
-		utils.ParseAPITimestamp(a.Bandwidth.PreviousMonth.TimestampStart),
-		utils.ParseAPITimestamp(a.Bandwidth.PreviousMonth.TimestampEnd),
+		utils.FormatTimestampString(a.Bandwidth.PreviousMonth.TimestampStart),
+		utils.FormatTimestampString(a.Bandwidth.PreviousMonth.TimestampEnd),
 	)
 
 	currentPeriod := fmt.Sprintf(
 		"%s - %s",
-		utils.ParseAPITimestamp(a.Bandwidth.CurrentMonthToDate.TimestampStart),
-		utils.ParseAPITimestamp(a.Bandwidth.CurrentMonthToDate.TimestampEnd),
+		utils.FormatTimestampString(a.Bandwidth.CurrentMonthToDate.TimestampStart),
+		utils.FormatTimestampString(a.Bandwidth.CurrentMonthToDate.TimestampEnd),
 	)
 
 	projectedPeriod := fmt.Sprintf(
 		"%s - %s",
-		utils.ParseAPITimestamp(a.Bandwidth.CurrentMonthProjected.TimestampStart),
-		utils.ParseAPITimestamp(a.Bandwidth.CurrentMonthProjected.TimestampEnd),
+		utils.FormatTimestampString(a.Bandwidth.CurrentMonthProjected.TimestampStart),
+		utils.FormatTimestampString(a.Bandwidth.CurrentMonthProjected.TimestampEnd),
 	)
 
 	return [][]string{

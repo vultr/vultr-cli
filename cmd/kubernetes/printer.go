@@ -6,6 +6,7 @@ import (
 
 	"github.com/vultr/govultr/v3"
 	"github.com/vultr/vultr-cli/v3/cmd/printer"
+	"github.com/vultr/vultr-cli/v3/cmd/utils"
 )
 
 // ClustersSummaryPrinter ...
@@ -605,5 +606,204 @@ func (c *ConfigPrinter) Data() [][]string {
 
 // Paging ...
 func (c *ConfigPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// AppsPrinter ...
+type AppsPrinter struct {
+	Apps []govultr.ClusterApplication
+}
+
+// JSON ...
+func (a *AppsPrinter) JSON() []byte {
+	return printer.MarshalObject(a, "json")
+}
+
+// YAML ...
+func (a *AppsPrinter) YAML() []byte {
+	return printer.MarshalObject(a, "yaml")
+}
+
+// Columns ...
+func (a *AppsPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"NAME",
+		"DESCRIPTION",
+		"VERSION",
+		"DATE CREATED",
+		"DATE UPDATED",
+	}}
+}
+
+// Data ...
+func (a *AppsPrinter) Data() [][]string {
+	if len(a.Apps) == 0 {
+		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
+	}
+
+	var data [][]string
+	for i := range a.Apps {
+		data = append(data, []string{
+			a.Apps[i].ID,
+			utils.TruncateString(a.Apps[i].Name, utils.DefaultRuneLengthShort),
+			utils.TruncateString(a.Apps[i].Description, utils.DefaultRuneLengthLong),
+			a.Apps[i].Version,
+			utils.FormatDateTimeString(a.Apps[i].DateCreated),
+			utils.FormatDateTimeString(a.Apps[i].DateUpdated),
+		})
+	}
+
+	return data
+}
+
+// Paging ...
+func (a *AppsPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// AppPrinter ...
+type AppPrinter struct {
+	App *govultr.ClusterApplication
+}
+
+// JSON ...
+func (a *AppPrinter) JSON() []byte {
+	return printer.MarshalObject(a, "json")
+}
+
+// YAML ...
+func (a *AppPrinter) YAML() []byte {
+	return printer.MarshalObject(a, "yaml")
+}
+
+// Columns ...
+func (a *AppPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (a *AppPrinter) Data() [][]string {
+	if a.App == nil {
+		return [][]string{0: {"No such app ID found"}}
+	}
+
+	return [][]string{
+		{"ID", a.App.ID},
+		{"NAME", a.App.Name},
+		{"DESCRIPTION", a.App.Description},
+		{"VERSION", a.App.Version},
+		{"DATE CREATED", a.App.DateCreated},
+		{"DATE UPDATED", a.App.DateUpdated},
+	}
+}
+
+// Paging ...
+func (a *AppPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// AppDeploymentsPrinter ...
+type AppDeploymentsPrinter struct {
+	Deployments []govultr.ClusterApplicationDeployment
+}
+
+// JSON ...
+func (a *AppDeploymentsPrinter) JSON() []byte {
+	return printer.MarshalObject(a, "json")
+}
+
+// YAML ...
+func (a *AppDeploymentsPrinter) YAML() []byte {
+	return printer.MarshalObject(a, "yaml")
+}
+
+// Columns ...
+func (a *AppDeploymentsPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"APP ID",
+		"APP NAME",
+		"VERSION",
+		"STATUS",
+		"DATE CREATED",
+		"DATE UPDATED",
+	}}
+}
+
+// Data ...
+func (a *AppDeploymentsPrinter) Data() [][]string {
+	if len(a.Deployments) <= 0 {
+		return [][]string{0: {"---", "---", "---", "---", "---", "---", "---"}}
+	}
+
+	var data [][]string
+	for i := range a.Deployments {
+		data = append(data, []string{
+			a.Deployments[i].ID,
+			a.Deployments[i].AppID,
+			a.Deployments[i].AppName,
+			a.Deployments[i].Version,
+			a.Deployments[i].Status,
+			a.Deployments[i].DateCreated,
+			a.Deployments[i].DateUpdated,
+		})
+	}
+
+	return data
+}
+
+// Paging ...
+func (a *AppDeploymentsPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// AppDeploymentPrinter ...
+type AppDeploymentPrinter struct {
+	Deployment *govultr.ClusterApplicationDeployment
+}
+
+// JSON ...
+func (a *AppDeploymentPrinter) JSON() []byte {
+	return printer.MarshalObject(a, "json")
+}
+
+// YAML ...
+func (a *AppDeploymentPrinter) YAML() []byte {
+	return printer.MarshalObject(a, "yaml")
+}
+
+// Columns ...
+func (a *AppDeploymentPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (a *AppDeploymentPrinter) Data() [][]string {
+	if a.Deployment == nil {
+		return [][]string{0: {"The deployment does not exist"}}
+	}
+
+	return [][]string{
+		{"ID", a.Deployment.ID},
+		{"APP ID", a.Deployment.AppID},
+		{"NAME", a.Deployment.AppName},
+		{"VERSION", a.Deployment.Version},
+		{"STATUS", a.Deployment.Status},
+		{"DATE CREATED", a.Deployment.DateCreated},
+		{"DATE UPDATED", a.Deployment.DateUpdated},
+	}
+}
+
+// Paging ...
+func (a *AppDeploymentPrinter) Paging() [][]string {
 	return nil
 }
