@@ -1141,7 +1141,7 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 	// Apps
 	apps := &cobra.Command{
 		Use:     "apps",
-		Short:   "Commands to manage app deployments in a kubernetes cluster",
+		Short:   "Commands to manage apps in a kubernetes cluster",
 		Aliases: []string{"app"},
 	}
 
