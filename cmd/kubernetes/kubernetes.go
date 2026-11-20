@@ -1098,6 +1098,227 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 		node,
 	)
 
+	// Apps
+	apps := &cobra.Command{
+		Use:     "apps",
+		Short:   "Commands to manage app deployments in a kubernetes cluster",
+		Aliases: []string{"app"},
+	}
+
+	// Apps list available
+	appsList := &cobra.Command{
+		Use:     "list-available",
+		Short:   "List catalog of available apps for deployment",
+		Aliases: []string{"available"},
+		// Long:    appsAvailableLong,
+		// Example: appsAvailableExample,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			apps, err := o.appsListAvailable()
+			if err != nil {
+				return fmt.Errorf("error retrieving available kubernetes applications list : %v", err)
+			}
+
+			data := &AppsPrinter{Apps: apps}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Apps show available details
+	appsDetails := &cobra.Command{
+		Use:     "details <APP ID>",
+		Short:   "Show the full list of details for an app",
+		Aliases: []string{"get-available"},
+		// Long:    appDetailsLong,
+		// Example: appDetailsExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide an app ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			app, err := o.appsGetAvailable()
+			if err != nil {
+				return fmt.Errorf(
+					"error retrieving available kubernetes application details : %v",
+					err,
+				)
+			}
+
+			data := &AppPrinter{App: app}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Apps deployments list
+	appsDeploymentsList := &cobra.Command{
+		Use:   "list-deployments <Cluster ID>",
+		Short: "List all app deployments on the cluster",
+		// Long:    appDeploymentsListLong,
+		// Example: appDeploymentsListExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a cluster ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			deps, err := o.appsListDeployments()
+			if err != nil {
+				return fmt.Errorf("error retrieving list of application deployments on kubernetes cluster : %v", err)
+			}
+
+			data := &AppDeploymentsPrinter{Deployments: deps}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Apps get deployment
+	appsDeploymentsGet := &cobra.Command{
+		Use:     "get-deployment <Cluster ID> <Deployment ID>",
+		Short:   "Get the details of an app deployment on the cluster",
+		Aliases: []string{"get-deployments"},
+		// Long:    appDeploymentGetLong,
+		// Example: appDeploymentGetExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 2 {
+				return errors.New("please provide a cluster ID and deployment ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			dep, err := o.appsGetDeployment()
+			if err != nil {
+				return fmt.Errorf("error retrieving application deployment on kubernetes cluster : %v", err)
+			}
+
+			data := &AppDeploymentPrinter{Deployment: dep}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Apps create deployment
+	appsDeploymentsCreate := &cobra.Command{
+		Use:     "create-deployment <Cluster ID>",
+		Short:   "Create a deployment in the cluster",
+		Aliases: []string{"create-deployments"},
+		// Long:    appDeploymentCreateLong,
+		// Example: appDeploymentCreateExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a cluster ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			appID, err := cmd.Flags().GetString("app-id")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'app-id' for kubernetes cluster app deployment create : %v", err)
+			}
+
+			config, err := cmd.Flags().GetString("config")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'config' for kubernetes cluster app deployment create : %v", err)
+			}
+
+			timeout, err := cmd.Flags().GetString("timeout")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'timeout' for kubernetes cluster app deployment create : %v", err)
+			}
+
+			o.appDeploymentReq = &govultr.ClusterApplicationDeploymentReq{
+				ID:      appID,
+				Config:  config,
+				Timeout: timeout,
+			}
+
+			dep, err := o.appsCreateDeployment()
+			if err != nil {
+				return fmt.Errorf("error creating application deployment on kubernetes cluster : %v", err)
+			}
+
+			data := &AppDeploymentPrinter{Deployment: dep}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	appsDeploymentsCreate.Flags().String("app-id", "", "The app ID to be deployed onto the kubernetes cluster")
+	if err := appsDeploymentsCreate.MarkFlagRequired("app-id"); err != nil {
+		fmt.Printf("error marking app-id flag required for kubernetes app deployment create : %v\n", err)
+		os.Exit(1)
+	}
+
+	appsDeploymentsCreate.Flags().String("timeout", "", "The timeout to be used when creating the deployment")
+	appsDeploymentsCreate.Flags().String("config", "", "Custom Helm values to send with the deployment")
+
+	// Apps upgrade deployment
+	appsDeploymentsUpgrade := &cobra.Command{
+		Use:     "upgrade-deployment <Cluster ID> <Deployment ID>",
+		Short:   "Upgrade a deployment in the cluster to the latest available version",
+		Aliases: []string{"upgrade-deployments"},
+		// Long:    appDeploymentUpgradeLong,
+		// Example: appDeploymentUpgradeExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 2 {
+				return errors.New("please provide a cluster ID and a deployment ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.appsUpgradeDeployment(); err != nil {
+				return fmt.Errorf("error upgrading application deployment on kubernetes cluster : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("Application deployment upgrade is underway"), nil)
+
+			return nil
+		},
+	}
+
+	// Apps delete deployment
+	appsDeploymentsDelete := &cobra.Command{
+		Use:     "delete-deployment <Cluster ID> <Deployment ID>",
+		Short:   "Delete a deployment in the cluster",
+		Aliases: []string{"delete-deployments"},
+		// Long:    appDeploymentDeleteLong,
+		// Example: appDeploymentDeleteExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 2 {
+				return errors.New("please provide a cluster ID and a deployment ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.appsDeleteDeployment(); err != nil {
+				return fmt.Errorf("error deleting the application deployment on kubernetes cluster : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("Application deployment deletion is underway"), nil)
+
+			return nil
+		},
+	}
+
+	apps.AddCommand(
+		appsList,
+		appsDetails,
+		appsDeploymentsList,
+		appsDeploymentsGet,
+		appsDeploymentsCreate,
+		appsDeploymentsUpgrade,
+		appsDeploymentsDelete,
+	)
+
 	cmd.AddCommand(
 		list,
 		get,
@@ -1108,6 +1329,7 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 		nodepool,
 		versions,
 		upgrades,
+		apps,
 	)
 
 	return cmd
@@ -1211,12 +1433,13 @@ func formatNodeLabels(nl string) map[string]string {
 }
 
 type options struct {
-	Base        *cli.Base
-	CreateReq   *govultr.ClusterReq
-	UpdateReq   *govultr.ClusterReqUpdate
-	UpgradeReq  *govultr.ClusterUpgradeReq
-	npCreateReq *govultr.NodePoolReq
-	npUpdateReq *govultr.NodePoolReqUpdate
+	Base             *cli.Base
+	CreateReq        *govultr.ClusterReq
+	UpdateReq        *govultr.ClusterReqUpdate
+	UpgradeReq       *govultr.ClusterUpgradeReq
+	npCreateReq      *govultr.NodePoolReq
+	npUpdateReq      *govultr.NodePoolReqUpdate
+	appDeploymentReq *govultr.ClusterApplicationDeploymentReq
 }
 
 func (o *options) list() ([]govultr.Cluster, *govultr.Meta, error) {
@@ -1295,4 +1518,47 @@ func (o *options) nodePoolNodeDelete() error {
 
 func (o *options) nodePoolNodeRecycle() error {
 	return o.Base.Client.Kubernetes.RecycleNodePoolInstance(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2]) //nolint:lll
+}
+
+func (o *options) appsListAvailable() ([]govultr.ClusterApplication, error) {
+	apps, _, err := o.Base.Client.Kubernetes.ListClusterApplicationsAvailable(o.Base.Context)
+	return apps, err
+}
+
+func (o *options) appsListDeployments() ([]govultr.ClusterApplicationDeployment, error) {
+	deps, _, err := o.Base.Client.Kubernetes.ListClusterApplicationDeployments(o.Base.Context, o.Base.Args[0])
+	return deps, err
+}
+
+func (o *options) appsGetDeployment() (*govultr.ClusterApplicationDeployment, error) {
+	dep, _, err := o.Base.Client.Kubernetes.GetClusterApplicationDeployment(o.Base.Context, o.Base.Args[0], o.Base.Args[1]) //nolint:lll
+	return dep, err
+}
+
+func (o *options) appsCreateDeployment() (*govultr.ClusterApplicationDeployment, error) {
+	dep, _, err := o.Base.Client.Kubernetes.CreateClusterApplicationDeployment(o.Base.Context, o.Base.Args[0], o.appDeploymentReq) //nolint:lll
+	return dep, err
+}
+
+func (o *options) appsUpgradeDeployment() error {
+	return o.Base.Client.Kubernetes.UpgradeClusterApplicationDeployment(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+}
+
+func (o *options) appsDeleteDeployment() error {
+	return o.Base.Client.Kubernetes.DeleteClusterApplicationDeployment(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+}
+
+func (o *options) appsGetAvailable() (*govultr.ClusterApplication, error) {
+	apps, _, err := o.Base.Client.Kubernetes.ListClusterApplicationsAvailable(o.Base.Context)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range apps {
+		if apps[i].ID == o.Base.Args[0] {
+			return &apps[i], nil
+		}
+	}
+
+	return nil, fmt.Errorf("app not found")
 }
