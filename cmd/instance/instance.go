@@ -1028,9 +1028,21 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 				return fmt.Errorf("error parsing flag 'osID' for instance os change : %v", errOs)
 			}
 
-			o.UpdateReq = &govultr.InstanceUpdateReq{
-				OsID: osID,
+			userData, errUs := cmd.Flags().GetString("userdata")
+			if errUs != nil {
+				return fmt.Errorf("error parsing flag 'userdata' for instance os change : %v", errUs)
 			}
+
+			userDataFile, errUd := cmd.Flags().GetString("userdata-file")
+			if errUd != nil {
+				return fmt.Errorf("error parsing flag 'userdata-file' for instance os change : %v", errUd)
+			}
+
+			req, errReq := osChangeRequest(osID, userData, userDataFile)
+			if errReq != nil {
+				return fmt.Errorf("error with instance os change : %v", errReq)
+			}
+			o.UpdateReq = req
 
 			_, err := o.update()
 			if err != nil {
@@ -1044,6 +1056,18 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	}
 
 	osChange.Flags().IntP("os", "", 0, "operating system ID you wish to use")
+	osChange.Flags().StringP(
+		"userdata",
+		"u",
+		"",
+		"plain text user data to give to the instance with the new operating system",
+	)
+	osChange.Flags().String(
+		"userdata-file",
+		"",
+		"file path to read in for the user data to give to the instance with the new operating system",
+	)
+	osChange.MarkFlagsMutuallyExclusive("userdata", "userdata-file")
 	if err := osChange.MarkFlagRequired("os"); err != nil {
 		fmt.Printf("error marking instance os update 'os' flag required: %v", err)
 		os.Exit(1)
@@ -1733,6 +1757,29 @@ func (o *options) get() (*govultr.Instance, error) {
 func (o *options) create() (*govultr.Instance, error) {
 	inst, _, err := o.Base.Client.Instance.Create(o.Base.Context, o.CreateReq)
 	return inst, err
+}
+
+// osChangeRequest builds the update request of `instance os change`. The user data
+// is sent in the same request, so that the new operating system boots with it
+func osChangeRequest(osID int, userData, userDataFile string) (*govultr.InstanceUpdateReq, error) {
+	req := &govultr.InstanceUpdateReq{
+		OsID: osID,
+	}
+
+	if userData != "" {
+		ud := userdata.NewUserDataFromString(userData)
+		req.UserData = govultr.StringToStringPtr(ud.Base64Encode())
+	}
+
+	if userDataFile != "" {
+		ud, err := userdata.NewUserDataFromFile(userDataFile)
+		if err != nil {
+			return nil, err
+		}
+		req.UserData = govultr.StringToStringPtr(ud.Base64Encode())
+	}
+
+	return req, nil
 }
 
 func (o *options) update() (*govultr.Instance, error) {
