@@ -21,13 +21,14 @@ func TruncateString(input string, runeLength int) string {
 		return ""
 	}
 
-	strRuneLength := len([]rune(input))
+	strRunes := []rune(input)
 
-	if strRuneLength <= runeLength {
+	if len(strRunes) <= runeLength {
 		return input
 	}
 
-	strRunes := []rune(input[:runeLength])
+	// truncate at length
+	strRunes = strRunes[:runeLength]
 
 	var strBuilder strings.Builder
 	strBuilder.WriteString(string(strRunes))
