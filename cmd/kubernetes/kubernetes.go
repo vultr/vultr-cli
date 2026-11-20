@@ -226,6 +226,51 @@ var (
 	# Shortened with alias commands
 	vultr-cli k n node r ffd31f18-5f77-454c-9065-212f942c3c35
 	`
+
+	appsAvailableLong = `Retrieves a list of all available kubernetes cluster
+applications. Further information may be retrieved with the 'details' command.`
+	appsAvailableExample = `
+	#Full example
+	vultr-cli kubernetes apps list
+`
+
+	appsDetailsLong    = `Retrieves additional details related to the application.`
+	appsDetailsExample = `
+	#Full example
+	vultr-cli kubernetes apps details c6a00ea5-9a54-481c-a79c-e4a1a74e8f44
+`
+
+	appsDeploymentListLong    = `Retrieves a list of deployments on a kubernetes cluster.`
+	appsDeploymentListExample = `
+	#Full example
+	vultr-cli kubernetes apps deployments list 8cf93f5f-875e-4aea-8a84-ec2dd592b5ae
+`
+
+	appsDeploymentGetLong    = `Retrieves details of a deployment on a kubernetes cluster.`
+	appsDeploymentGetExample = `
+	#Full example
+	vultr-cli kubernetes apps deployments get 8cf93f5f-875e-4aea-8a84-ec2dd592b5ae 4130764b-5276-4552-546f-32513239732b
+`
+
+	appsDeploymentCreateLong    = `Intiate the deployment of the app onto the kubernetes cluster.`
+	appsDeploymentCreateExample = `
+	#Full example
+	vultr-cli kubernetes apps deployments create 8cf93f5f-875e-4aea-8a84-ec2dd592b5ae \
+		--app-id 4130764b-5276-4552-546f-32513239732b
+`
+
+	appsDeploymentUpgradeLong = `Intiate the upgrade process for an app deployment on the kubernetes cluster. 
+This will automatically select the latest version of the app for the upgrade.`
+	appsDeploymentUpgradeExample = `
+	#Full example
+	vultr-cli kubernetes apps deployments upgrade 8cf93f5f-875e-4aea-8a84-ec2dd592b5ae 4130764b-5276-4552-546f-32513239732b
+`
+
+	appsDeploymentDeleteLong    = `Intiate the delete process for an app deployment.`
+	appsDeploymentDeleteExample = `
+	#Full example
+	vultr-cli kubernetes apps deployments delete 8cf93f5f-875e-4aea-8a84-ec2dd592b5ae 4130764b-5276-4552-546f-32513239732b
+`
 )
 
 const (
@@ -1102,11 +1147,11 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 
 	// Apps list available
 	appsList := &cobra.Command{
-		Use:     "list-available",
+		Use:     "list",
 		Short:   "List catalog of available apps for deployment",
 		Aliases: []string{"available"},
-		// Long:    appsAvailableLong,
-		// Example: appsAvailableExample,
+		Long:    appsAvailableLong,
+		Example: appsAvailableExample,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			apps, err := o.appsListAvailable()
 			if err != nil {
@@ -1123,10 +1168,9 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 	// Apps show available details
 	appsDetails := &cobra.Command{
 		Use:     "details <APP ID>",
-		Short:   "Show the full list of details for an app",
-		Aliases: []string{"get-available"},
-		// Long:    appDetailsLong,
-		// Example: appDetailsExample,
+		Short:   "Show detailed information for an app",
+		Long:    appsDetailsLong,
+		Example: appsDetailsExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide an app ID")
@@ -1149,12 +1193,17 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 		},
 	}
 
+	appsDeployment := &cobra.Command{
+		Use:   "deployment",
+		Short: "Commands for managing kubernetes app deployments",
+	}
+
 	// Apps deployments list
-	appsDeploymentsList := &cobra.Command{
-		Use:   "list-deployments <Cluster ID>",
-		Short: "List all app deployments on the cluster",
-		// Long:    appDeploymentsListLong,
-		// Example: appDeploymentsListExample,
+	appsDeploymentList := &cobra.Command{
+		Use:     "list <Cluster ID>",
+		Short:   "List all app deployments on the cluster",
+		Long:    appsDeploymentListLong,
+		Example: appsDeploymentListExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a cluster ID")
@@ -1175,12 +1224,11 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 	}
 
 	// Apps get deployment
-	appsDeploymentsGet := &cobra.Command{
-		Use:     "get-deployment <Cluster ID> <Deployment ID>",
+	appsDeploymentGet := &cobra.Command{
+		Use:     "get <Cluster ID> <Deployment ID>",
 		Short:   "Get the details of an app deployment on the cluster",
-		Aliases: []string{"get-deployments"},
-		// Long:    appDeploymentGetLong,
-		// Example: appDeploymentGetExample,
+		Long:    appsDeploymentGetLong,
+		Example: appsDeploymentGetExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 2 {
 				return errors.New("please provide a cluster ID and deployment ID")
@@ -1201,12 +1249,11 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 	}
 
 	// Apps create deployment
-	appsDeploymentsCreate := &cobra.Command{
-		Use:     "create-deployment <Cluster ID>",
+	appsDeploymentCreate := &cobra.Command{
+		Use:     "create <Cluster ID>",
 		Short:   "Create a deployment in the cluster",
-		Aliases: []string{"create-deployments"},
-		// Long:    appDeploymentCreateLong,
-		// Example: appDeploymentCreateExample,
+		Long:    appsDeploymentCreateLong,
+		Example: appsDeploymentCreateExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return errors.New("please provide a cluster ID")
@@ -1247,22 +1294,21 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 		},
 	}
 
-	appsDeploymentsCreate.Flags().String("app-id", "", "The app ID to be deployed onto the kubernetes cluster")
-	if err := appsDeploymentsCreate.MarkFlagRequired("app-id"); err != nil {
+	appsDeploymentCreate.Flags().String("app-id", "", "The app ID to be deployed onto the kubernetes cluster")
+	if err := appsDeploymentCreate.MarkFlagRequired("app-id"); err != nil {
 		fmt.Printf("error marking app-id flag required for kubernetes app deployment create : %v\n", err)
 		os.Exit(1)
 	}
 
-	appsDeploymentsCreate.Flags().String("timeout", "", "The timeout to be used when creating the deployment")
-	appsDeploymentsCreate.Flags().String("config", "", "Custom Helm values to send with the deployment")
+	appsDeploymentCreate.Flags().String("timeout", "", "The timeout to be used when creating the deployment")
+	appsDeploymentCreate.Flags().String("config", "", "Custom Helm values to send with the deployment")
 
 	// Apps upgrade deployment
-	appsDeploymentsUpgrade := &cobra.Command{
-		Use:     "upgrade-deployment <Cluster ID> <Deployment ID>",
+	appsDeploymentUpgrade := &cobra.Command{
+		Use:     "upgrade <Cluster ID> <Deployment ID>",
 		Short:   "Upgrade a deployment in the cluster to the latest available version",
-		Aliases: []string{"upgrade-deployments"},
-		// Long:    appDeploymentUpgradeLong,
-		// Example: appDeploymentUpgradeExample,
+		Long:    appsDeploymentUpgradeLong,
+		Example: appsDeploymentUpgradeExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 2 {
 				return errors.New("please provide a cluster ID and a deployment ID")
@@ -1281,12 +1327,11 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 	}
 
 	// Apps delete deployment
-	appsDeploymentsDelete := &cobra.Command{
-		Use:     "delete-deployment <Cluster ID> <Deployment ID>",
+	appsDeploymentDelete := &cobra.Command{
+		Use:     "delete <Cluster ID> <Deployment ID>",
 		Short:   "Delete a deployment in the cluster",
-		Aliases: []string{"delete-deployments"},
-		// Long:    appDeploymentDeleteLong,
-		// Example: appDeploymentDeleteExample,
+		Long:    appsDeploymentDeleteLong,
+		Example: appsDeploymentDeleteExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 2 {
 				return errors.New("please provide a cluster ID and a deployment ID")
@@ -1304,14 +1349,18 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 		},
 	}
 
+	appsDeployment.AddCommand(
+		appsDeploymentList,
+		appsDeploymentGet,
+		appsDeploymentCreate,
+		appsDeploymentUpgrade,
+		appsDeploymentDelete,
+	)
+
 	apps.AddCommand(
 		appsList,
 		appsDetails,
-		appsDeploymentsList,
-		appsDeploymentsGet,
-		appsDeploymentsCreate,
-		appsDeploymentsUpgrade,
-		appsDeploymentsDelete,
+		appsDeployment,
 	)
 
 	cmd.AddCommand(
