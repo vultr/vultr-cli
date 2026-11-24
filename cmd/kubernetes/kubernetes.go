@@ -271,6 +271,52 @@ This will automatically select the latest version of the app for the upgrade.`
 	#Full example
 	vultr-cli kubernetes apps deployments delete 8cf93f5f-875e-4aea-8a84-ec2dd592b5ae 4130764b-5276-4552-546f-32513239732b
 `
+
+	npLabelListExample = `
+	# Full example
+	vultr-cli kubernetes node-pool label list 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa
+`
+
+	npLabelGetExample = `
+	# Full example
+	vultr-cli kubernetes node-pool label get 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa \
+		162b7e698c7fe33235649d8557c37fcc
+`
+
+	npLabelCreateExample = `
+	# Full example
+	vultr-cli kubernetes node-pool label create 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa \
+		--key "my-key" --value "my-value"
+`
+
+	npLabelDeleteExample = `
+	# Full example
+	vultr-cli kubernetes node-pool label delete 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa \
+		162b7e698c7fe33235649d8557c37fcc
+`
+
+	npTaintListExample = `
+	# Full example
+	vultr-cli kubernetes node-pool taint list 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa
+`
+
+	npTaintGetExample = `
+	# Full example
+	vultr-cli kubernetes node-pool taint get 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa \
+		162b7e698c7fe33235649d8557c37fcc
+`
+
+	npTaintCreateExample = `
+	# Full example
+	vultr-cli kubernetes node-pool taint create 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa \
+		--key "my-key" --value "my-value" --effect "NoSchedule"
+`
+
+	npTaintDeleteExample = `
+	# Full example
+	vultr-cli kubernetes node-pool taint delete 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa \
+		162b7e698c7fe33235649d8557c37fcc
+`
 )
 
 const (
@@ -1138,8 +1184,9 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 
 	// Node pool label list
 	npLabelList := &cobra.Command{
-		Use:   "list <Cluster ID> <Node Pool ID>",
-		Short: "List all labels on the node pool",
+		Use:     "list <Cluster ID> <Node Pool ID>",
+		Short:   "List all labels on the node pool",
+		Example: npLabelListExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 2 {
 				return errors.New("please provide a cluster ID and a node pool ID")
@@ -1161,8 +1208,9 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 
 	// Node pool label get
 	npLabelGet := &cobra.Command{
-		Use:   "get <Cluster ID> <Node Pool ID> <Label ID>",
-		Short: "Get a label on the node pool",
+		Use:     "get <Cluster ID> <Node Pool ID> <Label ID>",
+		Short:   "Get a label on the node pool",
+		Example: npLabelGetExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 3 {
 				return errors.New("please provide a cluster ID, a node pool ID and a label ID")
@@ -1184,8 +1232,9 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 
 	// Node pool label create
 	npLabelCreate := &cobra.Command{
-		Use:   "create <Cluster ID> <Node Pool ID>",
-		Short: "Create a label in a node pool",
+		Use:     "create <Cluster ID> <Node Pool ID>",
+		Short:   "Create a label in a node pool",
+		Example: npLabelCreateExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 2 {
 				return errors.New("please provide a cluster ID and a node pool ID")
@@ -1234,8 +1283,9 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 
 	// Node pool label delete
 	npLabelDelete := &cobra.Command{
-		Use:   "delete <Cluster ID> <Node Pool ID> <Label ID>",
-		Short: "Delete a node pool label",
+		Use:     "delete <Cluster ID> <Node Pool ID> <Label ID>",
+		Short:   "Delete a node pool label",
+		Example: npLabelDeleteExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 3 {
 				return errors.New("please provide a cluster ID, a node pool ID and a label ID")
@@ -1269,8 +1319,9 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 
 	// Node pool taint list
 	npTaintList := &cobra.Command{
-		Use:   "list <Cluster ID> <Node Pool ID>",
-		Short: "List all taints on the node pool",
+		Use:     "list <Cluster ID> <Node Pool ID>",
+		Short:   "List all taints on the node pool",
+		Example: npTaintListExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 2 {
 				return errors.New("please provide a cluster ID and a node pool ID")
@@ -1292,8 +1343,9 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 
 	// Node pool taint get
 	npTaintGet := &cobra.Command{
-		Use:   "get <Cluster ID> <Node Pool ID> <Taint ID>",
-		Short: "Get a taint on the node pool",
+		Use:     "get <Cluster ID> <Node Pool ID> <Taint ID>",
+		Short:   "Get a taint on the node pool",
+		Example: npTaintGetExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 3 {
 				return errors.New("please provide a cluster ID, a node pool ID and a taint ID")
@@ -1315,8 +1367,9 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 
 	// Node pool taint create
 	npTaintCreate := &cobra.Command{
-		Use:   "create <Cluster ID> <Node Pool ID>",
-		Short: "Create a taint in a node pool",
+		Use:     "create <Cluster ID> <Node Pool ID>",
+		Short:   "Create a taint in a node pool",
+		Example: npTaintCreateExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 2 {
 				return errors.New("please provide a cluster ID and a node pool ID")
@@ -1377,8 +1430,9 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 
 	// Node pool taint delete
 	npTaintDelete := &cobra.Command{
-		Use:   "delete <Cluster ID> <Node Pool ID> <Taint ID>",
-		Short: "Delete a node pool taint",
+		Use:     "delete <Cluster ID> <Node Pool ID> <Taint ID>",
+		Short:   "Delete a node pool taint",
+		Example: npTaintDeleteExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 3 {
 				return errors.New("please provide a cluster ID, a node pool ID and a taint ID")
