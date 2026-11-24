@@ -102,12 +102,12 @@ var (
 	vpcAttachLong    = `Attaches an existing VPC to the specified instance`
 	vpcAttachExample = `
 	# Full example
-	vultr-cli instance vpc attach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
+	vultr-cli instance vpc attach cb676a46-66fd-4dfb-b839-443f2e6c0b60 2126b7d9-5e2a-491e-8840-838aa6b5f294
 	`
 	vpcDetachLong    = `Detaches an existing VPC from the specified instance`
 	vpcDetachExample = `
 	# Full example
-	vultr-cli instance vpc detach <instanceID> --vpc-id="2126b7d9-5e2a-491e-8840-838aa6b5f294"
+	vultr-cli instance vpc detach cb676a46-66fd-4dfb-b839-443f2e6c0b60 2126b7d9-5e2a-491e-8840-838aa6b5f294
 	`
 )
 
@@ -1546,7 +1546,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 	// VPC Attach
 	vpcAttach := &cobra.Command{
-		Use:     "attach <Instance ID>",
+		Use:     "attach <Instance ID> <VPC ID>",
 		Short:   "Attach a VPC to an instance",
 		Long:    vpcAttachLong,
 		Example: vpcAttachExample,
@@ -1569,7 +1569,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 	// VPC Detach
 	vpcDetach := &cobra.Command{
-		Use:     "detach <Instance ID>",
+		Use:     "detach <Instance ID> <VPC ID>",
 		Short:   "Detach a VPC from an instance",
 		Long:    vpcDetachLong,
 		Example: vpcDetachExample,
