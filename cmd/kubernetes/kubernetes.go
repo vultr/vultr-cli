@@ -1422,7 +1422,7 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 		os.Exit(1)
 	}
 
-	npTaintCreate.Flags().String("effect", "", "The effect of the taint")
+	npTaintCreate.Flags().String("effect", "", "The effect of the taint. One of 'NoSchedule', 'PreferNoSchedule' and 'NoExecute'")
 	if err := npTaintCreate.MarkFlagRequired("effect"); err != nil {
 		fmt.Printf("error marking kubernetes node pool taint create 'effect' flag required: %v", err)
 		os.Exit(1)
