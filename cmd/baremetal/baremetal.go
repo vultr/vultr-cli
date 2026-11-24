@@ -940,7 +940,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 	vpc := &cobra.Command{
 		Use:     "vpc",
 		Short:   "Commands to manage VPCs on bare metal servers",
-		Aliases: []string{"aliases"},
+		Aliases: []string{"vpcs"},
 	}
 
 	// VPC list

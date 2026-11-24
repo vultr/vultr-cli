@@ -1540,8 +1540,9 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 
 	// VPC
 	vpc := &cobra.Command{
-		Use:   "vpc",
-		Short: "Commands to handle vpcs on an instance",
+		Use:     "vpc",
+		Short:   "Commands to handle vpcs on an instance",
+		Aliases: []string{"vpcs"},
 	}
 
 	// VPC List
