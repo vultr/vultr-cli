@@ -859,7 +859,7 @@ func (l *LabelsPrinter) Paging() [][]string {
 
 // ======================================
 
-// TaintPrinter ...
+// LabelPrinter ...
 type LabelPrinter struct {
 	Label *govultr.NodePoolLabel
 }
