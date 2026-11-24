@@ -936,6 +936,84 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 
 	pxe.AddCommand(ipxeChainURL)
 
+	// VPC
+	vpc := &cobra.Command{
+		Use:     "vpc",
+		Short:   "Commands to manage VPCs on bare metal servers",
+		Aliases: []string{"aliases"},
+	}
+
+	// VPC list
+	vpcList := &cobra.Command{
+		Use:   "list <Bare Metal ID>",
+		Short: "List the attached VPC networks",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a bare metal ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			vpcs, err := o.listVPCs()
+			if err != nil {
+				return fmt.Errorf("error retrieving bare metal VPC list : %v", err)
+			}
+
+			data := &VPCsPrinter{VPCs: vpcs}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// VPC attach
+	vpcAttach := &cobra.Command{
+		Use:   "attach <Bare Metal ID> <VPC ID>",
+		Short: "Attach a VPC to a bare metal server",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 2 {
+				return errors.New("please provide a bare metal server ID and a VPC ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.attachVPC(); err != nil {
+				return fmt.Errorf("error attaching VPC to bare metal server : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("VPC attached to bare metal server"), nil)
+
+			return nil
+		},
+	}
+
+	// VPC detach
+	vpcDetach := &cobra.Command{
+		Use:   "detach <Bare Metal ID> <VPC ID>",
+		Short: "Detach a VPC from a bare metal server",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 2 {
+				return errors.New("please provide a bare metal server ID and a VPC ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.detachVPC(); err != nil {
+				return fmt.Errorf("error detaching VPC from bare metal server : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("VPC detached from bare metal server"), nil)
+
+			return nil
+		},
+	}
+
+	vpc.AddCommand(
+		vpcList,
+		vpcAttach,
+		vpcDetach,
+	)
+
 	cmd.AddCommand(
 		get,
 		list,
@@ -955,6 +1033,7 @@ Possible values: 'raid1', 'jbod', 'none''. Defaults to 'none'.`,
 		ipv4,
 		ipv6,
 		pxe,
+		vpc,
 	)
 
 	return cmd
@@ -966,75 +1045,88 @@ type options struct {
 	UpdateReq *govultr.BareMetalUpdate
 }
 
-func (b *options) list() ([]govultr.BareMetalServer, *govultr.Meta, error) {
-	bms, meta, _, err := b.Base.Client.BareMetalServer.List(b.Base.Context, b.Base.Options)
+func (o *options) list() ([]govultr.BareMetalServer, *govultr.Meta, error) {
+	bms, meta, _, err := o.Base.Client.BareMetalServer.List(o.Base.Context, o.Base.Options)
 	return bms, meta, err
 }
 
-func (b *options) get() (*govultr.BareMetalServer, error) {
-	bm, _, err := b.Base.Client.BareMetalServer.Get(b.Base.Context, b.Base.Args[0])
+func (o *options) get() (*govultr.BareMetalServer, error) {
+	bm, _, err := o.Base.Client.BareMetalServer.Get(o.Base.Context, o.Base.Args[0])
 	return bm, err
 }
 
-func (b *options) create() (*govultr.BareMetalServer, error) {
-	bm, _, err := b.Base.Client.BareMetalServer.Create(b.Base.Context, b.CreateReq)
+func (o *options) create() (*govultr.BareMetalServer, error) {
+	bm, _, err := o.Base.Client.BareMetalServer.Create(o.Base.Context, o.CreateReq)
 	return bm, err
 }
 
-func (b *options) update() (*govultr.BareMetalServer, error) {
-	bm, _, err := b.Base.Client.BareMetalServer.Update(b.Base.Context, b.Base.Args[0], b.UpdateReq)
+func (o *options) update() (*govultr.BareMetalServer, error) {
+	bm, _, err := o.Base.Client.BareMetalServer.Update(o.Base.Context, o.Base.Args[0], o.UpdateReq)
 	return bm, err
 }
 
-func (b *options) del() error {
-	return b.Base.Client.BareMetalServer.Delete(b.Base.Context, b.Base.Args[0])
+func (o *options) del() error {
+	return o.Base.Client.BareMetalServer.Delete(o.Base.Context, o.Base.Args[0])
 }
 
-func (b *options) halt() error {
-	return b.Base.Client.BareMetalServer.Halt(b.Base.Context, b.Base.Args[0])
+func (o *options) halt() error {
+	return o.Base.Client.BareMetalServer.Halt(o.Base.Context, o.Base.Args[0])
 }
 
-func (b *options) start() error {
-	return b.Base.Client.BareMetalServer.Start(b.Base.Context, b.Base.Args[0])
+func (o *options) start() error {
+	return o.Base.Client.BareMetalServer.Start(o.Base.Context, o.Base.Args[0])
 }
 
-func (b *options) reboot() error {
-	return b.Base.Client.BareMetalServer.Reboot(b.Base.Context, b.Base.Args[0])
+func (o *options) reboot() error {
+	return o.Base.Client.BareMetalServer.Reboot(o.Base.Context, o.Base.Args[0])
 }
 
-func (b *options) reinstall() error {
-	_, _, err := b.Base.Client.BareMetalServer.Reinstall(b.Base.Context, b.Base.Args[0])
+func (o *options) reinstall() error {
+	_, _, err := o.Base.Client.BareMetalServer.Reinstall(o.Base.Context, o.Base.Args[0])
 	return err
 }
 
-func (b *options) getUpgrades() (*govultr.Upgrades, error) {
-	list, _, err := b.Base.Client.BareMetalServer.GetUpgrades(b.Base.Context, b.Base.Args[0])
+func (o *options) getUpgrades() (*govultr.Upgrades, error) {
+	list, _, err := o.Base.Client.BareMetalServer.GetUpgrades(o.Base.Context, o.Base.Args[0])
 	return list, err
 }
 
-func (b *options) getUserData() (*govultr.UserData, error) {
-	ud, _, err := b.Base.Client.BareMetalServer.GetUserData(b.Base.Context, b.Base.Args[0])
+func (o *options) getUserData() (*govultr.UserData, error) {
+	ud, _, err := o.Base.Client.BareMetalServer.GetUserData(o.Base.Context, o.Base.Args[0])
 	return ud, err
 }
 
-func (b *options) getVNCURL() (*govultr.VNCUrl, error) {
-	url, _, err := b.Base.Client.BareMetalServer.GetVNCUrl(b.Base.Context, b.Base.Args[0])
+func (o *options) getVNCURL() (*govultr.VNCUrl, error) {
+	url, _, err := o.Base.Client.BareMetalServer.GetVNCUrl(o.Base.Context, o.Base.Args[0])
 	return url, err
 }
 
-func (b *options) getBandwidth() (*govultr.Bandwidth, error) {
-	bw, _, err := b.Base.Client.BareMetalServer.GetBandwidth(b.Base.Context, b.Base.Args[0])
+func (o *options) getBandwidth() (*govultr.Bandwidth, error) {
+	bw, _, err := o.Base.Client.BareMetalServer.GetBandwidth(o.Base.Context, o.Base.Args[0])
 	return bw, err
 }
 
-func (b *options) getIPv4Addresses() ([]govultr.IPv4, *govultr.Meta, error) {
-	ips, meta, _, err := b.Base.Client.BareMetalServer.ListIPv4s(b.Base.Context, b.Base.Args[0], b.Base.Options)
+func (o *options) getIPv4Addresses() ([]govultr.IPv4, *govultr.Meta, error) {
+	ips, meta, _, err := o.Base.Client.BareMetalServer.ListIPv4s(o.Base.Context, o.Base.Args[0], o.Base.Options)
 	return ips, meta, err
 }
 
-func (b *options) getIPv6Addresses() ([]govultr.IPv6, *govultr.Meta, error) {
-	ips, meta, _, err := b.Base.Client.BareMetalServer.ListIPv6s(b.Base.Context, b.Base.Args[0], b.Base.Options)
+func (o *options) getIPv6Addresses() ([]govultr.IPv6, *govultr.Meta, error) {
+	ips, meta, _, err := o.Base.Client.BareMetalServer.ListIPv6s(o.Base.Context, o.Base.Args[0], o.Base.Options)
 	return ips, meta, err
+}
+
+func (o *options) listVPCs() ([]govultr.VPCInfo, error) {
+	vpcs, _, err := o.Base.Client.BareMetalServer.ListVPCInfo(o.Base.Context, o.Base.Args[0])
+	return vpcs, err
+}
+
+func (o *options) attachVPC() error {
+	return o.Base.Client.BareMetalServer.AttachVPC(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+}
+
+func (o *options) detachVPC() error {
+	return o.Base.Client.BareMetalServer.DetachVPC(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
 }
 
 // ============================

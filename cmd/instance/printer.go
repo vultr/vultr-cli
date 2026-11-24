@@ -471,3 +471,53 @@ func (r *ReverseIPsPrinter) Data() [][]string {
 func (r *ReverseIPsPrinter) Paging() [][]string {
 	return nil
 }
+
+// ======================================
+
+// VPCsPrinter
+type VPCsPrinter struct {
+	VPCs []govultr.VPCInfo `json:"vpcs"`
+	Meta *govultr.Meta     `json:"meta"`
+}
+
+// JSON ...
+func (v *VPCsPrinter) JSON() []byte {
+	return printer.MarshalObject(v, "json")
+}
+
+// YAML ...
+func (v *VPCsPrinter) YAML() []byte {
+	return printer.MarshalObject(v, "yaml")
+}
+
+// Columns ...
+func (v *VPCsPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"MAC ADDRESS",
+		"IP ADDRESS",
+	}}
+}
+
+// Data ...
+func (v *VPCsPrinter) Data() [][]string {
+	if len(v.VPCs) == 0 {
+		return [][]string{0: {"---", "---", "---"}}
+	}
+
+	var data [][]string
+	for i := range v.VPCs {
+		data = append(data, []string{
+			v.VPCs[i].ID,
+			v.VPCs[i].MacAddress,
+			v.VPCs[i].IPAddress,
+		})
+	}
+
+	return data
+}
+
+// Paging ...
+func (v *VPCsPrinter) Paging() [][]string {
+	return printer.NewPagingFromMeta(v.Meta).Compose()
+}

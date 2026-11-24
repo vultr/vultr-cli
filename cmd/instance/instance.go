@@ -1544,6 +1544,41 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 		Short: "Commands to handle vpcs on an instance",
 	}
 
+	// VPC List
+	vpcList := &cobra.Command{
+		Use:   "list <Instance ID>",
+		Short: "List the attached VPC networks",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("please provide a instance ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			o.Base.Options = utils.GetPaging(cmd)
+			vpcs, meta, err := o.vpcsList()
+			if err != nil {
+				return fmt.Errorf("error retrieving instance VPC list : %v", err)
+			}
+
+			data := &VPCsPrinter{VPCs: vpcs, Meta: meta}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	vpcList.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
+	vpcList.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
+	)
+
 	// VPC Attach
 	vpcAttach := &cobra.Command{
 		Use:     "attach <Instance ID> <VPC ID>",
@@ -1591,6 +1626,7 @@ func NewCmdInstance(base *cli.Base) *cobra.Command { //nolint:funlen,gocyclo
 	}
 
 	vpc.AddCommand(
+		vpcList,
 		vpcAttach,
 		vpcDetach,
 	)
@@ -1839,6 +1875,11 @@ func (o *options) reverseDNSIPv6Create() error {
 
 func (o *options) reverseDNSIPv6Delete() error {
 	return o.Base.Client.Instance.DeleteReverseIPv6(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+}
+
+func (o *options) vpcsList() ([]govultr.VPCInfo, *govultr.Meta, error) {
+	vpcs, meta, _, err := o.Base.Client.Instance.ListVPCInfo(o.Base.Context, o.Base.Args[0], o.Base.Options)
+	return vpcs, meta, err
 }
 
 func (o *options) vpcAttach() error {
