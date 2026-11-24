@@ -94,7 +94,7 @@ var (
 	repoListLong    = `List all container registry repositories`
 	repoListExample = `
 	# Full example
-	vultr-cli container-registry repository list
+	vultr-cli container-registry repository list --per-page 10 --cursor 123123
 	`
 
 	repoGetLong    = `Get a container registry repository`
@@ -466,6 +466,17 @@ func NewCmdContainerRegistry(base *cli.Base) *cobra.Command { //nolint:funlen,go
 			return nil
 		},
 	}
+
+	repoList.Flags().StringP("cursor", "c", "", "(optional) cursor for paging.")
+	repoList.Flags().IntP(
+		"per-page",
+		"p",
+		utils.PerPageDefault,
+		fmt.Sprintf(
+			"(optional) Number of items requested per page. Default is %d and Max is 500.",
+			utils.PerPageDefault,
+		),
+	)
 
 	// Repository Get
 	repoGet := &cobra.Command{
