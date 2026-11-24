@@ -271,6 +271,52 @@ This will automatically select the latest version of the app for the upgrade.`
 	#Full example
 	vultr-cli kubernetes apps deployments delete 8cf93f5f-875e-4aea-8a84-ec2dd592b5ae 4130764b-5276-4552-546f-32513239732b
 `
+
+	npLabelListExample = `
+	# Full example
+	vultr-cli kubernetes node-pool label list 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa
+`
+
+	npLabelGetExample = `
+	# Full example
+	vultr-cli kubernetes node-pool label get 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa \
+		162b7e698c7fe33235649d8557c37fcc
+`
+
+	npLabelCreateExample = `
+	# Full example
+	vultr-cli kubernetes node-pool label create 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa \
+		--key "my-key" --value "my-value"
+`
+
+	npLabelDeleteExample = `
+	# Full example
+	vultr-cli kubernetes node-pool label delete 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa \
+		162b7e698c7fe33235649d8557c37fcc
+`
+
+	npTaintListExample = `
+	# Full example
+	vultr-cli kubernetes node-pool taint list 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa
+`
+
+	npTaintGetExample = `
+	# Full example
+	vultr-cli kubernetes node-pool taint get 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa \
+		162b7e698c7fe33235649d8557c37fcc
+`
+
+	npTaintCreateExample = `
+	# Full example
+	vultr-cli kubernetes node-pool taint create 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa \
+		--key "my-key" --value "my-value" --effect "NoSchedule"
+`
+
+	npTaintDeleteExample = `
+	# Full example
+	vultr-cli kubernetes node-pool taint delete 3a350f61-55d9-46a2-ae7b-7d2afc808995 84b1454f-c53a-4f5f-8f4b-fefa1a8f73fa \
+		162b7e698c7fe33235649d8557c37fcc
+`
 )
 
 const (
@@ -1129,6 +1175,292 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 		nodeRecycle,
 	)
 
+	// Node pool label
+	npLabel := &cobra.Command{
+		Use:     "label",
+		Short:   "Commands to manage node pool labels",
+		Aliases: []string{"labels"},
+	}
+
+	// Node pool label list
+	npLabelList := &cobra.Command{
+		Use:     "list <Cluster ID> <Node Pool ID>",
+		Short:   "List all labels on the node pool",
+		Example: npLabelListExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 2 {
+				return errors.New("please provide a cluster ID and a node pool ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			labels, err := o.nodePoolLabelList()
+			if err != nil {
+				return fmt.Errorf("error listing kubernetes node pool labels : %v", err)
+			}
+
+			data := &LabelsPrinter{Labels: labels}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Node pool label get
+	npLabelGet := &cobra.Command{
+		Use:     "get <Cluster ID> <Node Pool ID> <Label ID>",
+		Short:   "Get a label on the node pool",
+		Example: npLabelGetExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 3 {
+				return errors.New("please provide a cluster ID, a node pool ID and a label ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			label, err := o.nodePoolLabelGet()
+			if err != nil {
+				return fmt.Errorf("error getting kubernetes node pool label : %v", err)
+			}
+
+			data := &LabelPrinter{Label: label}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Node pool label create
+	npLabelCreate := &cobra.Command{
+		Use:     "create <Cluster ID> <Node Pool ID>",
+		Short:   "Create a label in a node pool",
+		Example: npLabelCreateExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 2 {
+				return errors.New("please provide a cluster ID and a node pool ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			key, err := cmd.Flags().GetString("key")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'key' for kubernetes node pool label create : %v", err)
+			}
+
+			val, err := cmd.Flags().GetString("value")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'value' for kubernetes node pool label create : %v", err)
+			}
+
+			o.npLabelReq = &govultr.NodePoolLabelReq{
+				Key:   key,
+				Value: val,
+			}
+
+			label, err := o.nodePoolLabelCreate()
+			if err != nil {
+				return fmt.Errorf("error creating kubernetes node pool label : %v", err)
+			}
+
+			data := &LabelPrinter{Label: label}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	npLabelCreate.Flags().String("key", "", "The key for the label")
+	if err := npLabelCreate.MarkFlagRequired("key"); err != nil {
+		fmt.Printf("error marking kubernetes node pool label create 'key' flag required: %v", err)
+		os.Exit(1)
+	}
+
+	npLabelCreate.Flags().String("value", "", "The value for the label")
+	if err := npLabelCreate.MarkFlagRequired("value"); err != nil {
+		fmt.Printf("error marking kubernetes node pool label create 'value' flag required: %v", err)
+		os.Exit(1)
+	}
+
+	// Node pool label delete
+	npLabelDelete := &cobra.Command{
+		Use:     "delete <Cluster ID> <Node Pool ID> <Label ID>",
+		Short:   "Delete a node pool label",
+		Example: npLabelDeleteExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 3 {
+				return errors.New("please provide a cluster ID, a node pool ID and a label ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.nodePoolLabelDelete(); err != nil {
+				return fmt.Errorf("error deleting kubernetes node pool label : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("Kubernetes node pool label has been deleted"), nil)
+
+			return nil
+		},
+	}
+
+	npLabel.AddCommand(
+		npLabelList,
+		npLabelGet,
+		npLabelCreate,
+		npLabelDelete,
+	)
+
+	// Node pool taint
+	npTaint := &cobra.Command{
+		Use:     "taint",
+		Short:   "Commands to manage node pool taints",
+		Aliases: []string{"taints"},
+	}
+
+	// Node pool taint list
+	npTaintList := &cobra.Command{
+		Use:     "list <Cluster ID> <Node Pool ID>",
+		Short:   "List all taints on the node pool",
+		Example: npTaintListExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 2 {
+				return errors.New("please provide a cluster ID and a node pool ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			taints, err := o.nodePoolTaintList()
+			if err != nil {
+				return fmt.Errorf("error listing kubernetes node pool taints : %v", err)
+			}
+
+			data := &TaintsPrinter{Taints: taints}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Node pool taint get
+	npTaintGet := &cobra.Command{
+		Use:     "get <Cluster ID> <Node Pool ID> <Taint ID>",
+		Short:   "Get a taint on the node pool",
+		Example: npTaintGetExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 3 {
+				return errors.New("please provide a cluster ID, a node pool ID and a taint ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			taint, err := o.nodePoolTaintGet()
+			if err != nil {
+				return fmt.Errorf("error getting kubernetes node pool taint : %v", err)
+			}
+
+			data := &TaintPrinter{Taint: taint}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	// Node pool taint create
+	npTaintCreate := &cobra.Command{
+		Use:     "create <Cluster ID> <Node Pool ID>",
+		Short:   "Create a taint in a node pool",
+		Example: npTaintCreateExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 2 {
+				return errors.New("please provide a cluster ID and a node pool ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			key, err := cmd.Flags().GetString("key")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'key' for kubernetes node pool taint create : %v", err)
+			}
+
+			val, err := cmd.Flags().GetString("value")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'value' for kubernetes node pool taint create : %v", err)
+			}
+
+			effect, err := cmd.Flags().GetString("effect")
+			if err != nil {
+				return fmt.Errorf("error parsing flag 'effect' for kubernetes node pool taint create : %v", err)
+			}
+
+			o.npTaintReq = &govultr.NodePoolTaintReq{
+				Key:    key,
+				Value:  val,
+				Effect: effect,
+			}
+
+			taint, err := o.nodePoolTaintCreate()
+			if err != nil {
+				return fmt.Errorf("error creating kubernetes node pool taint : %v", err)
+			}
+
+			data := &TaintPrinter{Taint: taint}
+			o.Base.Printer.Display(data, nil)
+
+			return nil
+		},
+	}
+
+	npTaintCreate.Flags().String("key", "", "The key for the taint")
+	if err := npTaintCreate.MarkFlagRequired("key"); err != nil {
+		fmt.Printf("error marking kubernetes node pool taint create 'key' flag required: %v", err)
+		os.Exit(1)
+	}
+
+	npTaintCreate.Flags().String("value", "", "The value for the taint")
+	if err := npTaintCreate.MarkFlagRequired("value"); err != nil {
+		fmt.Printf("error marking kubernetes node pool taint create 'value' flag required: %v", err)
+		os.Exit(1)
+	}
+
+	npTaintCreate.Flags().String(
+		"effect",
+		"",
+		"The effect of the taint. One of 'NoSchedule', 'PreferNoSchedule' and 'NoExecute'",
+	)
+	if err := npTaintCreate.MarkFlagRequired("effect"); err != nil {
+		fmt.Printf("error marking kubernetes node pool taint create 'effect' flag required: %v", err)
+		os.Exit(1)
+	}
+
+	// Node pool taint delete
+	npTaintDelete := &cobra.Command{
+		Use:     "delete <Cluster ID> <Node Pool ID> <Taint ID>",
+		Short:   "Delete a node pool taint",
+		Example: npTaintDeleteExample,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 3 {
+				return errors.New("please provide a cluster ID, a node pool ID and a taint ID")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := o.nodePoolTaintDelete(); err != nil {
+				return fmt.Errorf("error deleting kubernetes node pool taint : %v", err)
+			}
+
+			o.Base.Printer.Display(printer.Info("Kubernetes node pool taint has been deleted"), nil)
+
+			return nil
+		},
+	}
+
+	npTaint.AddCommand(
+		npTaintList,
+		npTaintGet,
+		npTaintCreate,
+		npTaintDelete,
+	)
+
 	nodepool.AddCommand(
 		npList,
 		npGet,
@@ -1136,6 +1468,8 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 		npUpdate,
 		npDelete,
 		node,
+		npLabel,
+		npTaint,
 	)
 
 	// Apps
@@ -1484,6 +1818,8 @@ type options struct {
 	UpgradeReq       *govultr.ClusterUpgradeReq
 	npCreateReq      *govultr.NodePoolReq
 	npUpdateReq      *govultr.NodePoolReqUpdate
+	npLabelReq       *govultr.NodePoolLabelReq
+	npTaintReq       *govultr.NodePoolTaintReq
 	appDeploymentReq *govultr.ClusterApplicationDeploymentReq
 }
 
@@ -1563,6 +1899,44 @@ func (o *options) nodePoolNodeDelete() error {
 
 func (o *options) nodePoolNodeRecycle() error {
 	return o.Base.Client.Kubernetes.RecycleNodePoolInstance(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2]) //nolint:lll
+}
+
+func (o *options) nodePoolLabelList() ([]govultr.NodePoolLabel, error) {
+	labels, _, err := o.Base.Client.Kubernetes.ListNodePoolLabels(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return labels, err
+}
+
+func (o *options) nodePoolLabelGet() (*govultr.NodePoolLabel, error) {
+	label, _, err := o.Base.Client.Kubernetes.GetNodePoolLabel(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2]) //nolint:lll
+	return label, err
+}
+
+func (o *options) nodePoolLabelCreate() (*govultr.NodePoolLabel, error) {
+	label, _, err := o.Base.Client.Kubernetes.CreateNodePoolLabel(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.npLabelReq) //nolint:lll
+	return label, err
+}
+
+func (o *options) nodePoolLabelDelete() error {
+	return o.Base.Client.Kubernetes.DeleteNodePoolLabel(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2]) //nolint:lll
+}
+
+func (o *options) nodePoolTaintList() ([]govultr.NodePoolTaint, error) {
+	taints, _, err := o.Base.Client.Kubernetes.ListNodePoolTaints(o.Base.Context, o.Base.Args[0], o.Base.Args[1])
+	return taints, err
+}
+
+func (o *options) nodePoolTaintGet() (*govultr.NodePoolTaint, error) {
+	taint, _, err := o.Base.Client.Kubernetes.GetNodePoolTaint(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2]) //nolint:lll
+	return taint, err
+}
+
+func (o *options) nodePoolTaintCreate() (*govultr.NodePoolTaint, error) {
+	taint, _, err := o.Base.Client.Kubernetes.CreateNodePoolTaint(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.npTaintReq) //nolint:lll
+	return taint, err
+}
+
+func (o *options) nodePoolTaintDelete() error {
+	return o.Base.Client.Kubernetes.DeleteNodePoolTaint(o.Base.Context, o.Base.Args[0], o.Base.Args[1], o.Base.Args[2]) //nolint:lll
 }
 
 func (o *options) appsListAvailable() ([]govultr.ClusterApplication, error) {

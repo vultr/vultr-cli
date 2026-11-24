@@ -807,3 +807,184 @@ func (a *AppDeploymentPrinter) Data() [][]string {
 func (a *AppDeploymentPrinter) Paging() [][]string {
 	return nil
 }
+
+// ======================================
+
+// LabelsPrinter ...
+type LabelsPrinter struct {
+	Labels []govultr.NodePoolLabel
+}
+
+// JSON ...
+func (l *LabelsPrinter) JSON() []byte {
+	return printer.MarshalObject(l, "json")
+}
+
+// YAML ...
+func (l *LabelsPrinter) YAML() []byte {
+	return printer.MarshalObject(l, "yaml")
+}
+
+// Columns ...
+func (l *LabelsPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"KEY",
+		"VALUE",
+	}}
+}
+
+// Data ...
+func (l *LabelsPrinter) Data() [][]string {
+	if len(l.Labels) == 0 {
+		return [][]string{0: {"---", "---", "---"}}
+	}
+
+	var data [][]string
+	for i := range l.Labels {
+		data = append(data, []string{
+			l.Labels[i].ID,
+			l.Labels[i].Key,
+			l.Labels[i].Value,
+		})
+	}
+
+	return data
+}
+
+// Paging ...
+func (l *LabelsPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// LabelPrinter ...
+type LabelPrinter struct {
+	Label *govultr.NodePoolLabel
+}
+
+// JSON ...
+func (l *LabelPrinter) JSON() []byte {
+	return printer.MarshalObject(l, "json")
+}
+
+// YAML ...
+func (l *LabelPrinter) YAML() []byte {
+	return printer.MarshalObject(l, "yaml")
+}
+
+// Columns ...
+func (l *LabelPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (l *LabelPrinter) Data() [][]string {
+	if l.Label == nil {
+		return [][]string{0: {"No such label found"}}
+	}
+
+	return [][]string{
+		{"ID", l.Label.ID},
+		{"KEY", l.Label.Key},
+		{"VALUE", l.Label.Value},
+	}
+}
+
+// Paging ...
+func (l *LabelPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// TaintsPrinter ...
+type TaintsPrinter struct {
+	Taints []govultr.NodePoolTaint
+}
+
+// JSON ...
+func (t *TaintsPrinter) JSON() []byte {
+	return printer.MarshalObject(t, "json")
+}
+
+// YAML ...
+func (t *TaintsPrinter) YAML() []byte {
+	return printer.MarshalObject(t, "yaml")
+}
+
+// Columns ...
+func (t *TaintsPrinter) Columns() [][]string {
+	return [][]string{0: {
+		"ID",
+		"KEY",
+		"VALUE",
+		"EFFECT",
+	}}
+}
+
+// Data ...
+func (t *TaintsPrinter) Data() [][]string {
+	if len(t.Taints) == 0 {
+		return [][]string{0: {"---", "---", "---", "---"}}
+	}
+
+	var data [][]string
+	for i := range t.Taints {
+		data = append(data, []string{
+			t.Taints[i].ID,
+			t.Taints[i].Key,
+			t.Taints[i].Value,
+			t.Taints[i].Effect,
+		})
+	}
+
+	return data
+}
+
+// Paging ...
+func (t *TaintsPrinter) Paging() [][]string {
+	return nil
+}
+
+// ======================================
+
+// TaintPrinter ...
+type TaintPrinter struct {
+	Taint *govultr.NodePoolTaint
+}
+
+// JSON ...
+func (t *TaintPrinter) JSON() []byte {
+	return printer.MarshalObject(t, "json")
+}
+
+// YAML ...
+func (t *TaintPrinter) YAML() []byte {
+	return printer.MarshalObject(t, "yaml")
+}
+
+// Columns ...
+func (t *TaintPrinter) Columns() [][]string {
+	return nil
+}
+
+// Data ...
+func (t *TaintPrinter) Data() [][]string {
+	if t.Taint == nil {
+		return [][]string{0: {"No such taint found"}}
+	}
+
+	return [][]string{
+		{"ID", t.Taint.ID},
+		{"KEY", t.Taint.Key},
+		{"VALUE", t.Taint.Value},
+		{"EFFECT", t.Taint.Effect},
+	}
+}
+
+// Paging ...
+func (t *TaintPrinter) Paging() [][]string {
+	return nil
+}
