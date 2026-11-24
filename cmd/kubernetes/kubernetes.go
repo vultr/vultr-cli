@@ -1249,7 +1249,7 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 
 			val, err := cmd.Flags().GetString("value")
 			if err != nil {
-				return fmt.Errorf("error parsing flag 'value' for kubernetes node pool taint create : %v", err)
+				return fmt.Errorf("error parsing flag 'value' for kubernetes node pool label create : %v", err)
 			}
 
 			o.npLabelReq = &govultr.NodePoolLabelReq{
@@ -1275,7 +1275,7 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 		os.Exit(1)
 	}
 
-	npLabelCreate.Flags().String("value", "", "The value for the taint")
+	npLabelCreate.Flags().String("value", "", "The value for the label")
 	if err := npLabelCreate.MarkFlagRequired("value"); err != nil {
 		fmt.Printf("error marking kubernetes node pool label create 'value' flag required: %v", err)
 		os.Exit(1)
@@ -1422,7 +1422,11 @@ or network interface. All traffic from the nodes will be routed, instead, throug
 		os.Exit(1)
 	}
 
-	npTaintCreate.Flags().String("effect", "", "The effect of the taint. One of 'NoSchedule', 'PreferNoSchedule' and 'NoExecute'")
+	npTaintCreate.Flags().String(
+		"effect",
+		"",
+		"The effect of the taint. One of 'NoSchedule', 'PreferNoSchedule' and 'NoExecute'",
+	)
 	if err := npTaintCreate.MarkFlagRequired("effect"); err != nil {
 		fmt.Printf("error marking kubernetes node pool taint create 'effect' flag required: %v", err)
 		os.Exit(1)
